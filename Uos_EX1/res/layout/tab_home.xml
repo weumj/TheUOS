@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/univ_pic" >
+
+    <GridView
+        android:id="@+id/tab_home_gridview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="80dip"
+        android:cacheColorHint="@android:color/transparent"
+        android:columnWidth="100dip"
+        android:listSelector="@android:color/transparent"
+        android:gravity="center"
+        android:horizontalSpacing="3dip"
+        android:numColumns="auto_fit"
+        android:paddingTop="5dip"
+        android:scrollbars="none"
+        android:stretchMode="spacingWidthUniform"
+        android:verticalSpacing="10dip" >
+    </GridView>
+
+</RelativeLayout>
