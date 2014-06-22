@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/tab_library_seat_list_text_room_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/black"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/tab_library_seat_list_text_vacancy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tab_library_seat_list_text_room_name"
+        android:text="@string/tab_library_seat_vacancy"
+        android:textColor="@android:color/black" />
+
+    <TextView
+        android:id="@+id/tab_library_seat_list_text_vacancy_seat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tab_library_seat_list_text_room_name"
+        android:layout_toRightOf="@id/tab_library_seat_list_text_vacancy"
+        android:textColor="#0054FF"
+        android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/tab_libray_seat_list_text_occupy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tab_library_seat_list_text_room_name"
+        android:layout_marginLeft="5dp"
+        android:layout_toRightOf="@id/tab_library_seat_list_text_vacancy_seat"
+        android:text="@string/tab_library_seat_occupy"
+        android:textColor="@android:color/black"
+        android:textSize="15sp" >
+    </TextView>
+
+    <TextView
+        android:id="@+id/tab_libray_seat_list_text_occupy_seat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tab_library_seat_list_text_room_name"
+        android:layout_toRightOf="@id/tab_libray_seat_list_text_occupy"
+        android:textColor="#FF0000"
+        android:textSize="15sp" />
+
+    <SeekBar
+        android:id="@+id/tab_libray_seat_list_text_rate_seek_bar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tab_libray_seat_list_text_occupy_seat"
+        android:focusable="false"
+        android:max="100"
+        android:progressDrawable="@drawable/progress_effectcolor" />
+
+</RelativeLayout>

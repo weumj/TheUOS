@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <PreferenceCategory android:title="@string/setting_anounce_noti_frag_title1" >
+        <PreferenceScreen android:summary="@string/setting_anounce_noti_frag_desc" >
+        </PreferenceScreen>
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="@string/pref_key_check_anounce_service"
+            android:title="@string/setting_check_anounce_service" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/setting_anounce_noti_frag_title2" >
+        <PreferenceScreen 
+            android:title="@string/setting_anounce_keyword_title_"
+            android:summary="@string/setting_anounce_keyword_desc2" >
+        </PreferenceScreen>
+
+        <EditTextPreference
+            android:key="@string/pref_key_keyword_anounce"
+            android:summary="@string/setting_anounce_keyword_desc"
+            android:title="@string/anounce_keyword" />
+
+        <PreferenceScreen
+            android:key="@string/pref_key_noti_time"
+            android:summary="@string/setting_noti_time_desc"
+            android:title="@string/setting_noti_time" >
+        </PreferenceScreen>
+    </PreferenceCategory>
+
+</PreferenceScreen>

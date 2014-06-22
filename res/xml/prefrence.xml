@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <PreferenceCategory android:title="@string/setting_screen" >
+        <PreferenceScreen
+            android:key="@string/pref_key_order"
+            android:summary="@string/setting_order_desc"
+            android:title="@string/setting_order" >
+        </PreferenceScreen>
+        <PreferenceScreen
+            android:key="@string/pref_key_theme"
+            android:summary="@string/setting_theme_desc"
+            android:title="@string/setting_theme" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/pref_key_home"
+            android:summary="@string/setting_home_desc"
+            android:title="@string/setting_home" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/title_section1_announce" >
+        <PreferenceScreen
+            android:summary="@string/setting_anounce_noti_desc"
+            android:title="@string/setting_anounce_noti" >
+        </PreferenceScreen>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/title_section3_book" >
+        <CheckBoxPreference
+            android:key="@string/pref_key_check_borrow"
+            android:title="@string/setting_check_borrow" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/title_section4_lib" >
+        <CheckBoxPreference
+            android:key="@string/pref_key_check_seat"
+            android:title="@string/setting_check_seat" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/title_section7_time" >
+        <PreferenceScreen
+            android:summary="@string/setting_timetable_desc"
+            android:title="@string/setting_timetable" >
+        </PreferenceScreen>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/setting_data" >
+        <PreferenceScreen
+            android:summary="@string/setting_save_route_desc"
+            android:title="@string/setting_save_route" >
+        </PreferenceScreen>
+        <PreferenceScreen
+            android:key="@string/pref_key_save_route"
+            android:title="@string/setting_save_route_sub_title" >
+        </PreferenceScreen>
+        <PreferenceScreen
+            android:key="@string/pref_key_delete_cache"
+            android:summary="@string/setting_delete_cache_desc"
+            android:title="@string/setting_delete_cache" >
+        </PreferenceScreen>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/setting_etc" >
+        <PreferenceScreen
+            android:summary="@string/setting_web_page_desc"
+            android:title="@string/setting_web_page" >
+        </PreferenceScreen>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/setting_app_info" >
+        <PreferenceScreen
+            android:summary="@string/setting_app_version_desc"
+            android:title="@string/setting_app_version" >
+        </PreferenceScreen>
+        <!--
+        <PreferenceScreen
+            android:summary="@string/setting_app_version_update_desc"
+            android:title="@string/setting_app_version_update" >
+        </PreferenceScreen>
+        -->
+    </PreferenceCategory>
+
+</PreferenceScreen>

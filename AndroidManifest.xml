@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.uoscs09.theuos"
+    android:versionCode="37"
+    android:versionName="@string/setting_app_version_desc" >
+
+    <uses-sdk
+        android:minSdkVersion="15"
+        android:targetSdkVersion="18" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
+
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@android:style/Theme.Holo.Light.NoActionBar" >
+        <meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="@string/google_play_v2_key" />
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <activity
+            android:name="com.uoscs09.theuos.TitleActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="@string/app_name"
+            android:screenOrientation="user"
+            android:theme="@style/Theme.Titile" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.uoscs09.theuos.PagerFragmentActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="@string/app_name"
+            android:screenOrientation="user"
+            android:uiOptions="splitActionBarWhenNarrow"
+            android:windowSoftInputMode="stateAlwaysHidden" >
+        </activity>
+        <activity android:name="com.uoscs09.theuos.tab.phonelist.PhoneListWebActivity" >
+        </activity>
+        <activity android:name="com.uoscs09.theuos.tab.map.SubMapActivity" >
+        </activity>
+        <activity android:name="com.uoscs09.theuos.tab.anounce.SubAnounceWebActivity" >
+        </activity>
+        <activity
+            android:name="com.uoscs09.theuos.setting.SettingActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:uiOptions="splitActionBarWhenNarrow" >
+        </activity>
+        <activity android:name="com.uoscs09.theuos.tab.libraryseat.SubSeatWebActivity" >
+        </activity>
+        <activity
+            android:name="com.uoscs09.theuos.tab.etc.EtcActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="user" >
+        </activity>
+
+        <service
+            android:name="com.uoscs09.theuos.widget.timetable.Widget5x4ListService"
+            android:exported="true"
+            android:label="@string/widget_timetable"
+            android:permission="android.permission.BIND_REMOTEVIEWS" >
+        </service>
+        <service
+            android:name="com.uoscs09.theuos.widget.timetable.Widget4x4ListService"
+            android:exported="true"
+            android:label="@string/widget_timetable"
+            android:permission="android.permission.BIND_REMOTEVIEWS" >
+        </service>
+        <service
+            android:name="com.uoscs09.theuos.widget.restaurant.RestListService"
+            android:exported="true"
+            android:label="@string/widget_rest"
+            android:permission="android.permission.BIND_REMOTEVIEWS" >
+        </service>
+        <service
+            android:name="com.uoscs09.theuos.tab.anounce.ServiceForAnounce"
+            android:label="@string/setting_anounce_noti" >
+        </service>
+
+        <receiver android:name="com.uoscs09.theuos.service.BReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" >
+                </action>
+            </intent-filter>
+        </receiver>
+        <receiver android:name="com.uoscs09.theuos.tab.timetable.TimeTableNotiReceiver" >
+            <intent-filter>
+                <action android:name="com.uoscs09.theuos.tab.timetable.set_alarm" >
+                </action>
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="com.uoscs09.theuos.widget.timetable.TimeTableWidget4x4"
+            android:label="@string/widget_timetable4x4" >
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_conf_timetable_4x4" />
+
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.uoscs09.theuos.widget.timetable.refresh" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.ACTION_EXTERNAL_APPLICATION_AVAILABLE" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="com.uoscs09.theuos.widget.timetable.TimeTableWidget5x4"
+            android:label="@string/widget_timetable5x4" >
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_conf_timetable_5x4" />
+
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.uoscs09.theuos.widget.timetable.refresh" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.ACTION_EXTERNAL_APPLICATION_AVAILABLE" />
+            </intent-filter>
+        </receiver>
+        <!-- 
+        <receiver
+            android:name="com.uoscs09.theuos.widget.restaurant.RestWidget"
+            android:label="@string/widget_rest_desc" >
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_conf_rest" />
+
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.uoscs09.theuos.widget.restaurant.RestWidget.NEXT_ACTION" />
+                <action android:name="com.uoscs09.theuos.widget.restaurant.RestWidget.PREV_ACTION" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.ACTION_EXTERNAL_APPLICATION_AVAILABLE" />
+            </intent-filter>
+        </receiver>
+         -->
+    </application>
+
+</manifest>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="widget_timetable">시간표 위젯</string>
+    <string name="widget_timetable4x4">The UOS 시간표 4x4</string>
+    <string name="widget_timetable5x4">The UOS 시간표 5x4</string>
+    <string name="widget_rest">식단표 위젯</string>
+    <string name="widget_rest_desc">The UOS 식단표</string>
+
+</resources>

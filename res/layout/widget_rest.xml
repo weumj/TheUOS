@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/selector_list" >
+
+    <ImageButton
+        android:id="@+id/widget_rest_btn_prev"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/selector_button"
+        android:src="@drawable/ic_action_navigation_back" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="1dip"
+        android:layout_below="@+id/widget_rest_btn_prev"
+        android:background="@android:color/darker_gray" />
+
+    <ListView
+        android:id="@+id/widget_rest_listview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/widget_rest_btn_prev"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="1dip" >
+    </ListView>
+
+    <ImageButton
+        android:id="@+id/widget_rest_btn_next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/selector_button"
+        android:src="@drawable/ic_action_navigation_forward" />
+
+    <TextView
+        android:id="@+id/widget_rest_main_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/widget_rest_btn_prev"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@android:color/black" />
+
+</RelativeLayout>

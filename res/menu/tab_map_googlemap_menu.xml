@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_action_action_search"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_web_for_tab_map_find">
+    </item>
+    
+    <item
+        android:id="@+id/action_direction"
+        android:icon="@drawable/ic_action_location_directions"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_location_direction">
+    </item>
+
+</menu>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" >
+
+    <ExpandableListView
+        android:id="@+id/expandableListView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:padding="10dp" >
+    </ExpandableListView>
+
+    <TextView
+        android:id="@+id/tab_search_subject_empty_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="100dp"
+        android:drawableStart="@drawable/ic_action_action_search_dark"
+        android:gravity="center"
+        android:text="버튼이나 메뉴버튼을 눌러 검색하세요"
+        android:visibility="invisible" />
+
+</RelativeLayout>

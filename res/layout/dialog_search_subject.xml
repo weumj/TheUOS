@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <Spinner
+        android:id="@+id/etc_search_subj_spinner1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:entries="@array/search_subj_opt1" />
+
+    <Spinner
+        android:id="@+id/etc_search_subj_spinner2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/etc_search_subj_spinner1"
+        android:entries="@array/search_subj_major_1_0" />
+
+    <Spinner
+        android:id="@+id/etc_search_subj_spinner3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_below="@+id/etc_search_subj_spinner1"
+        android:entries="@array/search_subj_major_2_0_0" />
+
+    <Spinner
+        android:id="@+id/etc_search_subj_spinner4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_below="@+id/etc_search_subj_spinner2"
+        android:layout_toRightOf="@+id/etc_search_subj_spinner3" />
+
+    <EditText
+        android:id="@+id/etc_search_subj_editText1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/etc_search_subj_spinner3"
+        android:layout_centerHorizontal="true"
+        android:ems="10"
+        android:hint="@string/search_hint"
+        android:inputType="text" />
+
+</RelativeLayout>

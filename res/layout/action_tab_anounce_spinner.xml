@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent" >
+
+    <Spinner
+        android:id="@+id/tab_announce_action_spinner1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:entries="@array/tab_anounce_action_spinner" />
+
+    <TextView
+        android:id="@+id/tab_anounce_action_textView_page"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/tab_announce_action_spinner1"
+        android:layout_marginLeft="20dp" />
+
+</RelativeLayout>
