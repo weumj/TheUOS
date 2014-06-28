@@ -25,6 +25,8 @@ import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.nhaarman.listviewanimations.swinginadapters.AnimationAdapter;
+import com.nhaarman.listviewanimations.swinginadapters.prepared.SwingLeftInAnimationAdapter;
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.impl.AbsAsyncFragment;
 import com.uoscs09.theuos.common.util.AppUtil;
@@ -56,6 +58,7 @@ public class TabAnounceFragment extends
 	private String searchQuery;
 	protected int spinnerSelection = 0;
 	protected int pageNum;
+	private AnimationAdapter aAdapter;
 	/** 이전 페이지 번호, 공지사항 검색 결과가 없으면 현재 페이지 번호를 변하지 않게하는 역할 */
 	private int prevPageNum = pageNum;
 	protected static final String PAGE_NUM = "PAGE";
@@ -153,7 +156,9 @@ public class TabAnounceFragment extends
 		});
 		listView.setEmptyView(emptyView);
 		listView.setOnItemClickListener(this);
-		listView.setAdapter(adapter);
+		aAdapter = new SwingLeftInAnimationAdapter(adapter);
+		aAdapter.setAbsListView(listView);
+		listView.setAdapter(aAdapter);
 		return rootView;
 	}
 
@@ -232,7 +237,8 @@ public class TabAnounceFragment extends
 				.getSystemService(Context.INPUT_METHOD_SERVICE);
 		SearchView v = (SearchView) searchMenu.getActionView();
 		ipm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-		v.clearFocus();
+		searchMenu.collapseActionView();
+		
 		if (spinnerSelection == 0) {
 			AppUtil.showToast(getActivity(),
 					R.string.tab_anounce_invaild_category, true);
@@ -311,7 +317,7 @@ public class TabAnounceFragment extends
 		String body = HttpRequest.getBodyByPost(url, StringUtil.ENCODE_UTF_8,
 				queryTable, StringUtil.ENCODE_UTF_8);
 		return (ArrayList<AnounceItem>) ParseFactory.create(
-				ParseFactory.ANOUNCE, body, howTo).parse();
+				ParseFactory.What.Anounce, body, howTo).parse();
 	}
 
 	@Override
@@ -328,6 +334,8 @@ public class TabAnounceFragment extends
 			adapter.clear();
 			adapter.addAll(result);
 			adapter.notifyDataSetChanged();
+			aAdapter.notifyDataSetChanged();
+			aAdapter.setShouldAnimateFromPosition(0);
 		}
 		updatePageNumber();
 	}

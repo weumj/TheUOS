@@ -1,4 +1,5 @@
 package pkg.asyncexcute;
+
 import java.util.concurrent.Callable;
 
 import android.os.AsyncTask;
@@ -9,7 +10,7 @@ public class AsyncExecutor<T> extends AsyncTask<Void, Void, T> {
 	private AsyncCallback<T> callback;
 	private Callable<T> callable;
 	private Exception occuredException;
-	
+
 	public AsyncExecutor<T> setCallable(Callable<T> callable) {
 		this.callable = callable;
 		return this;
@@ -34,8 +35,8 @@ public class AsyncExecutor<T> extends AsyncTask<Void, Void, T> {
 			return callable.call();
 		} catch (Exception ex) {
 			Log.e(TAG,
-			"exception occured while doing in background: "
-			+ ex.getMessage(), ex);
+					"exception occured while doing in background: "
+							+ ex.getMessage(), ex);
 			this.occuredException = ex;
 			return null;
 		}
@@ -43,7 +44,8 @@ public class AsyncExecutor<T> extends AsyncTask<Void, Void, T> {
 
 	@Override
 	protected void onPostExecute(T result) {
-		callback.onPostExcute();
+		if (callback != null)
+			callback.onPostExcute();
 		if (isCancelled()) {
 			notifyCanceled();
 		}
@@ -53,17 +55,21 @@ public class AsyncExecutor<T> extends AsyncTask<Void, Void, T> {
 		}
 		notifyResult(result);
 	}
+
 	private void notifyCanceled() {
 		if (callback != null)
 			callback.cancelled();
 	}
+
 	private boolean isExceptionOccured() {
 		return occuredException != null;
 	}
+
 	private void notifyException() {
 		if (callback != null)
 			callback.exceptionOccured(occuredException);
 	}
+
 	private void notifyResult(T result) {
 		if (callback != null)
 			callback.onResult(result);

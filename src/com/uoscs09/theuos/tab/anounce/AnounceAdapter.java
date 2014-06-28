@@ -28,14 +28,14 @@ public class AnounceAdapter extends AbsArrayAdapter<AnounceItem> {
 		AnounceItem item = getItem(position);
 		Holder h = (Holder) holder;
 		Spanned span = Html.fromHtml(item.type);
-		h.textArray[0].setText(span == null ? span : item.type);
+		h.textArray[0].setText(span != null ? span : item.type);
 		h.textArray[1]
 				.setTextColor(AppUtil.theme == AppTheme.Black ? Color.WHITE
 						: Color.BLACK);
 		span = Html.fromHtml(item.title);
-		h.textArray[1].setText(span == null ? span : item.title);
+		h.textArray[1].setText(span != null ? span : item.title);
 		span = Html.fromHtml(item.date);
-		h.textArray[2].setText(span == null ? span : item.date);
+		h.textArray[2].setText(span != null ? span : item.date);
 		return v;
 	}
 

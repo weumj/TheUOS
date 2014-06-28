@@ -1,4 +1,4 @@
-package com.uoscs09.theuos.tab.etc.score;
+package com.uoscs09.theuos.tab.score;
 
 import java.lang.ref.WeakReference;
 import java.util.List;

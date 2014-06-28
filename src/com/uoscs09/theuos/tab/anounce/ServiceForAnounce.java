@@ -170,7 +170,7 @@ public class ServiceForAnounce extends Service {
 					// TODO 첫페이지 탐색이 아닌 공지사항을 검색하는 방법으로 수정
 					body = HttpRequest.getBody(URL_LIST[j]);
 					list = (List<AnounceItem>) ParseFactory.create(
-							ParseFactory.ANOUNCE,
+							ParseFactory.What.Anounce,
 							body,
 							j == 2 ? ParseFactory.Value.BODY
 									: ParseFactory.Value.BASIC).parse();

@@ -1,17 +1,22 @@
 package com.uoscs09.theuos.tab.phonelist;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.uoscs09.theuos.common.impl.AsyncLoader;
+import com.uoscs09.theuos.common.impl.DBInterface;
 import com.uoscs09.theuos.common.util.AppUtil;
 import com.uoscs09.theuos.common.util.PrefUtil;
 import com.uoscs09.theuos.common.util.StringUtil;
 
-public class PhoneNumberDB {
+public class PhoneNumberDB extends AsyncLoader<PhoneItem> implements
+		DBInterface<PhoneItem>, Callable<PhoneItem> {
 	private SQLiteDatabase db;
 	private static final String TABLE_Name = "PhoneNumberList";
 	private static final String TABLE_AttrSite = "Site";
@@ -48,6 +53,10 @@ public class PhoneNumberDB {
 		}
 	}
 
+	public static boolean isOpen() {
+		return instance == null ? false : true;
+	}
+
 	public synchronized boolean insert(PhoneItem item) {
 		try {
 			ContentValues value = new ContentValues();
@@ -81,9 +90,10 @@ public class PhoneNumberDB {
 		}
 	}
 
-	public synchronized int delete(String siteName) {
-		return db.delete(TABLE_Name, TABLE_AttrSite + " = '" + siteName + "'",
-				null);
+	@Override
+	public synchronized int delete(PhoneItem item) {
+		return db.delete(TABLE_Name, TABLE_AttrSite + " = '" + item.siteName
+				+ "'", null);
 	}
 
 	public PhoneItem read(String siteName) {
@@ -95,7 +105,8 @@ public class PhoneNumberDB {
 		}
 	}
 
-	public ArrayList<PhoneItem> readAll() {
+	@Override
+	public List<PhoneItem> readAll(String query) {
 		return select(StringUtil.NULL);
 	}
 
@@ -123,12 +134,15 @@ public class PhoneNumberDB {
 	}
 
 	public synchronized void close() {
-		try {
-			db.close();
-			pref = null;
-			instance = null;
-		} catch (Exception e) {
-		}
+		excute(this);
+	}
+
+	@Override
+	public PhoneItem call() throws Exception {
+		db.close();
+		pref = null;
+		instance = null;
+		return null;
 	}
 
 	private synchronized void init() {
@@ -219,5 +233,4 @@ public class PhoneNumberDB {
 		}
 
 	}
-
 }

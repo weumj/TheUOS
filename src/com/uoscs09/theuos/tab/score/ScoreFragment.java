@@ -1,4 +1,4 @@
-package com.uoscs09.theuos.tab.etc.score;
+package com.uoscs09.theuos.tab.score;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -132,7 +132,7 @@ public class ScoreFragment extends AbsAsyncFragment<ArrayList<ScoreItem>>
 				"http://wise.uos.ac.kr/uosdoc/api.ApiApiSubjectList.oapi",
 				StringUtil.ENCODE_EUC_KR, table, StringUtil.ENCODE_EUC_KR);
 		ArrayList<ArrayList<String>> numList = (ArrayList<ArrayList<String>>) ParseFactory
-				.create(ParseFactory.ETC_SUBJECT_LIST, str,
+				.create(ParseFactory.What.SubjectList, str,
 						ParseFactory.Value.BASIC).parse();
 
 		ArrayList<String> item;
@@ -149,7 +149,7 @@ public class ScoreFragment extends AbsAsyncFragment<ArrayList<ScoreItem>>
 							StringUtil.ENCODE_EUC_KR, table,
 							StringUtil.ENCODE_EUC_KR);
 			list.addAll((ArrayList<ScoreItem>) ParseFactory.create(
-					ParseFactory.ETC_SUBJECT_SCORE, body,
+					ParseFactory.What.SubjectScore, body,
 					ParseFactory.Value.BASIC).parse());
 		}
 		table.remove(OApiUtil.SUBJECT_NO);

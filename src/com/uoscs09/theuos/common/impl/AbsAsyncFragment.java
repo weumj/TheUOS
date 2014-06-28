@@ -18,6 +18,7 @@ import com.uoscs09.theuos.common.util.AppUtil;
 public abstract class AbsAsyncFragment<T> extends Fragment implements
 		AsyncCallback<T>, Callable<T> {
 	private AsyncExecutor<T> executor;
+	private boolean mRunning = false;
 
 	@Override
 	public void exceptionOccured(Exception e) {
@@ -34,6 +35,16 @@ public abstract class AbsAsyncFragment<T> extends Fragment implements
 		AppUtil.showCanceledToast(getActivity(), isMenuVisible());
 	}
 
+	@Override
+	public void onPostExcute() {
+		mRunning = false;
+	}
+
+	/** 현재 백그라운드 작업이 실행 중 인지 여부를 반환한다. */
+	public final boolean isRunning() {
+		return mRunning;
+	}
+
 	/**
 	 * Main Thread에서 비동기 작업을 설정하고, 실행하는 메소드<br>
 	 * 비동기 작업이 실행되기 전에 필요한 작업은 이 메소드를 호출하기 전에 <br>
@@ -43,9 +54,26 @@ public abstract class AbsAsyncFragment<T> extends Fragment implements
 		if (executor != null && !executor.isCancelled()) {
 			executor.cancel(true);
 		}
-		executor = new AsyncExecutor<T>();
-		executor.setCallable(this).setCallback(this)
-				.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		mRunning = true;
+		setExcuter(true);
+		executor.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+	}
+
+	/**
+	 * 백그라운드 작업을 설정한다.
+	 * 
+	 * @param force
+	 *            다른 작업이 실행중인것과 관계없이 강제로 설정하는지 여부
+	 * @return 설정 여부
+	 */
+	public final boolean setExcuter(boolean force) {
+		if (!force && executor.getStatus().equals(AsyncTask.Status.RUNNING))
+			return false;
+		else {
+			executor = new AsyncExecutor<T>().setCallable(this).setCallback(
+					this);
+			return true;
+		}
 	}
 
 	/**
@@ -58,7 +86,10 @@ public abstract class AbsAsyncFragment<T> extends Fragment implements
 	 */
 	final protected boolean cancelExecutor() {
 		if (executor != null) {
-			return executor.cancel(true);
+			boolean b = executor.cancel(true);
+			if (b)
+				mRunning = false;
+			return b;
 		} else {
 			return false;
 		}

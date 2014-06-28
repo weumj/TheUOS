@@ -2,18 +2,10 @@ package com.uoscs09.theuos.http.parse;
 
 public class ParseFactory {
 	/* TODO enum type¿∏∑Œ πŸ≤‹ ∞Õ*/
-	public static final int ANOUNCE = 111;
-	public static final int BOOK = 112;
-	public static final int REST = 113;
-	public static final int SEAT = 114;
-	public static final int PHONE = 115;
-	public static final int TIMETABLE = 116;
-	public static final int ETC_EMPTY_ROOM = 117;
-	public static final int ETC_SUBJECT = 118;
-	public static final int ETC_SUBJECT_INFO = 119;
-	public static final int ETC_SUBJECT_LIST = 120;
-	public static final int ETC_SUBJECT_SCORE = 121;
-
+	public enum What{
+		Anounce, Book, Rest, Seat, Phone, TimeTable, EmptyRoom,
+		Subject, SubjectInfo, SubjectList, SubjectScore, Transport
+	}
 	/* TODO enum type¿∏∑Œ πŸ≤‹ ∞Õ*/
 	public static final class Value {
 		public final static int BASIC = 0;
@@ -23,30 +15,32 @@ public class ParseFactory {
 		public final static int CULTURE = 555;
 	}
 
-	public static IParseHttp create(int which, String body, int howTo) {
-		switch (which) {
-		case ANOUNCE:
+	public static IParseHttp create(What what, String body, int howTo) {
+		switch (what) {
+		case Anounce:
 			return new ParseAnounce(body, howTo);
-		case BOOK:
+		case Book:
 			return new ParseBook(body);
-		case PHONE:
+		case Phone:
 			return new ParsePhone(body, howTo);
-		case REST:
+		case Rest:
 			return new ParseRest(body);
-		case SEAT:
+		case Seat:
 			return new ParseSeat(body);
-		case TIMETABLE:
+		case TimeTable:
 			return new ParseTimetable(body);
-		case ETC_EMPTY_ROOM:
+		case EmptyRoom:
 			return new ParseEmptyRoom(body);
-		case ETC_SUBJECT:
+		case Subject:
 			return new ParseSubject(body);
-		case ETC_SUBJECT_INFO:
+		case SubjectInfo:
 			return new ParseSubjectInfo(body);
-		case ETC_SUBJECT_LIST:
+		case SubjectList:
 			return new ParseSubjectList(body);
-		case ETC_SUBJECT_SCORE:
+		case SubjectScore:
 			return new ParseSubjectScore(body);
+		case Transport:
+			return new ParseTransport(body, howTo);
 		default:
 			return null;
 		}

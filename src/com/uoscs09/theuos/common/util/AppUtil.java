@@ -1,15 +1,6 @@
 package com.uoscs09.theuos.common.util;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.Closeable;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,21 +21,20 @@ import com.uoscs09.theuos.tab.anounce.ServiceForAnounce;
 import com.uoscs09.theuos.tab.anounce.TabAnounceFragment;
 import com.uoscs09.theuos.tab.booksearch.TabBookSearchFragment;
 import com.uoscs09.theuos.tab.emptyroom.TabSearchEmptyRoomFragment;
-import com.uoscs09.theuos.tab.etc.TabEtcFragment;
 import com.uoscs09.theuos.tab.libraryseat.TabLibrarySeatFragment;
 import com.uoscs09.theuos.tab.map.TabMapFragment;
 import com.uoscs09.theuos.tab.phonelist.PhoneNumberDB;
 import com.uoscs09.theuos.tab.phonelist.TabPhoneFragment;
 import com.uoscs09.theuos.tab.restaurant.TabRestaurantFragment;
+import com.uoscs09.theuos.tab.score.ScoreFragment;
 import com.uoscs09.theuos.tab.subject.TabSearchSubjectFragment;
 import com.uoscs09.theuos.tab.timetable.TabTimeTableFragment;
+import com.uoscs09.theuos.tab.transport.TabTransportFragment;
 
 public class AppUtil {
-	public static final String FILE_TIMETABLE = "timetable_file";
 	public static final String DB_PHONE = "PhoneNumberDB.db";
-	public static final String FILE_COLOR_TABLE = "color_table_file";
-	public static final String FILE_REST = "rest_file";
 	public static final int RELAUNCH_ACTIVITY = 6565;
+	private static int PAGE_SIZE = 10;
 	public static boolean test;
 	public static AppTheme theme;
 	public static int timetable_limit;
@@ -56,52 +46,62 @@ public class AppUtil {
 	 * <li><b>Black</b> : 검은색 계열로 구성된 테마</li><br>
 	 */
 	public enum AppTheme {
-		/** white theme */
+		/** white textColortheme */
 		White,
 		/** android default, 액션바는 검은색, 일반 배경은 하얀색 */
 		BlackAndWhite,
-		/** black theme */
-		Black;
+		/** black textColortheme */
+		Black
 	}
 
 	public static void initStaticValues(PrefUtil pref) {
-		AppUtil.theme = AppTheme.values()[pref.get(PrefUtil.KEY_THEME, 0)];
+		int v = pref.get(PrefUtil.KEY_THEME, 0);
+		AppTheme[] vals = AppTheme.values();
+		if (v >= vals.length) {
+			v = 0;
+			pref.put(PrefUtil.KEY_THEME, v);
+		}
+		AppUtil.theme = vals[v];
 		AppUtil.timetable_limit = pref.get(PrefUtil.KEY_TIMETABLE_LIMIT,
 				PrefUtil.TIMETABLE_LIMIT_MAX);
 		AppUtil.test = pref.get("test", false);
+		PAGE_SIZE = test ? 12 : 10;
 	}
 
 	/** 저장된 탭 순서를 불러옴 */
 	public static ArrayList<Integer> loadPageOrder(Context context) {
 		PrefUtil pref = PrefUtil.getInstance(context);
 		ArrayList<Integer> tabList = new ArrayList<Integer>();
-		tabList.add(getTitleResId(pref.get("page1", 1)));
-		tabList.add(getTitleResId(pref.get("page2", 2)));
-		tabList.add(getTitleResId(pref.get("page3", 3)));
-		tabList.add(getTitleResId(pref.get("page4", 4)));
-		tabList.add(getTitleResId(pref.get("page5", 5)));
-		tabList.add(getTitleResId(pref.get("page6", 6)));
-		tabList.add(getTitleResId(pref.get("page7", 7)));
-		tabList.add(getTitleResId(pref.get("page8", 8)));
-		tabList.add(getTitleResId(pref.get("page9", 9)));
+		String page = "page";
+		for (int i = 1; i < PAGE_SIZE; i++) {
+			tabList.add(getTitleResId(pref.get(page + i, i)));
+		}
 		// tabList.add(getTitleResId(pref.get("page99", 99)));
 
 		return tabList;
 	}
 
+	private static int[] getPages() {
+		return new int[] { R.string.title_section1_announce, /* 공지사항 */
+		R.string.title_section2_rest, /* 식당메뉴 */
+		R.string.title_section3_book, /* 도서검색 */
+		R.string.title_section4_lib, /* 도서관좌석 */
+		R.string.title_section5_map, /* 학교지도 */
+		R.string.title_section6_tel, /* 전화번호 */
+		R.string.title_section7_time, /* 시간표 */
+		R.string.title_tab_search_empty_room, /* 빈강의실 */
+		R.string.title_tab_search_subject, /* 교과목 */
+		R.string.title_tab_transport, /* 교통정보 */
+		R.string.title_tab_score };
+	}
+
 	/** 기본 탭 순서를 불러옴 */
 	public static ArrayList<Integer> loadDefaultPageOrder() {
 		ArrayList<Integer> list = new ArrayList<Integer>();
-		list.add(R.string.title_section1_announce);
-		list.add(R.string.title_section2_rest);
-		list.add(R.string.title_section3_book);
-		list.add(R.string.title_section4_lib);
-		list.add(R.string.title_section5_map);
-		list.add(R.string.title_section6_tel);
-		list.add(R.string.title_section7_time);
-		list.add(R.string.title_tab_search_empty_room);
-		list.add(R.string.title_tab_search_subject);
-		// list.add(R.string.title_section_etc);
+		int[] pages = getPages();
+		for (int i = 0; i < PAGE_SIZE - 1; i++) {
+			list.add(pages[i]);
+		}
 		return list;
 	}
 
@@ -128,6 +128,10 @@ public class AppUtil {
 			return 8;
 		case R.string.title_tab_search_subject:
 			return 9;
+		case R.string.title_tab_score:
+			return 10;
+		case R.string.title_tab_transport:
+			return 11;
 		case R.string.setting:
 			return 98;
 		case R.string.title_section_etc:
@@ -160,6 +164,10 @@ public class AppUtil {
 			return R.string.title_tab_search_empty_room;
 		case 9:
 			return R.string.title_tab_search_subject;
+		case 10:
+			return R.string.title_tab_score;
+		case 11:
+			return R.string.title_tab_transport;
 		case 98:
 			return R.string.setting;
 		case 99:
@@ -173,7 +181,7 @@ public class AppUtil {
 	public static void savePageOrder(List<Integer> list, Context context) {
 		PrefUtil pref = PrefUtil.getInstance(context);
 		String PAGE = "page";
-		for (int i = 1; i < 10; i++) {
+		for (int i = 1; i < PAGE_SIZE; i++) {
 			pref.put(PAGE + i, titleResIdToOrder(list.get(i - 1)));
 		}
 	}
@@ -185,9 +193,8 @@ public class AppUtil {
 		case Black:
 			return getPageIconWhite(pageStringResourceId);
 		case White:
-			return getPageIconGray(pageStringResourceId);
 		default:
-			return -1;
+			return getPageIconGray(pageStringResourceId);
 		}
 	}
 
@@ -198,9 +205,8 @@ public class AppUtil {
 		case Black:
 			return getPageIconWhite(pageStringResourceId);
 		case White:
-			return getPageIconGray(pageStringResourceId);
 		default:
-			return -1;
+			return getPageIconGray(pageStringResourceId);
 		}
 	}
 
@@ -226,6 +232,10 @@ public class AppUtil {
 			return R.drawable.ic_action_action_search;
 		case R.string.title_tab_search_subject:
 			return R.drawable.ic_action_content_paste;
+		case R.string.title_tab_score:
+			return R.drawable.ic_action_content_copy;
+		case R.string.title_tab_transport:
+			return R.drawable.ic_action_location_directions;
 		case R.string.title_section_etc:
 			return R.drawable.ic_action_navigation_accept;
 		case R.string.setting:
@@ -259,6 +269,10 @@ public class AppUtil {
 			return R.drawable.ic_action_action_search_dark;
 		case R.string.title_tab_search_subject:
 			return R.drawable.ic_action_content_paste_dark;
+		case R.string.title_tab_score:
+			return R.drawable.ic_action_content_copy_dark;
+		case R.string.title_tab_transport:
+			return R.drawable.ic_action_location_directions_dark;
 		case R.string.title_section_etc:
 			return R.drawable.ic_action_navigation_accept_dark;
 		case R.string.setting:
@@ -319,12 +333,14 @@ public class AppUtil {
 			return TabPhoneFragment.class;
 		case R.string.title_section7_time:
 			return TabTimeTableFragment.class;
-		case R.string.title_section_etc:
-			return TabEtcFragment.class;
 		case R.string.title_tab_search_empty_room:
 			return TabSearchEmptyRoomFragment.class;
 		case R.string.title_tab_search_subject:
 			return TabSearchSubjectFragment.class;
+		case R.string.title_tab_score:
+			return ScoreFragment.class;
+		case R.string.title_tab_transport:
+			return TabTransportFragment.class;
 		default:
 			return null;
 		}
@@ -450,7 +466,8 @@ public class AppUtil {
 
 	/** 열려진 DB를 모두 닫는다. */
 	public static void closeAllDatabase(Context context) {
-		PhoneNumberDB.getInstance(context).close();
+		if (PhoneNumberDB.isOpen())
+			PhoneNumberDB.getInstance(context).close();
 	}
 
 	/**
@@ -464,7 +481,7 @@ public class AppUtil {
 		}
 		switch (theme) {
 		case BlackAndWhite:
-			appContext.setTheme(android.R.style.Theme_Holo_Light_DarkActionBar);
+			appContext.setTheme(R.style.Theme_MystyleBW);
 			break;
 		case Black:
 			appContext.setTheme(R.style.Theme_Mystyledark);
@@ -504,77 +521,6 @@ public class AppUtil {
 			return R.drawable.layout_color_gray_red;
 		default:
 			return -1;
-		}
-	}
-
-	/**
-	 * 주어진 이름의 파일을 읽어온다.
-	 * 
-	 * @return 파일이 존재하고, 성공적으로 읽어왔을 경우 : 해당 객체 <br>
-	 *         파일이 없거나 예외가 발생할 경우 : null
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T> T readFromFile(Context context, String fileName) {
-		FileInputStream fis = null;
-		BufferedInputStream bis = null;
-		ObjectInputStream ois = null;
-		T object;
-		try {
-			fis = context.openFileInput(fileName);
-			bis = new BufferedInputStream(fis);
-			ois = new ObjectInputStream(bis);
-			object = (T) ois.readObject();
-		} catch (FileNotFoundException e) {
-			object = null;
-		} catch (Exception e) {
-			e.printStackTrace();
-			object = null;
-		} finally {
-			closeStream(ois);
-			closeStream(bis);
-			closeStream(fis);
-		}
-		return object;
-	}
-
-	/**
-	 * 주어진 이름으로 파일을 저장한다.
-	 * 
-	 * @param mode
-	 *            Context 클래스의 mode 변수
-	 * @param obj
-	 *            저장할 객체
-	 * @return 성공 여부
-	 */
-	public static boolean saveToFile(Context context, String fileName,
-			int mode, Object obj) {
-		boolean state = false;
-		FileOutputStream fos = null;
-		BufferedOutputStream bos = null;
-		ObjectOutputStream oos = null;
-		try {
-			fos = context.openFileOutput(fileName, mode);
-			bos = new BufferedOutputStream(fos);
-			oos = new ObjectOutputStream(bos);
-			oos.writeObject(obj);
-			state = true;
-		} catch (Exception e) {
-			AppUtil.showToast(context, R.string.error_file_save, true);
-			e.printStackTrace();
-		} finally {
-			closeStream(oos);
-			closeStream(bos);
-			closeStream(fos);
-		}
-		return state;
-	}
-
-	private static void closeStream(Closeable close) {
-		if (close != null) {
-			try {
-				close.close();
-			} catch (IOException e) {
-			}
 		}
 	}
 }

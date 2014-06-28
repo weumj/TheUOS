@@ -34,6 +34,7 @@ import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.impl.AbsAsyncFragment;
 import com.uoscs09.theuos.common.util.AppUtil;
 import com.uoscs09.theuos.common.util.OApiUtil;
+import com.uoscs09.theuos.common.util.OApiUtil.Term;
 import com.uoscs09.theuos.common.util.StringUtil;
 import com.uoscs09.theuos.http.HttpRequest;
 import com.uoscs09.theuos.http.parse.ParseFactory;
@@ -47,8 +48,9 @@ public class TabSearchEmptyRoomFragment extends
 	protected AlertDialog dialog;
 	private ProgressDialog progress;
 	private Hashtable<String, String> params = new Hashtable<String, String>();
-	private Spinner sp_building;
-	private Spinner sp_time;
+	private Spinner buildingSpinner;
+	private Spinner timeSpinner;
+	private Spinner termSpinner;
 	private TextView timeTextView;
 	private TextView[] textViews;
 	private int sortFocus;
@@ -66,10 +68,12 @@ public class TabSearchEmptyRoomFragment extends
 		timeTextView.setGravity(Gravity.CENTER);
 		View dialogLayout = View.inflate(context,
 				R.layout.dialog_search_empty_room, null);
-		sp_building = (Spinner) dialogLayout
+		buildingSpinner = (Spinner) dialogLayout
 				.findViewById(R.id.etc_empty_spinner_building);
-		sp_time = (Spinner) dialogLayout
+		timeSpinner = (Spinner) dialogLayout
 				.findViewById(R.id.etc_empty_spinner_time);
+		termSpinner = (Spinner) dialogLayout
+				.findViewById(R.id.etc_empty_spinner_term);
 		progress = AppUtil.getProgressDialog(context, false, this);
 		dialog = new AlertDialog.Builder(context).setView(dialogLayout)
 				.setPositiveButton(R.string.confirm, new OnClickListener() {
@@ -143,14 +147,17 @@ public class TabSearchEmptyRoomFragment extends
 
 	private void putParams() {
 		Calendar c = Calendar.getInstance();
-		int time = sp_time.getSelectedItemPosition() + 1;
+		int time = timeSpinner.getSelectedItemPosition() + 1;
 		String wdayTime = String.valueOf(c.get(Calendar.DAY_OF_WEEK))
 				+ (time < 10 ? "0" : StringUtil.NULL) + String.valueOf(time);
-		String building = ((String) sp_building.getSelectedItem())
+		String building = ((String) buildingSpinner.getSelectedItem())
 				.split(StringUtil.SPACE)[0];
 
 		params.put(BUILDING, building);
 		params.put("wdayTime", wdayTime);
+		params.put(OApiUtil.TERM,
+				OApiUtil.getTermCode(Term.values()[termSpinner
+						.getSelectedItemPosition()]));
 	}
 
 	@Override
@@ -206,8 +213,10 @@ public class TabSearchEmptyRoomFragment extends
 		adapter.notifyDataSetChanged();
 		AppUtil.showToast(getActivity(), String.valueOf(result.size())
 				+ getString(R.string.search_found), true);
-		timeTextView.setText(sp_time.getSelectedItem().toString()
-				.split(StringUtil.NEW_LINE)[1]);
+
+		timeTextView.setText(timeSpinner.getSelectedItem().toString()
+				.split(StringUtil.NEW_LINE)[1]
+				+ StringUtil.NEW_LINE + termSpinner.getSelectedItem());
 	}
 
 	private void initTable() {
@@ -215,7 +224,6 @@ public class TabSearchEmptyRoomFragment extends
 				.format(new Date());
 		params.put(OApiUtil.API_KEY, OApiUtil.UOS_API_KEY);
 		params.put(OApiUtil.YEAR, OApiUtil.getYear());
-		params.put(OApiUtil.TERM, OApiUtil.getTerm());
 		params.put(BUILDING, StringUtil.NULL);
 		params.put("dateFrom", date);
 		params.put("dateTo", date);
@@ -228,6 +236,7 @@ public class TabSearchEmptyRoomFragment extends
 	@Override
 	public ArrayList<ClassRoomItem> call() throws Exception {
 		putParams();
+
 		if (params.get(BUILDING).equals("00")) {
 			final String[] buildings = { "01", "02", "03", "04", "05", "06",
 					"08", "09", "10", "11", "13", "14", "15", "16", "17", "18",
@@ -239,7 +248,7 @@ public class TabSearchEmptyRoomFragment extends
 				body = HttpRequest.getBody(URL, StringUtil.ENCODE_EUC_KR,
 						params, StringUtil.ENCODE_EUC_KR);
 				list.addAll((ArrayList<ClassRoomItem>) ParseFactory.create(
-						ParseFactory.ETC_EMPTY_ROOM, body,
+						ParseFactory.What.EmptyRoom, body,
 						ParseFactory.Value.BASIC).parse());
 			}
 			return list;
@@ -247,7 +256,7 @@ public class TabSearchEmptyRoomFragment extends
 			String body = HttpRequest.getBody(URL, StringUtil.ENCODE_EUC_KR,
 					params, StringUtil.ENCODE_EUC_KR);
 			return (ArrayList<ClassRoomItem>) ParseFactory
-					.create(ParseFactory.ETC_EMPTY_ROOM, body,
+					.create(ParseFactory.What.EmptyRoom, body,
 							ParseFactory.Value.BASIC).parse();
 		}
 	}

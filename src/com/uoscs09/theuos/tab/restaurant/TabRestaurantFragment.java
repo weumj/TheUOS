@@ -21,8 +21,9 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.common.impl.AbsAsyncFragment;
+import com.uoscs09.theuos.common.impl.AbsDrawableProgressFragment;
 import com.uoscs09.theuos.common.util.AppUtil;
+import com.uoscs09.theuos.common.util.IOUtil;
 import com.uoscs09.theuos.common.util.OApiUtil;
 import com.uoscs09.theuos.common.util.PrefUtil;
 import com.uoscs09.theuos.common.util.StringUtil;
@@ -30,7 +31,7 @@ import com.uoscs09.theuos.http.HttpRequest;
 import com.uoscs09.theuos.http.parse.ParseFactory;
 
 public class TabRestaurantFragment extends
-		AbsAsyncFragment<ArrayList<RestItem>> {
+		AbsDrawableProgressFragment<ArrayList<RestItem>> {
 	protected ScrollView restScroll;
 	private TextView restName, restSemester, restVacation, breakfast, lunch,
 			supper, actionTextView;
@@ -40,7 +41,6 @@ public class TabRestaurantFragment extends
 
 	private static final String BUTTON = "button";
 	private static final String REST = "rest_list";
-	private static final String NO_INFO = "정보가 없습니다.\n";
 	private static final String[] timeSemester = {
 			"학기중				\n조식 : 08:00~10:00	\n중식 : 11:00~14:00	\n 		       15:00~17:00",
 			"학기중				\n중식 : 11:30~14:00	\n석식 : 15:00~19:00	\n토요일 : 휴무",
@@ -73,7 +73,11 @@ public class TabRestaurantFragment extends
 		if (OApiUtil.getDateTime()
 				- PrefUtil.getInstance(context).get(
 						PrefUtil.KEY_REST_DATE_TIME, 0) < 3) {
-			restList = AppUtil.readFromFile(context, AppUtil.FILE_REST);
+			try {
+				restList = IOUtil.readFromFile(context, IOUtil.FILE_REST);
+			} catch (Exception e) {
+				AppUtil.showErrorToast(context, e, isMenuVisible());
+			}
 		}
 
 		actionViewLayout = View.inflate(context,
@@ -151,7 +155,7 @@ public class TabRestaurantFragment extends
 		AsyncExecutor<ArrayList<RestItem>> executor = getExecutor();
 		if (executor != null
 				&& executor.getStatus().equals(AsyncTask.Status.RUNNING)) {
-			actionTextView.setText("로딩중");
+			actionTextView.setText(R.string.progress_while_updating);
 		} else {
 			actionTextView.setText(StringUtil.NULL);
 		}
@@ -230,15 +234,15 @@ public class TabRestaurantFragment extends
 			}
 		}
 		if (item == null) {
-			breakfast.setText(NO_INFO);
-			lunch.setText(NO_INFO);
-			supper.setText(NO_INFO);
+			breakfast.setText(R.string.tab_rest_no_info);
+			lunch.setText(R.string.tab_rest_no_info);
+			supper.setText(R.string.tab_rest_no_info);
 		}
 	}
 
 	@Override
 	protected void excute() {
-		setActionText(getString(R.string.progress_while_updating));
+		actionTextView.setText(R.string.progress_while_updating);
 		super.excute();
 	}
 
@@ -253,9 +257,9 @@ public class TabRestaurantFragment extends
 		ArrayList<RestItem> list = new ArrayList<RestItem>();
 		String body = HttpRequest
 				.getBody("http://m.uos.ac.kr/mkor/food/list.do");
-		list = (ArrayList<RestItem>) ParseFactory.create(ParseFactory.REST,
-				body, ParseFactory.Value.BASIC).parse();
-		AppUtil.saveToFile(context, AppUtil.FILE_REST, Activity.MODE_PRIVATE,
+		list = (ArrayList<RestItem>) ParseFactory.create(
+				ParseFactory.What.Rest, body, ParseFactory.Value.BASIC).parse();
+		IOUtil.saveToFile(context, IOUtil.FILE_REST, Activity.MODE_PRIVATE,
 				list);
 		PrefUtil.getInstance(context).put(PrefUtil.KEY_REST_DATE_TIME,
 				OApiUtil.getDate());
@@ -265,25 +269,18 @@ public class TabRestaurantFragment extends
 	@Override
 	public void exceptionOccured(Exception e) {
 		super.exceptionOccured(e);
-		setActionText("로딩 실패");
+		actionTextView.setText(R.string.progress_fail);
 	}
 
 	@Override
 	public void onResult(ArrayList<RestItem> result) {
 		restList = result;
 		performClick(R.id.tab_rest_button_students_hall);
-		setActionText(StringUtil.NULL);
-	}
-
-	private void setActionText(String text) {
-		actionTextView.setText(text);
+		actionTextView.setText(StringUtil.NULL);
 	}
 
 	@Override
-	public void cancelled() {
-	}
-
-	@Override
-	public void onPostExcute() {
+	protected MenuItem getLoadingMenuItem(Menu menu) {
+		return menu.findItem(R.id.action_refresh);
 	}
 }

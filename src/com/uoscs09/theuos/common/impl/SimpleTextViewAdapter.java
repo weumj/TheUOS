@@ -4,6 +4,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -15,8 +16,10 @@ import com.uoscs09.theuos.common.util.AppUtil.AppTheme;
 /** TextView가 하나있고, icon이 붙은 layout의 Adapter를 제공하는 클래스. */
 public class SimpleTextViewAdapter extends AbsArrayAdapter<Integer> {
 	protected int textViewId;
-	protected AppTheme theme;
+	protected AppTheme textColorTheme;
+	protected AppTheme iconTheme;
 	protected DrawblePosition position;
+	protected Rect drawableBound;
 
 	public enum DrawblePosition {
 		TOP, BOTTOM, LEFT, RIGHT
@@ -25,8 +28,9 @@ public class SimpleTextViewAdapter extends AbsArrayAdapter<Integer> {
 	public SimpleTextViewAdapter(Context context, int layout, List<Integer> list) {
 		super(context, layout, list);
 		this.textViewId = android.R.id.text1;
-		this.theme = AppTheme.White;
+		this.textColorTheme = AppTheme.White;
 		this.position = DrawblePosition.LEFT;
+		this.iconTheme = AppUtil.theme;
 	}
 
 	private SimpleTextViewAdapter(Context context) {
@@ -37,25 +41,43 @@ public class SimpleTextViewAdapter extends AbsArrayAdapter<Integer> {
 	public View setView(int position, View convertView, ViewHolder holder) {
 		Holder h = (Holder) holder;
 		int item = getItem(position);
-
-		h.tv.setText(item);
+		TextView tv = h.tv;
+		tv.setText(item);
 		Drawable d = getContext().getResources().getDrawable(
-				AppUtil.getPageIcon(item, theme));
+				AppUtil.getPageIcon(item, iconTheme));
 		switch (this.position) {
 		case TOP:
-			h.tv.setCompoundDrawablesWithIntrinsicBounds(null, d, null, null);
+			if (drawableBound != null) {
+				d.setBounds(drawableBound);
+				tv.setCompoundDrawables(null, d, null, null);
+			} else
+				tv.setCompoundDrawablesWithIntrinsicBounds(null, d, null, null);
 			break;
 		case BOTTOM:
-			h.tv.setCompoundDrawablesWithIntrinsicBounds(null, null, null, d);
+			if (drawableBound != null) {
+				d.setBounds(drawableBound);
+				tv.setCompoundDrawables(null, null, null, d);
+			} else
+				tv.setCompoundDrawablesWithIntrinsicBounds(null, null, null, d);
 			break;
-		case LEFT:
-			h.tv.setCompoundDrawablesWithIntrinsicBounds(d, null, null, null);
+		case RIGHT:
+			if (drawableBound != null) {
+				d.setBounds(drawableBound);
+				tv.setCompoundDrawables(null, null, d, null);
+			} else
+				h.tv.setCompoundDrawablesWithIntrinsicBounds(null, null, d,
+						null);
 			break;
 		default:
-			h.tv.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
+			if (drawableBound != null) {
+				d.setBounds(drawableBound);
+				tv.setCompoundDrawables(d, null, null, null);
+			} else
+				h.tv.setCompoundDrawablesWithIntrinsicBounds(d, null, null,
+						null);
 			break;
 		}
-		switch (theme) {
+		switch (textColorTheme) {
 		case BlackAndWhite:
 		case White:
 			h.tv.setTextColor(Color.BLACK);
@@ -97,13 +119,25 @@ public class SimpleTextViewAdapter extends AbsArrayAdapter<Integer> {
 
 		/** AdapterView에서 표현될 Theme를 설정한다 */
 		public Builder setTheme(AppTheme theme) {
-			product.theme = theme;
+			product.textColorTheme = theme;
 			return this;
 		}
 
 		/** TextView의 icon의 위치를 설정한다. */
 		public Builder setDrawablePosition(DrawblePosition position) {
 			product.position = position;
+			return this;
+		}
+
+		/** TextView의 icon의 크기를 설정한다. */
+		public Builder setDrawableBounds(Rect bounds) {
+			product.drawableBound = bounds;
+			return this;
+		}
+
+		/** TextView의 icon의 테마를 설정한다. */
+		public Builder setDrawableTheme(AppTheme theme) {
+			product.iconTheme = theme;
 			return this;
 		}
 

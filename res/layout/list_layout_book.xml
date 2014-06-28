@@ -15,9 +15,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:paddingRight="60dp"
+        android:layout_marginRight="60dp"
+        android:background="@drawable/selector_text"
         android:textColor="@android:color/black"
-        android:textIsSelectable="true"
+        android:textColorHighlight="@android:color/holo_blue_light"
         android:textSize="16sp"
         android:textStyle="bold" />
 
@@ -27,9 +28,10 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/tab_booksearch_list_text_book_title"
-        android:paddingRight="60dp"
+        android:layout_marginRight="60dp"
+        android:background="@drawable/selector_text"
         android:textColor="@android:color/black"
-        android:textIsSelectable="true"
+        android:textColorHighlight="@android:color/holo_blue_light"
         android:textSize="14sp" />
 
     <TextView
@@ -38,9 +40,10 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/tab_booksearch_list_text_book_writer"
-        android:paddingRight="60dp"
+        android:layout_marginRight="60dp"
+        android:background="@drawable/selector_text"
         android:textColor="@android:color/black"
-        android:textIsSelectable="true"
+        android:textColorHighlight="@android:color/holo_blue_light"
         android:textSize="12sp" />
 
     <TextView

@@ -20,13 +20,13 @@ public class BookItem implements Parcelable {
 
 	public BookItem(String title, String writer, String bookInfo, String site,
 			String bookState, String coverSrc, String url) {
-		this.title = title;
-		this.writer = writer;
-		this.bookInfo = bookInfo;
-		this.site = site;
-		this.bookState = bookState;
-		this.coverSrc = coverSrc;
-		this.url = url;
+		this.title = title.trim();
+		this.writer = writer.trim();
+		this.bookInfo = bookInfo.trim();
+		this.site = site.trim();
+		this.bookState = bookState.trim();
+		this.coverSrc = coverSrc.trim();
+		this.url = url.trim();
 	}
 
 	private BookItem(Parcel source) {

@@ -68,12 +68,10 @@
             android:summary="@string/setting_app_version_desc"
             android:title="@string/setting_app_version" >
         </PreferenceScreen>
-        <!--
         <PreferenceScreen
             android:summary="@string/setting_app_version_update_desc"
             android:title="@string/setting_app_version_update" >
-        </PreferenceScreen>
-        -->
+        </PreferenceScreen>
     </PreferenceCategory>
 
 </PreferenceScreen>

@@ -5,14 +5,17 @@ import java.util.Calendar;
 /** WISE OPEN API관련 변수와 메소드를 가지는 클래스 */
 public class OApiUtil {
 	private static String year;
-	private static String term;
-	public static final String UOS_API_KEY = OApiKey.KEY;
+	public static final String UOS_API_KEY = OApiKey.WISE_OAPI_KEY;
 	public static final String API_KEY = "apiKey";
 	public static final String TERM = "term";
 	public static final String YEAR = "year";
 	public static final String SUBJECT_NAME = "subjectNm";
 	public static final String SUBJECT_NO = "subjectNo";
 	public static final String CLASS_DIV = "classDiv";
+
+	public enum Term {
+		SPRING, AUTUMN, SUMMER, WINTER
+	}
 
 	public static synchronized String getYear() {
 		if (year == null) {
@@ -21,16 +24,51 @@ public class OApiUtil {
 		return year;
 	}
 
-	public static synchronized String getTerm() {
-		if (term == null) {
-			int month = Calendar.getInstance().get(Calendar.MONTH) + 1;
-			if (1 < month && month < 8) {
-				term = "A10";
-			} else {
-				term = "A20";
-			}
+	public static String getSemesterYear(Term term) {
+		Calendar c = Calendar.getInstance();
+		int year = c.get(Calendar.YEAR);
+		int month = c.get(Calendar.MONTH) + 1;
+
+		if (term == Term.WINTER && (month < 3 || month == 12)) {
+			year--;
 		}
-		return term;
+
+		return String.valueOf(year);
+	}
+
+	public static Term getTerm() {
+		Calendar c = Calendar.getInstance();
+		int m = c.get(Calendar.MONTH) + 1;
+
+		switch (m) {
+		case 1:
+		case 2:
+			return Term.WINTER;
+		case 3:
+		case 4:
+		case 5:
+		case 6:
+			return Term.SPRING;
+		case 7:
+		case 8:
+			return Term.SUMMER;
+		default:
+			return Term.AUTUMN;
+		}
+	}
+
+	public static String getTermCode(Term term) {
+		switch (term) {
+		default:
+		case SPRING:
+			return "A10";
+		case SUMMER:
+			return "A11";
+		case AUTUMN:
+			return "A20";
+		case WINTER:
+			return "A21";
+		}
 	}
 
 	/**

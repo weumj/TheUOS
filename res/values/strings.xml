@@ -5,6 +5,8 @@
     <string name="univ">서울시립대학교</string>
     <string name="tab">탭</string>
     <string name="apply">적용</string>
+    <string name="update">업데이트</string>
+    <string name="later">나중에</string>
     <string name="confirm">확인</string>
     <string name="caution">주의</string>
     <string name="canceled">취소되었습니다.</string>
@@ -14,10 +16,11 @@
     <string name="error_internet">인터넷 또는 학교 서버 접속에 실패하였습니다.</string>
     <string name="error_file_save">파일을 저장하는데 실패하였습니다.</string>
     <string name="finish_update">업데이트 완료</string>
-    <string name="progress_while_updating">로딩중 ...</string>
-    <string name="progress_ongoing">처리 중...</string>
+    <string name="progress_while_updating">로딩중…</string>
+    <string name="progress_ongoing">처리 중…</string>
     <string name="progress_ongoing_wait">처리 중입니다. 잠시 후에 시도하세요.</string>
     <string name="progress_wait">잠시 후에 시도하세요.</string>
+    <string name="progress_fail">로딩 실패</string>
     <string name="before_finish">\'뒤로\'버튼을 한번 더 누르시면 종료됩니다.</string>
     <string name="title_section0_home">The UOS</string>
     <string name="title_section1_announce">공지사항</string>
@@ -30,6 +33,7 @@
     <string name="title_tab_search_subject">교과목 검색</string>
     <string name="title_tab_search_empty_room">빈 강의실 조회</string>
     <string name="title_tab_score">수업평가 결과 조회</string>
+    <string name="title_tab_transport">교통 정보</string>
     <string name="title_section_etc">기타</string>
     <string name="search_hint">검색어를 입력하세요.</string>
     <string name="search_result_empty">검색된 결과가 없습니다.</string>
@@ -61,10 +65,12 @@
     <string name="tab_library_seat_last_update">마지막 업데이트\n</string>
     <string name="tab_library_seat_dissmiss_info_not_loading">정보를 불러오는 중입니다.</string>
     <string name="tab_library_seat_dissmiss_info_not_exist_in_1hr">1시간 내에 해지될 좌석이 없습니다.</string>
-    <string name="tab_library_seat_vacancy">잔여 좌석수 : </string>
+    <string name="tab_library_seat_vacancy"> 잔여 좌석수 : </string>
     <string name="tab_library_seat_occupy"> 사용 좌석수 : </string>
     <string name="tab_map_submap_device_without_googlemap">이 기기는 구글 지도를 지원하지 않습니다.</string>
     <string name="tab_map_submap_do_not_locate">현재 위치를 감지하지 못하였습니다. 잠시후에 시도하세요.</string>
+    <string name="tab_map_submap_select_dest">목적지 선택</string>
+    <string name="tab_map_submap_select_building">건물을 선택해 주세요.</string>
     <string name="tab_rest_students_hall">학생회관</string>
     <string name="tab_rest_anekan">양식당</string>
     <string name="tab_rest_natural">자연과학관</string>
@@ -73,6 +79,7 @@
     <string name="tab_rest_breakfast">조식</string>
     <string name="tab_rest_lunch">중식</string>
     <string name="tab_rest_dinner">석식</string>
+    <string name="tab_rest_no_info">정보가 없습니다.\n</string>
     <string name="tab_phone_call">전화</string>
     <string name="tab_phone_site">장소</string>
     <string name="tab_phone_tel">전화번호</string>
@@ -81,6 +88,7 @@
     <string name="tab_phone_caution_update">전화번호 업데이트를 시행합니다.\n사용자의 네트워크 환경에 따라 다소 시간이 걸릴 수 있습니다.\n진행하시겠습니까?</string>
     <string name="tab_timetable_wise_id">Wise ID</string>
     <string name="tab_timetable_wise_passwd">Wise 비밀번호</string>
+    <string name="tab_timetable_wise_term">학기</string>
     <string name="tab_timetable_wise_timetable_save">시간표 저장</string>
     <string name="tab_timetable_wise_login_title">Wise 로그인</string>
     <string name="tab_timetable_wise_login_warning_null">ID 또는 비밀번호를 입력하지 않으셨습니다.</string>
@@ -103,6 +111,9 @@
     <string name="tab_empty_room_room_no">강의실\n번호</string>
     <string name="tab_empty_room_room_type">강의실\n구분</string>
     <string name="tab_empty_room_room_person">수용\n인원</string>
+    <string name="tab_empty_room_dialog_building">장소</string>
+    <string name="tab_empty_room_dialog_time">시간</string>
+    <string name="tab_empty_room_dialog_term">학기</string>
     <string name="tab_search_subject_sub_dept1">학부\n(과)</string>
     <string name="tab_search_subject_sub_div1">교과\n구분</string>
     <string name="tab_search_subject_no1">교과\n번호</string>
@@ -129,6 +140,7 @@
     <string name="tab_subject_empty_view_sort">각 항목의 분류를 터치하면\n오름/내림차순으로 정렬할 수 있습니다.</string>
     <string name="tab_subject_empty_view_hint_subj">교과목을 터치하면\n수업계획서를 볼 수 있습니다</string>
     <string name="tab_subject_info_plz_select_div_no">분반을 선택해 주세요.</string>
+    <string name="tab_transport_empty">버튼을 눌러 정보를 불러오세요.</string>
     <string name="tab_etc_selection">이동할 메뉴를 선택해주세요.</string>
 
     <string-array name="buildings_univ">
@@ -478,10 +490,6 @@
         <item>15 주</item>
         <item>16 주</item>
     </string-array>
-    <string-array name="term_array">
-        <item>1학기</item>
-        <item>2학기</item>
-    </string-array>
     <string-array name="tab_timetable_alarm_time_array">
         <item>알림 없음</item>
         <item>10분 전</item>
@@ -490,6 +498,12 @@
         <item>30분 전</item>
         <item>45분 전</item>
         <item>60분 전</item>
+    </string-array>
+    <string-array name="terms">
+        <item>1학기</item>
+        <item>2학기</item>
+        <item>여름계절학기</item>
+        <item>겨울계절학기</item>
     </string-array>
 
 </resources>

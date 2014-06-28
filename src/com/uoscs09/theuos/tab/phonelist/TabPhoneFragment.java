@@ -40,6 +40,7 @@ public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>>
 	private AlertDialog dialog;
 	protected static final String PHONE_LIST = "phone_list";
 	private List<PhoneItem> phoneNumList;
+	private boolean mIsInit;
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
@@ -55,10 +56,7 @@ public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>>
 			phoneNumList = savedInstanceState
 					.getParcelableArrayList(PHONE_LIST);
 		} else {
-			phoneNumList = PhoneNumberDB.getInstance(getActivity()).readAll();
-			if (phoneNumList == null) {
-				phoneNumList = new ArrayList<PhoneItem>();
-			}
+			phoneNumList = new ArrayList<PhoneItem>();
 		}
 		super.onCreate(savedInstanceState);
 	}
@@ -146,51 +144,69 @@ public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>>
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 
+	@Override
+	public void onResume() {
+		super.onResume();
+		if (phoneNumList.isEmpty()) {
+			mIsInit = true;
+			excute();
+		}
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public ArrayList<PhoneItem> call() throws Exception {
-		ArrayList<String> urlList = getUrlList();
-
-		final int progressNumber = 100 / urlList.size();
 
 		ArrayList<PhoneItem> phoneNumberList = new ArrayList<PhoneItem>();
-		int howTo;
-		String body = null;
-		int size = urlList.size();
-		for (int i = 0; i < size; i++) {
-			if (getExecutor().isCancelled()) {
-				return null;
-			}
-			try {
-				body = HttpRequest.getBody(urlList.get(i));
-				if (i < 7) {
-					howTo = ParseFactory.Value.SUBJECT;
-				} else if (i < 8) {
-					howTo = ParseFactory.Value.CULTURE;
-				} else if (i < 12) {
-					howTo = ParseFactory.Value.BOTTOM;
-				} else {
-					howTo = ParseFactory.Value.BODY;
+		if (mIsInit) {
+			PhoneNumberDB telDB = PhoneNumberDB.getInstance(getActivity());
+			phoneNumberList = (ArrayList<PhoneItem>) telDB
+					.readAll(StringUtil.NULL);
+		} else {
+			ArrayList<String> urlList = getUrlList();
+
+			final int progressNumber = 100 / urlList.size();
+			int howTo;
+			String body = null;
+			int size = urlList.size();
+			for (int i = 0; i < size; i++) {
+				if (getExecutor().isCancelled()) {
+					return null;
+				}
+				try {
+					body = HttpRequest.getBody(urlList.get(i));
+					if (i < 7) {
+						howTo = ParseFactory.Value.SUBJECT;
+					} else if (i < 8) {
+						howTo = ParseFactory.Value.CULTURE;
+					} else if (i < 12) {
+						howTo = ParseFactory.Value.BOTTOM;
+					} else {
+						howTo = ParseFactory.Value.BODY;
+					}
+
+					phoneNumberList.addAll((ArrayList<PhoneItem>) ParseFactory
+							.create(ParseFactory.What.Phone, body, howTo)
+							.parse());
+
+				} catch (UnknownHostException e) {
+					throw e;
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 
-				phoneNumberList.addAll((ArrayList<PhoneItem>) ParseFactory
-						.create(ParseFactory.PHONE, body, howTo).parse());
-
-			} catch (UnknownHostException e) {
-				throw e;
-			} catch (Exception e) {
-				e.printStackTrace();
+				progress.setProgress(progressNumber * i - 1);
 			}
-
-			progress.setProgress(progressNumber * i - 1);
+			// DB 에 데이터 등록
+			PhoneNumberDB telDB = PhoneNumberDB.getInstance(getActivity());
+			for (PhoneItem item : phoneNumberList) {
+				telDB.insertOrUpdate(item);
+			}
+			phoneNumberList = (ArrayList<PhoneItem>) telDB
+					.readAll(StringUtil.NULL);
+			progress.setProgress(100);
 		}
-		// DB 에 데이터 등록
-		PhoneNumberDB telDB = PhoneNumberDB.getInstance(getActivity());
-		for (PhoneItem item : phoneNumberList) {
-			telDB.insertOrUpdate(item);
-		}
-		progress.setProgress(100);
-		return telDB.readAll();
+		return phoneNumberList;
 	}
 
 	private void initProgress() {
@@ -228,8 +244,12 @@ public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>>
 		phoneAdapter.clear();
 		phoneAdapter.addAll(result);
 		phoneAdapter.notifyDataSetChanged();
-		AppUtil.showToast(getActivity(), R.string.finish_update,
-				isMenuVisible());
+		if (mIsInit) {
+			mIsInit = false;
+		} else {
+			AppUtil.showToast(getActivity(), R.string.finish_update,
+					isMenuVisible());
+		}
 	}
 
 	private ArrayList<String> getUrlList() {
@@ -292,7 +312,8 @@ public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>>
 		new AlertDialog.Builder(context)
 				.setTitle(
 						item.siteName
-								+ context.getString(R.string.tab_phone_confirm_call))
+								+ context
+										.getString(R.string.tab_phone_confirm_call))
 				.setMessage(phoneNum).setCancelable(true)
 				.setPositiveButton(R.string.confirm, new OnClickListener() {
 

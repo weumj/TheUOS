@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.uoscs09.theuos"
-    android:versionCode="37"
+    android:versionCode="41"
     android:versionName="@string/setting_app_version_desc" >
 
     <uses-sdk
@@ -32,6 +32,9 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.sec.android.support.multiwindow"
+            android:value="true" />
 
         <activity
             android:name="com.uoscs09.theuos.TitleActivity"
@@ -43,6 +46,7 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
@@ -135,7 +139,7 @@
                 <action android:name="android.intent.action.ACTION_EXTERNAL_APPLICATION_AVAILABLE" />
             </intent-filter>
         </receiver>
-        <!-- 
+        
         <receiver
             android:name="com.uoscs09.theuos.widget.restaurant.RestWidget"
             android:label="@string/widget_rest_desc" >
@@ -150,8 +154,8 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.ACTION_EXTERNAL_APPLICATION_AVAILABLE" />
             </intent-filter>
-        </receiver>
-         -->
+        </receiver>
+        
     </application>
 
 </manifest>

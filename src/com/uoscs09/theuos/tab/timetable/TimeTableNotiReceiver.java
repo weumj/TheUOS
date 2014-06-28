@@ -7,7 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.common.util.AppUtil;
+import com.uoscs09.theuos.common.util.IOUtil;
 import com.uoscs09.theuos.common.util.OApiUtil;
 
 /** 시간표 알림 이벤트를 받아 알림을 띄우는 BroadcastReceiver */
@@ -21,7 +21,8 @@ public class TimeTableNotiReceiver extends BroadcastReceiver {
 			int code = intent
 					.getIntExtra(TimeTableInfoCallback.INTENT_CODE, 11);
 			String name = intent.getStringExtra(OApiUtil.SUBJECT_NAME);
-			String when = AppUtil.readFromFile(context, String.valueOf(code));
+			String when = IOUtil.readFromFileSuppressed(context,
+					String.valueOf(code));
 			if ("알림 없음".equals(when)) {
 				return;
 			}

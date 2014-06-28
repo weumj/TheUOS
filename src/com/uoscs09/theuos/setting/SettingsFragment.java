@@ -1,9 +1,10 @@
 package com.uoscs09.theuos.setting;
 
+import java.util.Formatter;
 import java.util.concurrent.Callable;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+import net.htmlparser.jericho.Element;
+import net.htmlparser.jericho.Source;
 import pkg.asyncexcute.AsyncCallback;
 import pkg.asyncexcute.AsyncExecutor;
 import android.app.ActionBar;
@@ -20,6 +21,7 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
+import android.util.TypedValue;
 import android.widget.TextView;
 
 import com.uoscs09.theuos.R;
@@ -70,7 +72,6 @@ public class SettingsFragment extends PreferenceFragment implements
 			changeFragment(SettingsTimetableFragment.class);
 			return true;
 		case R.string.setting_save_route:
-			// changeFragment(SettingsFileSelectDialogFragment.class);
 			new SettingsFileSelectDialogFragment().show(getFragmentManager(),
 					null);
 			return true;
@@ -78,7 +79,7 @@ public class SettingsFragment extends PreferenceFragment implements
 			changeFragment(SettingsWebPageFragment.class);
 			return true;
 		case R.string.setting_app_version_update:
-			// showAppVersionDialog();
+			showAppVersionDialog();
 			return true;
 		default:
 			return false;
@@ -87,9 +88,7 @@ public class SettingsFragment extends PreferenceFragment implements
 
 	private void showAppVersionDialog() {
 		final Context context = getActivity();
-		// final String URL =
-		// "https://play.google.com/store/apps/details?id=com.uoscs09.theuos";
-		final String URL = "https://play.google.com/store/apps/details?id=com.smartlotte";
+		final String URL = "https://play.google.com/store/apps/details?id=com.uoscs09.theuos";
 		final ProgressDialog progress = AppUtil.getProgressDialog(context,
 				false, getText(R.string.progress_while_updating), null);
 		progress.show();
@@ -99,27 +98,38 @@ public class SettingsFragment extends PreferenceFragment implements
 			@Override
 			public String call() throws Exception {
 				String body = HttpRequest.getBody(URL);
-				Pattern p = Pattern.compile("현재버전\\n\n.[0-9]\\..[0-9]");
-				Matcher m = p.matcher(body);
-				return m.group();
+				Source s = new Source(body);
+				Element e = s.getAllElementsByClass("details-section metadata")
+						.get(0)
+						.getAllElementsByClass("details-section-contents")
+						.get(0).getAllElementsByClass("meta-info").get(3)
+						.getAllElementsByClass("content").get(0);
+				return e.getTextExtractor().toString().trim();
 			}
 		}).setCallback(new AsyncCallback.Base<String>() {
 			@Override
 			public void onResult(String result) {
-				AlertDialog.Builder builder = new AlertDialog.Builder(context);
-				TextView tv = new TextView(context);
 				String thisVersion = getString(R.string.setting_app_version_desc);
 				if (thisVersion.equals(result)) {
-					tv.setText(R.string.setting_app_version_update_this_new);
-					builder.setView(tv).setPositiveButton(android.R.string.ok,
-							null);
+					AppUtil.showToast(getActivity(),
+							R.string.setting_app_version_update_this_new, true);
 				} else {
-					tv.setText(R.string.setting_app_version_update_this_new
-							+ result);
-					builder.setView(tv)
-							.setPositiveButton("업데이트",
+					AlertDialog.Builder builder = new AlertDialog.Builder(
+							context);
+					TextView tv = new TextView(context);
+					tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+					tv.setPadding(10, 10, 10, 10);
+					Formatter f = new Formatter();
+					f.format(
+							getString(R.string.setting_app_version_update_this_old),
+							thisVersion);
+					tv.setText(f.toString() + " " + result);
+					f.close();
+					builder.setTitle(
+							R.string.setting_app_version_update_require)
+							.setView(tv)
+							.setPositiveButton(R.string.update,
 									new DialogInterface.OnClickListener() {
-
 										@Override
 										public void onClick(
 												DialogInterface dialog,
@@ -127,10 +137,9 @@ public class SettingsFragment extends PreferenceFragment implements
 											startActivity(AppUtil
 													.setWebPageIntent(URL));
 										}
-									})
-							.setNegativeButton(android.R.string.cancel, null);
+									}).setNegativeButton(R.string.later, null);
+					builder.create().show();
 				}
-				builder.create().show();
 			}
 
 			@Override

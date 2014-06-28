@@ -9,8 +9,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.drawable.AnimationDrawable;
 import android.os.AsyncTask;
+import android.os.AsyncTask.Status;
 import android.os.Build.VERSION;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -22,12 +22,11 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.common.impl.AbsAsyncFragment;
+import com.uoscs09.theuos.common.impl.AbsDrawableProgressFragment;
 import com.uoscs09.theuos.common.util.AppUtil;
 import com.uoscs09.theuos.common.util.PrefUtil;
 import com.uoscs09.theuos.common.util.StringUtil;
@@ -35,7 +34,7 @@ import com.uoscs09.theuos.http.HttpRequest;
 import com.uoscs09.theuos.http.parse.ParseFactory;
 
 public class TabLibrarySeatFragment extends
-		AbsAsyncFragment<ArrayList<SeatItem>> {
+		AbsDrawableProgressFragment<ArrayList<SeatItem>> {
 	/** 좌석 현황 리스트 뷰의 adapter */
 	private ArrayAdapter<SeatItem> mSeatAdapter;
 	/** 해지 될 좌석 정보 리스트 뷰의 adapter */
@@ -48,10 +47,6 @@ public class TabLibrarySeatFragment extends
 	private ListView mSeatListView;
 	/** 해지 될 좌석 정보 리스트 뷰, infoDialog에서 보여진다. */
 	private ListView mInfoListView;
-	/** 로딩 중을 나타내는 뷰, seatListView의 footer로 설정된다. */
-	private View mLoadingView;
-	/** 로딩 중을 표시하는 AnimationDrawable */
-	private AnimationDrawable mLoadingAnimation;
 	/** 상단 액션바에 설정되는 layout, timeTextView가 포함되어 동기화 시간을 나타낸다. */
 	private View mActionViewLayout;
 	/** 상단 액션바에 설정되어 동기화 시간을 나타내는 TextView */
@@ -101,10 +96,6 @@ public class TabLibrarySeatFragment extends
 			mDissmissInfoList = new ArrayList<String>();
 		}
 		Activity activity = getActivity();
-		mLoadingView = View.inflate(activity, R.layout.footer_loading_view,
-				null);
-		mLoadingAnimation = (AnimationDrawable) ((ImageView) mLoadingView
-				.findViewById(R.id.iv_list_footer_loading)).getBackground();
 		mActionViewLayout = View.inflate(activity,
 				R.layout.action_tab_lib_seat_view, null);
 		mTimeTextView = (TextView) mActionViewLayout
@@ -141,7 +132,7 @@ public class TabLibrarySeatFragment extends
 				excute();
 			}
 		} else {
-			mSeatListView.removeFooterView(mLoadingView);
+			mSeatListView.removeFooterView(getLoadingView());
 		}
 		mSeatListView.setOnItemClickListener(itemClickListenerOfLanguageList);
 
@@ -177,6 +168,7 @@ public class TabLibrarySeatFragment extends
 			inflater.inflate(R.menu.tab_library_seat, menu);
 			break;
 		}
+
 		mTimeTextView.setText(mCommitTime);
 		ActionBar actionBar = getActivity().getActionBar();
 		actionBar.setCustomView(mActionViewLayout);
@@ -191,7 +183,7 @@ public class TabLibrarySeatFragment extends
 			AsyncExecutor<ArrayList<SeatItem>> executor = getExecutor();
 			if (executor != null && VERSION.SDK_INT < VER_KITKAT
 					&& !executor.getStatus().equals(AsyncTask.Status.RUNNING)) {
-				mSeatListView.addFooterView(mLoadingView);
+				mSeatListView.addFooterView(getLoadingView());
 			}
 			excute();
 			return true;
@@ -220,14 +212,9 @@ public class TabLibrarySeatFragment extends
 		mSeatListView = (ListView) rootView
 				.findViewById(R.id.tab_library_list_seat);
 		if (VERSION.SDK_INT < VER_KITKAT) {
-			mSeatListView.addFooterView(mLoadingView);
+			mSeatListView.addFooterView(getLoadingView());
 		}
 		mSeatListView.setAdapter(mSeatAdapter);
-	}
-
-	private void startLoadingAnim() {
-		mLoadingView.setVisibility(View.VISIBLE);
-		mLoadingAnimation.start();
 	}
 
 	@Override
@@ -235,13 +222,12 @@ public class TabLibrarySeatFragment extends
 		if (VERSION.SDK_INT > VER_JELLYBEAN) {
 			AsyncExecutor<ArrayList<SeatItem>> executor = getExecutor();
 			if (executor == null) {
-				mSeatListView.addFooterView(mLoadingView);
+				mSeatListView.addFooterView(getLoadingView());
 			} else if (executor != null
-					&& !executor.getStatus().equals(AsyncTask.Status.RUNNING)) {
-				mSeatListView.addFooterView(mLoadingView);
+					&& executor.getStatus() != Status.RUNNING) {
+				mSeatListView.addFooterView(getLoadingView());
 			}
 		}
-		startLoadingAnim();
 		mSeatList.clear();
 		mSeatAdapter.clear();
 		super.excute();
@@ -249,9 +235,8 @@ public class TabLibrarySeatFragment extends
 
 	@Override
 	public void onPostExcute() {
-		mLoadingAnimation.stop();
-		mLoadingView.setVisibility(View.INVISIBLE);
-		mSeatListView.removeFooterView(mLoadingView);
+		super.onPostExcute();
+		mSeatListView.removeFooterView(getLoadingView());
 	}
 
 	@Override
@@ -268,7 +253,7 @@ public class TabLibrarySeatFragment extends
 	public ArrayList<SeatItem> call() throws Exception {
 		String body = HttpRequest.getBody(URL, StringUtil.ENCODE_EUC_KR);
 		ArrayList<SeatItem> callSeatList = (ArrayList<SeatItem>) ParseFactory
-				.create(ParseFactory.SEAT, body, 0).parse();
+				.create(ParseFactory.What.Seat, body, 0).parse();
 
 		// '해지될 좌석 정보' 정보를 리스트에 추가
 		SeatItem dissmisInfo = callSeatList.remove(callSeatList.size() - 1);
@@ -351,6 +336,11 @@ public class TabLibrarySeatFragment extends
 		if (mTimeTextView != null) {
 			mTimeTextView.setText(mCommitTime);
 		}
+	}
+
+	@Override
+	protected MenuItem getLoadingMenuItem(Menu menu) {
+		return menu.findItem(R.id.action_refresh);
 	}
 
 }

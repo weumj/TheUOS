@@ -2,18 +2,19 @@ package com.uoscs09.theuos.tab.subject;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Hashtable;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,6 +37,7 @@ import com.uoscs09.theuos.common.impl.AbsAsyncFragment;
 import com.uoscs09.theuos.common.util.AppUtil;
 import com.uoscs09.theuos.common.util.AppUtil.AppTheme;
 import com.uoscs09.theuos.common.util.OApiUtil;
+import com.uoscs09.theuos.common.util.OApiUtil.Term;
 import com.uoscs09.theuos.common.util.StringUtil;
 import com.uoscs09.theuos.http.HttpRequest;
 import com.uoscs09.theuos.http.parse.ParseFactory;
@@ -45,17 +47,14 @@ public class TabSearchSubjectFragment extends
 		OnItemClickListener, OnItemSelectedListener, View.OnClickListener {
 	private SubjectAdapter adapter;
 	protected ArrayList<SubjectItem> list;
-	protected static final String MAJOR = "http://wise.uos.ac.kr/uosdoc/api.ApiUcrMjTimeInq.oapi?apiKey="
-			+ OApiUtil.UOS_API_KEY;
-	protected static final String CULT = "http://wise.uos.ac.kr/uosdoc/api.ApiUcrCultTimeInq.oapi?apiKey="
-			+ OApiUtil.UOS_API_KEY;
-	private String qry;
+	protected Hashtable<String, String> params;
 	protected AlertDialog ad;
 	protected EditText et;
-	private Spinner sp1, sp2, sp3, sp4;
+	private Spinner sp1, sp2, sp3, sp4, termSpinner;
 	protected ProgressDialog prog;
 	private int[] selections = new int[4];
 	private TextView[] textViews;
+	private TextView actionTextview;
 	private int sortFocusViewId;
 	private boolean isInverse = false;
 
@@ -63,6 +62,8 @@ public class TabSearchSubjectFragment extends
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
+		params = new Hashtable<String, String>();
+
 		Context context = getActivity();
 		prog = AppUtil.getProgressDialog(context, false, new OnClickListener() {
 
@@ -80,6 +81,8 @@ public class TabSearchSubjectFragment extends
 		sp2 = (Spinner) dialogView.findViewById(R.id.etc_search_subj_spinner2);
 		sp3 = (Spinner) dialogView.findViewById(R.id.etc_search_subj_spinner3);
 		sp4 = (Spinner) dialogView.findViewById(R.id.etc_search_subj_spinner4);
+		termSpinner = (Spinner) dialogView
+				.findViewById(R.id.etc_search_subj_spinner_term);
 
 		sp1.setOnItemSelectedListener(this);
 		sp2.setOnItemSelectedListener(this);
@@ -90,12 +93,18 @@ public class TabSearchSubjectFragment extends
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View rootView;
+		Context context = getActivity();
+
+		actionTextview = new TextView(context);
+		actionTextview.setGravity(Gravity.CENTER);
+
 		switch (AppUtil.theme) {
 		case Black:
 			rootView = inflater.inflate(R.layout.tab_search_subj_dark,
 					container, false);
 			break;
 		case BlackAndWhite:
+			actionTextview.setTextColor(Color.WHITE);
 		case White:
 		default:
 			rootView = inflater.inflate(R.layout.tab_search_subj, container,
@@ -115,19 +124,19 @@ public class TabSearchSubjectFragment extends
 		});
 		if (savedInstanceState != null) {
 			list = savedInstanceState.getParcelableArrayList("list");
+			actionTextview.setText(savedInstanceState.getString("action"));
 		} else {
 			list = new ArrayList<SubjectItem>();
 		}
 		ListView listView = (ListView) rootView
 				.findViewById(R.id.tab_search_subject_list_view);
 		adapter = new SubjectAdapter(
-				getActivity(),
+				context,
 				AppUtil.theme == AppTheme.Black ? R.layout.list_layout_subject_dark
 						: R.layout.list_layout_subject, list);
 		listView.setAdapter(adapter);
 		listView.setOnItemClickListener(this);
 		listView.setEmptyView(empty);
-		qry = "&year=" + OApiUtil.getYear() + "&term=" + OApiUtil.getTerm();
 
 		int[] ids = { R.id.tab_search_subject_sub_dept1,
 				R.id.tab_search_subject_sub_div1, R.id.tab_search_subject_no1,
@@ -234,6 +243,7 @@ public class TabSearchSubjectFragment extends
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		outState.putParcelableArrayList("list", list);
+		outState.putString("action", actionTextview.getText().toString());
 		super.onSaveInstanceState(outState);
 	}
 
@@ -265,21 +275,9 @@ public class TabSearchSubjectFragment extends
 
 	@Override
 	public void onItemClick(AdapterView<?> ad, View v, int pos, long id) {
-		showDialFrag(getFragmentManager(),
-				(SubjectItem) ad.getItemAtPosition(pos));
-		// new SubjectInfoDialFrag().setItem(
-		// (SubjectItem) ad.getItemAtPosition(pos)).show(
-		// getFragmentManager(), "info");
-	}
-
-	private void showDialFrag(FragmentManager fm, SubjectItem item) {
-		Bundle b = new Bundle();
-		b.putParcelable("item", item);
-		DialogFragment f = (DialogFragment) fm.getFragment(b, "info");
-		if (f == null)
-			f = (DialogFragment) Fragment.instantiate(getActivity(),
-					SubjectInfoDialFrag.class.getName(), b);
-		f.show(fm, "info");
+		SubjectInfoDialFrag.showDialog(getFragmentManager(),
+				(SubjectItem) ad.getItemAtPosition(pos), getActivity(),
+				termSpinner.getSelectedItemPosition());
 	}
 
 	private void getAlertDialog(View v) {
@@ -316,38 +314,47 @@ public class TabSearchSubjectFragment extends
 		adapter.notifyDataSetChanged();
 		AppUtil.showToast(getActivity(), String.valueOf(result.size())
 				+ getString(R.string.search_found), true);
+
+		actionTextview.setText(termSpinner.getSelectedItem().toString());
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public ArrayList<SubjectItem> call() throws Exception {
-		StringBuilder sb = new StringBuilder();
+		String query;
+		params.clear();
+		params.put(OApiUtil.API_KEY, OApiUtil.UOS_API_KEY);
+		params.put(OApiUtil.YEAR, OApiUtil.getYear());
+		params.put(OApiUtil.TERM,
+				OApiUtil.getTermCode(Term.values()[termSpinner
+						.getSelectedItemPosition()]));
 		switch (sp1.getSelectedItemPosition()) {
+		default:
 		case 0:// 교양
-			sb.append(CULT).append(qry);
-			getCultSubjectDiv(sp2.getSelectedItemPosition(), sb);
+			query = "http://wise.uos.ac.kr/uosdoc/api.ApiUcrCultTimeInq.oapi";
+			params.put("subjectDiv",
+					getCultSubjectDiv(sp2.getSelectedItemPosition()));
 			break;
 		case 1:// 전공
-			sb.append(MAJOR).append(qry);
+			query = "http://wise.uos.ac.kr/uosdoc/api.ApiUcrMjTimeInq.oapi";
 			switch (selections[1]) {
 			case R.array.search_subj_major_2_0_0:
-				getMajorDeptDiv(sp3.getSelectedItemPosition(),
-						sp4.getSelectedItemPosition(), sb);
+				params.putAll(getMajorDeptDiv(sp3.getSelectedItemPosition(),
+						sp4.getSelectedItemPosition()));
 				break;
 			default:
-				getMajorDeptDiv2(selections[1], sp4.getSelectedItemPosition(),
-						sb);
+				params.putAll(getMajorDeptDiv2(selections[1],
+						sp4.getSelectedItemPosition()));
 				break;
 			}
 			break;
 		}
-		sb.append("&subjectNm=");
-		sb.append(URLEncoder.encode(et.getText().toString(),
+		params.put("subjectNm", URLEncoder.encode(et.getText().toString(),
 				StringUtil.ENCODE_EUC_KR));
-		String query = sb.toString();
-		String body = HttpRequest.getBody(query, StringUtil.ENCODE_EUC_KR);
+		String body = HttpRequest.getBody(query, StringUtil.ENCODE_EUC_KR,
+				params);
 		return (ArrayList<SubjectItem>) ParseFactory.create(
-				ParseFactory.ETC_SUBJECT, body, 0).parse();
+				ParseFactory.What.Subject, body, 0).parse();
 	}
 
 	@Override
@@ -362,6 +369,10 @@ public class TabSearchSubjectFragment extends
 			inflater.inflate(R.menu.tab_search_subject, menu);
 			break;
 		}
+
+		ActionBar actionBar = getActivity().getActionBar();
+		actionBar.setDisplayShowCustomEnabled(true);
+		actionBar.setCustomView(actionTextview);
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 
@@ -518,388 +529,410 @@ public class TabSearchSubjectFragment extends
 
 	@Override
 	public void onNothingSelected(AdapterView<?> arg0) {
-
 	}
 
-	private StringBuilder getCultSubjectDiv(int subjectDiv, StringBuilder sb) {
+	private String getCultSubjectDiv(int subjectDiv) {
 		switch (subjectDiv) {
+		default:
 		case 0:
-			sb.append("&subjectDiv=A01");
-			break;
+			return "A01";
 		case 1:
-			sb.append("&subjectDiv=A02");
-			break;
+			return "A02";
 		case 2:
-			sb.append("&ubjectDiv=A06");
-			break;
+			return "A06";
 		case 3:
-			sb.append("&subjectDiv=A07");
-			break;
+			return "A07";
 		}
-		return sb;
 	}
 
-	private StringBuilder getMajorDeptDiv(int deptDiv, int subDept,
-			StringBuilder sb) {
+	private Hashtable<String, String> getMajorDeptDiv(int deptDiv, int subDept) {
+		Hashtable<String, String> table = new Hashtable<String, String>(3);
 		switch (deptDiv) {
 		case 0:// 정경대학
-			sb.append("&deptDiv=210&dept=A201120212&subDept=");
+			table.put("deptDiv", "210");
+			table.put("dept", "A201120212");
 			switch (subDept) {
 			case 0:// 행정
-				sb.append("A201140214");
+				table.put("subDept", "A201140214");
 				break;
 			case 1:// 국제관계
-				sb.append("A201150215");
+				table.put("subDept", "A201150215");
 				break;
 			case 2:// 경제
-				sb.append("A201160216");
+				table.put("subDept", "A201160216");
 				break;
 			case 3:// 사회복지
-				sb.append("A201170217");
+				table.put("subDept", "A201170217");
 				break;
 			case 4:// 세무
-				sb.append("A201180218");
+				table.put("subDept", "A201180218");
 				break;
 			case 5:// 법학
-				sb.append("A202200320");
+				table.put("subDept", "A202200320");
 				break;
 			}
 			break;
 		case 1:// 경영대학
-			sb.append("&deptDiv=210&dept=A201130213&subDept=A201190219");
+			table.put("deptDiv", "210");
+			table.put("dept", "A201130213");
+			table.put("subDept", "A201190219");
 			break;
 		case 2:// 공과대학
-			sb.append("&deptDiv=220&dept=A200110111&subDept=");
+			table.put("deptDiv", "220");
+			table.put("dept", "A200110111");
 			switch (subDept) {
 			case 0:
-				sb.append("A200160116");// -전자전기컴퓨터공학부
+				table.put("subDept", "A200160116");// -전자전기컴퓨터공학부
 				break;
 			case 1:
-				sb.append("A200130113");// -화학공학과
+				table.put("subDept", "A200130113");// -화학공학과
 				break;
 			case 2:
-				sb.append("A200170117");// -기계정보공학과
+				table.put("subDept", "A200170117");// -기계정보공학과
 				break;
 			case 3:
-				sb.append("A200180118");// -신소재공학과
+				table.put("subDept", "A200180118");// -신소재공학과
 				break;
 			case 4:
-				sb.append("A200190119");// -토목공학과
+				table.put("subDept", "A200190119");// -토목공학과
 				break;
 			case 5:
-				sb.append("A200200120");// -컴퓨터과학부
+				table.put("subDept", "A200200120");// -컴퓨터과학부
 				break;
 			}
 			break;
 		case 3:// 인문대학
-			sb.append("&deptDiv=210&dept=A200220122&subDept=");
+			table.put("deptDiv", "210");
+			table.put("dept", "A200220122");
 			switch (subDept) {
 			case 0:
-				sb.append("A200230123");// -영어영문학과
+				table.put("subDept", "A200230123");// -영어영문학과
 				break;
 			case 1:
-				sb.append("A200240124");// -국어국문학과
+				table.put("subDept", "A200240124");// -국어국문학과
 				break;
 			case 2:
-				sb.append("A200250125");// -국사학과
+				table.put("subDept", "A200250125");// -국사학과
 				break;
 			case 3:
-				sb.append("A200260126");// -철학과
+				table.put("subDept", "A200260126");// -철학과
 				break;
 			case 4:
-				sb.append("A201020202");// -중국어문화학과
+				table.put("subDept", "A201020202");// -중국어문화학과
 				break;
 			}
 			break;
 		case 4:// 자연과학대학
-			sb.append("&deptDiv=210&dept=A200280128&subDept=");
+			table.put("deptDiv", "210");
+			table.put("dept", "A200280128");
 			switch (subDept) {
 			case 0:
-				sb.append("A200310131");// -수학과
+				table.put("subDept", "A200310131");// -수학과
 				break;
 			case 1:
-				sb.append("A200300130");// -통계학과
+				table.put("subDept", "A200300130");// -통계학과
 				break;
 			case 2:
-				sb.append("A200320132");// -물리학과
+				table.put("subDept", "A200320132");// -물리학과
 				break;
 			case 3:
-				sb.append("A200330133");// -생명과학과
+				table.put("subDept", "A200330133");// -생명과학과
 				break;
 			case 4:
-				sb.append("A200290129");// -환경원예학과
+				table.put("subDept", "A200290129");// -환경원예학과
 				break;
 			}
 			break;
 		case 5:// 도시과학대학
-			sb.append("&deptDiv=210&dept=A200370137&subDept=");
+			table.put("deptDiv", "210");
+			table.put("dept", "A200370137");
 			switch (subDept) {
 			case 0:
-				sb.append("A200380138");// -도시행정학과
+				table.put("subDept", "A200380138");// -도시행정학과
 				break;
 			case 1:
-				sb.append("A200400140");// -도시사회학과
+				table.put("subDept", "A200400140");// -도시사회학과
 				break;
 			case 2:
-				sb.append("A200890189");// -건축학전공
+				table.put("subDept", "A200890189");// -건축학전공
 				break;
 			case 3:
-				sb.append("A200900190");// -건축공학전공
+				table.put("subDept", "A200900190");// -건축공학전공
 				break;
 			case 4:
-				sb.append("A200490149");// -도시공학과
+				table.put("subDept", "A200490149");// -도시공학과
 				break;
 			case 5:
-				sb.append("A200500150");// -교통공학과
+				table.put("subDept", "A200500150");// -교통공학과
 				break;
 			case 6:
-				sb.append("A200510151");// -조경학과
+				table.put("subDept", "A200510151");// -조경학과
 				break;
 			case 7:
-				sb.append("A200450145");// -환경공학부
+				table.put("subDept", "A200450145");// -환경공학부
 				break;
 			case 8:
-				sb.append("A201000200");// -공간정보공학과
+				table.put("subDept", "A201000200");// -공간정보공학과
 				break;
 			case 9:
-				sb.append("A201010201");// -소방방재학과
+				table.put("subDept", "A201010201");// -소방방재학과
 				break;
 			}
 			break;
 		case 6:// 예술체육대학
-			sb.append("&deptDiv=210&dept=A200590159&subDept=");
+			table.put("deptDiv", "210");
+			table.put("dept", "A200590159");
 			switch (subDept) {
 			case 0:
-				sb.append("A200810181");// -공업디자인전공
+				table.put("subDept", "A200810181");// -공업디자인전공
 				break;
 			case 1:
-				sb.append("A200820182");// -시각디자인전공
+				table.put("subDept", "A200820182");// -시각디자인전공
 				break;
 			case 2:
-				sb.append("A200610161");// -환경조각학과
+				table.put("subDept", "A200610161");// -환경조각학과
 				break;
 			case 3:
-				sb.append("A200620162");// -음악학과
+				table.put("subDept", "A200620162");// -음악학과
 				break;
 			case 4:
-				sb.append("A200540154");// -스포츠과학과
+				table.put("subDept", "A200540154");// -스포츠과학과
 				break;
 			}
 			break;
 		case 7:// 국제교육원
-			sb.append("&deptDiv=210&dept=A201100210&subDept=A201110211");
+			table.put("deptDiv", "210");
+			table.put("dept", "A201100210");
+			table.put("subDept", "A201110211");
 			break;
 		}
-		return sb;
+		return table;
 	}
 
-	private StringBuilder getMajorDeptDiv2(int deptDiv, int subDept,
-			StringBuilder sb) {
+	private Hashtable<String, String> getMajorDeptDiv2(int deptDiv, int subDept) {
+		Hashtable<String, String> table = new Hashtable<String, String>(3);
 		switch (deptDiv) {
 		case R.array.search_subj_major_2_0_1:// 대학원
-			sb.append("&deptDiv=310&dept=A300010101&subDept=");
+			table.put("deptDiv", "310");
+			table.put("dept", "A300010101");
 			switch (subDept) {
 			case 0:// 도시행정학과
-				sb.append("A300030103");
+				table.put("subDept", "A300030103");
 				break;
 			case 1:// 행정학과
-				sb.append("A300040104");
+				table.put("subDept", "A300040104");
 				break;
 			case 2:// -사회복지학과
-				sb.append("A300320132");
+				table.put("subDept", "A300320132");
 				break;
 			case 3:// -도시사회학과
-				sb.append("A300360136");
+				table.put("subDept", "A300360136");
 				break;
 			case 4:// -법학과
-				sb.append("A300050105");
+				table.put("subDept", "A300050105");
 				break;
 			case 5:// -국제관계학과
-				sb.append("A300370137");
+				table.put("subDept", "A300370137");
 				break;
 			case 6:// -경영학과
-				sb.append("A300060106");
+				table.put("subDept", "A300060106");
 				break;
 			case 7:// -경제학과
-				sb.append("A300070107");
+				table.put("subDept", "A300070107");
 				break;
 			case 8:// -국어국문학과
-				sb.append("A300270127");
+				table.put("subDept", "A300270127");
 				break;
 			case 9:// -영어영문학과
-				sb.append("A300260126");
+				table.put("subDept", "A300260126");
 				break;
 			case 10:// -국사학과
-				sb.append("A300280128");
+				table.put("subDept", "A300280128");
 				break;
 			case 11:// -철학과
-				sb.append("A300310131");
+				table.put("subDept", "A300310131");
 				break;
 			case 12:// -조경학과
-				sb.append("A300200120");
+				table.put("subDept", "A300200120");
 				break;
 			case 13:// -환경원예학과
-				sb.append("A300210121");
+				table.put("subDept", "A300210121");
 				break;
 			case 14:// -컴퓨터과학과
-				sb.append("A302160316");
+				table.put("subDept", "A302160316");
 				break;
 			case 15:// 물리학과
-				sb.append("A300240124");
+				table.put("subDept", "A300240124");
 				break;
 			case 16:// -생명과학과
-				sb.append("A300250125");
+				table.put("subDept", "A300250125");
 				break;
 			case 17:// -토목공학과
-				sb.append("A300110111");
+				table.put("subDept", "A300110111");
 				break;
 			case 18:// --건축공학과
-				sb.append("A300120112");
+				table.put("subDept", "A300120112");
 				break;
 			case 19:// --건축학과
-				sb.append("A300410141");
+				table.put("subDept", "A300410141");
 				break;
 			case 20:// A300130113-환경공학과
-				sb.append("A300130113");
+				table.put("subDept", "A300130113");
 				break;
 			case 21:// -화학공학과
-				sb.append("A300140114");
+				table.put("subDept", "A300140114");
 				break;
 			case 22:// -도시공학과
-				sb.append("A300160116");
+				table.put("subDept", "A300160116");
 				break;
 			case 23:// -교통공학과
-				sb.append("A300170117");
+				table.put("subDept", "A300170117");
 				break;
 			case 24:// - -신소재공학과
-				sb.append("A300390139");
+				table.put("subDept", "A300390139");
 				break;
 			case 25:// -기계정보공학과
-				sb.append("A300340134");
+				table.put("subDept", "A300340134");
 				break;
 			case 26:// -공간정보공학과
-				sb.append("A301860286");
+				table.put("subDept", "A301860286");
 				break;
 			case 27:// 환경조각학과
-				sb.append("A300420142");
+				table.put("subDept", "A300420142");
 				break;
 			case 28:// -전자전기컴퓨터공학과
-				sb.append("A302040304");
+				table.put("subDept", "A302040304");
 				break;
 			case 29:// -음악학과
-				sb.append("A301940294");
+				table.put("subDept", "A301940294");
 				break;
 			case 30:// -스포츠과학과
-				sb.append("A302310331");
+				table.put("subDept", "A302310331");
 				break;
 			default:
 				return null;
 			}
 			break;
 		case R.array.search_subj_major_2_0_2:// 세무전문대학원
-			sb.append("&deptDiv=310&dept=A300430143&subDept=A302100310");
+			table.put("deptDiv", "310");
+			table.put("dept", "A300430143");
+			table.put("subDept", "A302100310");
 			break;
 		case R.array.search_subj_major_2_0_3:// 디자인
-			sb.append("&deptDiv=310&dept=A300500150&subDept=A300520152");
+			table.put("deptDiv", "310");
+			table.put("dept", "A300500150");
+			table.put("subDept", "A300520152");
 			break;
 		case R.array.search_subj_major_2_0_4:// 법학
-			sb.append("&deptDiv=310&dept=A302020302&subDept=A302030303");
+			table.put("deptDiv", "310");
+			table.put("dept", "A302020302");
+			table.put("subDept", "A302030303");
 			break;
 		case R.array.search_subj_major_2_0_5:// 도시
-			sb.append("&deptDiv=310&dept=A300570157&subDept=");
+			table.put("deptDiv", "310");
+			table.put("dept", "A300570157");
 			switch (subDept) {
 			case 0:// 도시행정학과
-				sb.append("A300590159");
+				table.put("subDept", "A300590159");
 				break;
 			case 1:// 방재공학과
-				sb.append("A300720172");
+				table.put("subDept", "A300720172");
 				break;
 			case 2:// -사회복지학과
-				sb.append("A300750175");
+				table.put("subDept", "A300750175");
 				break;
 			case 3:// -교통관리학과
-				sb.append("A300640164");
+				table.put("subDept", "A300640164");
 				break;
 			case 4:// -건축공학과
-				sb.append("A300690169");
+				table.put("subDept", "A300690169");
 				break;
 			case 5:// -조경학과
-				sb.append("A300700170");
+				table.put("subDept", "A300700170");
 				break;
 			case 6:// -환경공학과
-				sb.append("A300710171");
+				table.put("subDept", "A300710171");
 				break;
 			case 7:// -부동산학과
-				sb.append("A301840284");
+				table.put("subDept", "A301840284");
 				break;
 			case 8:// -관광문화학과
-				sb.append("A301900290");
+				table.put("subDept", "A301900290");
 				break;
 			default:
 				return null;
 			}
 			break;
 		case R.array.search_subj_major_2_0_6:// 경영
-			sb.append("&deptDiv=310&dept=A300760176&subDept=A300780178");
+			table.put("deptDiv", "310");
+			table.put("dept", "A300760176");
+			table.put("subDept", "A300780178");
 			break;
 		case R.array.search_subj_major_2_0_7:// 과학기술
-			sb.append("&deptDiv=301&dept=A302190319&subDept=");
+			table.put("deptDiv", "301");
+			table.put("dept", "A302190319");
 			switch (subDept) {
 			case 0:// 화학공학과
-				sb.append("A302210321");
+				table.put("subDept", "A302210321");
 				break;
 			case 1:// 신소재공학과
-				sb.append("A302230323");
+				table.put("subDept", "A302230323");
 				break;
 			case 2:// 기계공학과
-				sb.append("A302240324");
+				table.put("subDept", "A302240324");
 				break;
 			case 3:// 환경원예학과
-				sb.append("A302250325");
+				table.put("subDept", "A302250325");
 				break;
 			case 4:// 토목공학과
-				sb.append("A302260326");
+				table.put("subDept", "A302260326");
 				break;
 			case 5:// 전자전기공학과
-				sb.append("A302220322");
+				table.put("subDept", "A302220322");
 				break;
 			default:
 				return null;
 			}
 			break;
 		case R.array.search_subj_major_2_0_8:// 교육
-			sb.append("&deptDiv=321&dept=A300960196&subDept=");
+			table.put("deptDiv", "321");
+			table.put("dept", "A300960196");
 			switch (subDept) {
 			case 0:// 국어교육전공
-				sb.append("A300980198");
+				table.put("subDept", "A300980198");
 				break;
 			case 1:// 영어교육전공
-				sb.append("A300990199");
+				table.put("subDept", "A300990199");
 				break;
 			case 2:// 수학교육전공
-				sb.append("A301000200");
+				table.put("subDept", "A301000200");
 				break;
 			case 3:// 역사교육전공
-				sb.append("A301010201");
+				table.put("subDept", "A301010201");
 				break;
 			case 4:// 교수학습/상담전공
-				sb.append("A302300330");
+				table.put("subDept", "A302300330");
 				break;
 			default:
 				return null;
 			}
 			break;
 		case R.array.search_subj_major_2_0_9:// 국제
-
 			switch (subDept) {
 			case 0:// 글로벌건설경영학과
-				sb.append("&deptDiv=310&dept=A303100410&subDept=A303110411");
+				table.put("deptDiv", "310");
+				table.put("dept", "A303100410");
+				table.put("subDept", "A303110411");
 				break;
 			case 1:// 첨단녹색도시개발학과
-				sb.append("&deptDiv=310&dept=A303100410&subDept=A303120412");
+				table.put("deptDiv", "310");
+				table.put("dept", "A303100410");
+				table.put("subDept", "A303120412");
 				break;
 			case 2:// 국제도시개발프로그램
-				sb.append("&deptDiv=321&dept=A302280328&subDept=A302290329");
+				table.put("deptDiv", "321");
+				table.put("dept", "A302280328");
+				table.put("subDept", "A302290329");
 				break;
 			default:
 				return null;
@@ -908,6 +941,6 @@ public class TabSearchSubjectFragment extends
 		default:
 			return null;
 		}
-		return sb;
+		return table;
 	}
 }

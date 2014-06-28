@@ -1,7 +1,7 @@
 package com.uoscs09.theuos.tab.timetable;
 
-import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -17,7 +17,7 @@ import com.uoscs09.theuos.common.util.StringUtil;
 
 public class TimetableAdapter extends AbsArrayAdapter<TimeTableItem> {
 	private OnClickListener l;
-	private Hashtable<String, Integer> colorTable;
+	private Map<String, Integer> colorTable;
 	private List<TimeTableItem> list;
 
 	private TimetableAdapter(Context context) {
@@ -25,23 +25,20 @@ public class TimetableAdapter extends AbsArrayAdapter<TimeTableItem> {
 	}
 
 	public TimetableAdapter(Context context, int layout,
-			List<TimeTableItem> list) {
+			List<TimeTableItem> list, Map<String, Integer> colorTable) {
 		super(context, layout, list);
 		l = null;
 		this.list = list;
-		initColorInfo(context);
+		this.colorTable = colorTable;
 	}
 
 	public TimetableAdapter(Context context, int layout,
-			List<TimeTableItem> list, View.OnClickListener l) {
+			List<TimeTableItem> list, Map<String, Integer> colorTable,
+			View.OnClickListener l) {
 		super(context, layout, list);
 		this.l = l;
 		this.list = list;
-		initColorInfo(context);
-	}
-
-	private void initColorInfo(Context context) {
-		colorTable = TabTimeTableFragment.getColorTable(list, context);
+		this.colorTable = colorTable;
 	}
 
 	@Override
@@ -101,8 +98,6 @@ public class TimetableAdapter extends AbsArrayAdapter<TimeTableItem> {
 			w.textArray[i].setTextColor(Color.BLACK);
 			w.textArray[i].setTag(strArray[i] + StringUtil.NEW_LINE + position
 					+ StringUtil.NEW_LINE + i);
-			if (colorTable == null)
-				initColorInfo(getContext());
 			idx = colorTable.get(OApiUtil.getSubjectName(strArray[i]));
 			if (idx != null) {
 				color = AppUtil.getColor(idx);
@@ -146,11 +141,5 @@ public class TimetableAdapter extends AbsArrayAdapter<TimeTableItem> {
 			textArray[6] = (TextView) convertView
 					.findViewById(R.id.tab_timetable_list_text_sat);
 		}
-	}
-
-	@Override
-	public void notifyDataSetChanged() {
-		super.notifyDataSetChanged();
-		initColorInfo(getContext());
 	}
 }

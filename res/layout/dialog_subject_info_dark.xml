@@ -23,6 +23,6 @@
         android:background="@drawable/selector_button_dark"
         android:contentDescription="@string/action_copy"
         android:padding="2dp"
-        android:src="@drawable/ic_action_content_save" />
+        android:src="@drawable/ic_action_content_save_dark" />
 
 </RelativeLayout>

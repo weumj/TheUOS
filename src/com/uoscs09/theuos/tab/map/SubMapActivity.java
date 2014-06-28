@@ -19,7 +19,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.SpinnerAdapter;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -61,12 +60,19 @@ public class SubMapActivity extends BaseFragmentActivity implements
 		actionBar.setTitle(R.string.action_map);
 		actionBar.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP
 				| ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE);
-		int spinnerLayout = android.R.layout.simple_spinner_dropdown_item;
+		int spinnerLayout = android.R.layout.simple_spinner_item;
 		if (AppUtil.theme == AppTheme.BlackAndWhite) {
-			spinnerLayout = R.layout.spinner_simple_dropdown_item_dark;
+			spinnerLayout = R.layout.spinner_simple_item_dark;
 		}
-		SpinnerAdapter spinnerAdapter = ArrayAdapter.createFromResource(this,
-				R.array.buildings_univ, spinnerLayout);
+		ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter
+				.createFromResource(this, R.array.buildings_univ, spinnerLayout);
+		if (AppUtil.theme == AppTheme.BlackAndWhite) {
+			spinnerAdapter
+					.setDropDownViewResource(R.layout.spinner_simple_dropdown_item_dark);
+		} else {
+			spinnerAdapter
+					.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		}
 
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 		actionBar.setListNavigationCallbacks(spinnerAdapter,
@@ -110,7 +116,8 @@ public class SubMapActivity extends BaseFragmentActivity implements
 			}
 		});
 		locationSelector = new AlertDialog.Builder(this).setView(listView)
-				.setTitle("목적지 선택").setMessage("건물을 선택해 주세요").create();
+				.setTitle(R.string.tab_map_submap_select_dest)
+				.setMessage(R.string.tab_map_submap_select_building).create();
 		moveCameraPositionAt(0);
 		setCameraMapMarkerAt(0, getString(R.string.univ));
 	}

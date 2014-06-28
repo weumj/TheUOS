@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.impl.AbsArrayAdapter;
+import com.uoscs09.theuos.common.util.StringUtil;
 
 public class PhoneListAdapter extends AbsArrayAdapter<PhoneItem> {
 	protected Filter filter;
@@ -62,7 +63,7 @@ public class PhoneListAdapter extends AbsArrayAdapter<PhoneItem> {
 				protected FilterResults performFiltering(CharSequence constraint) {
 					FilterResults results = new FilterResults();
 					List<PhoneItem> beFilteredList = PhoneNumberDB.getInstance(
-							getContext()).readAll();
+							getContext()).readAll(StringUtil.NULL);
 					List<PhoneItem> filterList = new ArrayList<PhoneItem>();
 					if (constraint != null && constraint.length() > 0) {
 						PhoneItem item;
@@ -98,7 +99,8 @@ public class PhoneListAdapter extends AbsArrayAdapter<PhoneItem> {
 		public PhoneViewHolder(View convertView) {
 			phoneView = (TextView) convertView
 					.findViewById(R.id.tab_phone_list_text_site_tel_number);
-			siteView = (TextView) convertView.findViewById(R.id.tab_phone_list_text_site_name);
+			siteView = (TextView) convertView
+					.findViewById(R.id.tab_phone_list_text_site_name);
 			imgButton = (ImageButton) convertView
 					.findViewById(R.id.tab_phone_list_button_site_call);
 		}

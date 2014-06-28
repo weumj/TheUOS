@@ -13,6 +13,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -20,11 +22,14 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.nhaarman.listviewanimations.swinginadapters.AnimationAdapter;
+import com.nhaarman.listviewanimations.swinginadapters.prepared.AlphaInAnimationAdapter;
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.ListViewBitmapWriteTask;
 import com.uoscs09.theuos.common.util.AppUtil;
 import com.uoscs09.theuos.common.util.AppUtil.AppTheme;
 import com.uoscs09.theuos.common.util.OApiUtil;
+import com.uoscs09.theuos.common.util.OApiUtil.Term;
 import com.uoscs09.theuos.common.util.PrefUtil;
 import com.uoscs09.theuos.common.util.StringUtil;
 import com.uoscs09.theuos.http.HttpRequest;
@@ -33,13 +38,15 @@ import com.uoscs09.theuos.http.parse.ParseFactory;
 /**
  * 수업 계획서를 보여주는 DialogFragment<br>
  * {@code Fragment.setArgument()}와 {@code Bundle.putPacelable()}<br>
- * 을 통해 수업계획서를 보여줄 SubjectItem을 전달해야 한다
+ * 을 통해 수업계획서를 보여줄 SubjectItem과 학기 정보를 전달해야 한다
  */
 public class SubjectInfoDialFrag extends DialogFragment implements
 		AsyncCallback<ArrayList<String>>, Callable<ArrayList<String>>,
 		OnClickListener {
 	/** 교과목 객체 */
 	private SubjectItem item;
+	/** 학기 정보를 나타내는 변수 */
+	private Term term;
 	/** OAPI에 Query할 매개변수들 */
 	private Hashtable<String, String> params;
 	private ArrayList<String> infoList;
@@ -51,15 +58,30 @@ public class SubjectInfoDialFrag extends DialogFragment implements
 	private ListView listView;
 	/** ListView Adapter */
 	private ArrayAdapter<String> adapter;
-
+	private AnimationAdapter aAdapter;
+	
 	private final static String URL = "http://wise.uos.ac.kr/uosdoc/api.ApiApiCoursePlanView.oapi";
 	private final static String INFO = "info";
 	private final static String TITLE = "수업계획서";
 
+	public static void showDialog(FragmentManager fm, SubjectItem item,
+			Context context, int term) {
+		Bundle b = new Bundle();
+		b.putParcelable(OApiUtil.SUBJECT_NAME, item);
+		b.putInt(OApiUtil.TERM, term);
+		DialogFragment f = (DialogFragment) fm.getFragment(b, "info");
+		if (f == null)
+			f = (DialogFragment) Fragment.instantiate(context,
+					SubjectInfoDialFrag.class.getName(), b);
+		f.show(fm, "info");
+	}
+
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		item = getArguments().getParcelable("item");
+		Bundle b = getArguments();
+		item = b.getParcelable(OApiUtil.SUBJECT_NAME);
+		term = Term.values()[b.getInt(OApiUtil.TERM)];
 		if (item == null)
 			this.dismiss();
 	}
@@ -106,7 +128,10 @@ public class SubjectInfoDialFrag extends DialogFragment implements
 				context,
 				AppUtil.theme == AppTheme.Black ? R.layout.list_layout_subject_info_dark
 						: R.layout.list_layout_subject_info, infoList);
-		listView.setAdapter(adapter);
+		aAdapter = new AlphaInAnimationAdapter(adapter);
+		aAdapter.setAbsListView(listView);
+		listView.setAdapter(aAdapter);
+		aAdapter.notifyDataSetChanged();
 		return v;
 	}
 
@@ -128,8 +153,8 @@ public class SubjectInfoDialFrag extends DialogFragment implements
 	private void initTable() {
 		params = new Hashtable<String, String>(5);
 		params.put(OApiUtil.API_KEY, OApiUtil.UOS_API_KEY);
-		params.put(OApiUtil.YEAR, OApiUtil.getYear());
-		params.put(OApiUtil.TERM, OApiUtil.getTerm());
+		params.put(OApiUtil.YEAR, OApiUtil.getSemesterYear(term));
+		params.put(OApiUtil.TERM, OApiUtil.getTermCode(term));
 		params.put(OApiUtil.SUBJECT_NO, item.infoArray[3]);
 		params.put(OApiUtil.CLASS_DIV, item.infoArray[4]);
 	}
@@ -157,7 +182,7 @@ public class SubjectInfoDialFrag extends DialogFragment implements
 		String body = HttpRequest.getBody(URL, StringUtil.ENCODE_EUC_KR,
 				params, StringUtil.ENCODE_EUC_KR);
 		return (ArrayList<String>) ParseFactory.create(
-				ParseFactory.ETC_SUBJECT_INFO, body, 0).parse();
+				ParseFactory.What.SubjectInfo, body, 0).parse();
 	}
 
 	@Override
@@ -167,6 +192,7 @@ public class SubjectInfoDialFrag extends DialogFragment implements
 		adapter.clear();
 		adapter.addAll(result);
 		adapter.notifyDataSetChanged();
+		aAdapter.notifyDataSetChanged();
 	}
 
 	@Override

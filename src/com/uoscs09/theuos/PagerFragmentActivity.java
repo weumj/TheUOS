@@ -6,6 +6,7 @@ import android.R.color;
 import android.app.ActionBar;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -22,11 +23,13 @@ import android.widget.ListView;
 
 import com.uoscs09.theuos.common.BackPressCloseHandler;
 import com.uoscs09.theuos.common.impl.BaseFragmentActivity;
+import com.uoscs09.theuos.common.impl.SimpleTextViewAdapter;
 import com.uoscs09.theuos.common.util.AppUtil;
+import com.uoscs09.theuos.common.util.AppUtil.AppTheme;
 import com.uoscs09.theuos.common.util.PrefUtil;
 import com.uoscs09.theuos.setting.SettingActivity;
 
-/*TODO theme 관련 설정을 코드가 아닌 xml(/value/style_xxx)에서 변경할 수 있도록 할 것*/
+/*TODO textColortheme 관련 설정을 코드가 아닌 xml(/value/style_xxx)에서 변경할 수 있도록 할 것*/
 /** Main Activity, ViewPager가 존재한다. */
 public class PagerFragmentActivity extends BaseFragmentActivity implements
 		PagerInterface {
@@ -59,6 +62,10 @@ public class PagerFragmentActivity extends BaseFragmentActivity implements
 	}
 
 	protected void onCreate(Bundle savedInstanceState) {
+		// StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+		// .detectAll().penaltyLog().penaltyDialog().build());
+		// StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll()
+		// .penaltyLog().penaltyDeath().build());
 		/* 호출 순서를 바꾸지 말 것 */
 		initValues();
 		super.onCreate(savedInstanceState);
@@ -79,6 +86,7 @@ public class PagerFragmentActivity extends BaseFragmentActivity implements
 		}
 		AppUtil.startOrStopServiceAnounce(getApplicationContext());
 		mBackCloseHandler = new BackPressCloseHandler();
+		System.gc();
 	}
 
 	protected void onSaveInstanceState(Bundle outState) {
@@ -138,8 +146,17 @@ public class PagerFragmentActivity extends BaseFragmentActivity implements
 
 		drawerLayout.setDrawerShadow(R.drawable.drawer_shadow,
 				GravityCompat.START);
-		mDrawerListView.setAdapter(new DrawerListAdapter(this, drawerLayoutId,
-				list));
+		final float density = getResources().getDisplayMetrics().density;
+		int width = Math.round(30 * density);
+		int height = Math.round(28 * density);
+		AppTheme theme = AppUtil.theme == AppTheme.White ? AppTheme.White
+				: AppTheme.Black;
+		AppTheme iconTheme = AppUtil.theme == AppTheme.White ? AppTheme.White
+				: AppTheme.Black;
+		mDrawerListView.setAdapter(new SimpleTextViewAdapter.Builder(this,
+				drawerLayoutId, list).setTheme(theme)
+				.setDrawableTheme(iconTheme)
+				.setDrawableBounds(new Rect(0, 0, width, height)).create());
 		mDrawerListView
 				.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 					@Override
@@ -178,6 +195,21 @@ public class PagerFragmentActivity extends BaseFragmentActivity implements
 						navigateItem(position, true);
 					}
 				});
+		if (AppUtil.test) {
+			switch (AppUtil.theme) {
+			case BlackAndWhite:
+				mViewPager.setPageTransformer(true,
+						new ZoomOutPageTransformer());
+				break;
+			case White:
+				mViewPager.setPageTransformer(true, new DepthPageTransformer());
+				break;
+			default:
+				mViewPager.setPageTransformer(true, new PagerTransformer());
+				break;
+			}
+		}
+
 	}
 
 	/** SettingActivity를 시작한다. */
@@ -337,6 +369,89 @@ public class PagerFragmentActivity extends BaseFragmentActivity implements
 			break;
 		default:
 			break;
+		}
+	}
+
+	public class PagerTransformer implements ViewPager.PageTransformer {
+		@Override
+		public void transformPage(View arg0, float arg1) {
+			arg0.setRotationY(arg1 * -30);
+		}
+	}
+
+	public class ZoomOutPageTransformer implements ViewPager.PageTransformer {
+		private static final float MIN_SCALE = 0.85f;
+		private static final float MIN_ALPHA = 0.5f;
+
+		public void transformPage(View view, float position) {
+			int pageWidth = view.getWidth();
+			int pageHeight = view.getHeight();
+
+			if (position < -1) { // [-Infinity,-1)
+				// This page is way off-screen to the left.
+				view.setAlpha(0);
+
+			} else if (position <= 1) { // [-1,1]
+				// Modify the default slide transition to shrink the page as
+				// well
+				float scaleFactor = Math.max(MIN_SCALE, 1 - Math.abs(position));
+				float vertMargin = pageHeight * (1 - scaleFactor) / 2;
+				float horzMargin = pageWidth * (1 - scaleFactor) / 2;
+				if (position < 0) {
+					view.setTranslationX(horzMargin - vertMargin / 2);
+				} else {
+					view.setTranslationX(-horzMargin + vertMargin / 2);
+				}
+
+				// Scale the page down (between MIN_SCALE and 1)
+				view.setScaleX(scaleFactor);
+				view.setScaleY(scaleFactor);
+
+				// Fade the page relative to its size.
+				view.setAlpha(MIN_ALPHA + (scaleFactor - MIN_SCALE)
+						/ (1 - MIN_SCALE) * (1 - MIN_ALPHA));
+
+			} else { // (1,+Infinity]
+				// This page is way off-screen to the right.
+				view.setAlpha(0);
+			}
+		}
+	}
+
+	public class DepthPageTransformer implements ViewPager.PageTransformer {
+		private static final float MIN_SCALE = 0.75f;
+
+		public void transformPage(View view, float position) {
+			int pageWidth = view.getWidth();
+
+			if (position < -1) { // [-Infinity,-1)
+				// This page is way off-screen to the left.
+				view.setAlpha(0);
+
+			} else if (position <= 0) { // [-1,0]
+				// Use the default slide transition when moving to the left page
+				view.setAlpha(1);
+				view.setTranslationX(0);
+				view.setScaleX(1);
+				view.setScaleY(1);
+
+			} else if (position <= 1) { // (0,1]
+				// Fade the page out.
+				view.setAlpha(1 - position);
+
+				// Counteract the default slide transition
+				view.setTranslationX(pageWidth * -position);
+
+				// Scale the page down (between MIN_SCALE and 1)
+				float scaleFactor = MIN_SCALE + (1 - MIN_SCALE)
+						* (1 - Math.abs(position));
+				view.setScaleX(scaleFactor);
+				view.setScaleY(scaleFactor);
+
+			} else { // (1,+Infinity]
+				// This page is way off-screen to the right.
+				view.setAlpha(0);
+			}
 		}
 	}
 }

@@ -3,11 +3,12 @@
 
     <string name="setting_app_info">앱 정보</string>
     <string name="setting_app_version">버전</string>
-    <string name="setting_app_version_desc">2.00</string>
+    <string name="setting_app_version_desc">2.10</string>
     <string name="setting_app_version_update">최신버전 확인</string>
     <string name="setting_app_version_update_desc">어플리케이션의 최신 버전을 확인합니다.</string>
-    <string name="setting_app_version_update_this_old">현재 사용하는 어플리케이션이 최신버젼이 아닙니다.\n최신 버전 : </string>
-    <string name="setting_app_version_update_this_new">현재 사용하는 어플리케이션이 최신버젼입니다.</string>
+    <string name="setting_app_version_update_require">어플리케이션 업데이트 필요!</string>
+    <string name="setting_app_version_update_this_old">현재 사용하는 어플리케이션이 최신버전이 아닙니다.\n현재 버전 : %s\n최신 버전 :</string>
+    <string name="setting_app_version_update_this_new">현재 사용하는 어플리케이션이 최신버전입니다.</string>
     <string name="setting">설정</string>
     <string name="setting_etc">기타</string>
     <string name="setting_screen">화면 설정</string>
@@ -62,6 +63,8 @@
     <string name="setting_timetable_notify_time_desc">분 전에 알려줍니다.</string>
     <string name="setting_timetable_limit">시간표 표시 제한</string>
     <string name="setting_timetable_limit_desc">시간표가 최대로 보여줄 시간을 표시합니다.</string>
+    <string name="setting_timetable_limit_all">\n* 모든 교시가 표시됩니다.</string>
+    <string name="setting_timetable_limit_set">\n* %d교시 까지 표시됩니다.</string>
     <string name="pref_key_check_anounce_service">ACTIVE_SERVICE_ANOUNCE</string>
     <string name="pref_key_delete_cache">DELETE_CACHE</string>
     <string name="pref_key_order">ORDER</string>

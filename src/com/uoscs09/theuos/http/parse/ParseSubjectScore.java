@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.uoscs09.theuos.tab.etc.score.DetailScoreItem;
-import com.uoscs09.theuos.tab.etc.score.ScoreItem;
+import com.uoscs09.theuos.tab.score.DetailScoreItem;
+import com.uoscs09.theuos.tab.score.ScoreItem;
 
 public class ParseSubjectScore extends OApiParse<ArrayList<String>> {
 	private String[] PTN = { "subject_nm", "subject_no", "class_div",

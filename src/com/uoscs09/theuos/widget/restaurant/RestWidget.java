@@ -17,7 +17,7 @@ import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.common.util.AppUtil;
+import com.uoscs09.theuos.common.util.IOUtil;
 import com.uoscs09.theuos.common.util.OApiUtil;
 import com.uoscs09.theuos.common.util.PrefUtil;
 import com.uoscs09.theuos.tab.restaurant.RestItem;
@@ -33,8 +33,8 @@ public class RestWidget extends AppWidgetProvider {
 		if (OApiUtil.getDateTime()
 				- PrefUtil.getInstance(context).get(
 						PrefUtil.KEY_REST_DATE_TIME, 0) < 3) {
-			List<RestItem> list = AppUtil.readFromFile(context,
-					AppUtil.FILE_REST);
+			List<RestItem> list = IOUtil.readFromFileSuppressed(context,
+					IOUtil.FILE_REST);
 			if (list == null)
 				list = getRestListByThreading(context);
 			return list;
@@ -103,7 +103,8 @@ public class RestWidget extends AppWidgetProvider {
 						Log.w("restwidget", e2);
 						position = PrefUtil.getInstance(context).get(
 								REST_WIDGET_POSITION, 0);
-						list = AppUtil.readFromFile(context, AppUtil.FILE_REST);
+						list = IOUtil.readFromFileSuppressed(context,
+								IOUtil.FILE_REST);
 						item = list.get(position);
 					}
 				}

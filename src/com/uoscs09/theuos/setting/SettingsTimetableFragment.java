@@ -1,5 +1,7 @@
 package com.uoscs09.theuos.setting;
 
+import java.util.Formatter;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -58,13 +60,22 @@ public class SettingsTimetableFragment extends PreferenceFragment implements
 			Preference connectionPref = findPreference(key);
 			int limit = sharedPreferences.getInt(key, 15);
 			StringBuilder sb = new StringBuilder();
-			sb.append(getString(R.string.setting_timetable_limit_desc));
-			if (limit == 15) {
-				sb.append("\n* 모든 교시가 표시됩니다.");
-			} else {
-				sb.append("\n* ").append(limit).append("교시 까지 표시됩니다.");
+			Context context = getActivity();
+			if (context != null) {
+				sb.append(context
+						.getString(R.string.setting_timetable_limit_desc));
+				if (limit == 15) {
+					sb.append(context
+							.getString(R.string.setting_timetable_limit_all));
+				} else {
+					Formatter f = new Formatter();
+					sb.append(f.format(context
+							.getString(R.string.setting_timetable_limit_set),
+							limit));
+					f.close();
+				}
+				connectionPref.setSummary(sb.toString());
 			}
-			connectionPref.setSummary(sb.toString());
 		}
 	}
 

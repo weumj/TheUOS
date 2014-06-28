@@ -30,15 +30,18 @@ public class BookItemListAdapter extends AbsArrayAdapter<BookItem> {
 	private ImageLoaderConfiguration config;
 	private ImageLoader imageLoader;
 	private View.OnClickListener l;
+	private View.OnLongClickListener ll;
 
 	private BookItemListAdapter(Context context) {
 		super(context, 0);
 	}
 
 	public BookItemListAdapter(Context context, int layout,
-			List<BookItem> bookList, View.OnClickListener l) {
+			List<BookItem> bookList, View.OnClickListener l,
+			View.OnLongClickListener ll) {
 		super(context, layout, bookList);
 		this.l = l;
+		this.ll = ll;
 		imageLoader = ImageLoader.getInstance();
 		setupImgConfig();
 	}
@@ -54,9 +57,11 @@ public class BookItemListAdapter extends AbsArrayAdapter<BookItem> {
 		h.coverImg.setOnClickListener(l);
 		h.coverImg.setTag(item);
 		h.title.setText(item.title);
+		h.title.setOnLongClickListener(ll);
 		h.writer.setText(item.writer);
+		h.writer.setOnLongClickListener(ll);
 		h.publish_year.setText(item.bookInfo);
-
+		h.publish_year.setOnLongClickListener(ll);
 		h.bookState.setText(setSpannableText(item.bookState, 2));
 		h.location.setText(setSpannableText(item.site, 1));
 		h.location.setOnClickListener(l);
@@ -142,13 +147,18 @@ public class BookItemListAdapter extends AbsArrayAdapter<BookItem> {
 		public ImageView coverImg;
 
 		public Holder(View v) {
-			bookState = (TextView) v.findViewById(R.id.tab_booksearch_list_text_book_state);
-			coverImg = (ImageView) v.findViewById(R.id.tab_booksearch_list_image_book_image);
-			location = (TextView) v.findViewById(R.id.tab_booksearch_list_text_book_site);
-			title = (TextView) v.findViewById(R.id.tab_booksearch_list_text_book_title);
+			bookState = (TextView) v
+					.findViewById(R.id.tab_booksearch_list_text_book_state);
+			coverImg = (ImageView) v
+					.findViewById(R.id.tab_booksearch_list_image_book_image);
+			location = (TextView) v
+					.findViewById(R.id.tab_booksearch_list_text_book_site);
+			title = (TextView) v
+					.findViewById(R.id.tab_booksearch_list_text_book_title);
 			publish_year = (TextView) v
 					.findViewById(R.id.tab_booksearch_list_text_book_publish_and_year);
-			writer = (TextView) v.findViewById(R.id.tab_booksearch_list_text_book_writer);
+			writer = (TextView) v
+					.findViewById(R.id.tab_booksearch_list_text_book_writer);
 		}
 	}
 }

@@ -17,9 +17,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.view.View;
@@ -32,7 +29,9 @@ import android.widget.TextView;
 
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.util.AppUtil;
+import com.uoscs09.theuos.common.util.IOUtil;
 import com.uoscs09.theuos.common.util.OApiUtil;
+import com.uoscs09.theuos.common.util.OApiUtil.Term;
 import com.uoscs09.theuos.common.util.PrefUtil;
 import com.uoscs09.theuos.common.util.StringUtil;
 import com.uoscs09.theuos.http.HttpRequest;
@@ -53,6 +52,7 @@ public class TimeTableInfoCallback implements View.OnClickListener {
 	protected AlertDialog infoDialog, alarmDialog;
 	protected AsyncExecutor<ArrayList<ArrayList<String>>> infoExecutor;
 	protected Dialog progress;
+	private Term term;
 	private final static long DAY = 1000 * 60 * 60 * 24;
 	private final static long WEEK = DAY * 7;
 	public final static String ACTION_SET_ALARM = "com.uoscs09.theuos.tab.timetable.set_alarm";
@@ -63,6 +63,10 @@ public class TimeTableInfoCallback implements View.OnClickListener {
 		contextRef = new WeakReference<Context>(context);
 		progress = AppUtil.getProgressDialog(context, false, null);
 		initTable();
+	}
+
+	public void setTerm(Term term) {
+		this.term = term;
 	}
 
 	public void doOnClickFromTimeTable(View v) {
@@ -204,10 +208,9 @@ public class TimeTableInfoCallback implements View.OnClickListener {
 				.putExtra(INTENT_TIME, spinnerSelection);
 		PendingIntent pi = PendingIntent.getBroadcast(context, code, intent,
 				PendingIntent.FLAG_UPDATE_CURRENT);
-		AppUtil.saveToFile(context, String.valueOf(code), Context.MODE_PRIVATE,
-				when);
+		IOUtil.saveToFileSuppressed(context, String.valueOf(code),
+				Context.MODE_PRIVATE, when);
 		if (isSet) {
-			// long notiTime = System.currentTimeMillis() + 5000;
 			long notiTime = getNotificationTime(position, day);
 			am.cancel(pi);
 			am.setRepeating(AlarmManager.RTC_WAKEUP, notiTime, WEEK, pi);
@@ -230,8 +233,8 @@ public class TimeTableInfoCallback implements View.OnClickListener {
 				PendingIntent pi = PendingIntent.getBroadcast(context, code,
 						intent.putExtra(INTENT_CODE, code),
 						PendingIntent.FLAG_UPDATE_CURRENT);
-				AppUtil.saveToFile(context, String.valueOf(code),
-						Context.MODE_PRIVATE, when);
+				IOUtil.saveToFileAsync(context, String.valueOf(code),
+						Context.MODE_PRIVATE, when, null);
 				am.cancel(pi);
 			}
 		}
@@ -336,8 +339,6 @@ public class TimeTableInfoCallback implements View.OnClickListener {
 	protected void initTable() {
 		params = new Hashtable<String, String>();
 		params.put(OApiUtil.API_KEY, OApiUtil.UOS_API_KEY);
-		params.put(OApiUtil.YEAR, OApiUtil.getYear());
-		params.put(OApiUtil.TERM, OApiUtil.getTerm());
 	}
 
 	/** 수업 계획서 메뉴를 선택하였을 시, 작업을 처리하는 Callable */
@@ -345,8 +346,10 @@ public class TimeTableInfoCallback implements View.OnClickListener {
 		@SuppressWarnings("unchecked")
 		@Override
 		public ArrayList<ArrayList<String>> call() throws Exception {
+			params.put(OApiUtil.YEAR, OApiUtil.getSemesterYear(term));
+			params.put(OApiUtil.TERM, OApiUtil.getTermCode(term));
 			return (ArrayList<ArrayList<String>>) ParseFactory
-					.create(ParseFactory.ETC_SUBJECT_LIST,
+					.create(ParseFactory.What.SubjectList,
 							HttpRequest
 									.getBody(
 											"http://wise.uos.ac.kr/uosdoc/api.ApiApiSubjectList.oapi",
@@ -449,12 +452,7 @@ public class TimeTableInfoCallback implements View.OnClickListener {
 	};
 
 	protected void showDialFrag(FragmentManager fm, SubjectItem item) {
-		Bundle b = new Bundle();
-		b.putParcelable("item", item);
-		DialogFragment f = (DialogFragment) fm.getFragment(b, "info");
-		if (f == null)
-			f = (DialogFragment) Fragment.instantiate(contextRef.get(),
-					SubjectInfoDialFrag.class.getName(), b);
-		f.show(fm, "info");
+		SubjectInfoDialFrag.showDialog(fm, item, contextRef.get(),
+				term.ordinal());
 	}
 }

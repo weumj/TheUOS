@@ -6,4 +6,5 @@
     android:layout_height="fill_parent"
     android:ellipsize="marquee"
     android:padding="10dp"
-    android:singleLine="true" />
+    android:singleLine="true"
+    android:textColor="@android:color/white" />

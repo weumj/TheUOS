@@ -18,7 +18,9 @@ import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.DropAndDragListView;
 import com.uoscs09.theuos.common.DropAndDragListView.DragListener;
 import com.uoscs09.theuos.common.DropAndDragListView.DropListener;
+import com.uoscs09.theuos.common.impl.SimpleTextViewAdapter;
 import com.uoscs09.theuos.common.util.AppUtil;
+import com.uoscs09.theuos.common.util.AppUtil.AppTheme;
 
 /** page 순서를 바꾸는 설정이 있는 fragment */
 public class SettingsOrderFragment extends Fragment implements DragListener,
@@ -40,14 +42,26 @@ public class SettingsOrderFragment extends Fragment implements DragListener,
 
 		switch (AppUtil.theme) {
 		case Black:
-			adapter = new OrderListAdapter(activity,
-					R.layout.list_layout_order_dark, orderList);
+			adapter = new SimpleTextViewAdapter.Builder(activity,
+					R.layout.list_layout_order_dark, orderList)
+					.setTheme(AppUtil.theme)
+					.setTextViewId(R.id.setting_order_list_text_tab_title)
+					.create();
+			break;
+		case BlackAndWhite:
+			adapter = new SimpleTextViewAdapter.Builder(activity,
+					R.layout.list_layout_order, orderList)
+					.setTheme(AppUtil.theme).setDrawableTheme(AppTheme.White)
+					.setTextViewId(R.id.setting_order_list_text_tab_title)
+					.create();
 			break;
 		case White:
-		case BlackAndWhite:
 		default:
-			adapter = new OrderListAdapter(activity,
-					R.layout.list_layout_order, orderList);
+			adapter = new SimpleTextViewAdapter.Builder(activity,
+					R.layout.list_layout_order, orderList)
+					.setTheme(AppUtil.theme)
+					.setTextViewId(R.id.setting_order_list_text_tab_title)
+					.create();
 			break;
 		}
 		super.onCreate(savedInstanceState);
