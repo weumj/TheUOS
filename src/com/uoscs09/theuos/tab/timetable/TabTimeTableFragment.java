@@ -403,6 +403,7 @@ public class TabTimeTableFragment extends
 		if (!mIsOnLoad)
 			progress.dismiss();
 		clearPassWd();
+		super.onPostExcute();
 	}
 
 	@Override

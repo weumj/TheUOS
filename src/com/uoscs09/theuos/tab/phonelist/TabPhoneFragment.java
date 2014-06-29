@@ -236,6 +236,7 @@ public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>>
 
 	@Override
 	public void onPostExcute() {
+		super.onPostExcute();
 		progress.dismiss();
 	}
 

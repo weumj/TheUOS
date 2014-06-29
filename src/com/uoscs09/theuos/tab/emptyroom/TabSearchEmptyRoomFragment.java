@@ -263,6 +263,7 @@ public class TabSearchEmptyRoomFragment extends
 
 	@Override
 	public void onPostExcute() {
+		super.onPostExcute();
 		progress.dismiss();
 	}
 

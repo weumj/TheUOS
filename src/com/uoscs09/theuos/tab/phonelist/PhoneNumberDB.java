@@ -2,7 +2,6 @@ package com.uoscs09.theuos.tab.phonelist;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -15,8 +14,7 @@ import com.uoscs09.theuos.common.util.AppUtil;
 import com.uoscs09.theuos.common.util.PrefUtil;
 import com.uoscs09.theuos.common.util.StringUtil;
 
-public class PhoneNumberDB extends AsyncLoader<PhoneItem> implements
-		DBInterface<PhoneItem>, Callable<PhoneItem> {
+public class PhoneNumberDB implements DBInterface<PhoneItem>, Runnable {
 	private SQLiteDatabase db;
 	private static final String TABLE_Name = "PhoneNumberList";
 	private static final String TABLE_AttrSite = "Site";
@@ -134,15 +132,14 @@ public class PhoneNumberDB extends AsyncLoader<PhoneItem> implements
 	}
 
 	public synchronized void close() {
-		excute(this);
+		AsyncLoader.excute(this);
 	}
 
 	@Override
-	public PhoneItem call() throws Exception {
+	public void run() {
 		db.close();
 		pref = null;
 		instance = null;
-		return null;
 	}
 
 	private synchronized void init() {

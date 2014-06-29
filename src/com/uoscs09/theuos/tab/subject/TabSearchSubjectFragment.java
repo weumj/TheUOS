@@ -304,6 +304,7 @@ public class TabSearchSubjectFragment extends
 
 	@Override
 	public void onPostExcute() {
+		super.onPostExcute();
 		prog.dismiss();
 	}
 

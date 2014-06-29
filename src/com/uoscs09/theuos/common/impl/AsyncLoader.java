@@ -1,12 +1,30 @@
 package com.uoscs09.theuos.common.impl;
 
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Executor;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import android.os.AsyncTask;
 import pkg.asyncexcute.AsyncCallback;
 import pkg.asyncexcute.AsyncExecutor;
+import android.os.AsyncTask;
 
-public class AsyncLoader<T> {
+public class AsyncLoader<Data> {
+	private static final ThreadFactory sThreadFactory = new ThreadFactory() {
+		private final AtomicInteger mCount = new AtomicInteger(1);
+
+		public Thread newThread(Runnable r) {
+			return new Thread(r, "AsyncLoader #" + mCount.getAndIncrement());
+		}
+	};
+	private static final BlockingQueue<Runnable> sPoolWorkQueue = new LinkedBlockingQueue<Runnable>(
+			10);
+	public static final Executor THREAD_POOL_EXECUTOR = new ThreadPoolExecutor(
+			4, 128, 1, TimeUnit.SECONDS, sPoolWorkQueue, sThreadFactory);
 
 	/**
 	 * 비동기 작업을 실행한다.
@@ -16,8 +34,8 @@ public class AsyncLoader<T> {
 	 * @param l
 	 *            작업 종료후 호출될 callback
 	 */
-	public void excute(Callable<T> task, OnTaskFinishedListener l) {
-		getTasker(task, l).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+	public void excute(Callable<Data> task, OnTaskFinishedListener l) {
+		getTasker(task, l).executeOnExecutor(THREAD_POOL_EXECUTOR);
 	}
 
 	/**
@@ -28,27 +46,26 @@ public class AsyncLoader<T> {
 	 * @param callback
 	 *            작업 종료후 호출될 callback
 	 */
-	public void excute(Callable<T> task, AsyncCallback<T> callback) {
-		new AsyncExecutor<T>().setCallable(task).setCallback(callback)
-				.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+	public void excute(Callable<Data> task, AsyncCallback<Data> callback) {
+		new AsyncExecutor<Data>().setCallable(task).setCallback(callback)
+				.executeOnExecutor(THREAD_POOL_EXECUTOR);
 	}
 
 	/**
 	 * 결과를 반환하지 않는 비동기 작업을 실행한다.
 	 * 
-	 * @param task
-	 *            비동기 작업이 실시될 {@link Callable}
+	 * @param r
+	 *            비동기 작업이 실시될 {@link Runnable}
 	 */
-	public void excute(Callable<T> task) {
-		new AsyncExecutor<T>().setCallable(task).executeOnExecutor(
-				AsyncTask.THREAD_POOL_EXECUTOR);
+	public static void excute(Runnable r) {
+		THREAD_POOL_EXECUTOR.execute(r);
 	}
 
-	private AsyncTask<Void, Void, T> getTasker(Callable<T> task,
+	private AsyncTask<Void, Void, Data> getTasker(Callable<Data> task,
 			final OnTaskFinishedListener l) {
-		return new AsyncExecutor<T>().setCallable(task).setCallback(
-				new AsyncCallback.Base<T>() {
-					public void onResult(T result) {
+		return new AsyncExecutor<Data>().setCallable(task).setCallback(
+				new AsyncCallback.Base<Data>() {
+					public void onResult(Data result) {
 						if (l != null)
 							l.onTaskFinished(false, result);
 					}

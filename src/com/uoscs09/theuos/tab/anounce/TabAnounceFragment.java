@@ -322,6 +322,7 @@ public class TabAnounceFragment extends
 
 	@Override
 	public void onPostExcute() {
+		super.onPostExcute();
 		progress.dismiss();
 	}
 

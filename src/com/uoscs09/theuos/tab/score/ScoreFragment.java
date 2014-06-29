@@ -170,6 +170,7 @@ public class ScoreFragment extends AbsAsyncFragment<ArrayList<ScoreItem>>
 
 	@Override
 	public void onPostExcute() {
+		super.onPostExcute();
 		prog.dismiss();
 	}
 }

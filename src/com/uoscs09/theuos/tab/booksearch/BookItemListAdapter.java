@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import android.content.Context;
 import android.graphics.BitmapFactory;
@@ -28,8 +30,7 @@ import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.impl.AbsArrayAdapter;
 
 public class BookItemListAdapter extends AbsArrayAdapter<BookItem> {
-	private ImageLoaderConfiguration config;
-	private ImageLoader imageLoader;
+	private static final ImageLoader imageLoader = ImageLoader.getInstance();
 	private View.OnClickListener l;
 	private View.OnLongClickListener ll;
 
@@ -43,7 +44,6 @@ public class BookItemListAdapter extends AbsArrayAdapter<BookItem> {
 		super(context, layout, bookList);
 		this.l = l;
 		this.ll = ll;
-		imageLoader = ImageLoader.getInstance();
 		setupImgConfig();
 	}
 
@@ -105,7 +105,14 @@ public class BookItemListAdapter extends AbsArrayAdapter<BookItem> {
 	protected void setupImgConfig() {
 		if (!imageLoader.isInited()) {
 			File cacheDir = getContext().getCacheDir();
-			Executor ex = Executors.newCachedThreadPool();
+			Executor ex = Executors.newCachedThreadPool(new ThreadFactory() {
+				private final AtomicInteger mCount = new AtomicInteger(1);
+
+				public Thread newThread(Runnable r) {
+					return new Thread(r, "ImageLoader #"
+							+ mCount.getAndIncrement());
+				}
+			});
 			BitmapFactory.Options bitmapOpt = new BitmapFactory.Options();
 			bitmapOpt.inSampleSize = 4;
 			// Create configuration for ImageLoader
@@ -115,7 +122,8 @@ public class BookItemListAdapter extends AbsArrayAdapter<BookItem> {
 					.decodingOptions(bitmapOpt)
 					.showImageOnLoading(R.anim.loading_animation)
 					.cacheInMemory(true).cacheOnDisc(true).build();
-			config = new ImageLoaderConfiguration.Builder(getContext())
+			ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
+					getContext())
 					.memoryCacheExtraOptions(480, 800)
 					.taskExecutor(ex)
 					.taskExecutorForCachedImages(ex)
