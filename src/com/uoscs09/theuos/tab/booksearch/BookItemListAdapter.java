@@ -6,6 +6,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.text.Spannable;
 import android.text.style.ForegroundColorSpan;
@@ -105,9 +106,14 @@ public class BookItemListAdapter extends AbsArrayAdapter<BookItem> {
 		if (!imageLoader.isInited()) {
 			File cacheDir = getContext().getCacheDir();
 			Executor ex = Executors.newCachedThreadPool();
+			BitmapFactory.Options bitmapOpt = new BitmapFactory.Options();
+			bitmapOpt.inSampleSize = 4;
 			// Create configuration for ImageLoader
 			DisplayImageOptions option = new DisplayImageOptions.Builder()
 					.showImageForEmptyUri(R.drawable.noimg_en1)
+					.showImageOnFail(R.drawable.noimg_en1)
+					.decodingOptions(bitmapOpt)
+					.showImageOnLoading(R.anim.loading_animation)
 					.cacheInMemory(true).cacheOnDisc(true).build();
 			config = new ImageLoaderConfiguration.Builder(getContext())
 					.memoryCacheExtraOptions(480, 800)

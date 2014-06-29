@@ -32,7 +32,7 @@ public abstract class AbsDrawableProgressFragment<T> extends
 		return mLoadingView;
 	}
 
-	public AnimationDrawable getLoaAnimationDrawable() {
+	public AnimationDrawable getLoadingAnimDrawable() {
 		return mLoadingAnimation;
 	}
 
@@ -67,6 +67,6 @@ public abstract class AbsDrawableProgressFragment<T> extends
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 
-	/** 로딩 이이콘으로 변경할 MenuItem을 반환한다. */
+	/** 로딩 아이콘으로 변경할 MenuItem을 반환한다. */
 	abstract protected MenuItem getLoadingMenuItem(Menu menu);
 }
