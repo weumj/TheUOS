@@ -18,7 +18,7 @@
      limitations under the License.
 -->
 
-<resources xmlns:android="http://schemas.android.com/apk/res/android">
+<resources>
 
     <style name="Theme.Mystyledark" parent="@android:style/Theme.Holo">
         <item name="android:actionBarItemBackground">@drawable/selectable_background_mystyledark</item>
@@ -30,7 +30,7 @@
         <item name="android:actionModeBackground">@drawable/cab_background_top_mystyledark</item>
         <item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_mystyledark</item>
         <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Mystyledark</item>
-       
+        <item name="android:windowActionBarOverlay">false</item>
     </style>
 
     <style name="ActionBar.Solid.Mystyledark" parent="@android:style/Widget.Holo.ActionBar.Solid">
@@ -77,5 +77,4 @@
         <item name="android:dropDownListViewStyle">@style/DropDownListView.Mystyledark</item>
     </style>
 
-  
 </resources>

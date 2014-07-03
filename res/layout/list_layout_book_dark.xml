@@ -9,14 +9,21 @@
     android:paddingRight="5dp"
     android:paddingTop="2dp" >
 
+    <ImageView
+        android:id="@+id/tab_booksearch_list_image_book_image"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_marginRight="5dp"
+        android:background="@drawable/selector_button_dark"
+        android:padding="2dp" />
+
     <TextView
         android:id="@+id/tab_booksearch_list_text_book_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignRight="@+id/tab_booksearch_list_image_book_image"
+        android:layout_toRightOf="@id/tab_booksearch_list_image_book_image"
         android:background="@drawable/selector_text_dark"
-        android:layout_marginRight="60dp"
         android:textSize="16sp"
         android:textStyle="bold" />
 
@@ -24,44 +31,34 @@
         android:id="@+id/tab_booksearch_list_text_book_writer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/tab_booksearch_list_text_book_title"
+        android:layout_alignLeft="@id/tab_booksearch_list_text_book_title"
+        android:layout_below="@id/tab_booksearch_list_text_book_title"
         android:background="@drawable/selector_text_dark"
-        android:layout_marginRight="60dp"
         android:textSize="14sp" />
 
     <TextView
         android:id="@+id/tab_booksearch_list_text_book_publish_and_year"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/tab_booksearch_list_text_book_writer"
+        android:layout_alignLeft="@id/tab_booksearch_list_text_book_title"
+        android:layout_below="@id/tab_booksearch_list_text_book_writer"
         android:background="@drawable/selector_text_dark"
-        android:layout_marginRight="60dp"
         android:textSize="12sp" />
 
     <TextView
         android:id="@+id/tab_booksearch_list_text_book_site"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/tab_booksearch_list_text_book_publish_and_year" />
+        android:layout_alignLeft="@id/tab_booksearch_list_text_book_title"
+        android:layout_below="@id/tab_booksearch_list_text_book_publish_and_year" />
 
     <TextView
         android:id="@+id/tab_booksearch_list_text_book_state"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tab_booksearch_list_text_book_publish_and_year"
+        android:layout_below="@id/tab_booksearch_list_text_book_publish_and_year"
         android:layout_marginLeft="10dp"
-        android:layout_toRightOf="@+id/tab_booksearch_list_text_book_site"
+        android:layout_toRightOf="@id/tab_booksearch_list_text_book_site"
         android:textSize="13sp" />
-
-    <ImageView
-        android:id="@+id/tab_booksearch_list_image_book_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:background="@drawable/selector_button_dark"
-        android:padding="2dp" />
 
 </RelativeLayout>

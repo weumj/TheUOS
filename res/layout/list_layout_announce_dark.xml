@@ -1,10 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     android:layout_margin="5dp"
-    android:background="@drawable/selector_list_dark"
-    android:padding="5dp" >
+    android:background="@drawable/selector_list_rec_dark" >
+
+    <TextView
+        android:id="@+id/tab_anounce_list_text_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:textColor="@android:color/white"
+        android:textSize="13sp" />
+
+    <RelativeLayout
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="2dp"
+        android:layout_toRightOf="@id/tab_anounce_list_text_type"
+        android:background="@color/dark_blue_gray" >
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/tab_anounce_list_text_title"
@@ -18,22 +34,16 @@
         android:textSize="14sp" />
 
     <TextView
-        android:id="@+id/tab_anounce_list_text_type"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="@android:color/white" />
-
-    <TextView
         android:id="@+id/tab_anounce_list_text_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/tab_anounce_list_text_title"
         android:layout_marginTop="16dp"
-        android:paddingRight="10dp"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="@android:color/white" />
+        android:paddingBottom="5dp"
+        android:paddingRight="15dp"
+        android:paddingTop="5dp"
+        android:textColor="@android:color/white"
+        android:textSize="12sp" />
 
 </RelativeLayout>

@@ -8,13 +8,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:divider="@android:color/transparent"
+        android:layout_marginLeft="3dp"
+        android:layout_marginRight="3dp"
         android:dividerHeight="1dp"
         android:fadeScrollbars="true"
         android:fastScrollEnabled="true"
         android:listSelector="@android:color/transparent"
-        android:paddingLeft="5dp"
-        android:paddingRight="5dp"
         android:paddingTop="2dp"
         android:scrollingCache="true" >
     </ListView>

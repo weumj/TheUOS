@@ -57,6 +57,7 @@ public class TabBookSearchFragment extends
 	protected ArrayAdapter<BookItem> bookListAdapter;
 	private ArrayList<BookItem> bookList;
 	private AnimationAdapter aAdapter;
+	private ListView mListView;
 	/** ListView의 emptyView */
 	private View emptyView;
 	/** ActionBar에 띄울 View, 도서 검색 option이 선택된 사항을 나타낸다. */
@@ -83,7 +84,7 @@ public class TabBookSearchFragment extends
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		setHasOptionsMenu(true);
-		//setMenuRefresh(false);
+		// setMenuRefresh(false);
 		int oiSelect = 0, osSelect = 0;
 		if (savedInstanceState != null) {
 			bookList = savedInstanceState.getParcelableArrayList(BUNDLE_LIST);
@@ -215,14 +216,13 @@ public class TabBookSearchFragment extends
 			emptyView.setVisibility(View.VISIBLE);
 		}
 		// 리스트 뷰
-		ListView listView = (ListView) rootView
-				.findViewById(R.id.tab_book_list_search);
-		listView.addFooterView(getLoadingView());
+		mListView = (ListView) rootView.findViewById(R.id.tab_book_list_search);
+		mListView.addFooterView(getLoadingView());
 		aAdapter = new AlphaInAnimationAdapter(bookListAdapter);
-		aAdapter.setAbsListView(listView);
+		aAdapter.setAbsListView(mListView);
 		// 스크롤 리스너 등록
-		listView.setOnScrollListener(this);
-		listView.setAdapter(aAdapter);
+		mListView.setOnScrollListener(this);
+		mListView.setAdapter(aAdapter);
 		return rootView;
 	}
 
@@ -499,9 +499,9 @@ public class TabBookSearchFragment extends
 
 		@Override
 		public void onDestroyActionMode(ActionMode mode) {
-			View v = (View) mode.getTag();
-			if (v != null)
-				v.setSelected(false);
+			// View v = (View) mode.getTag();
+			// if (v != null)
+			// v.setSelected(false);
 			actionMode = null;
 		}
 	};
@@ -565,10 +565,10 @@ public class TabBookSearchFragment extends
 		if (actionMode == null)
 			actionMode = getActivity().startActionMode(mActionModeCallback);
 
-		View prevView = (View) actionMode.getTag();
-		if (prevView != null)
-			prevView.setSelected(false);
-		v.setSelected(true);
+		// View prevView = (View) actionMode.getTag();
+		// if (prevView != null)
+		// prevView.setSelected(false);
+		// v.setSelected(true);
 		actionMode.setTag(v);
 		actionMode.setTitle(((TextView) v).getText());
 		return true;

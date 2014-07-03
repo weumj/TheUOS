@@ -2,8 +2,7 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <style name="Theme.MystyleBW" parent="@android:style/Theme.Holo.Light.DarkActionBar">
-       </style>
-
-   
+        <item name="android:windowActionBarOverlay">false</item>
+    </style>
 
 </resources>

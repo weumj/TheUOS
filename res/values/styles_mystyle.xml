@@ -30,6 +30,7 @@
         <item name="android:actionModeBackground">@drawable/cab_background_top_mystyle</item>
         <item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_mystyle</item>
         <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Mystyle</item>
+        <item name="android:windowActionBarOverlay">false</item>
     </style>
 
     <style name="ActionBar.Solid.Mystyle" parent="@android:style/Widget.Holo.Light.ActionBar.Solid">
