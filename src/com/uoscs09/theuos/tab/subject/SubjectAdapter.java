@@ -16,7 +16,6 @@ public class SubjectAdapter extends AbsArrayAdapter<SubjectItem> {
 
 	public SubjectAdapter(Context context, int layout, List<SubjectItem> list) {
 		super(context, layout, list);
-
 	}
 
 	@Override
@@ -31,7 +30,7 @@ public class SubjectAdapter extends AbsArrayAdapter<SubjectItem> {
 			}
 			v.setText(item.infoArray[i++]);
 		}
-
+		setViewSize(h, TabSearchSubjectFragment.width);
 		return convertView;
 	}
 
@@ -68,11 +67,15 @@ public class SubjectAdapter extends AbsArrayAdapter<SubjectItem> {
 		// public TextView tlsn_limit_count;
 		public Holder(View v) {
 			tvArray = new TextView[11];
-			int[] idArray = { R.id.list_subject_text_sub_dept, R.id.list_subject_text_sub_div,
-					R.id.list_subject_text_no, R.id.list_subject_text_class_div,
-					R.id.list_subject_text_sub_nm, R.id.list_subject_text_yr, R.id.list_subject_text_credit,
-					R.id.list_subject_text_prof_nm, R.id.list_subject_text_class_nm,
-					R.id.list_subject_text_tlsn_cnt, R.id.list_subject_text_tlsn_limit };
+			int[] idArray = { R.id.list_subject_text_sub_dept,
+					R.id.list_subject_text_sub_div, R.id.list_subject_text_no,
+					R.id.list_subject_text_class_div,
+					R.id.list_subject_text_sub_nm, R.id.list_subject_text_yr,
+					R.id.list_subject_text_credit,
+					R.id.list_subject_text_prof_nm,
+					R.id.list_subject_text_class_nm,
+					R.id.list_subject_text_tlsn_cnt,
+					R.id.list_subject_text_tlsn_limit };
 			for (int i = 0; i < 11; i++) {
 				tvArray[i] = (TextView) v.findViewById(idArray[i]);
 			}

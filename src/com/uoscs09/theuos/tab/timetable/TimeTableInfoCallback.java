@@ -8,8 +8,6 @@ import java.util.Hashtable;
 import java.util.Locale;
 import java.util.concurrent.Callable;
 
-import pkg.asyncexcute.AsyncCallback;
-import pkg.asyncexcute.AsyncExecutor;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -19,6 +17,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -27,6 +26,8 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.javacan.asyncexcute.AsyncCallback;
+import com.javacan.asyncexcute.AsyncExecutor;
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.util.AppUtil;
 import com.uoscs09.theuos.common.util.IOUtil;
@@ -97,24 +98,12 @@ public class TimeTableInfoCallback implements View.OnClickListener {
 				return;
 			pos = Integer.valueOf(split[split.length - 2]);
 			day = Integer.valueOf(split[split.length - 1]);
-			View dialogView;
+
 			final Context context = contextRef.get();
 			if (context == null)
 				return;
-
-			switch (AppUtil.theme) {
-			case Black:
-				dialogView = View.inflate(context,
-						R.layout.dialog_timetable_subject_dark, null);
-				break;
-			case BlackAndWhite:
-			case White:
-			default:
-				dialogView = View.inflate(context,
-						R.layout.dialog_timetable_subject, null);
-				break;
-			}
-
+			View dialogView = View.inflate(context,
+					R.layout.dialog_timetable_subject, null);
 			dialogView.findViewById(R.id.dialog_timetable_button_map)
 					.setOnClickListener(this);
 			dialogView.findViewById(R.id.dialog_timetable_button_info)
@@ -214,12 +203,13 @@ public class TimeTableInfoCallback implements View.OnClickListener {
 			long notiTime = getNotificationTime(position, day);
 			am.cancel(pi);
 			am.setRepeating(AlarmManager.RTC_WAKEUP, notiTime, WEEK, pi);
+			Log.d("timetable_alarm", "alaram time : " + notiTime);
 		} else {
 			am.cancel(pi);
 		}
 	}
 
-	protected static void clearAllAlarm(Context context) {
+	public static void clearAllAlarm(Context context) {
 		AlarmManager am = (AlarmManager) context
 				.getSystemService(Context.ALARM_SERVICE);
 		String when = context.getResources().getStringArray(
@@ -227,9 +217,10 @@ public class TimeTableInfoCallback implements View.OnClickListener {
 		Intent intent = new Intent(context.getApplicationContext(),
 				TimeTableNotiReceiver.class).setAction(ACTION_SET_ALARM)
 				.putExtra(INTENT_CODE, 0);
+		int day;
 		for (int pos = 0; pos < 15; pos++) {
-			for (int d = 1; d < 7; d++) {
-				int code = getAlarmCode(pos, d);
+			for (day = 1; day < 7; day++) {
+				int code = getAlarmCode(pos, day);
 				PendingIntent pi = PendingIntent.getBroadcast(context, code,
 						intent.putExtra(INTENT_CODE, code),
 						PendingIntent.FLAG_UPDATE_CURRENT);
@@ -287,25 +278,11 @@ public class TimeTableInfoCallback implements View.OnClickListener {
 			minute += 60;
 		}
 
-		// long addTime = 0;
-		// int currentDay = c.get(Calendar.DAY_OF_WEEK) - 1;
-		// if (currentDay > day) {
-		// addTime = DAY * (currentDay - day);
-		// } else if (currentDay == day) {
-		// int currentHour = c.get(Calendar.HOUR_OF_DAY);
-		// int currentMinute = c.get(Calendar.MINUTE);
-		// if (hour < currentHour) {
-		// addTime = WEEK;
-		// }
-		// } else {
-		// addTime = DAY * (day - currentDay);
-		// }
-		// c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH),
-		// c.get(Calendar.DATE), hour, minute, 0);
-
+		c.setTimeInMillis(System.currentTimeMillis());
 		c.set(Calendar.DAY_OF_WEEK, day + 1);
 		c.set(Calendar.HOUR_OF_DAY, hour);
 		c.set(Calendar.MINUTE, minute);
+		c.set(Calendar.SECOND, 0);
 		Calendar now = Calendar.getInstance();
 		if (c.before(now)) {
 			c.add(Calendar.DATE, 7);

@@ -3,12 +3,10 @@ package com.uoscs09.theuos.tab.restaurant;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import pkg.asyncexcute.AsyncExecutor;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,7 +20,10 @@ import android.widget.TextView;
 
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.impl.AbsDrawableProgressFragment;
+import com.uoscs09.theuos.common.impl.annotaion.AsyncData;
+import com.uoscs09.theuos.common.impl.annotaion.ReleaseWhenDestroy;
 import com.uoscs09.theuos.common.util.AppUtil;
+import com.uoscs09.theuos.common.util.AppUtil.AppTheme;
 import com.uoscs09.theuos.common.util.IOUtil;
 import com.uoscs09.theuos.common.util.OApiUtil;
 import com.uoscs09.theuos.common.util.PrefUtil;
@@ -32,11 +33,15 @@ import com.uoscs09.theuos.http.parse.ParseFactory;
 
 public class TabRestaurantFragment extends
 		AbsDrawableProgressFragment<ArrayList<RestItem>> {
+	@ReleaseWhenDestroy
 	protected ScrollView restScroll;
+	@ReleaseWhenDestroy
 	private TextView restName, restSemester, restVacation, breakfast, lunch,
 			supper, actionTextView;
 	protected int buttonID;
-	private ArrayList<RestItem> restList;
+	@AsyncData
+	private ArrayList<RestItem> mRestList;
+	@ReleaseWhenDestroy
 	private View actionViewLayout;
 
 	private static final String BUTTON = "button";
@@ -54,30 +59,20 @@ public class TabRestaurantFragment extends
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		outState.putInt(BUTTON, buttonID);
-		outState.putParcelableArrayList(REST, restList);
+		outState.putParcelableArrayList(REST, mRestList);
 		super.onSaveInstanceState(outState);
 	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		setHasOptionsMenu(true);
 		Context context = getActivity();
-
+		setLoadingViewEnable(false);
 		if (savedInstanceState != null) {
 			buttonID = savedInstanceState.getInt(BUTTON);
-			restList = savedInstanceState.getParcelableArrayList(REST);
+			mRestList = savedInstanceState.getParcelableArrayList(REST);
 		} else {
 			buttonID = R.id.tab_rest_button_students_hall;
-		}
-
-		if (OApiUtil.getDateTime()
-				- PrefUtil.getInstance(context).get(
-						PrefUtil.KEY_REST_DATE_TIME, 0) < 3) {
-			try {
-				restList = IOUtil.readFromFile(context, IOUtil.FILE_REST);
-			} catch (Exception e) {
-				AppUtil.showErrorToast(context, e, isMenuVisible());
-			}
+			mRestList = new ArrayList<RestItem>();
 		}
 
 		actionViewLayout = View.inflate(context,
@@ -90,30 +85,13 @@ public class TabRestaurantFragment extends
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View rootView;
-		switch (AppUtil.theme) {
-		case Black:
-			rootView = inflater.inflate(R.layout.tab_restaurant_dark,
-					container, false);
-			break;
-		case BlackAndWhite:
-		case White:
-		default:
-			rootView = inflater.inflate(R.layout.tab_restaurant, container,
-					false);
-			break;
+		View rootView = inflater.inflate(R.layout.tab_restaurant, container,
+				false);
+		for (int id : new int[] { R.id.tab_rest_button_students_hall,
+				R.id.tab_rest_button_anekan, R.id.tab_rest_button_natural,
+				R.id.tab_rest_button_main_8th, R.id.tab_rest_button_living }) {
+			rootView.findViewById(id).setOnClickListener(disp);
 		}
-		rootView.findViewById(R.id.tab_rest_button_students_hall)
-				.setOnClickListener(disp);
-		rootView.findViewById(R.id.tab_rest_button_anekan).setOnClickListener(
-				disp);
-		rootView.findViewById(R.id.tab_rest_button_natural).setOnClickListener(
-				disp);
-		rootView.findViewById(R.id.tab_rest_button_main_8th)
-				.setOnClickListener(disp);
-		rootView.findViewById(R.id.tab_rest_button_living).setOnClickListener(
-				disp);
-
 		restScroll = (ScrollView) rootView.findViewById(R.id.tab_rest_scroll);
 		restName = (TextView) rootView.findViewById(R.id.tab_rest_text_name);
 		restSemester = (TextView) rootView
@@ -125,36 +103,26 @@ public class TabRestaurantFragment extends
 		lunch = (TextView) rootView.findViewById(R.id.tab_rest_text_lunch);
 		supper = (TextView) rootView.findViewById(R.id.tab_rest_text_supper);
 
-		performClick(buttonID);
 		return rootView;
 	}
 
 	@Override
 	public void onResume() {
-		if (restList == null)
+		if (mRestList.isEmpty())
 			excute();
+		else
+			getView().findViewById(buttonID).performClick();
 		super.onResume();
 	}
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		switch (AppUtil.theme) {
-		case BlackAndWhite:
+		if(AppUtil.theme == AppTheme.BlackAndWhite)
 			actionTextView.setTextColor(Color.WHITE);
-			inflater.inflate(R.menu.tab_restaurant_dark, menu);
-			break;
-		case Black:
-			inflater.inflate(R.menu.tab_restaurant_dark, menu);
-			break;
-		case White:
-		default:
-			inflater.inflate(R.menu.tab_restaurant, menu);
-			break;
-		}
+		inflater.inflate(R.menu.tab_restaurant, menu);
 		ActionBar actionBar = getActivity().getActionBar();
-		AsyncExecutor<ArrayList<RestItem>> executor = getExecutor();
-		if (executor != null
-				&& executor.getStatus().equals(AsyncTask.Status.RUNNING)) {
+
+		if (getExecutor() != null && isRunning()) {
 			actionTextView.setText(R.string.progress_while_updating);
 		} else {
 			actionTextView.setText(StringUtil.NULL);
@@ -179,6 +147,13 @@ public class TabRestaurantFragment extends
 	private final OnClickListener disp = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
+			View prev = getView().findViewWithTag("selected");
+			if (prev != null) {
+				prev.setSelected(false);
+				prev.setTag(null);
+			}
+			v.setSelected(true);
+			v.setTag("selected");
 			restScroll.scrollTo(0, 0);
 			buttonID = v.getId();
 			performClick(buttonID);
@@ -213,17 +188,19 @@ public class TabRestaurantFragment extends
 	}
 
 	private void setSemesterAndVacationText(int i) {
-		restSemester.setText(timeSemester[i]);
-		restVacation.setText(timeVacation[i]);
+		if (restSemester != null)
+			restSemester.setText(timeSemester[i]);
+		if (restVacation != null)
+			restVacation.setText(timeVacation[i]);
 	}
 
-	public void setBody(String name) {
+	public void setBody(final String name) {
 		restName.setText(name);
 		RestItem item = null;
-		if (restList != null) {
-			int size = restList.size();
+		if (mRestList != null) {
+			int size = mRestList.size();
 			for (int i = 0; i < size; i++) {
-				item = restList.get(i);
+				item = mRestList.get(i);
 				if (name.contains(item.title)) {
 					breakfast.setText(item.breakfast);
 					lunch.setText(item.lunch);
@@ -248,13 +225,28 @@ public class TabRestaurantFragment extends
 
 	@Override
 	public ArrayList<RestItem> call() throws Exception {
-		return getRestListFromWeb(getActivity());
+		Context context = getActivity();
+		if (OApiUtil.getDateTime()
+				- PrefUtil.getInstance(context).get(
+						PrefUtil.KEY_REST_DATE_TIME, 0) < 3) {
+			try {
+				ArrayList<RestItem> list = IOUtil.readFromFile(context,
+						IOUtil.FILE_REST);
+				if (list != null)
+					return list;
+			} catch (Exception e) {
+			}
+		}
+		// web에서 읽어온지 오래되었거나, 파일이 존재하지 않은경우
+		// wer에서 읽어옴
+		return getRestListFromWeb(context);
 	}
 
+	/** web에서 식단표을 읽어온다. */
 	@SuppressWarnings("unchecked")
 	public static ArrayList<RestItem> getRestListFromWeb(Context context)
 			throws IOException {
-		ArrayList<RestItem> list = new ArrayList<RestItem>();
+		ArrayList<RestItem> list;
 		String body = HttpRequest
 				.getBody("http://m.uos.ac.kr/mkor/food/list.do");
 		list = (ArrayList<RestItem>) ParseFactory.create(
@@ -269,13 +261,15 @@ public class TabRestaurantFragment extends
 	@Override
 	public void exceptionOccured(Exception e) {
 		super.exceptionOccured(e);
-		actionTextView.setText(R.string.progress_fail);
+		if (actionTextView != null)
+			actionTextView.setText(R.string.progress_fail);
 	}
 
 	@Override
-	public void onResult(ArrayList<RestItem> result) {
-		restList = result;
-		performClick(R.id.tab_rest_button_students_hall);
+	public void onTransactResult(ArrayList<RestItem> result) {
+		mRestList.clear();
+		mRestList.addAll(result);
+		getView().findViewById(buttonID).performClick();
 		actionTextView.setText(StringUtil.NULL);
 	}
 

@@ -27,16 +27,21 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.impl.BaseFragmentActivity;
+import com.uoscs09.theuos.common.impl.annotaion.ReleaseWhenDestroy;
 import com.uoscs09.theuos.common.util.AppUtil;
 import com.uoscs09.theuos.common.util.AppUtil.AppTheme;
 import com.uoscs09.theuos.common.util.StringUtil;
 
 public class SubMapActivity extends BaseFragmentActivity implements
 		LocationListener {
+	@ReleaseWhenDestroy
 	private GoogleMap googleMap;
 	private boolean isInit = true;
+	@ReleaseWhenDestroy
 	private AlertDialog dialog, locationSelector;
+	@ReleaseWhenDestroy
 	private LocationManager locationManager;
+	@ReleaseWhenDestroy
 	private Location location;
 	private int buildingNo;
 
@@ -248,16 +253,7 @@ public class SubMapActivity extends BaseFragmentActivity implements
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		switch (AppUtil.theme) {
-		case BlackAndWhite:
-		case Black:
-			getMenuInflater().inflate(R.menu.tab_map_googlemap_menu_dark, menu);
-			break;
-		case White:
-		default:
-			getMenuInflater().inflate(R.menu.tab_map_googlemap_menu, menu);
-			break;
-		}
+		getMenuInflater().inflate(R.menu.tab_map_googlemap_menu, menu);
 		return true;
 	}
 
@@ -298,7 +294,6 @@ public class SubMapActivity extends BaseFragmentActivity implements
 	@Override
 	protected void onDestroy() {
 		googleMap.clear();
-		googleMap = null;
 		super.onDestroy();
 	}
 

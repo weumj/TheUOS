@@ -3,6 +3,7 @@ package com.uoscs09.theuos.common.util;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.Closeable;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -13,8 +14,8 @@ import java.util.concurrent.Callable;
 
 import android.content.Context;
 
-import com.uoscs09.theuos.common.impl.AsyncLoader;
-import com.uoscs09.theuos.common.impl.AsyncLoader.OnTaskFinishedListener;
+import com.uoscs09.theuos.common.AsyncLoader;
+import com.uoscs09.theuos.common.AsyncLoader.OnTaskFinishedListener;
 
 public class IOUtil {
 	public static final String FILE_TIMETABLE = "timetable_file_v_semester";
@@ -138,6 +139,22 @@ public class IOUtil {
 				return saveToFile(context, fileName, mode, obj);
 			}
 		}, l);
+	}
+
+	/** 파일 또는 폴더를 삭제한다. 폴더의 경우 재귀적으로 탐색하여 내부의 파일까지 모두 삭제한다. */
+	public static void clearApplicationFile(File dir) {
+		if (dir == null || !dir.isDirectory())
+			return;
+		File[] children = dir.listFiles();
+		try {
+			for (File file : children) {
+				if (file.isDirectory())
+					clearApplicationFile(file);
+				else
+					file.delete();
+			}
+		} catch (Exception e) {
+		}
 	}
 
 }

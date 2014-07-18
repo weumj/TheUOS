@@ -7,11 +7,12 @@ import android.webkit.WebSettings;
 
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.impl.BaseActivity;
-/**WebView가 포함된 액티비티, 액티비티 종료시(onDestroy) webView를 destory함*/
+import com.uoscs09.theuos.common.util.AppUtil;
+
+/** WebView가 포함된 액티비티, 액티비티 종료시(onDestroy) webView를 destory함 */
 public abstract class WebViewActivity extends BaseActivity {
 	protected NonLeakingWebView mWebView;
 	protected WebSettings settings;
-	protected ActionBar actionBar;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -19,9 +20,9 @@ public abstract class WebViewActivity extends BaseActivity {
 		mWebView = new NonLeakingWebView(this);
 		setContentView(mWebView);
 		settings = mWebView.getSettings();
-		actionBar = getActionBar();
-		actionBar.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP
-				| ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE);
+		getActionBar().setDisplayOptions(
+				ActionBar.DISPLAY_HOME_AS_UP | ActionBar.DISPLAY_SHOW_HOME
+						| ActionBar.DISPLAY_SHOW_TITLE);
 	}
 
 	@Override
@@ -36,6 +37,7 @@ public abstract class WebViewActivity extends BaseActivity {
 			settings = null;
 			mWebView.clearCache(true);
 			mWebView.loadUrl("about:blank");
+			AppUtil.unbindDrawables(mWebView);
 			mWebView.destroy();
 			mWebView = null;
 			System.gc();

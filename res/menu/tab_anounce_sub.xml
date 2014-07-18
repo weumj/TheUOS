@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/action_web"
-        android:icon="@drawable/location_web_site"
+        android:icon="?menu_ic_location_web_site"
         android:orderInCategory="103"
         android:showAsAction="ifRoom"
         android:title="@string/action_web">

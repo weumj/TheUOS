@@ -16,6 +16,8 @@ import android.widget.ExpandableListView;
 
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.impl.AbsDrawableProgressFragment;
+import com.uoscs09.theuos.common.impl.annotaion.AsyncData;
+import com.uoscs09.theuos.common.impl.annotaion.ReleaseWhenDestroy;
 import com.uoscs09.theuos.common.util.AppUtil;
 import com.uoscs09.theuos.common.util.SeoulOApiUtil;
 import com.uoscs09.theuos.http.HttpRequest;
@@ -23,12 +25,14 @@ import com.uoscs09.theuos.http.parse.ParseFactory;
 
 public class TabTransportFragment extends
 		AbsDrawableProgressFragment<Map<String, ArrayList<TransportItem>>> {
+	@ReleaseWhenDestroy
 	private BaseExpandableListAdapter adapter;
+	@AsyncData
 	private Map<String, ArrayList<TransportItem>> data;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		setHasOptionsMenu(true);
+		setLoadingViewEnable(false);
 		super.onCreate(savedInstanceState);
 	}
 
@@ -38,7 +42,10 @@ public class TabTransportFragment extends
 		View v = inflater.inflate(R.layout.tab_transport, container, false);
 		ExpandableListView listview = (ExpandableListView) v
 				.findViewById(R.id.tab_transport_listview);
-		data = new Hashtable<String, ArrayList<TransportItem>>();
+
+		if (data == null) {
+			data = new Hashtable<String, ArrayList<TransportItem>>();
+		}
 		adapter = new TransportAdapter(getActivity(),
 				android.R.layout.simple_expandable_list_item_1,
 				R.layout.list_layout_transport, data);
@@ -56,20 +63,7 @@ public class TabTransportFragment extends
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		int res;
-		switch (AppUtil.theme) {
-		case Black:
-			res = R.menu.tab_restaurant_dark;
-			break;
-		case BlackAndWhite:
-			res = R.menu.tab_restaurant_dark;
-			break;
-		case White:
-		default:
-			res = R.menu.tab_restaurant;
-			break;
-		}
-		inflater.inflate(res, menu);
+		inflater.inflate(R.menu.tab_restaurant, menu);
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 
@@ -85,7 +79,7 @@ public class TabTransportFragment extends
 	}
 
 	@Override
-	public void onResult(Map<String, ArrayList<TransportItem>> result) {
+	public void onTransactResult(Map<String, ArrayList<TransportItem>> result) {
 		boolean empty = true;
 		for (ArrayList<TransportItem> item : result.values()) {
 			if (!item.isEmpty()) {

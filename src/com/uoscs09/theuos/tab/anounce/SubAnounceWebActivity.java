@@ -16,7 +16,7 @@ public class SubAnounceWebActivity extends WebViewActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		actionBar.setTitle(R.string.title_section1_announce);
+		getActionBar().setTitle(R.string.title_section1_announce);
 		Intent intent = getIntent();
 		String link = intent.getStringExtra(TabAnounceFragment.LIST_AN);
 		int selection = intent.getIntExtra(TabAnounceFragment.PAGE_NUM, 0);
@@ -47,16 +47,7 @@ public class SubAnounceWebActivity extends WebViewActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		switch (AppUtil.theme) {
-		case BlackAndWhite:
-		case Black:
-			getMenuInflater().inflate(R.menu.tab_anounce_sub_dark, menu);
-			break;
-		case White:
-		default:
-			getMenuInflater().inflate(R.menu.tab_anounce_sub, menu);
-			break;
-		}
+		getMenuInflater().inflate(R.menu.tab_anounce_sub, menu);
 		return true;
 	}
 

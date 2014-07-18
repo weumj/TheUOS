@@ -16,8 +16,8 @@ public class SubSeatWebActivity extends WebViewActivity {
 		super.onCreate(savedInstanceState);
 		SeatItem item = getIntent().getParcelableExtra(
 				TabLibrarySeatFragment.ITEM);
-		actionBar.setTitle(TITLE_);
-		actionBar.setSubtitle(item.roomName);
+		getActionBar().setTitle(TITLE_);
+		getActionBar().setSubtitle(item.roomName);
 		settings.setSupportZoom(true);
 		settings.setBuiltInZoomControls(true);
 		settings.setDisplayZoomControls(false);

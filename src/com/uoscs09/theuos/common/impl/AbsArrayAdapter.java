@@ -12,28 +12,28 @@ public abstract class AbsArrayAdapter<T> extends ArrayAdapter<T> {
 	protected int layout;
 
 	public AbsArrayAdapter(Context context, int layout, List<T> list) {
-		super(context.getApplicationContext(), layout, list);
+		super(context, layout, list);
 		this.layout = layout;
 	}
 
 	public AbsArrayAdapter(Context context, int layout, T[] array) {
-		super(context.getApplicationContext(), layout, array);
+		super(context, layout, array);
 		this.layout = layout;
 	}
 
 	public AbsArrayAdapter(Context context, int layout) {
-		super(context.getApplicationContext(), layout);
+		super(context, layout);
 		this.layout = layout;
 	}
 
 	public AbsArrayAdapter(Context context, int layout, int textViewID) {
-		super(context.getApplicationContext(), layout, textViewID);
+		super(context, layout, textViewID);
 		this.layout = layout;
 	}
 
 	public AbsArrayAdapter(Context context, int layout, int textViewID,
 			List<T> list) {
-		super(context.getApplicationContext(), layout, textViewID, list);
+		super(context, layout, textViewID, list);
 		this.layout = layout;
 	}
 

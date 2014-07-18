@@ -8,13 +8,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.uoscs09.theuos.common.impl.AsyncLoader;
-import com.uoscs09.theuos.common.impl.DBInterface;
+import com.uoscs09.theuos.common.AsyncLoader;
 import com.uoscs09.theuos.common.util.AppUtil;
 import com.uoscs09.theuos.common.util.PrefUtil;
 import com.uoscs09.theuos.common.util.StringUtil;
 
-public class PhoneNumberDB implements DBInterface<PhoneItem>, Runnable {
+public class PhoneNumberDB implements Runnable {
 	private SQLiteDatabase db;
 	private static final String TABLE_Name = "PhoneNumberList";
 	private static final String TABLE_AttrSite = "Site";
@@ -88,7 +87,6 @@ public class PhoneNumberDB implements DBInterface<PhoneItem>, Runnable {
 		}
 	}
 
-	@Override
 	public synchronized int delete(PhoneItem item) {
 		return db.delete(TABLE_Name, TABLE_AttrSite + " = '" + item.siteName
 				+ "'", null);
@@ -103,7 +101,6 @@ public class PhoneNumberDB implements DBInterface<PhoneItem>, Runnable {
 		}
 	}
 
-	@Override
 	public List<PhoneItem> readAll(String query) {
 		return select(StringUtil.NULL);
 	}

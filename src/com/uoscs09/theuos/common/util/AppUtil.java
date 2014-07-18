@@ -1,6 +1,7 @@
 package com.uoscs09.theuos.common.util;
 
-import java.io.File;
+import java.lang.reflect.Array;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,11 +13,15 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Toast;
 
 import com.uoscs09.theuos.PagerFragmentActivity;
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.TabHomeFragment;
+import com.uoscs09.theuos.common.impl.annotaion.ReleaseWhenDestroy;
 import com.uoscs09.theuos.tab.anounce.ServiceForAnounce;
 import com.uoscs09.theuos.tab.anounce.TabAnounceFragment;
 import com.uoscs09.theuos.tab.booksearch.TabBookSearchFragment;
@@ -92,7 +97,7 @@ public class AppUtil {
 		R.string.title_tab_search_empty_room, /* 빈강의실 */
 		R.string.title_tab_search_subject, /* 교과목 */
 		R.string.title_tab_transport, /* 교통정보 */
-		R.string.title_tab_score };
+		R.string.title_tab_score /* 수업평가 */};
 	}
 
 	/** 기본 탭 순서를 불러옴 */
@@ -294,22 +299,12 @@ public class AppUtil {
 		context.startActivity(clearTop);
 	}
 
-	/** 어플리케이션의 파일 또는 폴더를 삭제한다. */
-	public static void clearApplicationFile(File dir) {
-		if (dir == null || !dir.isDirectory())
-			return;
-		File[] children = dir.listFiles();
-		try {
-			for (File file : children) {
-				if (file.isDirectory())
-					clearApplicationFile(file);
-				else
-					file.delete();
-			}
-		} catch (Exception e) {
-		}
+	
+	public static void clearCache(Context context){
+		IOUtil.clearApplicationFile(context.getCacheDir());
+		IOUtil.clearApplicationFile(context.getExternalCacheDir());
 	}
-
+	
 	/**
 	 * @param pageTitleResId
 	 *            얻으려는 page에 알맞는 string 리소스 id
@@ -346,6 +341,35 @@ public class AppUtil {
 		}
 	}
 
+	public static int getPageResByClass(Class<? extends Fragment> fragmentClass) {
+		if (fragmentClass.equals(TabHomeFragment.class))
+			return R.string.title_section0_home;
+		else if (fragmentClass.equals(TabAnounceFragment.class))
+			return R.string.title_section1_announce;
+		else if (fragmentClass.equals(TabRestaurantFragment.class))
+			return R.string.title_section2_rest;
+		else if (fragmentClass.equals(TabBookSearchFragment.class))
+			return R.string.title_section3_book;
+		else if (fragmentClass.equals(TabLibrarySeatFragment.class))
+			return R.string.title_section4_lib;
+		else if (fragmentClass.equals(TabMapFragment.class))
+			return R.string.title_section5_map;
+		else if (fragmentClass.equals(TabPhoneFragment.class))
+			return R.string.title_section6_tel;
+		else if (fragmentClass.equals(TabTimeTableFragment.class))
+			return R.string.title_section7_time;
+		else if (fragmentClass.equals(TabSearchEmptyRoomFragment.class))
+			return R.string.title_tab_search_empty_room;
+		else if (fragmentClass.equals(TabSearchSubjectFragment.class))
+			return R.string.title_tab_search_subject;
+		else if (fragmentClass.equals(ScoreFragment.class))
+			return R.string.title_tab_score;
+		else if (fragmentClass.equals(TabTransportFragment.class))
+			return R.string.title_tab_transport;
+		else
+			return -1;
+	}
+
 	/**
 	 * 인텐트를 통해 인터넷 페이지를 띄운다.
 	 * 
@@ -375,6 +399,14 @@ public class AppUtil {
 		if (context != null && isVisible) {
 			Toast.makeText(context, resId, Toast.LENGTH_SHORT).show();
 		}
+	}
+
+	public static void showToast(Context context, int resId) {
+		showToast(context, resId, true);
+	}
+
+	public static void showToast(Context context, CharSequence msg) {
+		showToast(context, msg, true);
 	}
 
 	public static void showCanceledToast(Context context, boolean isVisible) {
@@ -521,6 +553,61 @@ public class AppUtil {
 			return R.drawable.layout_color_gray_red;
 		default:
 			return -1;
+		}
+	}
+
+	/**
+	 * <b>{@code @ReleaseWhenDestroy}</b> annotation이 붙은 Field를 null로 설정한다.
+	 * 
+	 * @param receiver
+	 *            해제 될 field가 있는 object
+	 */
+	public static void releaseResource(Object receiver) {
+		Field[] fields = receiver.getClass().getDeclaredFields();
+
+		for (Field f : fields) {
+			if (f.getAnnotation(ReleaseWhenDestroy.class) != null) {
+				try {
+					f.setAccessible(true);
+					if (f.getType().isArray()) {
+						Object array = f.get(receiver);
+						int size = Array.getLength(array);
+						for (int i = 0; i < size; i++) {
+							Object o = Array.get(array, i);
+							if (o instanceof View)
+								unbindDrawables((View) o);
+							Array.set(array, i, null);
+						}
+					}
+					Object o = f.get(receiver);
+					if (o instanceof View)
+						unbindDrawables((View) o);
+					f.set(receiver, null);
+					f.setAccessible(false);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	/**
+	 * 주어진 View와 View의 child의 drawable을 제거한다.
+	 * 
+	 * @param view
+	 *            - 해제될 View
+	 */
+	public static void unbindDrawables(View view) {
+		view.destroyDrawingCache();
+		if (view.getBackground() != null) {
+			view.getBackground().setCallback(null);
+		}
+		if (view instanceof ViewGroup) {
+			for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+				unbindDrawables(((ViewGroup) view).getChildAt(i));
+			}
+			if (!(view instanceof AdapterView))
+				((ViewGroup) view).removeAllViews();
 		}
 	}
 }

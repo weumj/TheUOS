@@ -28,8 +28,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:background="@drawable/selector_button"
-        android:drawableLeft="@drawable/ic_action_navigation_back"
+        android:background="?selector_button"
+        android:drawableLeft="?ic_navigation_back"
         android:text="@string/setting_save_route_up"
         android:textSize="14sp" />
 

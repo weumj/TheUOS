@@ -16,9 +16,9 @@ import android.widget.ArrayAdapter;
 
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.DropAndDragListView;
+import com.uoscs09.theuos.common.SimpleTextViewAdapter;
 import com.uoscs09.theuos.common.DropAndDragListView.DragListener;
 import com.uoscs09.theuos.common.DropAndDragListView.DropListener;
-import com.uoscs09.theuos.common.impl.SimpleTextViewAdapter;
 import com.uoscs09.theuos.common.util.AppUtil;
 import com.uoscs09.theuos.common.util.AppUtil.AppTheme;
 
@@ -41,13 +41,6 @@ public class SettingsOrderFragment extends Fragment implements DragListener,
 		orderList = AppUtil.loadPageOrder(activity);
 
 		switch (AppUtil.theme) {
-		case Black:
-			adapter = new SimpleTextViewAdapter.Builder(activity,
-					R.layout.list_layout_order_dark, orderList)
-					.setTheme(AppUtil.theme)
-					.setTextViewId(R.id.setting_order_list_text_tab_title)
-					.create();
-			break;
 		case BlackAndWhite:
 			adapter = new SimpleTextViewAdapter.Builder(activity,
 					R.layout.list_layout_order, orderList)
@@ -55,7 +48,6 @@ public class SettingsOrderFragment extends Fragment implements DragListener,
 					.setTextViewId(R.id.setting_order_list_text_tab_title)
 					.create();
 			break;
-		case White:
 		default:
 			adapter = new SimpleTextViewAdapter.Builder(activity,
 					R.layout.list_layout_order, orderList)
@@ -85,16 +77,7 @@ public class SettingsOrderFragment extends Fragment implements DragListener,
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		switch (AppUtil.theme) {
-		case BlackAndWhite:
-		case Black:
-			inflater.inflate(R.menu.setting_order_dark, menu);
-			break;
-		case White:
-		default:
-			inflater.inflate(R.menu.setting_order, menu);
-			break;
-		}
+		inflater.inflate(R.menu.setting_order, menu);
 	}
 
 	private void saveTabOrderList() {

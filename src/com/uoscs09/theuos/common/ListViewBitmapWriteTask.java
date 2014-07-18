@@ -3,8 +3,6 @@ package com.uoscs09.theuos.common;
 import java.lang.ref.WeakReference;
 import java.util.concurrent.Callable;
 
-import pkg.asyncexcute.AsyncCallback;
-import pkg.asyncexcute.AsyncExecutor;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -12,6 +10,8 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.widget.ListView;
 
+import com.javacan.asyncexcute.AsyncCallback;
+import com.javacan.asyncexcute.AsyncExecutor;
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.util.AppUtil;
 import com.uoscs09.theuos.common.util.GraphicUtil;

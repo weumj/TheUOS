@@ -49,10 +49,13 @@ public class TimetableAdapter extends AbsArrayAdapter<TimeTableItem> {
 
 	@Override
 	public View setView(int position, View convertView, ViewHolder holder) {
-		Context context = getContext();
+		// Context context = getContext();
 
-		int width = context.getResources().getDisplayMetrics().widthPixels
-				/ TabTimeTableFragment.NUM_OF_TIMETABLE_VIEWS;
+		// int width = TabTimeTableFragment.px == 0 ? context.getResources()
+		// .getDisplayMetrics().widthPixels
+		// / TabTimeTableFragment.NUM_OF_TIMETABLE_VIEWS
+		// : TabTimeTableFragment.px;
+		int width = TabTimeTableFragment.px;
 		ViewWrapper w = (ViewWrapper) holder;
 		TimeTableItem item = getItem(position);
 

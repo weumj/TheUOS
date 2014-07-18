@@ -12,7 +12,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
+
 import android.os.Bundle;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -35,6 +35,8 @@ import com.nhaarman.listviewanimations.swinginadapters.AnimationAdapter;
 import com.nhaarman.listviewanimations.swinginadapters.prepared.AlphaInAnimationAdapter;
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.impl.AbsDrawableProgressFragment;
+import com.uoscs09.theuos.common.impl.annotaion.AsyncData;
+import com.uoscs09.theuos.common.impl.annotaion.ReleaseWhenDestroy;
 import com.uoscs09.theuos.common.util.AppUtil;
 import com.uoscs09.theuos.common.util.PrefUtil;
 import com.uoscs09.theuos.common.util.StringUtil;
@@ -54,24 +56,37 @@ public class TabBookSearchFragment extends
 	/** 중앙 도서관에 질의할 매개변수들 */
 	private String query;
 	private String rawQuery;
+	@ReleaseWhenDestroy
 	protected ArrayAdapter<BookItem> bookListAdapter;
-	private ArrayList<BookItem> bookList;
+	@AsyncData
+	private ArrayList<BookItem> mBookList;
+	@ReleaseWhenDestroy
 	private AnimationAdapter aAdapter;
+	@ReleaseWhenDestroy
 	private ListView mListView;
 	/** ListView의 emptyView */
+	@ReleaseWhenDestroy
 	private View emptyView;
 	/** ActionBar에 띄울 View, 도서 검색 option이 선택된 사항을 나타낸다. */
+	@ReleaseWhenDestroy
 	private TextView optionTextView;
+	@ReleaseWhenDestroy
 	private TextView queryTextview;
+	@ReleaseWhenDestroy
 	private View actionView;
 	/** option : catergory */
+	@ReleaseWhenDestroy
 	protected Spinner oi;
 	/** option : sort */
+	@ReleaseWhenDestroy
 	protected Spinner os;
 	/** 옵션을 선택하게 하는 Dialog */
+	@ReleaseWhenDestroy
 	protected AlertDialog optionDialog;
 	/** 검색 메뉴, 검색할 단어가 입력되는 곳 */
+	@ReleaseWhenDestroy
 	protected MenuItem searchMenu;
+	@ReleaseWhenDestroy
 	protected ActionMode actionMode;
 
 	private static final String BUNDLE_LIST = "BookList";
@@ -83,11 +98,10 @@ public class TabBookSearchFragment extends
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		setHasOptionsMenu(true);
-		// setMenuRefresh(false);
 		int oiSelect = 0, osSelect = 0;
+		setMenuRefresh(false);
 		if (savedInstanceState != null) {
-			bookList = savedInstanceState.getParcelableArrayList(BUNDLE_LIST);
+			mBookList = savedInstanceState.getParcelableArrayList(BUNDLE_LIST);
 			oiSelect = savedInstanceState.getInt(OI_SEL);
 			osSelect = savedInstanceState.getInt(OS_SEL);
 			query = savedInstanceState.getString(QUERY);
@@ -95,7 +109,7 @@ public class TabBookSearchFragment extends
 			rawQuery = savedInstanceState
 					.getString("rawQuery", StringUtil.NULL);
 		} else {
-			bookList = new ArrayList<BookItem>();
+			mBookList = new ArrayList<BookItem>();
 			page = 1;
 		}
 		Context context = getActivity();
@@ -105,21 +119,6 @@ public class TabBookSearchFragment extends
 				.findViewById(R.id.tab_book_option);
 		queryTextview.setText(rawQuery);
 
-		int dialogIcon;
-		switch (AppUtil.theme) {
-		case Black:
-			dialogIcon = R.drawable.ic_action_action_help_dark;
-			break;
-		case BlackAndWhite:
-			dialogIcon = R.drawable.ic_action_action_help;
-			queryTextview.setTextColor(Color.WHITE);
-			optionTextView.setTextColor(Color.WHITE);
-			break;
-		case White:
-		default:
-			dialogIcon = R.drawable.ic_action_action_help;
-			break;
-		}
 		View dialogLayout = View.inflate(context,
 				R.layout.dialog_tab_book_spinners, null);
 		oi = (Spinner) dialogLayout
@@ -156,7 +155,7 @@ public class TabBookSearchFragment extends
 								os.setSelection(0);
 								setActionText();
 							}
-						}).setIcon(dialogIcon).create();
+						}).setIcon(R.attr.ic_action_help).create();
 		super.onCreate(savedInstanceState);
 	}
 
@@ -172,7 +171,7 @@ public class TabBookSearchFragment extends
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		outState.putParcelableArrayList(BUNDLE_LIST, bookList);
+		outState.putParcelableArrayList(BUNDLE_LIST, mBookList);
 		outState.putInt(OI_SEL, oi.getSelectedItemPosition());
 		outState.putInt(OS_SEL, os.getSelectedItemPosition());
 		outState.putInt(BUNDLE_PAGE, page);
@@ -184,32 +183,17 @@ public class TabBookSearchFragment extends
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		Context context = getActivity();
-		// 어댑터
-		View rootView;
-		switch (AppUtil.theme) {
-		case Black:
-			bookListAdapter = new BookItemListAdapter(context,
-					R.layout.list_layout_book_dark, bookList, l, this);
-			rootView = inflater.inflate(R.layout.tab_book_search_dark,
-					container, false);
-			break;
-		case BlackAndWhite:
-		case White:
-		default:
-			bookListAdapter = new BookItemListAdapter(context,
-					R.layout.list_layout_book, bookList, l, this);
-			rootView = inflater.inflate(R.layout.tab_book_search, container,
-					false);
-			break;
-		}
+		bookListAdapter = new BookItemListAdapter(getActivity(),
+				R.layout.list_layout_book, mBookList, l, this);
+		View rootView = inflater.inflate(R.layout.tab_book_search, container,
+				false);
 
 		emptyView = rootView.findViewById(R.id.tab_book_empty);
 		emptyView.findViewById(R.id.tab_book_search_empty_info1)
 				.setOnClickListener(this);
 		emptyView.findViewById(R.id.tab_book_search_empty_info2)
 				.setOnClickListener(this);
-		if (bookList.size() != 0) {
+		if (mBookList.size() != 0) {
 			emptyView.setVisibility(View.INVISIBLE);
 			isResultEmpty = false;
 		} else {
@@ -242,17 +226,7 @@ public class TabBookSearchFragment extends
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		switch (AppUtil.theme) {
-		case BlackAndWhite:
-		case Black:
-			inflater.inflate(R.menu.tab_book_search_dark, menu);
-			break;
-		case White:
-		default:
-			inflater.inflate(R.menu.tab_book_search, menu);
-			break;
-		}
-
+		inflater.inflate(R.menu.tab_book_search, menu);
 		searchMenu = menu.findItem(R.id.action_search);
 		SearchView searchView = (SearchView) searchMenu.getActionView();
 		searchView.setOnQueryTextListener(this);
@@ -390,7 +364,7 @@ public class TabBookSearchFragment extends
 	}
 
 	@Override
-	public void onResult(ArrayList<BookItem> result) {
+	public void onTransactResult(ArrayList<BookItem> result) {
 		Context context = getActivity();
 		if (context != null) {
 			if (result.size() == 0) {
@@ -409,8 +383,8 @@ public class TabBookSearchFragment extends
 	}
 
 	@Override
-	public void onPostExcute() {
-		super.onPostExcute();
+	protected void onTransactPostExcute() {
+		super.onTransactPostExcute();
 		isResultEmpty = false;
 	}
 
@@ -456,22 +430,12 @@ public class TabBookSearchFragment extends
 		}
 	}
 
+	@ReleaseWhenDestroy
 	private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
 
 		@Override
 		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-			MenuInflater inflater = mode.getMenuInflater();
-			switch (AppUtil.theme) {
-			case Black:
-			case BlackAndWhite:
-				inflater.inflate(R.menu.tab_book_contextual_dark, menu);
-				break;
-			case White:
-			default:
-				inflater.inflate(R.menu.tab_book_contextual, menu);
-				break;
-			}
-
+			mode.getMenuInflater().inflate(R.menu.tab_book_contextual, menu);
 			return true;
 		}
 
@@ -572,5 +536,11 @@ public class TabBookSearchFragment extends
 		actionMode.setTag(v);
 		actionMode.setTitle(((TextView) v).getText());
 		return true;
+	}
+
+	@Override
+	protected boolean putAsyncData(String key, ArrayList<BookItem> obj) {
+		mBookList.addAll(obj);
+		return super.putAsyncData(key, mBookList);
 	}
 }

@@ -35,9 +35,7 @@ public class SubjectItem implements Parcelable {
 	}
 
 	public SubjectItem(String[] array) {
-		for (int i = 0; i < SIZE; i++) {
-			infoArray[i] = array[i];
-		}
+		System.arraycopy(array, 0, infoArray, 0, SIZE);
 	}
 
 	public SubjectItem(List<String> list) {

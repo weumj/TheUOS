@@ -6,14 +6,13 @@ import android.R.color;
 import android.app.ActionBar;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SlidingPaneLayout;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,14 +21,15 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.uoscs09.theuos.common.BackPressCloseHandler;
+import com.uoscs09.theuos.common.SimpleTextViewAdapter;
 import com.uoscs09.theuos.common.impl.BaseFragmentActivity;
-import com.uoscs09.theuos.common.impl.SimpleTextViewAdapter;
 import com.uoscs09.theuos.common.util.AppUtil;
 import com.uoscs09.theuos.common.util.AppUtil.AppTheme;
 import com.uoscs09.theuos.common.util.PrefUtil;
 import com.uoscs09.theuos.setting.SettingActivity;
 
-/*TODO textColortheme 관련 설정을 코드가 아닌 xml(/value/style_xxx)에서 변경할 수 있도록 할 것*/
+import dev.dworks.libs.actionbartoggle.ActionBarToggle;
+
 /** Main Activity, ViewPager가 존재한다. */
 public class PagerFragmentActivity extends BaseFragmentActivity implements
 		PagerInterface {
@@ -42,15 +42,14 @@ public class PagerFragmentActivity extends BaseFragmentActivity implements
 	/** 화면 순서를 나타내는 리스트 */
 	private ArrayList<Integer> mPageOrderList;
 
-	/** DrawerLayout */
-	protected DrawerLayout drawerLayout;
-	/** Drawer ListView */
+	protected SlidingPaneLayout slidingLayout;
+	/** Left ListView */
 	private ListView mDrawerListView;
-	/** Drawer Toggle */
-	private ActionBarDrawerToggle mDrawerToggle;
+	/** ActionBar Toggle */
+	private ActionBarToggle mDrawerToggle;
 
 	private static final int START_SETTING = 999;
-	private static final String SAVED_TAB_NUM = "saved_tab_num";
+	public static final String SAVED_TAB_NUM = "saved_tab_num";
 
 	private void initValues() {
 		PrefUtil pref = PrefUtil.getInstance(this);
@@ -69,8 +68,8 @@ public class PagerFragmentActivity extends BaseFragmentActivity implements
 		/* 호출 순서를 바꾸지 말 것 */
 		initValues();
 		super.onCreate(savedInstanceState);
-
-		setContentView(R.layout.activity_pager_and_drawer);
+		// setContentView(R.layout.activity_pager_and_drawer);
+		setContentView(R.layout.activity_pager_and_slider);
 		initPager();
 		initDrawer();
 		/* 호출 순서를 바꾸지 말 것 */
@@ -110,10 +109,16 @@ public class PagerFragmentActivity extends BaseFragmentActivity implements
 		}
 		if (!isFromPager) {
 			mViewPager.setCurrentItem(position, true);
-			drawerLayout.closeDrawer(mDrawerListView);
+			slidingLayout.closePane();
+			// drawerLayout.closeDrawer(mDrawerListView);
 		}
 		mDrawerListView.setItemChecked(position, true);
-		getActionBar().setTitle(mPagerAdapter.getPageTitle(position));
+		mDrawerListView.setSelection(position);
+		int res = mPageOrderList.get(position);
+		if (res != -1) {
+			getActionBar().setTitle(res);
+			// getActionBar().setIcon(AppUtil.getPageIcon(res));
+		}
 	}
 
 	private void initDrawer() {
@@ -126,7 +131,10 @@ public class PagerFragmentActivity extends BaseFragmentActivity implements
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setHomeButtonEnabled(true);
 
-		drawerLayout = (DrawerLayout) findViewById(R.id.activity_pager_drawer_layout);
+		slidingLayout = (SlidingPaneLayout) findViewById(R.id.activity_sliding_layout);
+		slidingLayout.setShadowResourceLeft(R.drawable.shadow_);
+		slidingLayout.setSliderFadeColor(Color.TRANSPARENT);
+		slidingLayout.setCoveredFadeColor(Color.DKGRAY);
 		mDrawerListView = (ListView) findViewById(R.id.activity_pager_left_drawer);
 		int drawerLayoutId;
 		switch (AppUtil.theme) {
@@ -144,8 +152,6 @@ public class PagerFragmentActivity extends BaseFragmentActivity implements
 			break;
 		}
 
-		drawerLayout.setDrawerShadow(R.drawable.drawer_shadow,
-				GravityCompat.START);
 		final float density = getResources().getDisplayMetrics().density;
 		int width = Math.round(30 * density);
 		int height = Math.round(28 * density);
@@ -167,20 +173,21 @@ public class PagerFragmentActivity extends BaseFragmentActivity implements
 							navigateItem(pos, false);
 						else if (pos == size) {
 							startSettingActivity();
-							drawerLayout.closeDrawer(mDrawerListView);
+							slidingLayout.closePane();
+							// drawerLayout.closeDrawer(mDrawerListView);
 						} else if (pos == size + 1) {
 							AppUtil.exit(getApplicationContext());
 						}
 					}
 				});
 
-		mDrawerToggle = new ActionBarDrawerToggle(this, /* host Activity */
-		drawerLayout, /* DrawerLayout object */
+		mDrawerToggle = new ActionBarToggle(this, /* host Activity */
+		slidingLayout, /* DrawerLayout object */
 		R.drawable.ic_drawer, /* nav drawer image to replace 'Up' caret */
 		R.string.app_name, /* "open drawer" description for accessibility */
 		R.string.app_name /* "close drawer" description for accessibility */
 		);
-		drawerLayout.setDrawerListener(mDrawerToggle);
+		slidingLayout.setPanelSlideListener(mDrawerToggle);
 	}
 
 	private void initPager() {
@@ -195,19 +202,17 @@ public class PagerFragmentActivity extends BaseFragmentActivity implements
 						navigateItem(position, true);
 					}
 				});
-		if (AppUtil.test) {
-			switch (AppUtil.theme) {
-			case BlackAndWhite:
-				mViewPager.setPageTransformer(true,
-						new ZoomOutPageTransformer());
-				break;
-			case White:
-				mViewPager.setPageTransformer(true, new DepthPageTransformer());
-				break;
-			default:
-				mViewPager.setPageTransformer(true, new PagerTransformer());
-				break;
-			}
+		mViewPager.setOffscreenPageLimit(1);
+		switch (AppUtil.theme) {
+		case BlackAndWhite:
+			mViewPager.setPageTransformer(true, new PagerTransformer(2));
+			break;
+		case White:
+			mViewPager.setPageTransformer(true, new PagerTransformer(1));
+			break;
+		default:
+			mViewPager.setPageTransformer(true, new PagerTransformer(0));
+			break;
 		}
 
 	}
@@ -216,6 +221,7 @@ public class PagerFragmentActivity extends BaseFragmentActivity implements
 	protected void startSettingActivity() {
 		startActivityForResult(new Intent(this, SettingActivity.class),
 				START_SETTING);
+		overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 	}
 
 	/** 현재 페이지의 인덱스를 얻는다. */
@@ -233,6 +239,8 @@ public class PagerFragmentActivity extends BaseFragmentActivity implements
 		super.onPostCreate(savedInstanceState);
 		// Sync the toggle state after onRestoreInstanceState has occurred.
 		mDrawerToggle.syncState();
+		getActionBar().setDisplayHomeAsUpEnabled(
+				mDrawerToggle.isDrawerIndicatorEnabled());
 	}
 
 	@Override
@@ -240,6 +248,8 @@ public class PagerFragmentActivity extends BaseFragmentActivity implements
 		super.onConfigurationChanged(newConfig);
 		// Pass any configuration change to the drawer toggls
 		mDrawerToggle.onConfigurationChanged(newConfig);
+		getActionBar().setDisplayHomeAsUpEnabled(
+				mDrawerToggle.isDrawerIndicatorEnabled());
 	}
 
 	@Override
@@ -255,11 +265,8 @@ public class PagerFragmentActivity extends BaseFragmentActivity implements
 			return true;
 		}
 		switch (item.getItemId()) {
-		case R.id.action_exit:
-			AppUtil.exit(this);
-			return true;
-		case R.id.setting:
-			startSettingActivity();
+		case android.R.id.home:
+			openOrCloseDrawer();
 			return true;
 		default:
 			return false;
@@ -299,8 +306,22 @@ public class PagerFragmentActivity extends BaseFragmentActivity implements
 	}
 
 	@Override
+	public void onDetachedFromWindow() {
+		mBackCloseHandler = null;
+		mDrawerListView = null;
+		mDrawerToggle = null;
+		mPageOrderList = null;
+		mPagerAdapter = null;
+		mViewPager = null;
+		slidingLayout = null;
+		super.onDetachedFromWindow();
+	}
+
+	@Override
 	public void onBackPressed() {
-		if (PrefUtil.getInstance(getApplicationContext()).get(
+		if (slidingLayout.isSlideable() && slidingLayout.isOpen()) {
+			slidingLayout.closePane();
+		} else if (PrefUtil.getInstance(getApplicationContext()).get(
 				PrefUtil.KEY_HOME, true)) {
 			if (getCurrentPageIndex() == 0) {
 				doBack();
@@ -348,14 +369,19 @@ public class PagerFragmentActivity extends BaseFragmentActivity implements
 	}
 
 	private void openOrCloseDrawer() {
-		if (drawerLayout.isDrawerOpen(mDrawerListView))
-			drawerLayout.closeDrawer(mDrawerListView);
-		else
-			drawerLayout.openDrawer(mDrawerListView);
+		// if (drawerLayout.isDrawerOpen(mDrawerListView))
+		// drawerLayout.closeDrawer(mDrawerListView);
+		// else
+		// drawerLayout.openDrawer(mDrawerListView);
+		if (!slidingLayout.isOpen()) {
+			slidingLayout.openPane();
+		} else {
+			slidingLayout.closePane();
+		}
 	}
 
 	@Override
-	public void sendCommand(Type type, Object data) {
+	public Object sendCommand(Type type, Object data) {
 		switch (type) {
 		case PAGE:
 			try {
@@ -363,27 +389,42 @@ public class PagerFragmentActivity extends BaseFragmentActivity implements
 						.toString())), false);
 			} catch (Exception e) {
 			}
-			break;
+			return null;
 		case SETTING:
 			startSettingActivity();
-			break;
+			return null;
+		case INDEX:
+			return getCurrentPageIndex();
 		default:
-			break;
+			return null;
 		}
 	}
 
 	public class PagerTransformer implements ViewPager.PageTransformer {
+		private int i;
+
+		public PagerTransformer(int i) {
+			this.i = i;
+		}
+
 		@Override
 		public void transformPage(View arg0, float arg1) {
-			arg0.setRotationY(arg1 * -30);
+			switch (i) {
+			case 1:
+				transfromZoom(arg0, arg1);
+				break;
+			case 2:
+				transformDepth(arg0, arg1);
+				break;
+			default:
+				arg0.setRotationY(arg1 * -30);
+				break;
+			}
 		}
-	}
 
-	public class ZoomOutPageTransformer implements ViewPager.PageTransformer {
-		private static final float MIN_SCALE = 0.85f;
-		private static final float MIN_ALPHA = 0.5f;
-
-		public void transformPage(View view, float position) {
+		private void transfromZoom(View view, float position) {
+			final float MIN_SCALE = 0.85f;
+			final float MIN_ALPHA = 0.5f;
 			int pageWidth = view.getWidth();
 			int pageHeight = view.getHeight();
 
@@ -416,12 +457,9 @@ public class PagerFragmentActivity extends BaseFragmentActivity implements
 				view.setAlpha(0);
 			}
 		}
-	}
 
-	public class DepthPageTransformer implements ViewPager.PageTransformer {
-		private static final float MIN_SCALE = 0.75f;
-
-		public void transformPage(View view, float position) {
+		private void transformDepth(View view, float position) {
+			final float MIN_SCALE = 0.75f;
 			int pageWidth = view.getWidth();
 
 			if (position < -1) { // [-Infinity,-1)

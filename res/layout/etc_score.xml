@@ -19,7 +19,7 @@
         android:layout_marginTop="100dp"
         android:drawableStart="@drawable/ic_action_action_search"
         android:gravity="center"
-        android:text="버튼을 눌러 검색하세요"
+        android:text="@string/emptyview_button_to_search"
         android:visibility="invisible" />
 
 </RelativeLayout>

@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/score_datePicker"
         android:ems="10"
-        android:hint="과목명을 입력하세요"
+        android:hint="@string/tab_score_input_subject_name"
         android:inputType="text" >
 
         <requestFocus />

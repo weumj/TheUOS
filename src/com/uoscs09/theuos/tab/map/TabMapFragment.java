@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,22 +17,21 @@ import android.webkit.WebSettings;
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.CustomWebViewClient;
 import com.uoscs09.theuos.common.NonLeakingWebView;
+import com.uoscs09.theuos.common.impl.BaseFragment;
+import com.uoscs09.theuos.common.impl.annotaion.ReleaseWhenDestroy;
 import com.uoscs09.theuos.common.util.AppUtil;
 
-public class TabMapFragment extends Fragment implements OnTouchListener {
+@SuppressLint("ClickableViewAccessibility")
+public class TabMapFragment extends BaseFragment implements OnTouchListener {
+	@ReleaseWhenDestroy
 	private NonLeakingWebView mWebView;
 	private final static String URL = "http://m.uos.ac.kr/mkor/html/01_auos/05_location/location.do";
-
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		setHasOptionsMenu(true);
-		super.onCreate(savedInstanceState);
-	}
 
 	@SuppressLint("SetJavaScriptEnabled")
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+		setHasOptionsMenu(true);
 		if (mWebView == null)
 			mWebView = new NonLeakingWebView(getActivity());
 		mWebView.setWebViewClient(new CustomWebViewClient());
@@ -73,24 +71,17 @@ public class TabMapFragment extends Fragment implements OnTouchListener {
 		if (mWebView != null) {
 			mWebView.clearCache(true);
 			mWebView.loadUrl("about:blank");
+			AppUtil.unbindDrawables(mWebView);
 			mWebView.destroy();
 			mWebView = null;
+			System.gc();
 		}
 		super.onDestroyView();
 	}
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		switch (AppUtil.theme) {
-		case BlackAndWhite:
-		case Black:
-			inflater.inflate(R.menu.tab_map_dark, menu);
-			break;
-		case White:
-		default:
-			inflater.inflate(R.menu.tab_map, menu);
-			break;
-		}
+		inflater.inflate(R.menu.tab_map, menu);
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 

@@ -8,7 +8,6 @@
         android:id="@+id/tab_library_seat_list_text_room_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/black"
         android:textSize="20sp" />
 
     <TextView
@@ -16,8 +15,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/tab_library_seat_list_text_room_name"
-        android:text="@string/tab_library_seat_vacancy"
-        android:textColor="@android:color/black" />
+        android:text="@string/tab_library_seat_vacancy" />
 
     <TextView
         android:id="@+id/tab_library_seat_list_text_vacancy_seat"
@@ -36,7 +34,6 @@
         android:layout_marginLeft="5dp"
         android:layout_toRightOf="@id/tab_library_seat_list_text_vacancy_seat"
         android:text="@string/tab_library_seat_occupy"
-        android:textColor="@android:color/black"
         android:textSize="15sp" >
     </TextView>
 

@@ -1,5 +1,6 @@
 package com.uoscs09.theuos.common;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
@@ -14,7 +15,6 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
-
 import com.uoscs09.theuos.R;
 /** drag and drop이 가능한 {@code ListView} <br>
  * stackoverflow에서 검색함*/
@@ -57,7 +57,7 @@ public class DropAndDragListView extends ListView {
                     if (itemnum == AdapterView.INVALID_POSITION) {
                         break;
                     }
-                    View item = (View) getChildAt(itemnum - getFirstVisiblePosition()); // 드래그 아이템
+                    View item = getChildAt(itemnum - getFirstVisiblePosition()); // 드래그 아이템
                     mItemHeightNormal = item.getHeight(); // 아이템의 높이
                     //mItemHeightExpanded = mItemHeightNormal * 2; // 아이템이 드래그 할때 벌어지질 높이
                     mDragPoint = y - item.getTop();
@@ -88,6 +88,7 @@ public class DropAndDragListView extends ListView {
         return super.onInterceptTouchEvent(ev);
     }
 	
+	@SuppressLint("ClickableViewAccessibility")
 	@Override
     public boolean onTouchEvent(MotionEvent ev) {
         if ((mDragListener != null || mDropListener != null) && mDragView != null) {
@@ -238,10 +239,6 @@ public class DropAndDragListView extends ListView {
             v.setVisibility(View.VISIBLE);
         }
     }
-	@Override
-	protected void layoutChildren() {
-		super.layoutChildren();
-	}
     
 	// 드래그 시작
 	private void startDragging(Bitmap bm, int y) {

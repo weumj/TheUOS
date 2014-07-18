@@ -11,7 +11,6 @@
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:layout_toLeftOf="@+id/tab_phone_list_text_site_tel_number"
-        android:textColor="@android:color/black"
         android:textIsSelectable="true"
         android:textSize="15sp" />
 
@@ -22,7 +21,6 @@
         android:layout_centerInParent="true"
         android:layout_toLeftOf="@+id/tab_phone_list_button_site_call"
         android:paddingRight="20dp"
-        android:textColor="@android:color/black"
         android:textIsSelectable="true"
         android:textSize="14sp" />
 
@@ -32,9 +30,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerInParent="true"
-        android:background="@drawable/selector_button"
-        android:contentDescription="@string/tab_phone_call"
         android:layout_marginRight="10dp"
+        android:background="?selector_button"
+        android:contentDescription="@string/tab_phone_call"
         android:src="@android:drawable/ic_menu_call" />
 
 </RelativeLayout>

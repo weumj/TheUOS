@@ -7,13 +7,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 import android.text.Html;
 import android.util.Log;
 
@@ -45,9 +49,9 @@ public class ServiceForAnounce extends Service {
 	protected boolean isServiceEnabled;
 	/** Á¢¼ÓÇÒ URL */
 	protected static final String[] URL_LIST = {
-			"http://www.uos.ac.kr/korNotice/list.do?list_id=FA1&pageIndex=1",
-			"http://www.uos.ac.kr/korNotice/list.do?list_id=FA2&pageIndex=1",
-			"http://scholarship.uos.ac.kr/scholarship.do?process=list&brdbbsseq=1&x=1&y=1&w=3&pageNo=1" };
+			"http://www.uos.ac.kr/korNotice/mSubjectList.do?list_id=FA1&pageIndex=1",
+			"http://www.uos.ac.kr/korNotice/mSubjectList.do?list_id=FA2&pageIndex=1",
+			"http://scholarship.uos.ac.kr/scholarship.do?process=mSubjectList&brdbbsseq=1&x=1&y=1&w=3&pageNo=1" };
 
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -229,15 +233,22 @@ public class ServiceForAnounce extends Service {
 		}
 	};
 
+	@SuppressWarnings("deprecation")
+	@SuppressLint ("Correctness")
 	protected Notification notiBuilder(AnounceItem item, PendingIntent pi,
 			Context context) {
 		long[] PATTERN = { 200, 300, 200 };
-		return new Notification.Builder(context)
+		NotificationCompat.Builder b = new NotificationCompat.Builder(context)
 				.setContentTitle(Html.fromHtml(item.type))
 				.setContentText(Html.fromHtml(item.title))
 				.setContentIntent(StringUtil.NULL.equals(item.date) ? null : pi)
 				.setSmallIcon(R.drawable.ic_launcher)
 				.setTicker(getText(R.string.setting_anounce_noti))
-				.setAutoCancel(true).setVibrate(PATTERN).getNotification();
+				.setAutoCancel(true).setVibrate(PATTERN);
+		if (VERSION.SDK_INT < VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
+			return b.getNotification();
+		} else {
+			return b.build();
+		}
 	}
 }

@@ -28,35 +28,38 @@ import android.widget.SearchView.OnQueryTextListener;
 
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.impl.AbsAsyncFragment;
+import com.uoscs09.theuos.common.impl.annotaion.AsyncData;
+import com.uoscs09.theuos.common.impl.annotaion.ReleaseWhenDestroy;
 import com.uoscs09.theuos.common.util.AppUtil;
 import com.uoscs09.theuos.common.util.StringUtil;
 import com.uoscs09.theuos.http.HttpRequest;
 import com.uoscs09.theuos.http.parse.ParseFactory;
 
-public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>>
-		implements View.OnClickListener {
+public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>> {
+	@ReleaseWhenDestroy
 	protected ArrayAdapter<PhoneItem> phoneAdapter;
+	@ReleaseWhenDestroy
 	protected ProgressDialog progress;
+	@ReleaseWhenDestroy
 	private AlertDialog dialog;
 	protected static final String PHONE_LIST = "phone_list";
-	private List<PhoneItem> phoneNumList;
+	@AsyncData
+	private List<PhoneItem> mPhoneList;
 	private boolean mIsInit;
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		outState.putParcelableArrayList(PHONE_LIST,
-				(ArrayList<? extends Parcelable>) phoneNumList);
+				(ArrayList<? extends Parcelable>) mPhoneList);
 		super.onSaveInstanceState(outState);
 	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		setHasOptionsMenu(true);
 		if (savedInstanceState != null) {
-			phoneNumList = savedInstanceState
-					.getParcelableArrayList(PHONE_LIST);
+			mPhoneList = savedInstanceState.getParcelableArrayList(PHONE_LIST);
 		} else {
-			phoneNumList = new ArrayList<PhoneItem>();
+			mPhoneList = new ArrayList<PhoneItem>();
 		}
 		super.onCreate(savedInstanceState);
 	}
@@ -70,19 +73,8 @@ public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>>
 		dialog = settingAlertDialog();
 
 		// 리스트 어댑터 생성
-		switch (AppUtil.theme) {
-		case Black:
-			phoneAdapter = new PhoneListAdapter(getActivity(),
-					R.layout.list_layout_phone_dark, phoneNumList, this);
-			break;
-		case BlackAndWhite:
-		case White:
-		default:
-			phoneAdapter = new PhoneListAdapter(getActivity(),
-					R.layout.list_layout_phone, phoneNumList, this);
-			break;
-		}
-
+		phoneAdapter = new PhoneListAdapter(getActivity(),
+				R.layout.list_layout_phone, mPhoneList, mOnClickListener);
 		// 리스트 뷰
 		ListView phoneListView = (ListView) rootView
 				.findViewById(R.id.tab_phone_list_phone);
@@ -111,16 +103,7 @@ public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>>
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		switch (AppUtil.theme) {
-		case BlackAndWhite:
-		case Black:
-			inflater.inflate(R.menu.tab_phone_dark, menu);
-			break;
-		case White:
-		default:
-			inflater.inflate(R.menu.tab_phone, menu);
-			break;
-		}
+		inflater.inflate(R.menu.tab_phone, menu);
 		MenuItem searchMenu = menu.findItem(R.id.action_search);
 
 		SearchView searchView = (SearchView) searchMenu.getActionView();
@@ -147,7 +130,7 @@ public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>>
 	@Override
 	public void onResume() {
 		super.onResume();
-		if (phoneNumList.isEmpty()) {
+		if (mPhoneList.isEmpty()) {
 			mIsInit = true;
 			excute();
 		}
@@ -235,13 +218,14 @@ public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>>
 	}
 
 	@Override
-	public void onPostExcute() {
-		super.onPostExcute();
-		progress.dismiss();
+	protected void onTransactPostExcute() {
+		// super.onTransactPostExcute();
+		if (progress != null)
+			progress.dismiss();
 	}
 
 	@Override
-	public void onResult(ArrayList<PhoneItem> result) {
+	public void onTransactResult(ArrayList<PhoneItem> result) {
 		phoneAdapter.clear();
 		phoneAdapter.addAll(result);
 		phoneAdapter.notifyDataSetChanged();
@@ -305,34 +289,40 @@ public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>>
 		return urlList;
 	}
 
-	@Override
-	public void onClick(View v) {
-		PhoneItem item = (PhoneItem) v.getTag();
-		final Context context = getActivity();
-		final String phoneNum = parseTelNumber(item.sitePhoneNumber);
-		new AlertDialog.Builder(context)
-				.setTitle(
-						item.siteName
-								+ context
-										.getString(R.string.tab_phone_confirm_call))
-				.setMessage(phoneNum).setCancelable(true)
-				.setPositiveButton(R.string.confirm, new OnClickListener() {
+	private View.OnClickListener mOnClickListener = new View.OnClickListener() {
 
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						Intent callIntent = new Intent(Intent.ACTION_DIAL, Uri
-								.parse("tel:" + phoneNum));
-						context.startActivity(callIntent);
-						AppUtil.overridePendingTransition((Activity) context, 1);
-					}
-				}).setNegativeButton(R.string.cancel, null).create().show();
-	}
+		@Override
+		public void onClick(View v) {
+			PhoneItem item = (PhoneItem) v.getTag();
+			final Context context = getActivity();
+			final String phoneNum = parseTelNumber(item.sitePhoneNumber);
+			new AlertDialog.Builder(context)
+					.setTitle(
+							item.siteName
+									+ context
+											.getString(R.string.tab_phone_confirm_call))
+					.setMessage(phoneNum).setCancelable(true)
+					.setPositiveButton(R.string.confirm, new OnClickListener() {
 
-	private String parseTelNumber(String telNumber) {
-		if (telNumber.startsWith("도서관")) {
-			return telNumber.split(StringUtil.SPACE)[2];
-		} else {
-			return telNumber.split("~")[0].split(",")[0];
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							Intent callIntent = new Intent(Intent.ACTION_DIAL,
+									Uri.parse("tel:" + phoneNum));
+							context.startActivity(callIntent);
+							AppUtil.overridePendingTransition(
+									(Activity) context, 1);
+						}
+					}).setNegativeButton(R.string.cancel, null).create().show();
+
 		}
-	}
+
+		private String parseTelNumber(String telNumber) {
+			if (telNumber.startsWith("도서관")) {
+				return telNumber.split(StringUtil.SPACE)[2];
+			} else {
+				return telNumber.split("~")[0].split(",")[0];
+			}
+		}
+	};
+
 }

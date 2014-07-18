@@ -5,8 +5,6 @@ import java.util.concurrent.Callable;
 
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.Source;
-import pkg.asyncexcute.AsyncCallback;
-import pkg.asyncexcute.AsyncExecutor;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -24,7 +22,10 @@ import android.preference.PreferenceScreen;
 import android.util.TypedValue;
 import android.widget.TextView;
 
+import com.javacan.asyncexcute.AsyncCallback;
+import com.javacan.asyncexcute.AsyncExecutor;
 import com.uoscs09.theuos.R;
+import com.uoscs09.theuos.common.AsyncLoader;
 import com.uoscs09.theuos.common.util.AppUtil;
 import com.uoscs09.theuos.common.util.AppUtil.AppTheme;
 import com.uoscs09.theuos.common.util.PrefUtil;
@@ -192,14 +193,13 @@ public class SettingsFragment extends PreferenceFragment implements
 
 	/** 어플리케이션의 모든 캐쉬를 삭제한다. */
 	private void deleteCache(Context context) {
-		try {
-			AppUtil.clearApplicationFile(context.getCacheDir());
-			AppUtil.clearApplicationFile(context.getExternalCacheDir());
-			AppUtil.showToast(context, R.string.excute_delete,
-					getUserVisibleHint());
-		} catch (Exception e) {
-			AppUtil.showErrorToast(context, e, true);
-		}
+		AsyncLoader.excute(new Runnable() {
+			@Override
+			public void run() {
+				AppUtil.clearCache(getActivity());
+				AppUtil.showToast(getActivity(), R.string.excute_delete);
+			}
+		});
 	}
 
 	@Override

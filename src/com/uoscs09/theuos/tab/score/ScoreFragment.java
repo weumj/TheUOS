@@ -20,6 +20,7 @@ import android.widget.NumberPicker;
 
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.impl.AbsAsyncFragment;
+import com.uoscs09.theuos.common.impl.annotaion.ReleaseWhenDestroy;
 import com.uoscs09.theuos.common.util.AppUtil;
 import com.uoscs09.theuos.common.util.OApiUtil;
 import com.uoscs09.theuos.common.util.StringUtil;
@@ -28,18 +29,22 @@ import com.uoscs09.theuos.http.parse.ParseFactory;
 
 public class ScoreFragment extends AbsAsyncFragment<ArrayList<ScoreItem>>
 		implements DialogInterface.OnClickListener {
+	@ReleaseWhenDestroy
 	protected AlertDialog alertDialog;
+	@ReleaseWhenDestroy
 	private ProgressDialog prog;
+	@ReleaseWhenDestroy
 	private NumberPicker datePicker, termPicker;
+	@ReleaseWhenDestroy
 	private EditText edit;
 	private Hashtable<String, String> table;
+	@ReleaseWhenDestroy
 	private ScoreAdapter adapter;
+	@ReleaseWhenDestroy
 	private ExpandableListView listView;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setHasOptionsMenu(true);
 		Context context = getActivity();
 		View dialogView = View.inflate(context, R.layout.dialog_score, null);
 		datePicker = (NumberPicker) dialogView
@@ -61,12 +66,24 @@ public class ScoreFragment extends AbsAsyncFragment<ArrayList<ScoreItem>>
 		prog = AppUtil.getProgressDialog(context, false, null);
 		adapter = new ScoreAdapter(context, new ArrayList<ScoreItem>());
 		initTable();
+		super.onCreate(savedInstanceState);
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View v = inflater.inflate(R.layout.etc_score, container, false);
+		View v;
+		switch (AppUtil.theme) {
+		case Black:
+			v = inflater.inflate(R.layout.etc_score_dark, container, false);
+			break;
+		case BlackAndWhite:
+		case White:
+		default:
+			v = inflater.inflate(R.layout.etc_score, container, false);
+			break;
+		}
+
 		listView = (ExpandableListView) v
 				.findViewById(R.id.expandableListView1);
 		listView.setAdapter(adapter);
@@ -84,16 +101,7 @@ public class ScoreFragment extends AbsAsyncFragment<ArrayList<ScoreItem>>
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		switch (AppUtil.theme) {
-		case BlackAndWhite:
-		case Black:
-			inflater.inflate(R.menu.etc_score_dark, menu);
-			break;
-		case White:
-		default:
-			inflater.inflate(R.menu.etc_score, menu);
-			break;
-		}
+		inflater.inflate(R.menu.etc_score, menu);
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 
@@ -114,7 +122,7 @@ public class ScoreFragment extends AbsAsyncFragment<ArrayList<ScoreItem>>
 	}
 
 	@Override
-	public void onResult(ArrayList<ScoreItem> result) {
+	public void onTransactResult(ArrayList<ScoreItem> result) {
 		adapter = new ScoreAdapter(getActivity().getApplicationContext(),
 				result);
 		listView.setAdapter(adapter);
@@ -169,8 +177,8 @@ public class ScoreFragment extends AbsAsyncFragment<ArrayList<ScoreItem>>
 	}
 
 	@Override
-	public void onPostExcute() {
-		super.onPostExcute();
+	protected void onTransactPostExcute() {
+		// super.onTransactPostExcute();
 		prog.dismiss();
 	}
 }

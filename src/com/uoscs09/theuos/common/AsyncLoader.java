@@ -1,31 +1,13 @@
-package com.uoscs09.theuos.common.impl;
+package com.uoscs09.theuos.common;
 
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Executor;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import pkg.asyncexcute.AsyncCallback;
-import pkg.asyncexcute.AsyncExecutor;
+import com.javacan.asyncexcute.AsyncCallback;
+import com.javacan.asyncexcute.AsyncExecutor;
+
 import android.os.AsyncTask;
 
 public class AsyncLoader<Data> {
-	private static final ThreadFactory sThreadFactory = new ThreadFactory() {
-		private final AtomicInteger mCount = new AtomicInteger(1);
-
-		public Thread newThread(Runnable r) {
-			return new Thread(r, "AsyncLoader #" + mCount.getAndIncrement());
-		}
-	};
-	private static final BlockingQueue<Runnable> sPoolWorkQueue = new LinkedBlockingQueue<Runnable>(
-			10);
-	public static final Executor THREAD_POOL_EXECUTOR = new ThreadPoolExecutor(
-			4, 128, 1, TimeUnit.SECONDS, sPoolWorkQueue, sThreadFactory);
-
 	/**
 	 * 비동기 작업을 실행한다.
 	 * 
@@ -35,7 +17,7 @@ public class AsyncLoader<Data> {
 	 *            작업 종료후 호출될 callback
 	 */
 	public void excute(Callable<Data> task, OnTaskFinishedListener l) {
-		getTasker(task, l).executeOnExecutor(THREAD_POOL_EXECUTOR);
+		getTasker(task, l).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 
 	/**
@@ -48,7 +30,7 @@ public class AsyncLoader<Data> {
 	 */
 	public void excute(Callable<Data> task, AsyncCallback<Data> callback) {
 		new AsyncExecutor<Data>().setCallable(task).setCallback(callback)
-				.executeOnExecutor(THREAD_POOL_EXECUTOR);
+				.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 
 	/**
@@ -58,7 +40,7 @@ public class AsyncLoader<Data> {
 	 *            비동기 작업이 실시될 {@link Runnable}
 	 */
 	public static void excute(Runnable r) {
-		THREAD_POOL_EXECUTOR.execute(r);
+		AsyncTask.THREAD_POOL_EXECUTOR.execute(r);
 	}
 
 	private AsyncTask<Void, Void, Data> getTasker(Callable<Data> task,

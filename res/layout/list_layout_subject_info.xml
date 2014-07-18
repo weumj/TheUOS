@@ -7,8 +7,7 @@
         android:id="@+id/list_subject_info_text_title"
         android:layout_width="50dip"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textColor="@android:color/black" />
+        android:gravity="center" />
 
     <LinearLayout
         android:layout_width="1dp"
@@ -20,7 +19,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="3dp"
-        android:textColor="@android:color/black"
         android:textIsSelectable="true" />
 
 </LinearLayout>

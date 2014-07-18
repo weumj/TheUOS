@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="tab_home_gridview_vertical_margin">0dp</dimen>
+    <dimen name="tab_home_gridview_horizontal_margin">0dp</dimen>
+
+</resources>

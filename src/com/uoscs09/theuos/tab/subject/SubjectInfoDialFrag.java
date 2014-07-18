@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.concurrent.Callable;
 
-import pkg.asyncexcute.AsyncCallback;
-import pkg.asyncexcute.AsyncExecutor;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -22,12 +20,13 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.javacan.asyncexcute.AsyncCallback;
+import com.javacan.asyncexcute.AsyncExecutor;
 import com.nhaarman.listviewanimations.swinginadapters.AnimationAdapter;
 import com.nhaarman.listviewanimations.swinginadapters.prepared.AlphaInAnimationAdapter;
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.ListViewBitmapWriteTask;
 import com.uoscs09.theuos.common.util.AppUtil;
-import com.uoscs09.theuos.common.util.AppUtil.AppTheme;
 import com.uoscs09.theuos.common.util.OApiUtil;
 import com.uoscs09.theuos.common.util.OApiUtil.Term;
 import com.uoscs09.theuos.common.util.PrefUtil;
@@ -59,7 +58,7 @@ public class SubjectInfoDialFrag extends DialogFragment implements
 	/** ListView Adapter */
 	private ArrayAdapter<String> adapter;
 	private AnimationAdapter aAdapter;
-	
+
 	private final static String URL = "http://wise.uos.ac.kr/uosdoc/api.ApiApiCoursePlanView.oapi";
 	private final static String INFO = "info";
 	private final static String TITLE = "¼ö¾÷°èÈ¹¼­";
@@ -90,21 +89,9 @@ public class SubjectInfoDialFrag extends DialogFragment implements
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		initTable();
-		View v;
+		View v = inflater.inflate(R.layout.dialog_subject_info, container,
+				false);
 		Context context = getActivity();
-		switch (AppUtil.theme) {
-		case Black:
-			v = inflater.inflate(R.layout.dialog_subject_info_dark, container,
-					false);
-			break;
-		case BlackAndWhite:
-		case White:
-		default:
-			v = inflater
-					.inflate(R.layout.dialog_subject_info, container, false);
-			break;
-		}
-
 		listView = (ListView) v
 				.findViewById(R.id.dialog_etc_subject_info_list_view);
 
@@ -124,10 +111,8 @@ public class SubjectInfoDialFrag extends DialogFragment implements
 						dismiss();
 					}
 				});
-		adapter = new SubjectInfoAdapter(
-				context,
-				AppUtil.theme == AppTheme.Black ? R.layout.list_layout_subject_info_dark
-						: R.layout.list_layout_subject_info, infoList);
+		adapter = new SubjectInfoAdapter(context,
+				R.layout.list_layout_subject_info, infoList);
 		aAdapter = new AlphaInAnimationAdapter(adapter);
 		aAdapter.setAbsListView(listView);
 		listView.setAdapter(aAdapter);

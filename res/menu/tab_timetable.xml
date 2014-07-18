@@ -3,21 +3,21 @@
 
     <item
         android:id="@+id/action_wise"
-        android:icon="@drawable/ic_action_content_import_export"
+        android:icon="?menu_ic_content_import_export"
         android:orderInCategory="101"
-        android:showAsAction="always|withText"
+        android:showAsAction="always"
         android:title="@string/tab_timetable_wise_login_title">
     </item>
     <item
         android:id="@+id/action_delete"
-        android:icon="@drawable/ic_action_content_discard"
+        android:icon="?menu_ic_content_discard"
         android:orderInCategory="102"
         android:showAsAction="always|withText"
         android:title="@string/action_delete">
     </item>
     <item
         android:id="@+id/action_save"
-        android:icon="@drawable/ic_action_content_save"
+        android:icon="?menu_ic_content_save"
         android:orderInCategory="103"
         android:showAsAction="always|withText"
         android:title="@string/action_save">

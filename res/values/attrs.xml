@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="ThemeDrawable"></declare-styleable>
+    <declare-styleable name="ThemeDrawable.ActionIcon">
+        <attr name="ic_action_about" format="reference|color|" />
+        <attr name="ic_action_help" format="reference|color" />
+        <attr name="ic_action_search" format="reference|color" />
+        <attr name="ic_action_settings" format="reference|color" />
+        <attr name="ic_av_replay" format="reference|color" />
+        <attr name="ic_collections_collection" format="reference|color" />
+        <attr name="ic_collections_view_as_list" format="reference|color" />
+        <attr name="ic_content_copy" format="reference|color" />
+        <attr name="ic_content_discard" format="reference|color" />
+        <attr name="ic_content_import_export" format="reference|color" />
+        <attr name="ic_content_paste" format="reference|color" />
+        <attr name="ic_content_remove" format="reference|color" />
+        <attr name="ic_content_save" format="reference|color" />
+        <attr name="ic_content_undo" format="reference|color" />
+        <attr name="ic_device_access_alarms" format="reference|color" />
+        <attr name="ic_device_access_call" format="reference|color" />
+        <attr name="ic_device_access_storage" format="reference|color" />
+        <attr name="ic_location_directions" format="reference|color" />
+        <attr name="ic_location_place" format="reference|color" />
+        <attr name="ic_location_web_site" format="reference|color" />
+        <attr name="ic_navigation_accept" format="reference|color" />
+        <attr name="ic_navigation_back" format="reference|color" />
+        <attr name="ic_navigation_cancel" format="reference|color" />
+        <attr name="ic_navigation_collapse" format="reference|color" />
+        <attr name="ic_navigation_expand" format="reference|color" />
+        <attr name="ic_navigation_forward" format="reference|color" />
+        <attr name="ic_navigation_refresh" format="reference|color" />
+        <attr name="ic_book" format="reference|color" />
+        <attr name="ic_chair" format="reference|color" />
+    </declare-styleable>
+    <declare-styleable name="ThemeDrawable.Selector">
+        <attr name="selector_list" format="reference|color" />
+        <attr name="selector_list_shadow" format="reference|color" />
+        <attr name="selector_list_circle" format="reference|color" />
+        <attr name="selector_list_rec" format="reference|color" />
+        <attr name="selector_button" format="reference|color" />
+        <attr name="selector_text" format="reference|color" />
+    </declare-styleable>
+    <declare-styleable name="ThemeDrawable.ActionIcon.ForMenu">
+        <attr name="menu_ic_action_about" format="reference|color|" />
+        <attr name="menu_ic_action_help" format="reference|color" />
+        <attr name="menu_ic_action_search" format="reference|color" />
+        <attr name="menu_ic_action_settings" format="reference|color" />
+        <attr name="menu_ic_av_replay" format="reference|color" />
+        <attr name="menu_ic_collections_collection" format="reference|color" />
+        <attr name="menu_ic_collections_view_as_list" format="reference|color" />
+        <attr name="menu_ic_content_copy" format="reference|color" />
+        <attr name="menu_ic_content_discard" format="reference|color" />
+        <attr name="menu_ic_content_import_export" format="reference|color" />
+        <attr name="menu_ic_content_paste" format="reference|color" />
+        <attr name="menu_ic_content_remove" format="reference|color" />
+        <attr name="menu_ic_content_save" format="reference|color" />
+        <attr name="menu_ic_content_undo" format="reference|color" />
+        <attr name="menu_ic_device_access_alarms" format="reference|color" />
+        <attr name="menu_ic_device_access_call" format="reference|color" />
+        <attr name="menu_ic_device_access_storage" format="reference|color" />
+        <attr name="menu_ic_location_directions" format="reference|color" />
+        <attr name="menu_ic_location_place" format="reference|color" />
+        <attr name="menu_ic_location_web_site" format="reference|color" />
+        <attr name="menu_ic_navigation_accept" format="reference|color" />
+        <attr name="menu_ic_navigation_back" format="reference|color" />
+        <attr name="menu_ic_navigation_cancel" format="reference|color" />
+        <attr name="menu_ic_navigation_collapse" format="reference|color" />
+        <attr name="menu_ic_navigation_expand" format="reference|color" />
+        <attr name="menu_ic_navigation_forward" format="reference|color" />
+        <attr name="menu_ic_navigation_refresh" format="reference|color" />
+        <attr name="menu_ic_book" format="reference|color" />
+        <attr name="menu_ic_chair" format="reference|color" />
+    </declare-styleable>
+    <declare-styleable name="ThemeDrawable.Color">
+        <attr name="color_rosy_brown" format="reference|color"></attr>
+        <attr name="color_text" format="reference|color"></attr>
+        <attr name="color_action_text" format="reference|color"></attr>
+    </declare-styleable>
+
+</resources>

@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/selector_list_shadow"
+    android:layout_marginLeft="5dp"
+    android:layout_marginRight="5dp"
+    android:background="?selector_list_shadow"
     android:fadingEdgeLength="3dp"
     android:paddingBottom="2dp"
     android:paddingLeft="5dp"
@@ -15,7 +18,8 @@
         android:layout_height="fill_parent"
         android:layout_alignParentLeft="true"
         android:layout_marginRight="5dp"
-        android:background="@drawable/selector_button"
+        android:background="?selector_button"
+        android:contentDescription="@string/tab_book_book_opt"
         android:padding="2dp" />
 
     <TextView
@@ -23,8 +27,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/tab_booksearch_list_image_book_image"
-        android:background="@drawable/selector_text"
-        android:textColor="@android:color/black"
+        android:background="?selector_text"
         android:textColorHighlight="@android:color/holo_blue_light"
         android:textSize="16sp"
         android:textStyle="bold" />
@@ -33,10 +36,9 @@
         android:id="@+id/tab_booksearch_list_text_book_writer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/tab_booksearch_list_text_book_title"
-        android:layout_below="@+id/tab_booksearch_list_text_book_title"
-        android:background="@drawable/selector_text"
-        android:textColor="@android:color/black"
+        android:layout_alignLeft="@id/tab_booksearch_list_text_book_title"
+        android:layout_below="@id/tab_booksearch_list_text_book_title"
+        android:background="?selector_text"
         android:textColorHighlight="@android:color/holo_blue_light"
         android:textSize="14sp" />
 
@@ -44,10 +46,9 @@
         android:id="@+id/tab_booksearch_list_text_book_publish_and_year"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/tab_booksearch_list_text_book_title"
-        android:layout_below="@+id/tab_booksearch_list_text_book_writer"
-        android:background="@drawable/selector_text"
-        android:textColor="@android:color/black"
+        android:layout_alignLeft="@id/tab_booksearch_list_text_book_title"
+        android:layout_below="@id/tab_booksearch_list_text_book_writer"
+        android:background="?selector_text"
         android:textColorHighlight="@android:color/holo_blue_light"
         android:textSize="12sp" />
 
@@ -55,17 +56,16 @@
         android:id="@+id/tab_booksearch_list_text_book_site"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/tab_booksearch_list_text_book_title"
-        android:layout_below="@+id/tab_booksearch_list_text_book_publish_and_year"
-        android:textColor="@android:color/black" />
+        android:layout_alignLeft="@id/tab_booksearch_list_text_book_title"
+        android:layout_below="@id/tab_booksearch_list_text_book_publish_and_year" />
 
     <TextView
         android:id="@+id/tab_booksearch_list_text_book_state"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tab_booksearch_list_text_book_publish_and_year"
+        android:layout_below="@id/tab_booksearch_list_text_book_publish_and_year"
         android:layout_marginLeft="10dp"
-        android:layout_toRightOf="@+id/tab_booksearch_list_text_book_site"
+        android:layout_toRightOf="@id/tab_booksearch_list_text_book_site"
         android:gravity="center_vertical"
         android:paddingBottom="10dp"
         android:textSize="13sp" />

@@ -3,21 +3,21 @@
 
     <item
         android:id="@+id/action_goto_default"
-        android:icon="@drawable/ic_action_av_replay"
+        android:icon="?menu_ic_av_replay"
         android:orderInCategory="101"
-        android:showAsAction="always|withText"
+        android:showAsAction="ifRoom|withText"
         android:title="@string/setting_order_goto_default">
     </item>
     <item
         android:id="@+id/action_cancel"
-        android:icon="@drawable/ic_action_content_remove"
+        android:icon="?menu_ic_content_remove"
         android:orderInCategory="102"
         android:showAsAction="always|withText"
         android:title="@string/cancel">
     </item>
     <item
         android:id="@+id/action_apply"
-        android:icon="@drawable/ic_action_navigation_accept"
+        android:icon="?menu_ic_navigation_accept"
         android:orderInCategory="108"
         android:showAsAction="always|withText"
         android:title="@string/apply">

@@ -54,20 +54,10 @@ public class SettingsFileSelectDialogFragment extends DialogFragment {
 
 	/** Dialog의 View를 생성한다. */
 	private View createView() {
-		int layout, listLayout;
-		switch (AppUtil.theme) {
-		case Black:
-			layout = R.layout.dialog_setting_save_route_dark;
-			listLayout = R.layout.list_layout_save_route_dark;
-			break;
-		default:
-			layout = R.layout.dialog_setting_save_route;
-			listLayout = R.layout.list_layout_save_route;
-			break;
-		}
-
-		adapter = new FileListAdapter(getActivity(), listLayout, list);
-		View rootView = View.inflate(getActivity(), layout, null);
+		adapter = new FileListAdapter(getActivity(),
+				R.layout.list_layout_save_route, list);
+		View rootView = View.inflate(getActivity(),
+				R.layout.dialog_setting_save_route, null);
 		rootView.findViewById(R.id.dialog_setting_save_route_button_up)
 				.setOnClickListener(new View.OnClickListener() {
 					@Override

@@ -127,8 +127,7 @@ public class SettingsAnounceNotiFragment extends PreferenceFragment implements
 
 							if (pre_h == hourOfDay && pre_m == minute) {
 								AppUtil.showToast(activity,
-										R.string.setting_noti_apply_not_commit,
-										getUserVisibleHint());
+										R.string.setting_noti_apply_not_commit);
 								return;
 							}
 							pref.put(StringUtil.STR_HOUR, hourOfDay);
@@ -152,8 +151,7 @@ public class SettingsAnounceNotiFragment extends PreferenceFragment implements
 									.append("ºÐ\" À¸·Î ")
 									.append(getText(R.string.setting_confirm));
 
-							AppUtil.showToast(activity, sb.toString(),
-									getUserVisibleHint());
+							AppUtil.showToast(activity, sb.toString());
 
 							onSharedPreferenceChanged(getPreferenceScreen()
 									.getSharedPreferences(),

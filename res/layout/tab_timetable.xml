@@ -16,7 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="4"
-            android:background="@color/rosy_brown"
+            android:background="?color_rosy_brown"
             android:gravity="center"
             android:paddingLeft="2dp"
             android:text="@string/tab_timtable_period"
@@ -32,7 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="4"
-            android:background="@color/rosy_brown"
+            android:background="?color_rosy_brown"
             android:gravity="center"
             android:text="@string/tab_timetable_mon"
             android:textColor="@android:color/white" />
@@ -47,7 +47,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="4"
-            android:background="@color/rosy_brown"
+            android:background="?color_rosy_brown"
             android:gravity="center"
             android:text="@string/tab_timetable_tue"
             android:textColor="@android:color/white" />
@@ -62,7 +62,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="4"
-            android:background="@color/rosy_brown"
+            android:background="?color_rosy_brown"
             android:gravity="center"
             android:text="@string/tab_timetable_wed"
             android:textColor="@android:color/white" />
@@ -77,7 +77,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="4"
-            android:background="@color/rosy_brown"
+            android:background="?color_rosy_brown"
             android:gravity="center"
             android:text="@string/tab_timetable_thr"
             android:textColor="@android:color/white" />
@@ -92,7 +92,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="4"
-            android:background="@color/rosy_brown"
+            android:background="?color_rosy_brown"
             android:gravity="center"
             android:text="@string/tab_timetable_fri"
             android:textColor="@android:color/white" />
@@ -107,7 +107,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="4"
-            android:background="@color/rosy_brown"
+            android:background="?color_rosy_brown"
             android:gravity="center"
             android:text="@string/tab_timetable_sat"
             android:textColor="@android:color/white" />
@@ -130,7 +130,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="@drawable/selector_button"
+        android:background="?selector_button"
+        android:gravity="center"
         android:padding="2dp"
         android:visibility="invisible" >
 
@@ -140,7 +141,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
             android:layout_marginTop="30dp"
-            android:drawableStart="@drawable/ic_action_content_import_export"
+            android:drawableStart="?ic_content_import_export"
             android:text="@string/tab_timetable_empty_text1" />
 
         <TextView
@@ -149,7 +150,7 @@
             android:layout_below="@id/tab_timetable_empty_text"
             android:layout_marginLeft="30dp"
             android:layout_marginTop="60dp"
-            android:drawableStart="@drawable/ic_action_navigation_accept"
+            android:drawableStart="?ic_navigation_accept"
             android:text="@string/tab_timetable_empty_text2" />
     </RelativeLayout>
 

@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.NotificationCompat;
 
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.util.IOUtil;
@@ -30,7 +31,7 @@ public class TimeTableNotiReceiver extends BroadcastReceiver {
 			String content = "수업 (" + name + ") 시작 " + when + " 입니다.";
 			NotificationManager nm = (NotificationManager) context
 					.getSystemService(Context.NOTIFICATION_SERVICE);
-			Notification notify = new Notification.Builder(context)
+			Notification notify = new NotificationCompat.Builder(context)
 					.setDefaults(Notification.DEFAULT_ALL)
 					.setAutoCancel(true)
 					.setContentTitle(
@@ -38,7 +39,7 @@ public class TimeTableNotiReceiver extends BroadcastReceiver {
 					.setContentText(content).setTicker(content)
 					.setLights(0xff00ff00, 1000, 3000)
 					.setSmallIcon(R.drawable.ic_launcher).setVibrate(vibrate)
-					.setWhen(time).getNotification();
+					.setWhen(time).build();
 			nm.notify(code * 100, notify);
 		}
 	}

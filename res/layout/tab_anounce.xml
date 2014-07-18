@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
@@ -8,13 +9,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_marginLeft="3dp"
-        android:layout_marginRight="3dp"
-        android:dividerHeight="1dp"
-        android:fadeScrollbars="true"
-        android:fastScrollEnabled="true"
+        android:clipToPadding="true"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="8dp"
         android:listSelector="@android:color/transparent"
-        android:paddingTop="2dp"
+        android:paddingBottom="5dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingTop="5dp"
+        android:scrollbars="none"
         android:scrollingCache="true" >
     </ListView>
 
@@ -23,8 +26,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:background="@drawable/selector_button_dark"
-        android:drawableStart="@drawable/ic_action_navigation_accept"
+        android:background="?selector_button"
+        android:drawableStart="?ic_navigation_accept"
         android:gravity="center_vertical"
         android:text="@string/tab_anounce_empty_view_desc"
         android:visibility="invisible" >

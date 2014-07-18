@@ -7,14 +7,12 @@ import java.util.Hashtable;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
-import android.graphics.Color;
+import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.view.Gravity;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,13 +25,14 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.common.impl.AbsAsyncFragment;
+import com.uoscs09.theuos.common.impl.AbsDrawableProgressFragment;
+import com.uoscs09.theuos.common.impl.annotaion.AsyncData;
+import com.uoscs09.theuos.common.impl.annotaion.ReleaseWhenDestroy;
 import com.uoscs09.theuos.common.util.AppUtil;
 import com.uoscs09.theuos.common.util.AppUtil.AppTheme;
 import com.uoscs09.theuos.common.util.OApiUtil;
@@ -43,35 +42,33 @@ import com.uoscs09.theuos.http.HttpRequest;
 import com.uoscs09.theuos.http.parse.ParseFactory;
 
 public class TabSearchSubjectFragment extends
-		AbsAsyncFragment<ArrayList<SubjectItem>> implements
+		AbsDrawableProgressFragment<ArrayList<SubjectItem>> implements
 		OnItemClickListener, OnItemSelectedListener, View.OnClickListener {
+	@ReleaseWhenDestroy
 	private SubjectAdapter adapter;
-	protected ArrayList<SubjectItem> list;
+	@AsyncData
+	protected ArrayList<SubjectItem> mSubjectList;
 	protected Hashtable<String, String> params;
+	@ReleaseWhenDestroy
 	protected AlertDialog ad;
+	@ReleaseWhenDestroy
 	protected EditText et;
+	@ReleaseWhenDestroy
 	private Spinner sp1, sp2, sp3, sp4, termSpinner;
-	protected ProgressDialog prog;
 	private int[] selections = new int[4];
+	@ReleaseWhenDestroy
 	private TextView[] textViews;
+	@ReleaseWhenDestroy
 	private TextView actionTextview;
 	private int sortFocusViewId;
 	private boolean isInverse = false;
+	protected static int width;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setHasOptionsMenu(true);
 		params = new Hashtable<String, String>();
-
+		setLoadingViewEnable(false);
 		Context context = getActivity();
-		prog = AppUtil.getProgressDialog(context, false, new OnClickListener() {
-
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				cancelExecutor();
-			}
-		});
 		View dialogView = View.inflate(context, R.layout.dialog_search_subject,
 				null);
 		getAlertDialog(dialogView);
@@ -87,6 +84,7 @@ public class TabSearchSubjectFragment extends
 		sp1.setOnItemSelectedListener(this);
 		sp2.setOnItemSelectedListener(this);
 		sp3.setOnItemSelectedListener(this);
+		super.onCreate(savedInstanceState);
 	}
 
 	@Override
@@ -95,26 +93,9 @@ public class TabSearchSubjectFragment extends
 		View rootView;
 		Context context = getActivity();
 
-		actionTextview = new TextView(context);
-		actionTextview.setGravity(Gravity.CENTER);
-
-		switch (AppUtil.theme) {
-		case Black:
-			rootView = inflater.inflate(R.layout.tab_search_subj_dark,
-					container, false);
-			break;
-		case BlackAndWhite:
-			actionTextview.setTextColor(Color.WHITE);
-		case White:
-		default:
-			rootView = inflater.inflate(R.layout.tab_search_subj, container,
-					false);
-			break;
-		}
-
-		int width = getResources().getDisplayMetrics().widthPixels / 12;
-		setTextViewSize(width, rootView);
-
+		actionTextview = (TextView) View.inflate(context,
+				R.layout.action_textview, null);
+		rootView = inflater.inflate(R.layout.tab_search_subj, container, false);
 		View empty = rootView.findViewById(R.id.tab_search_subject_empty_view);
 		empty.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -123,17 +104,16 @@ public class TabSearchSubjectFragment extends
 			}
 		});
 		if (savedInstanceState != null) {
-			list = savedInstanceState.getParcelableArrayList("list");
+			mSubjectList = savedInstanceState
+					.getParcelableArrayList("mSubjectList");
 			actionTextview.setText(savedInstanceState.getString("action"));
 		} else {
-			list = new ArrayList<SubjectItem>();
+			mSubjectList = new ArrayList<SubjectItem>();
 		}
 		ListView listView = (ListView) rootView
 				.findViewById(R.id.tab_search_subject_list_view);
-		adapter = new SubjectAdapter(
-				context,
-				AppUtil.theme == AppTheme.Black ? R.layout.list_layout_subject_dark
-						: R.layout.list_layout_subject, list);
+		adapter = new SubjectAdapter(context, R.layout.list_layout_subject,
+				mSubjectList);
 		listView.setAdapter(adapter);
 		listView.setOnItemClickListener(this);
 		listView.setEmptyView(empty);
@@ -153,13 +133,14 @@ public class TabSearchSubjectFragment extends
 			textViews[i] = (TextView) rootView.findViewById(id);
 			textViews[i++].setOnClickListener(this);
 		}
-
+		width = getResources().getDisplayMetrics().widthPixels / 12;
+		setTextViewSize(width);
 		return rootView;
 	}
 
 	@Override
 	public void onClick(View v) {
-		if (list.isEmpty()) {
+		if (mSubjectList.isEmpty()) {
 			return;
 		}
 		int field = 0;
@@ -242,35 +223,29 @@ public class TabSearchSubjectFragment extends
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		outState.putParcelableArrayList("list", list);
+		outState.putParcelableArrayList("mSubjectList", mSubjectList);
 		outState.putString("action", actionTextview.getText().toString());
 		super.onSaveInstanceState(outState);
 	}
 
-	private void setTextViewSize(int px, View v) {
-		((TextView) v.findViewById(R.id.tab_search_subject_sub_dept1))
-				.setWidth(px * 2);
-		((TextView) v.findViewById(R.id.tab_search_subject_sub_div1))
-				.setWidth(px * 2);
-		((TextView) v.findViewById(R.id.tab_search_subject_no1))
-				.setWidth(px * 2);
-		((TextView) v.findViewById(R.id.tab_search_subject_class_div1))
-				.setWidth(px);
-		((TextView) v.findViewById(R.id.tab_search_subject_sub_nm1))
-				.setWidth(px * 4);
-		((TextView) v.findViewById(R.id.tab_search_subject_yr1)).setWidth(px);
-		((TextView) v.findViewById(R.id.tab_search_subject_credit1))
-				.setWidth(px);
-		((TextView) v.findViewById(R.id.tab_search_subject_prof_nm1))
-				.setWidth(px * 2);
-		((TextView) v.findViewById(R.id.tab_search_subject_class_nm1))
-				.setWidth(px * 5);
-		((TextView) v.findViewById(R.id.tab_search_subject_tlsn_cnt1))
-				.setWidth(px);
-		((TextView) v.findViewById(R.id.tab_search_subject_tlsn_limit1))
-				.setWidth(px);
-		((LinearLayout) v.findViewById(R.id.tab_search_subject_line_layout))
-				.setMinimumWidth(px * 23);
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+				newConfig.screenWidthDp, getResources().getDisplayMetrics()) / 12;
+		setTextViewSize(width);
+		adapter.notifyDataSetChanged();
+		super.onConfigurationChanged(newConfig);
+	}
+
+	private void setTextViewSize(int px) {
+		int[] ints = { 2, 2, 2, 1, 4, 1, 1, 2, 5, 1, 1 };
+		int i = 0;
+		for (TextView tv : textViews) {
+			tv.setWidth(px * ints[i++]);
+		}
+		// ((LinearLayout)
+		// getView().findViewById(R.id.tab_search_subject_line_layout))
+		// .setMinimumWidth(px * 23);
 	}
 
 	@Override
@@ -294,7 +269,6 @@ public class TabSearchSubjectFragment extends
 									int which) {
 								InputMethodManager ipm = (InputMethodManager) context
 										.getSystemService(Activity.INPUT_METHOD_SERVICE);
-								prog.show();
 								ipm.hideSoftInputFromWindow(
 										et.getWindowToken(), 0);
 								excute();
@@ -303,13 +277,7 @@ public class TabSearchSubjectFragment extends
 	}
 
 	@Override
-	public void onPostExcute() {
-		super.onPostExcute();
-		prog.dismiss();
-	}
-
-	@Override
-	public void onResult(ArrayList<SubjectItem> result) {
+	public void onTransactResult(ArrayList<SubjectItem> result) {
 		adapter.clear();
 		adapter.addAll(result);
 		adapter.notifyDataSetChanged();
@@ -360,17 +328,7 @@ public class TabSearchSubjectFragment extends
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		switch (AppUtil.theme) {
-		case BlackAndWhite:
-		case Black:
-			inflater.inflate(R.menu.tab_search_subject_dark, menu);
-			break;
-		case White:
-		default:
-			inflater.inflate(R.menu.tab_search_subject, menu);
-			break;
-		}
-
+		inflater.inflate(R.menu.tab_search_subject, menu);
 		ActionBar actionBar = getActivity().getActionBar();
 		actionBar.setDisplayShowCustomEnabled(true);
 		actionBar.setCustomView(actionTextview);
@@ -943,5 +901,10 @@ public class TabSearchSubjectFragment extends
 			return null;
 		}
 		return table;
+	}
+
+	@Override
+	protected MenuItem getLoadingMenuItem(Menu menu) {
+		return menu.findItem(R.id.action_search);
 	}
 }

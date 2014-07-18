@@ -18,7 +18,7 @@
      limitations under the License.
 -->
 
-<resources xmlns:android="http://schemas.android.com/apk/res/android">
+<resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:custom="http://schemas.android.com/apk/res-auto">
 
     <style name="Theme.Mystyle" parent="@android:style/Theme.Holo.Light">
         <item name="android:actionBarItemBackground">@drawable/selectable_background_mystyle</item>
@@ -31,6 +31,81 @@
         <item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_mystyle</item>
         <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Mystyle</item>
         <item name="android:windowActionBarOverlay">false</item>
+
+        <!-- for selector -->
+        <item name="selector_list">@drawable/selector_list</item>
+        <item name="selector_list_shadow">@drawable/selector_list_shadow</item>
+        <item name="selector_list_circle">@drawable/selector_list_circle</item>
+        <item name="selector_list_rec">@drawable/selector_list_rec</item>
+        <item name="selector_button">@drawable/selector_button</item>
+        <item name="selector_text">@drawable/selector_text</item>
+
+        <!-- for icon drawables -->
+        <item name="ic_action_about">@drawable/ic_action_action_about</item>
+        <item name="ic_action_help">@drawable/ic_action_action_help</item>
+        <item name="ic_action_search">@drawable/ic_action_action_search</item>
+        <item name="ic_action_settings">@drawable/ic_action_action_settings</item>
+        <item name="ic_av_replay">@drawable/ic_action_av_replay</item>
+        <item name="ic_collections_collection">@drawable/ic_action_collections_collection</item>
+        <item name="ic_collections_view_as_list">@drawable/ic_action_collections_view_as_list</item>
+        <item name="ic_content_copy">@drawable/ic_action_content_copy</item>
+        <item name="ic_content_discard">@drawable/ic_action_content_discard</item>
+        <item name="ic_content_import_export">@drawable/ic_action_content_import_export</item>
+        <item name="ic_content_paste">@drawable/ic_action_content_paste</item>
+        <item name="ic_content_remove">@drawable/ic_action_content_remove</item>
+        <item name="ic_content_save">@drawable/ic_action_content_save</item>
+        <item name="ic_content_undo">@drawable/ic_action_content_undo</item>
+        <item name="ic_device_access_alarms">@drawable/ic_action_device_access_alarms</item>
+        <item name="ic_device_access_call">@drawable/ic_action_device_access_call</item>
+        <item name="ic_device_access_storage">@drawable/ic_action_device_access_storage_1</item>
+        <item name="ic_location_directions">@drawable/ic_action_location_directions</item>
+        <item name="ic_location_place">@drawable/ic_action_location_place</item>
+        <item name="ic_location_web_site">@drawable/ic_action_location_web_site</item>
+        <item name="ic_navigation_accept">@drawable/ic_action_navigation_accept</item>
+        <item name="ic_navigation_back">@drawable/ic_action_navigation_back</item>
+        <item name="ic_navigation_cancel">@drawable/ic_action_navigation_cancel_dark</item>
+        <item name="ic_navigation_collapse">@drawable/ic_action_navigation_collapse</item>
+        <item name="ic_navigation_expand">@drawable/ic_action_navigation_expand</item>
+        <item name="ic_navigation_forward">@drawable/ic_action_navigation_forward</item>
+        <item name="ic_navigation_refresh">@drawable/ic_action_navigation_refresh</item>
+        <item name="ic_book">@drawable/ic_book_text</item>
+        <item name="ic_chair">@drawable/ic_chair</item>
+        
+          <!-- for menu icon drawables -->
+        <item name="menu_ic_action_about">@drawable/ic_action_action_about</item>
+        <item name="menu_ic_action_help">@drawable/ic_action_action_help</item>
+        <item name="menu_ic_action_search">@drawable/ic_action_action_search</item>
+        <item name="menu_ic_action_settings">@drawable/ic_action_action_settings</item>
+        <item name="menu_ic_av_replay">@drawable/ic_action_av_replay</item>
+        <item name="menu_ic_collections_collection">@drawable/ic_action_collections_collection</item>
+        <item name="menu_ic_collections_view_as_list">@drawable/ic_action_collections_view_as_list</item>
+        <item name="menu_ic_content_copy">@drawable/ic_action_content_copy</item>
+        <item name="menu_ic_content_discard">@drawable/ic_action_content_discard</item>
+        <item name="menu_ic_content_import_export">@drawable/ic_action_content_import_export</item>
+        <item name="menu_ic_content_paste">@drawable/ic_action_content_paste</item>
+        <item name="menu_ic_content_remove">@drawable/ic_action_content_remove</item>
+        <item name="menu_ic_content_save">@drawable/ic_action_content_save</item>
+        <item name="menu_ic_content_undo">@drawable/ic_action_content_undo</item>
+        <item name="menu_ic_device_access_alarms">@drawable/ic_action_device_access_alarms</item>
+        <item name="menu_ic_device_access_call">@drawable/ic_action_device_access_call</item>
+        <item name="menu_ic_device_access_storage">@drawable/ic_action_device_access_storage_1</item>
+        <item name="menu_ic_location_directions">@drawable/ic_action_location_directions</item>
+        <item name="menu_ic_location_place">@drawable/ic_action_location_place</item>
+        <item name="menu_ic_location_web_site">@drawable/ic_action_location_web_site</item>
+        <item name="menu_ic_navigation_accept">@drawable/ic_action_navigation_accept</item>
+        <item name="menu_ic_navigation_back">@drawable/ic_action_navigation_back</item>
+        <item name="menu_ic_navigation_cancel">@drawable/ic_action_navigation_cancel_dark</item>
+        <item name="menu_ic_navigation_collapse">@drawable/ic_action_navigation_collapse</item>
+        <item name="menu_ic_navigation_expand">@drawable/ic_action_navigation_expand</item>
+        <item name="menu_ic_navigation_forward">@drawable/ic_action_navigation_forward</item>
+        <item name="menu_ic_navigation_refresh">@drawable/ic_action_navigation_refresh</item>
+        <item name="menu_ic_book">@drawable/ic_book_text</item>
+        <item name="menu_ic_chair">@drawable/ic_chair</item>
+        
+        <!-- for color -->
+        <item name="color_rosy_brown">@color/rosy_brown</item>
+        <item name="color_text">@android:color/black</item>
+        <item name="color_action_text">@android:color/black</item>
     </style>
 
     <style name="ActionBar.Solid.Mystyle" parent="@android:style/Widget.Holo.Light.ActionBar.Solid">

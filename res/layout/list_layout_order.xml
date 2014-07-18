@@ -9,7 +9,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_marginRight="16dp"
-        android:src="@drawable/ic_action_content_import_export" />
+        android:contentDescription="@string/setting_order"
+        android:src="?ic_content_import_export" />
 
     <TextView
         android:id="@+id/setting_order_list_text_tab_title"
@@ -18,7 +19,6 @@
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="16dp"
         android:layout_toLeftOf="@+id/setting_order_list_img_switch"
-        android:gravity="center_vertical"
-        android:text="Large Text" />
+        android:gravity="center_vertical" />
 
 </RelativeLayout>

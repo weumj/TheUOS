@@ -1,4 +1,4 @@
-package com.uoscs09.theuos.common.impl;
+package com.uoscs09.theuos.common;
 
 import java.util.List;
 
@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.uoscs09.theuos.common.impl.AbsArrayAdapter;
 import com.uoscs09.theuos.common.util.AppUtil;
 import com.uoscs09.theuos.common.util.AppUtil.AppTheme;
 

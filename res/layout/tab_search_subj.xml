@@ -29,136 +29,137 @@
                 android:id="@+id/tab_search_subject_sub_dept1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="?selector_list_rec"
                 android:gravity="center"
                 android:text="@string/tab_search_subject_sub_dept1" />
 
             <LinearLayout
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:background="@android:color/darker_gray" />
 
             <TextView
                 android:id="@+id/tab_search_subject_sub_div1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="?selector_list_rec"
                 android:gravity="center"
                 android:text="@string/tab_search_subject_sub_div1" />
 
             <LinearLayout
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:background="@android:color/darker_gray" />
 
             <TextView
                 android:id="@+id/tab_search_subject_no1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="?selector_list_rec"
                 android:gravity="center"
                 android:text="@string/tab_search_subject_no1" />
 
             <LinearLayout
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:background="@android:color/darker_gray" />
 
             <TextView
                 android:id="@+id/tab_search_subject_class_div1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="?selector_list_rec"
                 android:gravity="center"
                 android:text="@string/tab_search_subject_class_div1" />
 
             <LinearLayout
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:background="@android:color/darker_gray" />
 
             <TextView
                 android:id="@+id/tab_search_subject_sub_nm1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="?selector_list_rec"
                 android:gravity="center"
                 android:text="@string/tab_search_subject_sub_nm1" />
 
             <LinearLayout
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:background="@android:color/darker_gray" />
 
             <TextView
                 android:id="@+id/tab_search_subject_yr1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="?selector_list_rec"
                 android:gravity="center"
                 android:text="@string/tab_search_subject_yr1" />
 
             <LinearLayout
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:background="@android:color/darker_gray" />
 
             <TextView
                 android:id="@+id/tab_search_subject_credit1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="?selector_list_rec"
                 android:gravity="center"
                 android:text="@string/tab_search_subject_credit1" />
 
             <LinearLayout
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:background="@android:color/darker_gray" />
 
             <TextView
                 android:id="@+id/tab_search_subject_prof_nm1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="?selector_list_rec"
                 android:gravity="center"
                 android:text="@string/tab_search_subject_prof_nm1" />
 
             <LinearLayout
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:background="@android:color/darker_gray" />
 
             <TextView
                 android:id="@+id/tab_search_subject_class_nm1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="?selector_list_rec"
                 android:gravity="center"
                 android:text="@string/tab_search_subject_class_nm1" />
 
             <LinearLayout
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:background="@android:color/darker_gray" />
 
             <TextView
                 android:id="@+id/tab_search_subject_tlsn_cnt1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="?selector_list_rec"
                 android:gravity="center"
                 android:text="@string/tab_search_subject_tlsn_cnt1" />
 
             <LinearLayout
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:background="@android:color/darker_gray" />
 
             <TextView
                 android:id="@+id/tab_search_subject_tlsn_limit1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="?selector_list_rec"
                 android:gravity="center"
                 android:text="@string/tab_search_subject_tlsn_limit1" />
         </LinearLayout>
@@ -189,7 +190,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="50dp"
             android:layout_marginTop="100dp"
-            android:background="@drawable/selector_button"
+            android:background="?selector_button"
             android:padding="2dp"
             android:visibility="gone" >
 
@@ -197,7 +198,7 @@
                 android:id="@+id/empty1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawableStart="@drawable/ic_action_action_search"
+                android:drawableStart="?ic_action_search"
                 android:gravity="center_vertical"
                 android:text="@string/tab_subject_empty_view_hint" />
 
@@ -207,7 +208,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/empty1"
                 android:layout_marginTop="20dp"
-                android:drawableStart="@drawable/ic_action_content_import_export"
+                android:drawableStart="?ic_content_import_export"
                 android:gravity="center_vertical"
                 android:text="@string/tab_subject_empty_view_sort" />
 
@@ -216,7 +217,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/empty2"
                 android:layout_marginTop="30dp"
-                android:drawableStart="@drawable/ic_action_navigation_accept"
+                android:drawableStart="?ic_navigation_accept"
                 android:text="@string/tab_subject_empty_view_hint_subj" />
         </RelativeLayout>
     </RelativeLayout>

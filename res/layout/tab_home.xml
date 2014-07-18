@@ -2,20 +2,24 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/univ_pic" >
+    android:background="@drawable/univ_pic"
+    android:gravity="center" >
 
     <GridView
         android:id="@+id/tab_home_gridview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="80dip"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center"
         android:cacheColorHint="@android:color/transparent"
         android:columnWidth="100dip"
         android:gravity="center"
         android:horizontalSpacing="3dip"
         android:listSelector="@android:color/transparent"
         android:numColumns="auto_fit"
-        android:paddingTop="5dip"
+        android:paddingLeft="@dimen/tab_home_gridview_horizontal_margin"
+        android:paddingRight="@dimen/tab_home_gridview_horizontal_margin"
+        android:paddingTop="@dimen/tab_home_gridview_vertical_margin"
         android:scrollbars="none"
         android:stretchMode="spacingWidthUniform"
         android:verticalSpacing="10dip" >

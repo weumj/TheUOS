@@ -9,16 +9,13 @@ import java.util.Locale;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,7 +28,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.common.impl.AbsAsyncFragment;
+import com.uoscs09.theuos.common.impl.AbsDrawableProgressFragment;
+import com.uoscs09.theuos.common.impl.annotaion.AsyncData;
+import com.uoscs09.theuos.common.impl.annotaion.ReleaseWhenDestroy;
 import com.uoscs09.theuos.common.util.AppUtil;
 import com.uoscs09.theuos.common.util.OApiUtil;
 import com.uoscs09.theuos.common.util.OApiUtil.Term;
@@ -41,17 +40,24 @@ import com.uoscs09.theuos.http.parse.ParseFactory;
 
 /** 빈 강의실을 조회하는 fragment */
 public class TabSearchEmptyRoomFragment extends
-		AbsAsyncFragment<ArrayList<ClassRoomItem>> implements
+		AbsDrawableProgressFragment<ArrayList<ClassRoomItem>> implements
 		DialogInterface.OnClickListener, View.OnClickListener {
+	@ReleaseWhenDestroy
 	private ArrayAdapter<ClassRoomItem> adapter;
-	private ArrayList<ClassRoomItem> list;
+	@AsyncData
+	private ArrayList<ClassRoomItem> mClassRoomList;
+	@ReleaseWhenDestroy
 	protected AlertDialog dialog;
-	private ProgressDialog progress;
 	private Hashtable<String, String> params = new Hashtable<String, String>();
+	@ReleaseWhenDestroy
 	private Spinner buildingSpinner;
+	@ReleaseWhenDestroy
 	private Spinner timeSpinner;
+	@ReleaseWhenDestroy
 	private Spinner termSpinner;
+	@ReleaseWhenDestroy
 	private TextView timeTextView;
+	@ReleaseWhenDestroy
 	private TextView[] textViews;
 	private int sortFocus;
 	private boolean isReverse = false;
@@ -60,12 +66,11 @@ public class TabSearchEmptyRoomFragment extends
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setHasOptionsMenu(true);
 		initTable();
+		setLoadingViewEnable(false);
 		Context context = getActivity();
-		timeTextView = new TextView(context);
-		timeTextView.setGravity(Gravity.CENTER);
+		timeTextView = (TextView) View.inflate(context,
+				R.layout.action_textview, null);
 		View dialogLayout = View.inflate(context,
 				R.layout.dialog_search_empty_room, null);
 		buildingSpinner = (Spinner) dialogLayout
@@ -74,43 +79,35 @@ public class TabSearchEmptyRoomFragment extends
 				.findViewById(R.id.etc_empty_spinner_time);
 		termSpinner = (Spinner) dialogLayout
 				.findViewById(R.id.etc_empty_spinner_term);
-		progress = AppUtil.getProgressDialog(context, false, this);
-		dialog = new AlertDialog.Builder(context).setView(dialogLayout)
+
+		initSearchDialog(dialogLayout);
+		if (savedInstanceState != null) {
+			mClassRoomList = savedInstanceState
+					.getParcelableArrayList(BUILDING);
+			timeTextView.setText(savedInstanceState.getString("time"));
+		} else {
+			mClassRoomList = new ArrayList<ClassRoomItem>();
+		}
+		super.onCreate(savedInstanceState);
+	}
+
+	private void initSearchDialog(View innerView) {
+		dialog = new AlertDialog.Builder(getActivity()).setView(innerView)
 				.setPositiveButton(R.string.confirm, new OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						excute();
 					}
 				}).create();
-
-		if (savedInstanceState != null) {
-			list = savedInstanceState.getParcelableArrayList(BUILDING);
-			timeTextView.setText(savedInstanceState.getString("time"));
-		} else {
-			list = new ArrayList<ClassRoomItem>();
-		}
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View root;
-		switch (AppUtil.theme) {
-		case Black:
-			root = inflater.inflate(R.layout.tab_search_empty_room_dark,
-					container, false);
-			adapter = new SearchEmptyRoomAdapter(getActivity(),
-					R.layout.list_layout_empty_room_dark, list);
-			break;
-		case BlackAndWhite:
-		case White:
-		default:
-			root = inflater.inflate(R.layout.tab_search_empty_room, container,
-					false);
-			adapter = new SearchEmptyRoomAdapter(getActivity(),
-					R.layout.list_layout_empty_room, list);
-			break;
-		}
+		View root = inflater.inflate(R.layout.tab_search_empty_room, container,
+				false);
+		adapter = new SearchEmptyRoomAdapter(getActivity(),
+				R.layout.list_layout_empty_room, mClassRoomList);
 		textViews = new TextView[4];
 		int[] ids = { R.id.tab_search_empty_room_text_building_name,
 				R.id.tab_search_empty_room_text_room_no,
@@ -139,7 +136,7 @@ public class TabSearchEmptyRoomFragment extends
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		outState.putParcelableArrayList(BUILDING, list);
+		outState.putParcelableArrayList(BUILDING, mClassRoomList);
 		outState.putString("time", timeTextView.getText().toString());
 		super.onSaveInstanceState(outState);
 
@@ -161,12 +158,6 @@ public class TabSearchEmptyRoomFragment extends
 	}
 
 	@Override
-	protected void excute() {
-		progress.show();
-		super.excute();
-	}
-
-	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
 				newConfig.screenWidthDp, getResources().getDisplayMetrics()) / 4;
@@ -176,18 +167,7 @@ public class TabSearchEmptyRoomFragment extends
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		switch (AppUtil.theme) {
-		case BlackAndWhite:
-		case Black:
-			inflater.inflate(R.menu.tab_search_empty_room_dark, menu);
-			timeTextView.setTextColor(Color.WHITE);
-			break;
-		case White:
-		default:
-			inflater.inflate(R.menu.tab_search_empty_room, menu);
-			timeTextView.setTextColor(Color.BLACK);
-			break;
-		}
+		inflater.inflate(R.menu.tab_search_empty_room, menu);
 		ActionBar ab = getActivity().getActionBar();
 		ab.setCustomView(timeTextView);
 		ab.setDisplayShowCustomEnabled(true);
@@ -206,10 +186,9 @@ public class TabSearchEmptyRoomFragment extends
 	}
 
 	@Override
-	public void onResult(ArrayList<ClassRoomItem> result) {
-		adapter.clear();
-		list = result;
-		adapter.addAll(result);
+	public void onTransactResult(ArrayList<ClassRoomItem> result) {
+		mClassRoomList.clear();
+		mClassRoomList.addAll(result);
 		adapter.notifyDataSetChanged();
 		AppUtil.showToast(getActivity(), String.valueOf(result.size())
 				+ getString(R.string.search_found), true);
@@ -261,12 +240,6 @@ public class TabSearchEmptyRoomFragment extends
 		}
 	}
 
-	@Override
-	public void onPostExcute() {
-		super.onPostExcute();
-		progress.dismiss();
-	}
-
 	private void setViewSize(int px, View v) {
 		((TextView) v
 				.findViewById(R.id.tab_search_empty_room_text_building_name))
@@ -286,7 +259,7 @@ public class TabSearchEmptyRoomFragment extends
 
 	@Override
 	public void onClick(View v) {
-		if (list.isEmpty()) {
+		if (mClassRoomList.isEmpty()) {
 			return;
 		}
 		int field = 0;
@@ -332,8 +305,12 @@ public class TabSearchEmptyRoomFragment extends
 		Drawable d = getResources().getDrawable(drawableId);
 		textViews[field].setCompoundDrawablesWithIntrinsicBounds(d, null, null,
 				null);
-		adapter.clear();
-		adapter.addAll(list);
+
 		adapter.sort(ClassRoomItem.getComparator(field, isReverse));
+	}
+
+	@Override
+	protected MenuItem getLoadingMenuItem(Menu menu) {
+		return menu.findItem(R.id.action_search);
 	}
 }

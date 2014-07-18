@@ -6,7 +6,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,15 +16,20 @@ import android.widget.GridView;
 import android.widget.ListView;
 
 import com.nhaarman.listviewanimations.swinginadapters.prepared.SwingBottomInAnimationAdapter;
-import com.uoscs09.theuos.PagerInterface.Type;
-import com.uoscs09.theuos.common.impl.SimpleTextViewAdapter;
-import com.uoscs09.theuos.common.impl.SimpleTextViewAdapter.DrawblePosition;
+import com.uoscs09.theuos.common.SimpleTextViewAdapter;
+import com.uoscs09.theuos.common.SimpleTextViewAdapter.DrawblePosition;
+import com.uoscs09.theuos.common.impl.BaseFragment;
+import com.uoscs09.theuos.common.impl.annotaion.ReleaseWhenDestroy;
 import com.uoscs09.theuos.common.util.AppUtil;
 import com.uoscs09.theuos.common.util.AppUtil.AppTheme;
 
-public class TabHomeFragment extends Fragment implements OnItemClickListener {
+public class TabHomeFragment extends BaseFragment implements
+		OnItemClickListener {
+	@ReleaseWhenDestroy
 	private ArrayAdapter<Integer> adapter;
+	@ReleaseWhenDestroy
 	protected PagerInterface pl;
+	@ReleaseWhenDestroy
 	protected AlertDialog etcDialog;
 
 	@Override
@@ -75,7 +79,7 @@ public class TabHomeFragment extends Fragment implements OnItemClickListener {
 					int position, long id) {
 				etcDialog.dismiss();
 				int item = (Integer) parent.getItemAtPosition(position);
-				pl.sendCommand(Type.PAGE, item);
+				pl.sendCommand(PagerInterface.Type.PAGE, item);
 			}
 		});
 
@@ -106,13 +110,14 @@ public class TabHomeFragment extends Fragment implements OnItemClickListener {
 		if (pl != null) {
 			switch (pos) {
 			case 8:
-				pl.sendCommand(Type.SETTING, null);
+				pl.sendCommand(PagerInterface.Type.SETTING, null);
 				break;
 			case 7:
 				etcDialog.show();
 				break;
 			default:
-				pl.sendCommand(Type.PAGE, adapterView.getItemAtPosition(pos));
+				pl.sendCommand(PagerInterface.Type.PAGE,
+						adapterView.getItemAtPosition(pos));
 				break;
 			}
 		}

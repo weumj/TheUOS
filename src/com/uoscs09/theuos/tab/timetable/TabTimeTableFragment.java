@@ -5,29 +5,28 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 import org.apache.http.client.ClientProtocolException;
 
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.text.method.TextKeyListener;
-import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -35,8 +34,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.uoscs09.theuos.R;
+import com.uoscs09.theuos.common.AsyncLoader;
+import com.uoscs09.theuos.common.AsyncLoader.OnTaskFinishedListener;
 import com.uoscs09.theuos.common.ListViewBitmapWriteTask;
-import com.uoscs09.theuos.common.impl.AbsAsyncFragment;
+import com.uoscs09.theuos.common.impl.AbsDrawableProgressFragment;
+import com.uoscs09.theuos.common.impl.annotaion.AsyncData;
+import com.uoscs09.theuos.common.impl.annotaion.ReleaseWhenDestroy;
 import com.uoscs09.theuos.common.util.AppUtil;
 import com.uoscs09.theuos.common.util.GraphicUtil;
 import com.uoscs09.theuos.common.util.IOUtil;
@@ -48,45 +51,55 @@ import com.uoscs09.theuos.http.TimeTableHttpRequest;
 import com.uoscs09.theuos.http.parse.ParseFactory;
 
 public class TabTimeTableFragment extends
-		AbsAsyncFragment<ArrayList<TimeTableItem>> implements
+		AbsDrawableProgressFragment<ArrayList<TimeTableItem>> implements
 		DialogInterface.OnClickListener, View.OnClickListener {
+	@ReleaseWhenDestroy
 	private AlertDialog loginDialog;
-	private List<TimeTableItem> timetable_list;
+	@AsyncData
+	private List<TimeTableItem> mTimetableList;
+	@ReleaseWhenDestroy
 	protected ArrayAdapter<TimeTableItem> adapter;
-	private ProgressDialog progress;
+	@ReleaseWhenDestroy
 	protected View rootView;
+	@ReleaseWhenDestroy
 	protected EditText idView, passwdView;
+	@ReleaseWhenDestroy
 	private Spinner termSpinner;
+	@ReleaseWhenDestroy
 	protected TextView termTextView;
+	@ReleaseWhenDestroy
 	private AlertDialog deleteDialog;
 	protected Term term;
+	@ReleaseWhenDestroy
 	protected ListView listView;
+	@ReleaseWhenDestroy
 	private TimeTableInfoCallback cb;
 	private boolean mIsOnLoad;
 	private Map<String, Integer> colorTable;
 
-	private int[] titleViewIds = new int[] { R.id.tab_time_peroid,
-			R.id.tab_time_mon, R.id.tab_time_tue, R.id.tab_time_wed,
-			R.id.tab_time_thur, R.id.tab_time_fri, R.id.tab_time_sat, };
+	private int[] titleViewIds = { R.id.tab_time_peroid, R.id.tab_time_mon,
+			R.id.tab_time_tue, R.id.tab_time_wed, R.id.tab_time_thur,
+			R.id.tab_time_fri, R.id.tab_time_sat, };
+	protected static int px;
 	public final static int NUM_OF_TIMETABLE_VIEWS = 7;
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		setHasOptionsMenu(true);
 		Context context = getActivity();
+		setLoadingViewEnable(false);
 		if (savedInstanceState != null) {
-			timetable_list = savedInstanceState
+			mTimetableList = savedInstanceState
 					.getParcelableArrayList(IOUtil.FILE_TIMETABLE);
 			colorTable = (Map<String, Integer>) savedInstanceState
 					.getSerializable("color");
 		} else {
-			timetable_list = new ArrayList<TimeTableItem>();
+			mTimetableList = new ArrayList<TimeTableItem>();
 			colorTable = new Hashtable<String, Integer>();
 		}
 		cb = new TimeTableInfoCallback(context);
-		termTextView = new TextView(context);
-		termTextView.setGravity(Gravity.CENTER);
+		termTextView = (TextView) View.inflate(context,
+				R.layout.action_textview, null);
 
 		int termValue = PrefUtil.getInstance(context).get("timetable_term", -1);
 		if (termValue != -1) {
@@ -97,31 +110,8 @@ public class TabTimeTableFragment extends
 			term = OApiUtil.getTerm();
 			cb.setTerm(term);
 		}
-
-		switch (AppUtil.theme) {
-		case Black:
-			adapter = new TimetableAdapter(context,
-					R.layout.list_layout_timetable_dark, timetable_list,
-					colorTable, cb);
-			break;
-		case BlackAndWhite:
-			termTextView.setTextColor(Color.WHITE);
-		case White:
-		default:
-			adapter = new TimetableAdapter(context,
-					R.layout.list_layout_timetable, timetable_list, colorTable,
-					cb);
-			break;
-		}
-
-		progress = AppUtil.getProgressDialog(context, false,
-				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						cancelExecutor();
-					}
-				});
-
+		adapter = new TimetableAdapter(context, R.layout.list_layout_timetable,
+				mTimetableList, colorTable, cb);
 		View wiseDialogLayout = View.inflate(context,
 				R.layout.dialog_wise_input, null);
 		idView = (EditText) wiseDialogLayout
@@ -137,13 +127,6 @@ public class TabTimeTableFragment extends
 				.setNegativeButton(R.string.cancel, this).create();
 
 		super.onCreate(savedInstanceState);
-	}
-
-	private void setTermTextViewText(Term term, Context context) {
-		termTextView.setText(OApiUtil.getSemesterYear(term)
-				+ " / "
-				+ context.getResources().getStringArray(R.array.terms)[term
-						.ordinal()]);
 	}
 
 	@Override
@@ -190,13 +173,13 @@ public class TabTimeTableFragment extends
 	}
 
 	private void clearId() {
-		if (idView.length() > 0) {
+		if (idView != null && idView.length() > 0) {
 			TextKeyListener.clear(idView.getText());
 		}
 	}
 
 	private void clearPassWd() {
-		if (passwdView.length() > 0) {
+		if (passwdView != null && passwdView.length() > 0) {
 			TextKeyListener.clear(passwdView.getText());
 		}
 	}
@@ -204,7 +187,7 @@ public class TabTimeTableFragment extends
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		outState.putParcelableArrayList(IOUtil.FILE_TIMETABLE,
-				(ArrayList<? extends Parcelable>) timetable_list);
+				(ArrayList<? extends Parcelable>) mTimetableList);
 		outState.putSerializable("color", (Serializable) colorTable);
 		super.onSaveInstanceState(outState);
 	}
@@ -212,32 +195,22 @@ public class TabTimeTableFragment extends
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		switch (AppUtil.theme) {
-		case Black:
-			rootView = inflater.inflate(R.layout.tab_timetable_dark, container,
-					false);
-			break;
-		case BlackAndWhite:
-		case White:
-		default:
-			rootView = inflater.inflate(R.layout.tab_timetable, container,
-					false);
-			break;
-		}
-
+		rootView = inflater.inflate(R.layout.tab_timetable, container, false);
 		View emptyView = rootView.findViewById(R.id.tab_timetable_empty);
 		emptyView.setOnClickListener(this);
 		listView = (ListView) rootView.findViewById(R.id.time_table_listView1);
 		listView.setEmptyView(emptyView);
 		listView.setAdapter(adapter);
+
 		setHolderTag(rootView);
+		if (px > 0)
+			setTitleViewSize(px);
 
 		return rootView;
 	}
 
 	@Override
 	public void onResume() {
-		setTitleViewSize(getResources().getDisplayMetrics().widthPixels / 7);
 		if (adapter.isEmpty()) {
 			mIsOnLoad = true;
 			excute();
@@ -246,17 +219,54 @@ public class TabTimeTableFragment extends
 	}
 
 	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		switch (AppUtil.theme) {
-		case BlackAndWhite:
-		case Black:
-			inflater.inflate(R.menu.tab_timetable_dark, menu);
-			break;
-		case White:
-		default:
-			inflater.inflate(R.menu.tab_timetable, menu);
-			break;
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		getView().getViewTreeObserver().addOnGlobalLayoutListener(viewObserver);
+	}
+
+	private ViewTreeObserver.OnGlobalLayoutListener viewObserver = new ViewTreeObserver.OnGlobalLayoutListener() {
+
+		@Override
+		public void onGlobalLayout() {
+			if (listView != null) {
+				int width = listView.getWidth();
+				if (width > 0) {
+					width = (width - 10) / NUM_OF_TIMETABLE_VIEWS;
+					if (px != width) {
+						px = width;
+						setTitleViewSize(px);
+						adapter.notifyDataSetChanged();
+					}
+				}
+			}
 		}
+	};
+
+	@SuppressLint("NewApi")
+	@SuppressWarnings("deprecation")
+	@Override
+	public void setUserVisibleHint(boolean isVisibleToUser) {
+		super.setUserVisibleHint(isVisibleToUser);
+		View v = getView();
+		if (v != null) {
+			if (!isVisibleToUser) {
+				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+					v.getViewTreeObserver().removeGlobalOnLayoutListener(
+							viewObserver);
+				} else {
+					v.getViewTreeObserver().removeOnGlobalLayoutListener(
+							viewObserver);
+				}
+			} else {
+				v.getViewTreeObserver().addOnGlobalLayoutListener(viewObserver);
+				setTitleViewSize(px);
+			}
+		}
+	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.tab_timetable, menu);
 		ActionBar actionBar = getActivity().getActionBar();
 		actionBar.setDisplayShowCustomEnabled(true);
 		actionBar.setCustomView(termTextView);
@@ -267,7 +277,11 @@ public class TabTimeTableFragment extends
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_wise:
-			loginDialog.show();
+			if (isRunning()) {
+				AppUtil.showToast(getActivity(), R.string.progress_ongoing,
+						true);
+			} else
+				loginDialog.show();
 			return true;
 		case R.id.action_delete:
 			if (deleteDialog == null)
@@ -280,36 +294,6 @@ public class TabTimeTableFragment extends
 		default:
 			return false;
 		}
-	}
-
-	private AlertDialog getDeleteDialog() {
-		return new AlertDialog.Builder(getActivity())
-				.setMessage(R.string.confirm_delete)
-				.setPositiveButton(android.R.string.ok,
-						new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog,
-									int which) {
-								Context context = getActivity();
-								if (context.deleteFile(IOUtil.FILE_TIMETABLE)) {
-									adapter.clear();
-									adapter.notifyDataSetChanged();
-									timetable_list.clear();
-									context.deleteFile(IOUtil.FILE_COLOR_TABLE);
-									AppUtil.showToast(context,
-											R.string.excute_delete, isVisible());
-									TimeTableInfoCallback
-											.clearAllAlarm(context);
-									PrefUtil.getInstance(context).put(
-											"timetable_term", -1);
-									termTextView.setText(StringUtil.NULL);
-								} else {
-									AppUtil.showToast(context,
-											R.string.file_not_found,
-											isVisible());
-								}
-							}
-						}).setNegativeButton(R.string.cancel, null).create();
 	}
 
 	private void saveTimetable() {
@@ -357,21 +341,18 @@ public class TabTimeTableFragment extends
 		task.excute();
 	}
 
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-				newConfig.screenWidthDp, getResources().getDisplayMetrics())
-				/ NUM_OF_TIMETABLE_VIEWS;
-		setTitleViewSize(px);
-		super.onConfigurationChanged(newConfig);
-	}
-
+	/**
+	 * View를 찾기 쉽게하기위하여 메인 View에 '시간, 월 ~ 토' 를 나타내는 TextView를 등록한다.
+	 */
 	private void setHolderTag(View rootView) {
 		for (int id : titleViewIds) {
 			rootView.setTag(id, rootView.findViewById(id));
 		}
 	}
 
+	/**
+	 * '시간, 월 ~ 토' 를 나타내는 TextView의 너비를 설정한다.
+	 */
 	private void setTitleViewSize(int width) {
 		for (int id : titleViewIds) {
 			((TextView) rootView.getTag(id)).setWidth(width);
@@ -379,7 +360,7 @@ public class TabTimeTableFragment extends
 	}
 
 	@Override
-	public void onResult(ArrayList<TimeTableItem> result) {
+	public void onTransactResult(ArrayList<TimeTableItem> result) {
 		Context context = getActivity();
 		if (result.isEmpty()) {
 			if (mIsOnLoad) {
@@ -390,27 +371,26 @@ public class TabTimeTableFragment extends
 			}
 			return;
 		}
-		adapter.clear();
-		timetable_list = result;
-		adapter.addAll(result);
-		adapter.notifyDataSetChanged();
+		mTimetableList.clear();
+		mTimetableList.addAll(result);
+		if (adapter != null)
+			adapter.notifyDataSetChanged();
 
 		setTermTextViewText(term, context);
 	}
 
-	@Override
-	public void onPostExcute() {
-		if (!mIsOnLoad)
-			progress.dismiss();
-		clearPassWd();
-		super.onPostExcute();
+	private void setTermTextViewText(Term term, Context context) {
+		if (termTextView != null)
+			termTextView.setText(OApiUtil.getSemesterYear(term)
+					+ " / "
+					+ context.getResources().getStringArray(R.array.terms)[term
+							.ordinal()]);
 	}
 
 	@Override
-	protected void excute() {
-		if (!mIsOnLoad)
-			progress.show();
-		super.excute();
+	protected void onTransactPostExcute() {
+		super.onTransactPostExcute();
+		clearPassWd();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -418,9 +398,10 @@ public class TabTimeTableFragment extends
 	public ArrayList<TimeTableItem> call() throws Exception {
 		ArrayList<TimeTableItem> result;
 		Context context = getActivity();
+		// Fragment가 처음 Attach되었을 때, 파일에서 시간표을 읽어온다.
 		if (mIsOnLoad) {
 			result = (ArrayList<TimeTableItem>) readTimetable(context);
-		} else {
+		} else { // 사용자가 WISE에 시간표 정보를 요청하였을 때
 			term = Term.values()[termSpinner.getSelectedItemPosition()];
 			String body = TimeTableHttpRequest.getHttpBodyPost(
 					idView.getText(), passwdView.getText(), term);
@@ -433,6 +414,8 @@ public class TabTimeTableFragment extends
 			saveColorTable(context, makeColorTable(result));
 		}
 
+		// 시간표를 정상적으로 불러왔다면, 시간표를 저장하고,
+		// 시간표의 과목과 과목의 색을 Mapping한다.
 		if (!result.isEmpty()) {
 			IOUtil.saveToFile(context, IOUtil.FILE_TIMETABLE,
 					Activity.MODE_PRIVATE, result);
@@ -453,6 +436,11 @@ public class TabTimeTableFragment extends
 		}
 	}
 
+	/**
+	 * 시간표 정보를 파일로부터 읽어온다.
+	 * 
+	 * @return 시간표 정보 list, 파일이 없다면 빈 list
+	 */
 	public static List<TimeTableItem> readTimetable(Context context) {
 		List<TimeTableItem> list = IOUtil.readFromFileSuppressed(context,
 				IOUtil.FILE_TIMETABLE);
@@ -473,16 +461,24 @@ public class TabTimeTableFragment extends
 		}
 	}
 
+	/**
+	 * 주어진 시간표정보를 통해 시간표 각 과목과 컬러를 mapping하는 Map을 작성한다.
+	 * 
+	 * @param timetable
+	 *            시간표
+	 * @return 과목이름이 Key이고, Value가 컬러를 가리키는 Integer인 Map<br>
+	 *         * 컬러는 단순한 정수이며, AppUtil을 통해 Color integer를 얻어와야 한다.
+	 */
 	public static Hashtable<String, Integer> makeColorTable(
-			List<TimeTableItem> list) {
+			List<TimeTableItem> timetable) {
 		Hashtable<String, Integer> table = new Hashtable<String, Integer>();
-		int size = list.size();
+		final int size = timetable.size();
 		String name;
 		TimeTableItem item;
 		String[] array;
 		int j = 0, h = 0;
 		for (int i = 0; i < size; i++) {
-			item = list.get(i);
+			item = timetable.get(i);
 			array = new String[] { item.mon, item.tue, item.wed, item.thr,
 					item.fri, item.sat };
 			for (h = 0; h < array.length; h++) {
@@ -496,26 +492,110 @@ public class TabTimeTableFragment extends
 		return table;
 	}
 
+	/**
+	 * 주어진 시간표정보를 통해 시간표 각 과목과 컬러를 mapping하는 Map을 파일에서 읽어오거나 작성한다.
+	 * 
+	 * @param timetable
+	 *            시간표
+	 * @param context
+	 * @return 시간표의 각 과목과 컬러를 mapping하는 Map
+	 */
 	public static Hashtable<String, Integer> getColorTable(
-			List<TimeTableItem> list, Context context) {
+			List<TimeTableItem> timetable, Context context) {
 		Hashtable<String, Integer> table = readColorTableFromFile(context);
 
 		if (table == null || table.size() == 0) {
-			table = makeColorTable(list);
+			table = makeColorTable(timetable);
 			saveColorTable(context, table);
 		}
 		return table;
 	}
 
+	/**
+	 * 주어진 시간표 컬러 Map을 파일로 저장한다.
+	 * 
+	 * @param colorTable
+	 *            color map
+	 * @param context
+	 * */
 	public static void saveColorTable(Context context,
 			Hashtable<String, Integer> colorTable) {
 		IOUtil.saveToFileAsync(context, IOUtil.FILE_COLOR_TABLE,
 				Activity.MODE_PRIVATE, colorTable, null);
 	}
 
+	/**
+	 * color map을 파일로 부터 읽어온다.
+	 */
 	public static Hashtable<String, Integer> readColorTableFromFile(
 			Context context) {
 		return IOUtil.readFromFileSuppressed(context, IOUtil.FILE_COLOR_TABLE);
 	}
 
+	private AlertDialog getDeleteDialog() {
+		return new AlertDialog.Builder(getActivity())
+				.setMessage(R.string.confirm_delete)
+				.setPositiveButton(android.R.string.ok,
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								new AsyncLoader<Boolean>().excute(
+										new Callable<Boolean>() {
+
+											@Override
+											public Boolean call()
+													throws Exception {
+												boolean b = getActivity()
+														.deleteFile(
+																IOUtil.FILE_TIMETABLE);
+												if (b) {
+													getActivity()
+															.deleteFile(
+																	IOUtil.FILE_COLOR_TABLE);
+												}
+												return b;
+											}
+										}, new OnTaskFinishedListener() {
+
+											@Override
+											public void onTaskFinished(
+													boolean isExceptionOccoured,
+													Object data) {
+												boolean result = (Boolean) data;
+												if (!isExceptionOccoured
+														&& result) {
+													adapter.clear();
+													adapter.notifyDataSetChanged();
+													mTimetableList.clear();
+													Context context = getActivity();
+													AppUtil.showToast(
+															context,
+															R.string.excute_delete,
+															isVisible());
+													TimeTableInfoCallback
+															.clearAllAlarm(context);
+													PrefUtil.getInstance(
+															context).put(
+															"timetable_term",
+															-1);
+													termTextView
+															.setText(StringUtil.NULL);
+												} else {
+													AppUtil.showToast(
+															getActivity(),
+															R.string.file_not_found,
+															isVisible());
+												}
+											}
+
+										});
+							}
+						}).setNegativeButton(R.string.cancel, null).create();
+	}
+
+	@Override
+	protected MenuItem getLoadingMenuItem(Menu menu) {
+		return menu.findItem(R.id.action_wise);
+	}
 }
