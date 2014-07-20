@@ -12,7 +12,7 @@
         android:id="@+id/action_info"
         android:icon="?menu_ic_action_about"
         android:orderInCategory="102"
-        android:showAsAction="always"
+        android:showAsAction="ifRoom"
         android:title="@string/action_dissmiss_info">
     </item>
 

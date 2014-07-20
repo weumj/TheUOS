@@ -3,7 +3,6 @@ package com.uoscs09.theuos.tab.anounce;
 import java.util.List;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.text.Html;
 import android.text.Spanned;
 import android.view.View;
@@ -11,8 +10,6 @@ import android.widget.TextView;
 
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.impl.AbsArrayAdapter;
-import com.uoscs09.theuos.common.util.AppUtil;
-import com.uoscs09.theuos.common.util.AppUtil.AppTheme;
 
 public class AnounceAdapter extends AbsArrayAdapter<AnounceItem> {
 	private AnounceAdapter(Context context) {
@@ -29,9 +26,6 @@ public class AnounceAdapter extends AbsArrayAdapter<AnounceItem> {
 		Holder h = (Holder) holder;
 		Spanned span = Html.fromHtml(item.type);
 		h.textArray[0].setText(span != null ? span : item.type);
-		h.textArray[1]
-				.setTextColor(AppUtil.theme == AppTheme.Black ? Color.WHITE
-						: Color.BLACK);
 		span = Html.fromHtml(item.title);
 		h.textArray[1].setText(span != null ? span : item.title);
 		span = Html.fromHtml(item.date);

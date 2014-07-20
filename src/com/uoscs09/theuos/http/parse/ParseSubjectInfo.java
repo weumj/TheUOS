@@ -44,7 +44,7 @@ public class ParseSubjectInfo extends OApiParse<ArrayList<String>> {
 			return list;
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new RuntimeException("¼ö¾÷°èÈ¹Á¤º¸°¡ ¾ø½À´Ï´Ù.");
+			throw new RuntimeException("ìˆ˜ì—…ê³„íšì •ë³´ê°€ ì—†ìŠµë‹ˆë‹¤.");
 		}
 	}
 

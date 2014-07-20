@@ -11,7 +11,7 @@ import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.util.IOUtil;
 import com.uoscs09.theuos.common.util.OApiUtil;
 
-/** ½Ã°£Ç¥ ¾Ë¸² ÀÌº¥Æ®¸¦ ¹Ş¾Æ ¾Ë¸²À» ¶ç¿ì´Â BroadcastReceiver */
+/** ì‹œê°„í‘œ ì•Œë¦¼ ì´ë²¤íŠ¸ë¥¼ ë°›ì•„ ì•Œë¦¼ì„ ë„ìš°ëŠ” BroadcastReceiver */
 public class TimeTableNotiReceiver extends BroadcastReceiver {
 
 	@Override
@@ -24,11 +24,11 @@ public class TimeTableNotiReceiver extends BroadcastReceiver {
 			String name = intent.getStringExtra(OApiUtil.SUBJECT_NAME);
 			String when = IOUtil.readFromFileSuppressed(context,
 					String.valueOf(code));
-			if ("¾Ë¸² ¾øÀ½".equals(when)) {
+			if ("ì•Œë¦¼ ì—†ìŒ".equals(when)) {
 				return;
 			}
 			long time = System.currentTimeMillis();
-			String content = "¼ö¾÷ (" + name + ") ½ÃÀÛ " + when + " ÀÔ´Ï´Ù.";
+			String content = "ìˆ˜ì—… (" + name + ") ì‹œì‘ " + when + " ì…ë‹ˆë‹¤.";
 			NotificationManager nm = (NotificationManager) context
 					.getSystemService(Context.NOTIFICATION_SERVICE);
 			Notification notify = new NotificationCompat.Builder(context)

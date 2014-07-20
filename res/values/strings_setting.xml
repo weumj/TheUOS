@@ -36,7 +36,6 @@
     <string name="setting_anounce_keyword_desc2">키워드는 여러개를 설정할 수 있습니다.\n(한 줄에 하나의 키워드를 입력합니다.)</string>
     <string name="apply_default">초기값을 불러왔습니다.</string>
     <string name="setting_noti_apply_not_commit">알림시간이 변경되지 않았습니다.</string>
-    <string name="empty_timetable">시간표 정보가 없습니다.</string>
     <string name="setting_plz_select_theme">테마를 선택해 주세요.</string>
     <string name="setting_check_borrow">대출 불가능 도서 보지 않기</string>
     <string name="setting_check_borrow_desc_enable">현재 대출 불가능한 책은 검색 결과에서 보이지 않습니다.</string>
@@ -57,10 +56,6 @@
     <string name="setting_save_route_error_parent">현재 폴더의 상위 폴더를 불러올 수 없습니다.</string>
     <string name="setting_timetable_desc">시간표와 관련된 설정을 바꿀 수 있습니다.</string>
     <string name="setting_timetable">시간표 설정</string>
-    <string name="setting_timetable_notify">시간표 알림</string>
-    <string name="setting_timetable_notify_desc">수업 시간 전에 알림을 띄웁니다.</string>
-    <string name="setting_timetable_notify_time">알림 시간 설정</string>
-    <string name="setting_timetable_notify_time_desc">분 전에 알려줍니다.</string>
     <string name="setting_timetable_limit">시간표 표시 제한</string>
     <string name="setting_timetable_limit_desc">시간표가 최대로 보여줄 시간을 표시합니다.</string>
     <string name="setting_timetable_limit_all">\n* 모든 교시가 표시됩니다.</string>
@@ -73,8 +68,6 @@
     <string name="pref_key_check_seat">LIB_SEAT</string>
     <string name="pref_key_noti_time">NOTI_TIME</string>
     <string name="pref_key_theme">APP_THEME</string>
-    <string name="pref_key_timetable_notify">TIMETABLE_NOTIFY</string>
-    <string name="pref_key_timetable_notify_time">TIMETABLE_NOTIFY_TIME</string>
     <string name="pref_key_timetable_limit">TIMETABLE_LIMIT</string>
     <string name="pref_key_home">SCREEN_HOME</string>
     <string name="pref_key_save_route">IMAGE_SAVE_ROUTE</string>

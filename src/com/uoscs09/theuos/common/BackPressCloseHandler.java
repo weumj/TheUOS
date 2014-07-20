@@ -3,12 +3,12 @@ package com.uoscs09.theuos.common;
 /**
  * source from JavaCan : 
  * {@link http://javacan.tistory.com/entry/close-androidapp-by-successive-back-press}<br>
- * µÚ·Î°¡±â ¹öÆ°À» µÎ¹ø ´­·¯ ¾ÛÀ» Á¾·á½ÃÅ°´Â ÀÏÀ» Ã³¸®ÇÏ´Â Å¬·¡½º
+ * ë’¤ë¡œê°€ê¸° ë²„íŠ¼ì„ ë‘ë²ˆ ëˆŒëŸ¬ ì•±ì„ ì¢…ë£Œì‹œí‚¤ëŠ” ì¼ì„ ì²˜ë¦¬í•˜ëŠ” í´ë˜ìŠ¤
  */
 public class BackPressCloseHandler {
 	private long backKeyPressedTime = 0;
 
-	/** @return µÚ·Î ¹öÆ°ÀÌ Ã³À½ ´­¸° ÀÌÈÄ 2ÃÊ ³»¿¡ ´Ù½Ã ´­¸®¸é true, 2ÃÊ°¡ Áö³­ µÚ ´­¸®¸é false */
+	/** @return ë’¤ë¡œ ë²„íŠ¼ì´ ì²˜ìŒ ëˆŒë¦° ì´í›„ 2ì´ˆ ë‚´ì— ë‹¤ì‹œ ëˆŒë¦¬ë©´ true, 2ì´ˆê°€ ì§€ë‚œ ë’¤ ëˆŒë¦¬ë©´ false */
 	public boolean onBackPressed() {
 		long current = System.currentTimeMillis();
 		if (current <= backKeyPressedTime + 2000) {

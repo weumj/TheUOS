@@ -2,8 +2,8 @@ package com.uoscs09.theuos.http.parse;
 
 import java.io.IOException;
 import java.util.List;
-/** ÇÊ¿äÇÑ Á¤º¸¸¦ parsingÇÏ´Â interface*/
+/** í•„ìš”í•œ ì •ë³´ë¥¼ parsingí•˜ëŠ” interface*/
 public interface IParseHttp {
-	/** ÁÖ¾îÁø Á¤º¸¸¦ parsingÇÏ¿© List·Î ¹ÝÈ¯ÇÑ´Ù.*/
+	/** ì£¼ì–´ì§„ ì •ë³´ë¥¼ parsingí•˜ì—¬ Listë¡œ ë°˜í™˜í•œë‹¤.*/
 	public List<?> parse() throws IOException;
 }

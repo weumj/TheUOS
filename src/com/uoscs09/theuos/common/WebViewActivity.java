@@ -9,7 +9,7 @@ import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.impl.BaseActivity;
 import com.uoscs09.theuos.common.util.AppUtil;
 
-/** WebView°¡ Æ÷ÇÔµÈ ¾×Æ¼ºñÆ¼, ¾×Æ¼ºñÆ¼ Á¾·á½Ã(onDestroy) webView¸¦ destoryÇÔ */
+/** WebViewê°€ í¬í•¨ëœ ì•¡í‹°ë¹„í‹°, ì•¡í‹°ë¹„í‹° ì¢…ë£Œì‹œ(onDestroy) webViewë¥¼ destoryí•¨ */
 public abstract class WebViewActivity extends BaseActivity {
 	protected NonLeakingWebView mWebView;
 	protected WebSettings settings;

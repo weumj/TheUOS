@@ -2,7 +2,7 @@ package com.uoscs09.theuos.common.util;
 
 import java.util.Calendar;
 
-/** WISE OPEN API°ü·Ã º¯¼ö¿Í ¸Ş¼Òµå¸¦ °¡Áö´Â Å¬·¡½º */
+/** WISE OPEN APIê´€ë ¨ ë³€ìˆ˜ì™€ ë©”ì†Œë“œë¥¼ ê°€ì§€ëŠ” í´ë˜ìŠ¤ */
 public class OApiUtil {
 	private static String year;
 	public static final String UOS_API_KEY = OApiKey.WISE_OAPI_KEY;
@@ -72,9 +72,9 @@ public class OApiUtil {
 	}
 
 	/**
-	 * @return ³¯Â¥¸¦ ³ªÅ¸³»´Â ¼ıÀÚ <br>
-	 *         6¿ù 1ÀÏ : 601<br>
-	 *         12¿ù 12ÀÏ : 1212
+	 * @return ë‚ ì§œë¥¼ ë‚˜íƒ€ë‚´ëŠ” ìˆ«ì <br>
+	 *         6ì›” 1ì¼ : 601<br>
+	 *         12ì›” 12ì¼ : 1212
 	 */
 	public static int getDate() {
 		Calendar c = Calendar.getInstance();
@@ -82,9 +82,9 @@ public class OApiUtil {
 	}
 
 	/**
-	 * @return ³¯Â¥¿Í ½Ã°£À» ³ªÅ¸³»´Â ¼ıÀÚ <br>
-	 *         6¿ù 1ÀÏ 10½Ã: 60110<br>
-	 *         6¿ù 1ÀÏ 23½Ã: 60123<br>
+	 * @return ë‚ ì§œì™€ ì‹œê°„ì„ ë‚˜íƒ€ë‚´ëŠ” ìˆ«ì <br>
+	 *         6ì›” 1ì¼ 10ì‹œ: 60110<br>
+	 *         6ì›” 1ì¼ 23ì‹œ: 60123<br>
 	 */
 	public static int getDateTime() {
 		Calendar c = Calendar.getInstance();
@@ -96,73 +96,73 @@ public class OApiUtil {
 		StringBuilder sb = new StringBuilder();
 		switch (Integer.valueOf(buildingNo)) {
 		case 1:
-			sb.append("Àü³ó°ü");
+			sb.append("ì „ë†ê´€");
 			break;
 		case 2:
-			sb.append("Á¦1°øÇĞ°ü");
+			sb.append("ì œ1ê³µí•™ê´€");
 			break;
 		case 3:
-			sb.append("°Ç¼³°øÇĞ°ü");
+			sb.append("ê±´ì„¤ê³µí•™ê´€");
 			break;
 		case 4:
-			sb.append("Ã¢°ø°ü");
+			sb.append("ì°½ê³µê´€");
 			break;
 		case 5:
-			sb.append("ÀÎ¹®ÇĞ°ü");
+			sb.append("ì¸ë¬¸í•™ê´€");
 			break;
 		case 6:
-			sb.append("¹èºÀ°ü");
+			sb.append("ë°°ë´‰ê´€");
 			break;
 		case 8:
-			sb.append("ÀÚ¿¬°úÇĞ°ü");
+			sb.append("ìì—°ê³¼í•™ê´€");
 			break;
 		case 9:
-			sb.append("À½¾Ç°ü");
+			sb.append("ìŒì•…ê´€");
 			break;
 		case 10:
-			sb.append("°æ³ó°ü");
+			sb.append("ê²½ë†ê´€");
 			break;
 		case 11:
-			sb.append("Á¦2°øÇĞ°ü");
+			sb.append("ì œ2ê³µí•™ê´€");
 			break;
 		case 13:
-			sb.append("¾ğ¹«°ü");
+			sb.append("ì–¸ë¬´ê´€");
 			break;
 		case 14:
-			sb.append("°úÇĞ±â¼ú°ü");
+			sb.append("ê³¼í•™ê¸°ìˆ ê´€");
 			break;
 		case 15:
-			sb.append("21¼¼±â°ü");
+			sb.append("21ì„¸ê¸°ê´€");
 			break;
 		case 16:
-			sb.append("Á¶Çü°ü");
+			sb.append("ì¡°í˜•ê´€");
 			break;
 		case 17:
-			sb.append("Ã¼À°°ü");
+			sb.append("ì²´ìœ¡ê´€");
 			break;
 		case 19:
-			sb.append("Á¤º¸±â¼ú°ü");
+			sb.append("ì •ë³´ê¸°ìˆ ê´€");
 			break;
 		case 20:
-			sb.append("¹ıÇĞ°ü");
+			sb.append("ë²•í•™ê´€");
 			break;
 		case 23:
-			sb.append("°ÇÃà±¸Á¶½ÇÇèµ¿");
+			sb.append("ê±´ì¶•êµ¬ì¡°ì‹¤í—˜ë™");
 			break;
 		case 24:
-			sb.append("Åä¸ñ±¸Á¶½ÇÇèµ¿");
+			sb.append("í† ëª©êµ¬ì¡°ì‹¤í—˜ë™");
 			break;
 		case 25:
-			sb.append("¹Ìµğ¾î°ü");
+			sb.append("ë¯¸ë””ì–´ê´€");
 			break;
 		case 26:
-			sb.append("ÀÚµ¿È­¿Â½Ç");
+			sb.append("ìë™í™”ì˜¨ì‹¤");
 			break;
 		case 28:
-			sb.append("¿îµ¿Àå");
+			sb.append("ìš´ë™ì¥");
 			break;
 		case 33:
-			sb.append("¹Ì·¡°ü");
+			sb.append("ë¯¸ë˜ê´€");
 			break;
 		default:
 			return null;

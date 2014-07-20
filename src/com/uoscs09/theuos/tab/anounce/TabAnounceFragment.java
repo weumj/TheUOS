@@ -39,13 +39,13 @@ import com.uoscs09.theuos.http.parse.ParseFactory;
 public class TabAnounceFragment extends
 		AbsDrawableProgressFragment<ArrayList<AnounceItem>> implements
 		SearchView.OnQueryTextListener {
-	/** »ó´Ü ¾×¼Ç¹Ù¿¡ Ãß°¡µÉ ·¹ÀÌ¾Æ¿ô, spinner¿Í pageView°¡ ¹èÄ¡µÈ´Ù. */
+	/** ìƒë‹¨ ì•¡ì…˜ë°”ì— ì¶”ê°€ë  ë ˆì´ì•„ì›ƒ, spinnerì™€ pageViewê°€ ë°°ì¹˜ëœë‹¤. */
 	@ReleaseWhenDestroy
 	private View actionViewLayout;
-	/** »ó´Ü ¾×¼Ç¹Ù¿¡ Ãß°¡µÉ À§Á¬, ÆäÀÌÁö ÀÎµ¦½º */
+	/** ìƒë‹¨ ì•¡ì…˜ë°”ì— ì¶”ê°€ë  ìœ„ì ¯, í˜ì´ì§€ ì¸ë±ìŠ¤ */
 	@ReleaseWhenDestroy
 	private TextView pageView;
-	/** »ó´Ü ¾×¼Ç¹Ù¿¡ Ãß°¡µÉ À§Á¬, Ä«Å×°í¸® ¼±ÅÃ */
+	/** ìƒë‹¨ ì•¡ì…˜ë°”ì— ì¶”ê°€ë  ìœ„ì ¯, ì¹´í…Œê³ ë¦¬ ì„ íƒ */
 	@ReleaseWhenDestroy
 	protected Spinner spinner;
 	@ReleaseWhenDestroy
@@ -56,18 +56,18 @@ public class TabAnounceFragment extends
 	/** searchView */
 	@ReleaseWhenDestroy
 	private MenuItem searchMenu;
-	/** viewpager ÀÌµ¿ ½Ã ½ºÇÇ³ÊÀÇ ¾ÆÀÌÅÛ ¸®½º³Ê¸¦ ÇÑ¹ø¸¸ ¹ßµ¿½ÃÅ°°Ô ÇÏ´Â º¯¼ö */
+	/** viewpager ì´ë™ ì‹œ ìŠ¤í”¼ë„ˆì˜ ì•„ì´í…œ ë¦¬ìŠ¤ë„ˆë¥¼ í•œë²ˆë§Œ ë°œë™ì‹œí‚¤ê²Œ í•˜ëŠ” ë³€ìˆ˜ */
 	private boolean once;
-	/** °Ë»ö±â´É È°¼ºÈ­½Ã true °¡ µÇ´Â º¯¼ö */
+	/** ê²€ìƒ‰ê¸°ëŠ¥ í™œì„±í™”ì‹œ true ê°€ ë˜ëŠ” ë³€ìˆ˜ */
 	private boolean isSearch;
-	/** (°Ë»ö ¸Ş´º ¼±ÅÃ½Ã)°Ë»ö¾î¸¦ ÀúÀåÇÔ */
+	/** (ê²€ìƒ‰ ë©”ë‰´ ì„ íƒì‹œ)ê²€ìƒ‰ì–´ë¥¼ ì €ì¥í•¨ */
 	private String searchQuery;
 	protected int spinnerSelection = 0;
 	protected int pageNum;
 	@ReleaseWhenDestroy
 	protected AlertDialog pageSelectDialog;
 
-	/** ÀÌÀü ÆäÀÌÁö ¹øÈ£, °øÁö»çÇ× °Ë»ö °á°ú°¡ ¾øÀ¸¸é ÇöÀç ÆäÀÌÁö ¹øÈ£¸¦ º¯ÇÏÁö ¾Ê°ÔÇÏ´Â ¿ªÇÒ */
+	/** ì´ì „ í˜ì´ì§€ ë²ˆí˜¸, ê³µì§€ì‚¬í•­ ê²€ìƒ‰ ê²°ê³¼ê°€ ì—†ìœ¼ë©´ í˜„ì¬ í˜ì´ì§€ ë²ˆí˜¸ë¥¼ ë³€í•˜ì§€ ì•Šê²Œí•˜ëŠ” ì—­í•  */
 	private int prevPageNum = pageNum;
 	protected static final String PAGE_NUM = "PAGE";
 	protected static final String LIST_AN = "list_an";
@@ -97,7 +97,7 @@ public class TabAnounceFragment extends
 		pageView = (TextView) actionViewLayout
 				.findViewById(R.id.tab_anounce_action_textView_page);
 		pageView.setOnClickListener(new View.OnClickListener() {
-			// ÆäÀÌÁö¸¦ ³ªÅ¸³»´Â ¹öÆ°À» ¼±ÅÃÇßÀ» ½Ã, ÆäÀÌÁö¸¦ ¼±ÅÃÇÏ´Â ¸Ş´º¸¦ ¶ç¿î´Ù.
+			// í˜ì´ì§€ë¥¼ ë‚˜íƒ€ë‚´ëŠ” ë²„íŠ¼ì„ ì„ íƒí–ˆì„ ì‹œ, í˜ì´ì§€ë¥¼ ì„ íƒí•˜ëŠ” ë©”ë‰´ë¥¼ ë„ìš´ë‹¤.
 			@Override
 			public void onClick(View v) {
 				if (spinnerSelection == 0) {
@@ -146,7 +146,7 @@ public class TabAnounceFragment extends
 		return rootView;
 	}
 
-	/** °øÁö»çÇ× ¸®½ºÆ®Áß ÇÏ³ª°¡ ¼±ÅÃµÇ¸é È£ÃâµÊ */
+	/** ê³µì§€ì‚¬í•­ ë¦¬ìŠ¤íŠ¸ì¤‘ í•˜ë‚˜ê°€ ì„ íƒë˜ë©´ í˜¸ì¶œë¨ */
 	private AdapterView.OnItemClickListener mOnItemClickListener = new AdapterView.OnItemClickListener() {
 		@Override
 		public void onItemClick(AdapterView<?> adapterView, View view, int pos,
@@ -164,7 +164,7 @@ public class TabAnounceFragment extends
 		}
 	};
 
-	/** spinner°¡ ¼±ÅÃµÇ¸é(Ä«Å×°í¸® ¼±ÅÃ) È£ÃâµÊ */
+	/** spinnerê°€ ì„ íƒë˜ë©´(ì¹´í…Œê³ ë¦¬ ì„ íƒ) í˜¸ì¶œë¨ */
 	private AdapterView.OnItemSelectedListener mOnItemSelectedListener = new AdapterView.OnItemSelectedListener() {
 		@Override
 		public void onItemSelected(AdapterView<?> adapterView, View view,
@@ -258,7 +258,7 @@ public class TabAnounceFragment extends
 	@SuppressWarnings("unchecked")
 	@Override
 	public ArrayList<AnounceItem> call() throws Exception {
-		// TODO ÃÖÀûÈ­ ÇÊ¿ä, ÇÊ¿ä¾øÀÌ Áö¿ì°í ¾²°í ÇÔ
+		// TODO ìµœì í™” í•„ìš”, í•„ìš”ì—†ì´ ì§€ìš°ê³  ì“°ê³  í•¨
 		queryTable.clear();
 		int howTo;
 		String url;
@@ -310,7 +310,7 @@ public class TabAnounceFragment extends
 					+ PAGE_NUM);
 	}
 
-	/** ÀúÀåµÈ bundle¿¡¼­ µ¥ÀÌÅÍ¸¦ º¹±¸ÇÑ´Ù. */
+	/** ì €ì¥ëœ bundleì—ì„œ ë°ì´í„°ë¥¼ ë³µêµ¬í•œë‹¤. */
 	private void getDataFromBundle(Bundle savedInstanceState) {
 		if (savedInstanceState != null) {
 			pageNum = savedInstanceState.getInt(PAGE_NUM);
@@ -324,14 +324,14 @@ public class TabAnounceFragment extends
 		}
 	}
 
-	/** ÆäÀÌÁö ¼±ÅÃ dialog¸¦ »ı¼ºÇÑ´Ù. */
+	/** í˜ì´ì§€ ì„ íƒ dialogë¥¼ ìƒì„±í•œë‹¤. */
 	private void initDialog() {
 		Context context = getActivity();
 		final NumberPicker np = new NumberPicker(context);
 		np.setMinValue(1);
 		np.setMaxValue(999);
 		pageSelectDialog = new AlertDialog.Builder(context)
-				.setTitle("ÀÌµ¿ÇÒ ÆäÀÌÁö¸¦ ¼±ÅÃÇÏ¼¼¿ä")
+				.setTitle("ì´ë™í•  í˜ì´ì§€ë¥¼ ì„ íƒí•˜ì„¸ìš”")
 				.setView(np)
 				.setPositiveButton(android.R.string.ok,
 						new DialogInterface.OnClickListener() {
@@ -346,7 +346,7 @@ public class TabAnounceFragment extends
 				.create();
 	}
 
-	/** ÇöÀç pageÀÇ ¹øÈ£¸¦ ¼³Á¤ÇÑ´Ù. */
+	/** í˜„ì¬ pageì˜ ë²ˆí˜¸ë¥¼ ì„¤ì •í•œë‹¤. */
 	private void setPageValue(int newValue) {
 		prevPageNum = pageNum;
 		pageNum = newValue;

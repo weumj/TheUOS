@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
-import android.graphics.Color;
+import android.content.res.TypedArray;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
@@ -19,6 +20,8 @@ public class TimetableAdapter extends AbsArrayAdapter<TimeTableItem> {
 	private OnClickListener l;
 	private Map<String, Integer> colorTable;
 	private List<TimeTableItem> list;
+	private static int BACKGROUND_RES;
+	private static final int[] SELECTOR_REF = { R.attr.selector_button };
 
 	private TimetableAdapter(Context context) {
 		super(context, 0);
@@ -30,6 +33,7 @@ public class TimetableAdapter extends AbsArrayAdapter<TimeTableItem> {
 		l = null;
 		this.list = list;
 		this.colorTable = colorTable;
+		init(context);
 	}
 
 	public TimetableAdapter(Context context, int layout,
@@ -39,6 +43,15 @@ public class TimetableAdapter extends AbsArrayAdapter<TimeTableItem> {
 		this.l = l;
 		this.list = list;
 		this.colorTable = colorTable;
+		init(context);
+	}
+
+	private static void init(Context context) {
+		// 시간표 기본 background resource을 얻어옴
+		TypedValue value = new TypedValue();
+		TypedArray a = context.obtainStyledAttributes(value.data, SELECTOR_REF);
+		BACKGROUND_RES = a.getResourceId(0, R.drawable.selector_button);
+		a.recycle();
 	}
 
 	@Override
@@ -49,12 +62,6 @@ public class TimetableAdapter extends AbsArrayAdapter<TimeTableItem> {
 
 	@Override
 	public View setView(int position, View convertView, ViewHolder holder) {
-		// Context context = getContext();
-
-		// int width = TabTimeTableFragment.px == 0 ? context.getResources()
-		// .getDisplayMetrics().widthPixels
-		// / TabTimeTableFragment.NUM_OF_TIMETABLE_VIEWS
-		// : TabTimeTableFragment.px;
 		int width = TabTimeTableFragment.px;
 		ViewWrapper w = (ViewWrapper) holder;
 		TimeTableItem item = getItem(position);
@@ -65,42 +72,31 @@ public class TimetableAdapter extends AbsArrayAdapter<TimeTableItem> {
 		w.textArray[0]
 				.setText(strArray[0].replace("\n\n", StringUtil.NEW_LINE));
 		w.textArray[0].setWidth(width);
-		int baseSelector;
-		switch (AppUtil.theme) {
-		case Black:
-			baseSelector = R.drawable.selector_button_dark;
-			break;
-		case BlackAndWhite:
-		case White:
-		default:
-			baseSelector = R.drawable.selector_button;
-			break;
-		}
 
 		Integer idx;
 		int color;
-		TimeTableItem upperItem;
+		String[] upperArray = null;
 		if (position != 0) {
-			upperItem = getItem(position - 1);
-		} else {
-			upperItem = new TimeTableItem();
+			TimeTableItem upperItem = getItem(position - 1);
+			upperArray = new String[] { null, upperItem.mon, upperItem.tue,
+					upperItem.wed, upperItem.thr, upperItem.fri, upperItem.sat };
 		}
-		String[] upperArray = { null, upperItem.mon, upperItem.tue,
-				upperItem.wed, upperItem.thr, upperItem.fri, upperItem.sat };
 
 		for (int i = 1; i < TabTimeTableFragment.NUM_OF_TIMETABLE_VIEWS; i++) {
-			if (OApiUtil.getSubjectName(upperArray[i]).equals(
-					OApiUtil.getSubjectName(strArray[i]))) {
+			if (upperArray != null
+					&& OApiUtil.getSubjectName(upperArray[i]).equals(
+							OApiUtil.getSubjectName(strArray[i]))) {
 				w.textArray[i].setText(StringUtil.NULL);
 			} else {
 				w.textArray[i].setText(OApiUtil
 						.getCompressedString(strArray[i]).trim());
 			}
 
-			w.textArray[i].setWidth(width);
-			w.textArray[i].setTextColor(Color.BLACK);
+			// 시간표 알림을 위한 시간표 정보 데이터 저장
 			w.textArray[i].setTag(strArray[i] + StringUtil.NEW_LINE + position
 					+ StringUtil.NEW_LINE + i);
+
+			w.textArray[i].setWidth(width);
 			idx = colorTable.get(OApiUtil.getSubjectName(strArray[i]));
 			if (idx != null) {
 				color = AppUtil.getColor(idx);
@@ -112,7 +108,7 @@ public class TimetableAdapter extends AbsArrayAdapter<TimeTableItem> {
 				idx = null;
 			} else {
 				w.textArray[i].setOnClickListener(null);
-				w.textArray[i].setBackgroundResource(baseSelector);
+				w.textArray[i].setBackgroundResource(BACKGROUND_RES);
 			}
 		}
 		return convertView;

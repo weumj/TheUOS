@@ -32,15 +32,15 @@ public class SeoulOApiUtil {
 
 	public static String getStationName(String code) {
 		if (Metro.Chung.equals(code))
-			return "Ã»·®¸® (1È£¼±)";
+			return "ì²­ëŸ‰ë¦¬ (1í˜¸ì„ )";
 		else if (Metro.DAP.equals(code))
-			return "´ä½Ê¸®";
+			return "ë‹µì‹­ë¦¬";
 		else if (Metro.HOE.equals(code))
-			return "È¸±â (1È£¼±)";
+			return "íšŒê¸° (1í˜¸ì„ )";
 		else if (Metro.JChung.equals(code))
-			return "Ã»·®¸® (Áß¾Ó¼±)";
+			return "ì²­ëŸ‰ë¦¬ (ì¤‘ì•™ì„ )";
 		else if (Metro.JHOE.equals(code))
-			return "È¸±â (Áß¾Ó¼±)";
+			return "íšŒê¸° (ì¤‘ì•™ì„ )";
 		else
 			return null;
 	}

@@ -17,7 +17,7 @@ import android.widget.ListView;
 
 public class GraphicUtil {
 
-	/** ÁÖ¾îÁø ¸®½ºÆ®ºäÀÇ ÀüÃ¼ ¾ÆÀÌÅÛµéÀ» ÇÏ³ªÀÇ ÅëÇÕµÈ ºñÆ®¸ÊÀ¸·Î ¸¸µç´Ù. */
+	/** ì£¼ì–´ì§„ ë¦¬ìŠ¤íŠ¸ë·°ì˜ ì „ì²´ ì•„ì´í…œë“¤ì„ í•˜ë‚˜ì˜ í†µí•©ëœ ë¹„íŠ¸ë§µìœ¼ë¡œ ë§Œë“ ë‹¤. */
 	public static Bitmap getWholeListViewItemsToBitmap(ListView listview) {
 		ListAdapter adapter = listview.getAdapter();
 		int itemscount = adapter.getCount();
@@ -66,9 +66,9 @@ public class GraphicUtil {
 	}
 
 	/**
-	 * ÇØ´ç ºñÆ®¸Ê ÀÌ¹ÌÁö¸¦ ÆÄÀÏ·Î ÀúÀåÇÑ´Ù.
+	 * í•´ë‹¹ ë¹„íŠ¸ë§µ ì´ë¯¸ì§€ë¥¼ íŒŒì¼ë¡œ ì €ì¥í•œë‹¤.
 	 * 
-	 * @return ¼º°ø ¿©ºÎ
+	 * @return ì„±ê³µ ì—¬ë¶€
 	 */
 	public static boolean saveImageToFile(String src, Bitmap img)
 			throws IOException, FileNotFoundException {
@@ -83,8 +83,8 @@ public class GraphicUtil {
 	}
 
 	/**
-	 * ÁÖ¾îÁø ºä¸¦ ºñÆ®¸ÊÀ¸·Î Ä¸ÃÄÇÑ´Ù.<br>
-	 * {@code View.getDrawingCache()} °¡ nullÀ» ¹İÈ¯ÇÒ¶§ »ç¿ëÇÑ´Ù.
+	 * ì£¼ì–´ì§„ ë·°ë¥¼ ë¹„íŠ¸ë§µìœ¼ë¡œ ìº¡ì³í•œë‹¤.<br>
+	 * {@code View.getDrawingCache()} ê°€ nullì„ ë°˜í™˜í• ë•Œ ì‚¬ìš©í•œë‹¤.
 	 * */
 	public static Bitmap createBitmapFromView(View v)
 			throws IllegalArgumentException {
@@ -98,7 +98,7 @@ public class GraphicUtil {
 		return b;
 	}
 
-	/** µÎ°³ÀÇ ºñÆ®¸ÊÀ» ÇÕÄ£´Ù. bmp1ÀÌ À§¿¡ À§Ä¡ÇÑ´Ù. */
+	/** ë‘ê°œì˜ ë¹„íŠ¸ë§µì„ í•©ì¹œë‹¤. bmp1ì´ ìœ„ì— ìœ„ì¹˜í•œë‹¤. */
 	public static Bitmap merge(Bitmap bmp1, Bitmap bmp2) {
 		Bitmap cs = null;
 

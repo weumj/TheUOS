@@ -3,7 +3,7 @@ package com.uoscs09.theuos.common;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-/** URI Ã¢ÀÌ ¾Æ´Ñ Á÷Á¢ URLÀ» loadÇÏ´Â ¿ªÇÒ */
+/** URI ì°½ì´ ì•„ë‹Œ ì§ì ‘ URLì„ loadí•˜ëŠ” ì—­í•  */
 public class CustomWebViewClient extends WebViewClient {
 
 	@Override

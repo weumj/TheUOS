@@ -30,16 +30,16 @@ import com.uoscs09.theuos.setting.SettingActivity;
 
 import dev.dworks.libs.actionbartoggle.ActionBarToggle;
 
-/** Main Activity, ViewPager°¡ Á¸ÀçÇÑ´Ù. */
+/** Main Activity, ViewPagerê°€ ì¡´ì¬í•œë‹¤. */
 public class PagerFragmentActivity extends BaseFragmentActivity implements
 		PagerInterface {
 	/** ViewPager */
 	private ViewPager mViewPager;
 	/** ViewPager Adapter */
 	private FragmentStatePagerAdapter mPagerAdapter;
-	/** µÚ·Î µÎ¹ø´­·¯ Á¾·á */
+	/** ë’¤ë¡œ ë‘ë²ˆëˆŒëŸ¬ ì¢…ë£Œ */
 	private BackPressCloseHandler mBackCloseHandler;
-	/** È­¸é ¼ø¼­¸¦ ³ªÅ¸³»´Â ¸®½ºÆ® */
+	/** í™”ë©´ ìˆœì„œë¥¼ ë‚˜íƒ€ë‚´ëŠ” ë¦¬ìŠ¤íŠ¸ */
 	private ArrayList<Integer> mPageOrderList;
 
 	protected SlidingPaneLayout slidingLayout;
@@ -65,14 +65,14 @@ public class PagerFragmentActivity extends BaseFragmentActivity implements
 		// .detectAll().penaltyLog().penaltyDialog().build());
 		// StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll()
 		// .penaltyLog().penaltyDeath().build());
-		/* È£Ãâ ¼ø¼­¸¦ ¹Ù²ÙÁö ¸» °Í */
+		/* í˜¸ì¶œ ìˆœì„œë¥¼ ë°”ê¾¸ì§€ ë§ ê²ƒ */
 		initValues();
 		super.onCreate(savedInstanceState);
 		// setContentView(R.layout.activity_pager_and_drawer);
 		setContentView(R.layout.activity_pager_and_slider);
 		initPager();
 		initDrawer();
-		/* È£Ãâ ¼ø¼­¸¦ ¹Ù²ÙÁö ¸» °Í */
+		/* í˜¸ì¶œ ìˆœì„œë¥¼ ë°”ê¾¸ì§€ ë§ ê²ƒ */
 
 		int tabNumber = getIntent().getIntExtra(SAVED_TAB_NUM, 0);
 		if (savedInstanceState != null) {
@@ -94,13 +94,13 @@ public class PagerFragmentActivity extends BaseFragmentActivity implements
 	}
 
 	/**
-	 * ViewPager¸¦ ÀüÈ¯ÇÏ´Â ¸Ş¼Òµå
+	 * ViewPagerë¥¼ ì „í™˜í•˜ëŠ” ë©”ì†Œë“œ
 	 * 
 	 * @param position
-	 *            ÀüÈ¯µÉ À§Ä¡
+	 *            ì „í™˜ë  ìœ„ì¹˜
 	 * @param isFromPager
-	 *            ¸Ş¼Òµå°¡ ViewPager·Î ºÎÅÍ È£ÃâµÇ¾ú´ÂÁö ¿©ºÎ <br>
-	 *            loop¸¦ ¹æÁöÇÏ´Â ¿ªÇÒÀ» ÇÑ´Ù.
+	 *            ë©”ì†Œë“œê°€ ViewPagerë¡œ ë¶€í„° í˜¸ì¶œë˜ì—ˆëŠ”ì§€ ì—¬ë¶€ <br>
+	 *            loopë¥¼ ë°©ì§€í•˜ëŠ” ì—­í• ì„ í•œë‹¤.
 	 */
 	protected void navigateItem(int position, boolean isFromPager) {
 		if (position < 0) {
@@ -217,19 +217,19 @@ public class PagerFragmentActivity extends BaseFragmentActivity implements
 
 	}
 
-	/** SettingActivity¸¦ ½ÃÀÛÇÑ´Ù. */
+	/** SettingActivityë¥¼ ì‹œì‘í•œë‹¤. */
 	protected void startSettingActivity() {
 		startActivityForResult(new Intent(this, SettingActivity.class),
 				START_SETTING);
 		overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 	}
 
-	/** ÇöÀç ÆäÀÌÁöÀÇ ÀÎµ¦½º¸¦ ¾ò´Â´Ù. */
+	/** í˜„ì¬ í˜ì´ì§€ì˜ ì¸ë±ìŠ¤ë¥¼ ì–»ëŠ”ë‹¤. */
 	protected int getCurrentPageIndex() {
 		return mViewPager.getCurrentItem();
 	}
 
-	/** ÇöÀç ÆäÀÌÁöÀÇ id¸¦ ¾ò´Â´Ù. */
+	/** í˜„ì¬ í˜ì´ì§€ì˜ idë¥¼ ì–»ëŠ”ë‹¤. */
 	protected int getCurrentPageId() {
 		return mPageOrderList.get(getCurrentPageIndex());
 	}
@@ -282,20 +282,20 @@ public class PagerFragmentActivity extends BaseFragmentActivity implements
 	}
 
 	/**
-	 * »õ·Î¿î ÀÎÅÙÆ®¸¦ ¹ŞÀ»¶§ ±×°ÍÀ» °Ë»çÇØ¼­ <br>
-	 * FinishSelf = true ÀÌ¸é ¾îÇÃ¸®ÄÉÀÌ¼Ç Á¾·á
+	 * ìƒˆë¡œìš´ ì¸í…íŠ¸ë¥¼ ë°›ì„ë•Œ ê·¸ê²ƒì„ ê²€ì‚¬í•´ì„œ <br>
+	 * FinishSelf = true ì´ë©´ ì–´í”Œë¦¬ì¼€ì´ì…˜ ì¢…ë£Œ
 	 */
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
 		if (intent.getBooleanExtra("FinishSelf", false)) {
-			// TODO ÀÌ°÷¿¡¼­ Á¾·á Àü Ã³¸®¸¦ ÇÑ´Ù.
+			// TODO ì´ê³³ì—ì„œ ì¢…ë£Œ ì „ ì²˜ë¦¬ë¥¼ í•œë‹¤.
 			// AppUtil.clearApplicationFile(getCacheDir());
 			// AppUtil.clearApplicationFile(getExternalCacheDir());
 			AppUtil.closeAllDatabase(this);
 			finish();
 			overridePendingTransition(R.anim.enter_fade, R.anim.exit_hold);
-			// ÁöÁ¤ ½Ã°£ ÈÄ ¸ğµç ½º·¹µå Á¾·á
+			// ì§€ì • ì‹œê°„ í›„ ëª¨ë“  ìŠ¤ë ˆë“œ ì¢…ë£Œ
 			new Handler().postDelayed(new Runnable() {
 				@Override
 				public void run() {
@@ -343,7 +343,7 @@ public class PagerFragmentActivity extends BaseFragmentActivity implements
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode,
 			Intent intent) {
-		// activity¸¦ Àç½ÃÀÛÇÔ
+		// activityë¥¼ ì¬ì‹œì‘í•¨
 		// XXX potential memory leak!!!!!
 		if (resultCode == AppUtil.RELAUNCH_ACTIVITY) {
 			finish();

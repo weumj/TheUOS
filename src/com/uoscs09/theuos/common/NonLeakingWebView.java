@@ -12,8 +12,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 /**
- * stackoverflow¿¡¼­ °Ë»öµÈ WebViewÀÇ subclass<br>
- * memory leakÀÌ WebViewº¸´Ù ´úÇÏ´Ù.
+ * stackoverflowì—ì„œ ê²€ìƒ‰ëœ WebViewì˜ subclass<br>
+ * memory leakì´ WebViewë³´ë‹¤ ëœí•˜ë‹¤.
  */
 public class NonLeakingWebView extends WebView {
 	private static Field sConfigCallback;

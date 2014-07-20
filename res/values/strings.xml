@@ -61,8 +61,7 @@
     <string name="tab_book_subject_opt">검색 옵션을 선택해주세요</string>
     <string name="tab_book_empty_text1"> 버튼을 터치하여 도서 검색을 해 보세요</string>
     <string name="tab_book_empty_text2"> 버튼을 터치하여 도서 검색 옵션을 설정하세요</string>
-    <string name="tab_library_seat_last_update">마지막 업데이트\n</string>
-    <string name="tab_library_seat_dissmiss_info_not_loading">정보를 불러오는 중입니다.</string>
+    <string name="tab_library_seat_last_update">최근 조회 시간\n</string>
     <string name="tab_library_seat_dissmiss_info_not_exist_in_1hr">1시간 내에 해지될 좌석이 없습니다.</string>
     <string name="tab_library_seat_vacancy"> 잔여 좌석수 : </string>
     <string name="tab_library_seat_occupy"> 사용 좌석수 : </string>
@@ -80,15 +79,12 @@
     <string name="tab_rest_dinner">석식</string>
     <string name="tab_rest_no_info">정보가 없습니다.\n</string>
     <string name="tab_phone_call">전화</string>
-    <string name="tab_phone_site">장소</string>
-    <string name="tab_phone_tel">전화번호</string>
     <string name="tab_phone_search_hint">검색할 장소를 입력하세요.</string>
     <string name="tab_phone_confirm_call">(으)로 전화를 겁니다.</string>
     <string name="tab_phone_caution_update">전화번호 업데이트를 시행합니다.\n사용자의 네트워크 환경에 따라 다소 시간이 걸릴 수 있습니다.\n진행하시겠습니까?</string>
     <string name="tab_timetable_wise_id">Wise ID</string>
     <string name="tab_timetable_wise_passwd">Wise 비밀번호</string>
     <string name="tab_timetable_wise_term">학기</string>
-    <string name="tab_timetable_wise_timetable_save">시간표 저장</string>
     <string name="tab_timetable_wise_login_title">Wise 로그인</string>
     <string name="tab_timetable_wise_login_warning_null">ID 또는 비밀번호를 입력하지 않으셨습니다.</string>
     <string name="tab_timetable_wise_login_warning_fail">로그인에 실패했습니다.</string>
@@ -124,17 +120,6 @@
     <string name="tab_search_subject_class_nm1">강의시간\n및 강의실</string>
     <string name="tab_search_subject_tlsn_cnt1">인원\n</string>
     <string name="tab_search_subject_tlsn_limit1">정원\n</string>
-    <string name="tab_subject_info_week">주차</string>
-    <string name="tab_subject_info_etc">준비물, 과제, 기타</string>
-    <string name="tab_subject_info_week_book">(주별) 교재</string>
-    <string name="tab_subject_info_week_class_meth">수업 방법</string>
-    <string name="tab_subject_info_week_class_cont">수업 내용</string>
-    <string name="tab_subject_info_subject_nm">과목명</string>
-    <string name="tab_subject_info_prof">담당 교수</string>
-    <string name="tab_subject_info_tel">연락처</string>
-    <string name="tab_subject_info_eval">성적 평가</string>
-    <string name="tab_subject_info_book">교재</string>
-    <string name="tab_subject_info_subject_no">교과 번호</string>
     <string name="tab_subject_empty_view_hint">버튼을 터치하여 검색을 시작하세요.</string>
     <string name="tab_subject_empty_view_sort">각 항목의 분류를 터치하면\n오름/내림차순으로 정렬할 수 있습니다.</string>
     <string name="tab_subject_empty_view_hint_subj">교과목을 터치하면\n수업계획서를 볼 수 있습니다</string>
@@ -288,11 +273,6 @@
     </string-array>
     <string-array name="search_cult_2">
         <item>교과목명</item>
-    </string-array>
-    <string-array name="search_subj_opt2">
-        <item>교과목명으로 검색</item>
-        <item>교과번호로 검색</item>
-        <item>담당교수로 검색</item>
     </string-array>
     <string-array name="search_subj_major_1_0">
         <item>대학</item>
@@ -473,24 +453,6 @@
         <item>글로벌건설경영학과</item>
         <item>첨단녹색도시개발학과</item>
         <item>국제도시개발프로그램</item>
-    </string-array>
-    <string-array name="subject_info_weeks">
-        <item>1 주</item>
-        <item>2 주</item>
-        <item>3 주</item>
-        <item>4 주</item>
-        <item>5 주</item>
-        <item>6 주</item>
-        <item>7 주</item>
-        <item>8 주</item>
-        <item>9 주</item>
-        <item>10 주</item>
-        <item>11 주</item>
-        <item>12 주</item>
-        <item>13 주</item>
-        <item>14 주</item>
-        <item>15 주</item>
-        <item>16 주</item>
     </string-array>
     <string-array name="tab_timetable_alarm_time_array">
         <item>알림 없음</item>

@@ -7,7 +7,7 @@ import android.content.Intent;
 import com.uoscs09.theuos.common.util.AppUtil;
 import com.uoscs09.theuos.tab.timetable.TimeTableInfoCallback;
 
-/** ¿©·¯ intent¸¦ ¹Ş¾Æ ÇÊ¿äÇÑ ¼­ºñ½º¸¦ ½ÇÇàÇÏ´Â Å¬·¡½º */
+/** ì—¬ëŸ¬ intentë¥¼ ë°›ì•„ í•„ìš”í•œ ì„œë¹„ìŠ¤ë¥¼ ì‹¤í–‰í•˜ëŠ” í´ë˜ìŠ¤ */
 public class BReceiver extends BroadcastReceiver {
 
 	@Override

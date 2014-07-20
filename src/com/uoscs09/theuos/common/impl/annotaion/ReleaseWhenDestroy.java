@@ -6,9 +6,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Fragment ¶Ç´Â Activity°¡ ÆÄ±«µÉ ¶§,<br>
- * <b>({@code Fragment.onDetach()}¶Ç´Â {@code Activity.onDestroy()} °¡ È£ÃâµÈ °æ¿ì)</b><br>
- * ÇØÁ¦µÉ Field¸¦ ³ªÅ¸³½´Ù.
+ * Fragment ë˜ëŠ” Activityê°€ íŒŒê´´ë  ë•Œ,<br>
+ * <b>({@code Fragment.onDetach()}ë˜ëŠ” {@code Activity.onDestroy()} ê°€ í˜¸ì¶œëœ ê²½ìš°)</b><br>
+ * í•´ì œë  Fieldë¥¼ ë‚˜íƒ€ë‚¸ë‹¤.
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)

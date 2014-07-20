@@ -3,13 +3,11 @@ package com.uoscs09.theuos.tab.libraryseat;
 import java.util.List;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.View;
 import android.widget.TextView;
 
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.impl.AbsArrayAdapter;
-import com.uoscs09.theuos.common.util.AppUtil;
 
 public class SeatDissmissInfoListAdapter extends AbsArrayAdapter<String> {
 	private SeatDissmissInfoListAdapter(Context context) {
@@ -27,10 +25,6 @@ public class SeatDissmissInfoListAdapter extends AbsArrayAdapter<String> {
 		Holder h = (Holder) holder;
 		h.texts[0].setText(strs[0]);
 		h.texts[1].setText(strs[1]);
-		if (AppUtil.theme != AppUtil.AppTheme.Black) {
-			h.texts[0].setTextColor(Color.BLACK);
-			h.texts[1].setTextColor(Color.BLACK);
-		}
 		return v;
 	}
 

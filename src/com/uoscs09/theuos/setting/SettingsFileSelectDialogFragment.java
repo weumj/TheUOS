@@ -24,18 +24,18 @@ import com.uoscs09.theuos.common.util.AppUtil;
 import com.uoscs09.theuos.common.util.PrefUtil;
 
 /**
- * ¼³Á¤ È­¸é¿¡¼­ <b>'ÀÌ¹ÌÁö ÀúÀå °æ·Î'</b> ¸¦ ¼±ÅÃÇÏ¸é ÀüÈ¯µÇ´Â Fragment<br>
- * dialog Çü½ÄÀ¸·Î µ¿ÀÛÇÏ¸ç ¾Æ·¡¿Í °°Àº ±â´ÉÀ» Á¦°øÇÑ´Ù.<br>
- * <li>ÇöÀç ¼³Á¤µÈ °æ·Î¸¦ º¸¿©ÁÖ´Â ±â´É</li> <li>
- * µğ·ºÅä¸® Å½»ö ±â´É</li> <li>»õ Æú´õ »ı¼º ±â´É</li> <li>µğ·ºÅä¸® °æ·Î ¼±ÅÃ ±â´É</li><br>
+ * ì„¤ì • í™”ë©´ì—ì„œ <b>'ì´ë¯¸ì§€ ì €ì¥ ê²½ë¡œ'</b> ë¥¼ ì„ íƒí•˜ë©´ ì „í™˜ë˜ëŠ” Fragment<br>
+ * dialog í˜•ì‹ìœ¼ë¡œ ë™ì‘í•˜ë©° ì•„ë˜ì™€ ê°™ì€ ê¸°ëŠ¥ì„ ì œê³µí•œë‹¤.<br>
+ * <li>í˜„ì¬ ì„¤ì •ëœ ê²½ë¡œë¥¼ ë³´ì—¬ì£¼ëŠ” ê¸°ëŠ¥</li> <li>
+ * ë””ë ‰í† ë¦¬ íƒìƒ‰ ê¸°ëŠ¥</li> <li>ìƒˆ í´ë” ìƒì„± ê¸°ëŠ¥</li> <li>ë””ë ‰í† ë¦¬ ê²½ë¡œ ì„ íƒ ê¸°ëŠ¥</li><br>
  * <br>
  * <br>
  * 
- * µğ·ºÅä¸® ¼±ÅÃ¹öÆ°À» ´­·¶À» ½Ã µğ·ºÅä¸® °æ·Î°¡ preference¿¡ <br>
- * {@code PrefUtil.KEY_SAVE_ROUTE}¸¦ Å°°ªÀ¸·Î ÇØ¼­ ÀúÀåµÇ¾î¾ß ÇÑ´Ù. <br>
+ * ë””ë ‰í† ë¦¬ ì„ íƒë²„íŠ¼ì„ ëˆŒë €ì„ ì‹œ ë””ë ‰í† ë¦¬ ê²½ë¡œê°€ preferenceì— <br>
+ * {@code PrefUtil.KEY_SAVE_ROUTE}ë¥¼ í‚¤ê°’ìœ¼ë¡œ í•´ì„œ ì €ì¥ë˜ì–´ì•¼ í•œë‹¤. <br>
  * <br>
  * 
- * Ãë¼ÒÇÑ °æ¿ì preferenceÀÇ °ªÀº ¹Ù²îÁö ¾Ê´Â´Ù.
+ * ì·¨ì†Œí•œ ê²½ìš° preferenceì˜ ê°’ì€ ë°”ë€Œì§€ ì•ŠëŠ”ë‹¤.
  */
 public class SettingsFileSelectDialogFragment extends DialogFragment {
 	protected TextView pathTextView;
@@ -52,7 +52,7 @@ public class SettingsFileSelectDialogFragment extends DialogFragment {
 		path = getPathFromPref(getActivity());
 	}
 
-	/** DialogÀÇ View¸¦ »ı¼ºÇÑ´Ù. */
+	/** Dialogì˜ Viewë¥¼ ìƒì„±í•œë‹¤. */
 	private View createView() {
 		adapter = new FileListAdapter(getActivity(),
 				R.layout.list_layout_save_route, list);

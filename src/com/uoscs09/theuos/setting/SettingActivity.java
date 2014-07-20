@@ -7,7 +7,7 @@ import android.view.MenuItem;
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.impl.BaseActivity;
 
-/** ¼³Á¤ activity, ÁÖ¿ä ³»¿ëÀº SettingsFragment¿¡ ±¸ÇöµÇ¾î ÀÖ´Ù. */
+/** ì„¤ì • activity, ì£¼ìš” ë‚´ìš©ì€ SettingsFragmentì— êµ¬í˜„ë˜ì–´ ìˆë‹¤. */
 public class SettingActivity extends BaseActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

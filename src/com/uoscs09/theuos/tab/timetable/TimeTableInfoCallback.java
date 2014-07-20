@@ -42,8 +42,8 @@ import com.uoscs09.theuos.tab.subject.SubjectInfoDialFrag;
 import com.uoscs09.theuos.tab.subject.SubjectItem;
 
 /**
- * ½Ã°£Ç¥ ÅÇ¿¡¼­ °ú¸ñÀ» ¼±ÅÃÇÏ¸é ºÒ¸®°Ô µÇ´Â Å¬·¡½º<br>
- * °ú¸ñ ¼±ÅÃ½Ã AlertDialog¸¦ ¶ç¿ì°í, AlertDialog¿¡¼­ Á¦°øÇÏ´Â ¸Ş´º¸¦ Ã³¸®ÇÑ´Ù.
+ * ì‹œê°„í‘œ íƒ­ì—ì„œ ê³¼ëª©ì„ ì„ íƒí•˜ë©´ ë¶ˆë¦¬ê²Œ ë˜ëŠ” í´ë˜ìŠ¤<br>
+ * ê³¼ëª© ì„ íƒì‹œ AlertDialogë¥¼ ë„ìš°ê³ , AlertDialogì—ì„œ ì œê³µí•˜ëŠ” ë©”ë‰´ë¥¼ ì²˜ë¦¬í•œë‹¤.
  */
 public class TimeTableInfoCallback implements View.OnClickListener {
 	protected Hashtable<String, String> params;
@@ -71,10 +71,10 @@ public class TimeTableInfoCallback implements View.OnClickListener {
 	}
 
 	public void doOnClickFromTimeTable(View v) {
-		// ½Ã°£Ç¥¸¦ ÅÍÄ¡ÇÏ¸é ³ªÅ¸³ª´Â dialog¸¦ »ı¼ºÇÏ´Â °úÁ¤
+		// ì‹œê°„í‘œë¥¼ í„°ì¹˜í•˜ë©´ ë‚˜íƒ€ë‚˜ëŠ” dialogë¥¼ ìƒì„±í•˜ëŠ” ê³¼ì •
 		if (v instanceof TextView) {
-			// Àü´ŞµÇ¾î ¿À´Â TextViewÀÇ tag´Â
-			// ½Ã°£Ç¥ Á¤º¸ + ½Ã°£Ç¥ Á¤º¸ÀÇ ¸®½ºÆ® ÀÎµ¦½º(0-15) + ½Ã°£Ç¥ ¿äÀÏ Á¤º¸(1-7)
+			// ì „ë‹¬ë˜ì–´ ì˜¤ëŠ” TextViewì˜ tagëŠ”
+			// ì‹œê°„í‘œ ì •ë³´ + ì‹œê°„í‘œ ì •ë³´ì˜ ë¦¬ìŠ¤íŠ¸ ì¸ë±ìŠ¤(0-15) + ì‹œê°„í‘œ ìš”ì¼ ì •ë³´(1-7)
 			TextView tv = (TextView) v;
 			String tag = tv.getTag().toString();
 			String[] split = tag.split(StringUtil.NEW_LINE);
@@ -233,13 +233,13 @@ public class TimeTableInfoCallback implements View.OnClickListener {
 	}
 
 	/**
-	 * ¾Ë¸² ½Ã°£À» ¹İÈ¯ÇÑ´Ù.
+	 * ì•Œë¦¼ ì‹œê°„ì„ ë°˜í™˜í•œë‹¤.
 	 * 
 	 * @param position
-	 *            - ¸®½ºÆ® ºä¿¡¼­ÀÇ À§Ä¡. Áï, ½Ã°£´ë¸¦ ÀÇ¹ÌÇÔ. ¹üÀ§´Â 0 ~ 14
+	 *            - ë¦¬ìŠ¤íŠ¸ ë·°ì—ì„œì˜ ìœ„ì¹˜. ì¦‰, ì‹œê°„ëŒ€ë¥¼ ì˜ë¯¸í•¨. ë²”ìœ„ëŠ” 0 ~ 14
 	 * @param day
-	 *            - ½Ã°£Ç¥¿¡¼­ÀÇ ³¯Â¥. ¹üÀ§´Â ½Ã°£À» ³ªÅ¸³»´Â Ã¹ ¹øÂ° Ä­À» Á¦¿ÜÇÏ°í<br>
-	 *            ¿ù¿äÀÏ 1 ~ Åä¿äÀÏ 6 ÀÓ.
+	 *            - ì‹œê°„í‘œì—ì„œì˜ ë‚ ì§œ. ë²”ìœ„ëŠ” ì‹œê°„ì„ ë‚˜íƒ€ë‚´ëŠ” ì²« ë²ˆì§¸ ì¹¸ì„ ì œì™¸í•˜ê³ <br>
+	 *            ì›”ìš”ì¼ 1 ~ í† ìš”ì¼ 6 ì„.
 	 */
 	private long getNotificationTime(int position, int day) {
 		Calendar c = Calendar.getInstance(Locale.KOREA);
@@ -318,7 +318,7 @@ public class TimeTableInfoCallback implements View.OnClickListener {
 		params.put(OApiUtil.API_KEY, OApiUtil.UOS_API_KEY);
 	}
 
-	/** ¼ö¾÷ °èÈ¹¼­ ¸Ş´º¸¦ ¼±ÅÃÇÏ¿´À» ½Ã, ÀÛ¾÷À» Ã³¸®ÇÏ´Â Callable */
+	/** ìˆ˜ì—… ê³„íšì„œ ë©”ë‰´ë¥¼ ì„ íƒí•˜ì˜€ì„ ì‹œ, ì‘ì—…ì„ ì²˜ë¦¬í•˜ëŠ” Callable */
 	protected final Callable<ArrayList<ArrayList<String>>> infoCallable = new Callable<ArrayList<ArrayList<String>>>() {
 		@SuppressWarnings("unchecked")
 		@Override
@@ -336,7 +336,7 @@ public class TimeTableInfoCallback implements View.OnClickListener {
 		}
 	};
 
-	/** ¼ö¾÷ °èÈ¹¼­ ¸Ş´º¸¦ ¼±ÅÃÇÏ¿´À» ½Ã, ÀÛ¾÷ °á°ú¸¦ Ã³¸®ÇÏ´Â AsyncCallback */
+	/** ìˆ˜ì—… ê³„íšì„œ ë©”ë‰´ë¥¼ ì„ íƒí•˜ì˜€ì„ ì‹œ, ì‘ì—… ê²°ê³¼ë¥¼ ì²˜ë¦¬í•˜ëŠ” AsyncCallback */
 	protected final AsyncCallback<ArrayList<ArrayList<String>>> infoCallback = new AsyncCallback<ArrayList<ArrayList<String>>>() {
 
 		@Override
@@ -365,7 +365,7 @@ public class TimeTableInfoCallback implements View.OnClickListener {
 
 			if (size == 1) {
 				if (divList.size() < 1) {
-					AppUtil.showToast(context, "±³°ú¸ñÀ» Ã³¸®ÇÏ´Âµ¥ ¿¡·¯°¡ ¹ß»ıÇÏ¿´½À´Ï´Ù.", true);
+					AppUtil.showToast(context, "êµê³¼ëª©ì„ ì²˜ë¦¬í•˜ëŠ”ë° ì—ëŸ¬ê°€ ë°œìƒí•˜ì˜€ìŠµë‹ˆë‹¤.", true);
 					return;
 				}
 				SubjectItem item = new SubjectItem();

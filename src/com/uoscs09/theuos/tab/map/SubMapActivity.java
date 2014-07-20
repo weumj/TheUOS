@@ -169,10 +169,10 @@ public class SubMapActivity extends BaseFragmentActivity implements
 			locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 			Criteria criteria = new Criteria();
 			String provider = locationManager.getBestProvider(criteria, true);
-			if (provider == null) { // À§Ä¡Á¤º¸ ¼³Á¤ÀÌ ¾ÈµÇ¾î ÀÖÀ¸¸é ¼³Á¤ÇÏ´Â ¿¢Æ¼ºñÆ¼·Î ÀÌµ¿ÇÕ´Ï´Ù
+			if (provider == null) { // ìœ„ì¹˜ì •ë³´ ì„¤ì •ì´ ì•ˆë˜ì–´ ìˆìœ¼ë©´ ì„¤ì •í•˜ëŠ” ì—‘í‹°ë¹„í‹°ë¡œ ì´ë™í•©ë‹ˆë‹¤
 				new AlertDialog.Builder(this)
-						.setTitle("À§Ä¡¼­ºñ½º µ¿ÀÇ")
-						.setNeutralButton("ÀÌµ¿",
+						.setTitle("ìœ„ì¹˜ì„œë¹„ìŠ¤ ë™ì˜")
+						.setNeutralButton("ì´ë™",
 								new DialogInterface.OnClickListener() {
 									@Override
 									public void onClick(DialogInterface dialog,
@@ -191,7 +191,7 @@ public class SubMapActivity extends BaseFragmentActivity implements
 									}
 								}).show();
 
-			} else { // À§Ä¡ Á¤º¸ ¼³Á¤ÀÌ µÇ¾î ÀÖÀ¸¸é ÇöÀçÀ§Ä¡¸¦ ¹Ş¾Æ¿É´Ï´Ù
+			} else { // ìœ„ì¹˜ ì •ë³´ ì„¤ì •ì´ ë˜ì–´ ìˆìœ¼ë©´ í˜„ì¬ìœ„ì¹˜ë¥¼ ë°›ì•„ì˜µë‹ˆë‹¤
 				locationManager.requestLocationUpdates(provider, 1, 1, this);
 			}
 		}
@@ -199,16 +199,16 @@ public class SubMapActivity extends BaseFragmentActivity implements
 	}
 
 	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) { // ÈÄ
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) { // í›„
 		super.onActivityResult(requestCode, resultCode, data);
 		switch (requestCode) {
 		case 0:
 			locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 			Criteria criteria = new Criteria();
 			String provider = locationManager.getBestProvider(criteria, true);
-			if (provider == null) {// »ç¿ëÀÚ°¡ À§Ä¡¼³Á¤µ¿ÀÇ ¾ÈÇßÀ»¶§ Á¾·á
+			if (provider == null) {// ì‚¬ìš©ìê°€ ìœ„ì¹˜ì„¤ì •ë™ì˜ ì•ˆí–ˆì„ë•Œ ì¢…ë£Œ
 				finish();
-			} else {// »ç¿ëÀÚ°¡ À§Ä¡¼³Á¤ µ¿ÀÇ ÇßÀ»¶§
+			} else {// ì‚¬ìš©ìê°€ ìœ„ì¹˜ì„¤ì • ë™ì˜ í–ˆì„ë•Œ
 				locationManager.requestLocationUpdates(provider, 1L, 2F, this);
 				initMap();
 			}
@@ -300,7 +300,7 @@ public class SubMapActivity extends BaseFragmentActivity implements
 	private void selectWelfareBuildingMenu() {
 		if (dialog == null) {
 			dialog = new AlertDialog.Builder(this)
-					.setTitle("º¹Áö½Ã¼³")
+					.setTitle("ë³µì§€ì‹œì„¤")
 					.setItems(R.array.tab_map_submap_buildings_welfare,
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
@@ -309,7 +309,7 @@ public class SubMapActivity extends BaseFragmentActivity implements
 									String locationName = getResources()
 											.getStringArray(
 													R.array.tab_map_submap_buildings_welfare)[item];
-									// TODO ¸®ÆÑÅä¸µÀÌ ½Ã±ŞÇÔ state
+									// TODO ë¦¬íŒ©í† ë§ì´ ì‹œê¸‰í•¨ state
 									switch (CASE_WELFARE.values()[item]) {
 									case BANK:
 										setCameraMapMarkerAt(7, locationName);
@@ -321,21 +321,21 @@ public class SubMapActivity extends BaseFragmentActivity implements
 									case PRINT:
 										setCameraMapMarkerAt(5, locationName
 												+ StringUtil.NEW_LINE
-												+ "2Ãş PC½Ç(533È£)");
+												+ "2ì¸µ PCì‹¤(533í˜¸)");
 										setCameraMapMarkerAt(15, locationName
 												+ StringUtil.NEW_LINE
-												+ "ÀüÀÚµµ¼­°ü(ÀÔ±İ°¡´É), 2Ãş 227È£");
+												+ "ì „ìë„ì„œê´€(ì…ê¸ˆê°€ëŠ¥), 2ì¸µ 227í˜¸");
 										setCameraMapMarkerAt(20, locationName
 												+ StringUtil.NEW_LINE
-												+ "4Ãş(ÀÔ±İ°¡´É), 5Ãş, 6Ãş(µµ¼­°ü)");
+												+ "4ì¸µ(ì…ê¸ˆê°€ëŠ¥), 5ì¸µ, 6ì¸µ(ë„ì„œê´€)");
 										setCameraMapMarkerAt(21, locationName
 												+ StringUtil.NEW_LINE
-												+ "1Ãş, 2Ãş, 3Ãş(ÀÔ±İ°¡´É), 4Ãş");
+												+ "1ì¸µ, 2ì¸µ, 3ì¸µ(ì…ê¸ˆê°€ëŠ¥), 4ì¸µ");
 										setCameraMapMarkerAt(33, locationName
 												+ StringUtil.NEW_LINE
-												+ "3Ãş °æ¿µµµ¼­°ü, 4Ãş PC½Ç(ÀÔ±İ°¡´É)");
+												+ "3ì¸µ ê²½ì˜ë„ì„œê´€, 4ì¸µ PCì‹¤(ì…ê¸ˆê°€ëŠ¥)");
 										setCameraMapMarkerAt(34, locationName
-												+ StringUtil.NEW_LINE + "1Ãş ·Îºñ");
+												+ StringUtil.NEW_LINE + "1ì¸µ ë¡œë¹„");
 										break;
 									case CASH:
 										setCameraMapMarkerAt(7, locationName);
@@ -523,7 +523,7 @@ public class SubMapActivity extends BaseFragmentActivity implements
 			latLng = new LatLng(37.584342, 127.063399);
 			break;
 		case 35:
-			// ½Åº»°ü
+			// ì‹ ë³¸ê´€
 			// latLng = new LatLng(37.583462, 127.056927);
 			latLng = new LatLng(37.584180, 127.060765);
 			break;

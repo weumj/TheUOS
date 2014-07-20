@@ -24,7 +24,7 @@ import com.uoscs09.theuos.common.util.StringUtil;
  * public String tlsn_limit_count<br>
  */
 public class SubjectItem implements Parcelable {
-	// TODO ¼ö¾÷ ½Ã°£À» String ÀÌ ¾Æ´Ñ ³¯Â¥/½Ã°£ º° code·Î º¯È¯
+	// TODO ìˆ˜ì—… ì‹œê°„ì„ String ì´ ì•„ë‹Œ ë‚ ì§œ/ì‹œê°„ ë³„ codeë¡œ ë³€í™˜
 	public static final int SIZE = 13;
 	public String[] infoArray = new String[SIZE];
 

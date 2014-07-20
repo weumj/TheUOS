@@ -26,7 +26,7 @@ public class ParsePhone extends JerichoParse<PhoneItem> {
 		ArrayList<PhoneItem> itemList = new ArrayList<PhoneItem>();
 
 		switch (howTo) {
-		case ParseFactory.Value.BOTTOM: // ±âÅ¸ ÁÖ¿ä½Ã¼³ ÆÄ½Ì(ÆäÀÌÁö ¾Æ·§ºÎºĞÀÇ ÀüÈ­¹øÈ£ ÆÄ½Ì)
+		case ParseFactory.Value.BOTTOM: // ê¸°íƒ€ ì£¼ìš”ì‹œì„¤ íŒŒì‹±(í˜ì´ì§€ ì•„ë«ë¶€ë¶„ì˜ ì „í™”ë²ˆí˜¸ íŒŒì‹±)
 		{
 			Element div = source.getElementById("chargeBorder");
 			List<Element> list = div.getAllElementsByClass("ml10");
@@ -46,26 +46,26 @@ public class ParsePhone extends JerichoParse<PhoneItem> {
 			itemList.add(new PhoneItem(name, tel));
 		}
 			break;
-		case ParseFactory.Value.BODY: // °¢ ÆíÀÇ½Ã¼³ ÀüÈ­¹øÈ£ ÆÄ½Ì
+		case ParseFactory.Value.BODY: // ê° í¸ì˜ì‹œì„¤ ì „í™”ë²ˆí˜¸ íŒŒì‹±
 		{
 			List<Element> div = source.getAllElementsByClass("floatL ml16");
 			for (Element element : div) {
-				// Àå¼Ò ÀÌ¸§ ¾ò¾î¿È
+				// ì¥ì†Œ ì´ë¦„ ì–»ì–´ì˜´
 				Element img = element.getAllElements(HTMLElementName.IMG)
 						.get(0);
 				String site = img.getAttributeValue("title");
-				site = site.replace("(ÈÑ¹Ì¸®¸¶Æ®)", StringUtil.NULL);
+				site = site.replace("(í›¼ë¯¸ë¦¬ë§ˆíŠ¸)", StringUtil.NULL);
 				if (site == null) {
 					throw new IOException();
 				}
-				// ÀüÈ­¹øÈ£ ¾ò¾î¿È
+				// ì „í™”ë²ˆí˜¸ ì–»ì–´ì˜´
 				Element telNumber = element.getAllElementsByClass("d3").get(1);
 				String tel2 = telNumber.getContent().getTextExtractor()
 						.toString();
-				String telNumberString = tel2.replace("ÀüÈ­¹øÈ£ : 02) ", "02-");
-				if (telNumberString.startsWith("ÀüÈ­¹øÈ£")) {
+				String telNumberString = tel2.replace("ì „í™”ë²ˆí˜¸ : 02) ", "02-");
+				if (telNumberString.startsWith("ì „í™”ë²ˆí˜¸")) {
 					telNumberString = telNumberString.replace(
-							"ÀüÈ­¹øÈ£ : µµ¼­°ü 02) ", "µµ¼­°ü 02-");
+							"ì „í™”ë²ˆí˜¸ : ë„ì„œê´€ 02) ", "ë„ì„œê´€ 02-");
 					String[] array = telNumberString.split(StringUtil.SPACE);
 					telNumberString = array[0] + StringUtil.SPACE + array[1]
 							+ StringUtil.NEW_LINE + array[2] + StringUtil.SPACE
@@ -76,7 +76,7 @@ public class ParsePhone extends JerichoParse<PhoneItem> {
 			}
 		}
 			break;
-		case ParseFactory.Value.SUBJECT: // °¢ ÇĞ°ú/ÇĞºÎ »ç¹«½Ç ÀüÈ­¹øÈ£ ÆÄ½Ì
+		case ParseFactory.Value.SUBJECT: // ê° í•™ê³¼/í•™ë¶€ ì‚¬ë¬´ì‹¤ ì „í™”ë²ˆí˜¸ íŒŒì‹±
 		{
 			List<Element> div_site = source.getAllElementsByClass("floatL");
 			List<Element> div_number = source
@@ -84,20 +84,20 @@ public class ParsePhone extends JerichoParse<PhoneItem> {
 			ArrayList<String> list_site = new ArrayList<String>();
 			ArrayList<String> list_num = new ArrayList<String>();
 			for (Element element : div_site) {
-				// Àå¼Ò ÀÌ¸§ ¾ò¾î¿È
+				// ì¥ì†Œ ì´ë¦„ ì–»ì–´ì˜´
 				try {
 					Element li = element.getAllElementsByClass("d1").get(0);
 					Element img = li.getAllElements(HTMLElementName.IMG).get(0);
-					// title ¼Ó¼º·Î °¡Á®¿Ã ¼öµµ ÀÖÁö¸¸
-					// È¨ÆäÀÌÁö¿¡ Àß¸ø ÀÔ·ÂÇÑ ºÎºĞÀÌ ÀÖ¾î¼­
-					// alt·Î °¡Á®¿È
+					// title ì†ì„±ë¡œ ê°€ì ¸ì˜¬ ìˆ˜ë„ ìˆì§€ë§Œ
+					// í™ˆí˜ì´ì§€ì— ì˜ëª» ì…ë ¥í•œ ë¶€ë¶„ì´ ìˆì–´ì„œ
+					// altë¡œ ê°€ì ¸ì˜´
 					String site = img.getAttributeValue("alt");
 					list_site.add(site);
 				} catch (Exception e) {
 				}
 			}
 			for (Element element : div_number) {
-				// ÀüÈ­¹øÈ£ ¾ò¾î¿È
+				// ì „í™”ë²ˆí˜¸ ì–»ì–´ì˜´
 				String telNumber = element.getContent().getTextExtractor()
 						.toString();
 				String[] array = telNumber.split(StringUtil.SPACE);
@@ -133,7 +133,7 @@ public class ParsePhone extends JerichoParse<PhoneItem> {
 			ArrayList<String> list_num = new ArrayList<String>();
 			List<Element> div_site = source.getAllElementsByClass("m0p0");
 			for (Element element : div_site) {
-				// Àå¼Ò ÀÌ¸§ ¾ò¾î¿È
+				// ì¥ì†Œ ì´ë¦„ ì–»ì–´ì˜´
 				try {
 					Element li = element.getAllElementsByClass("d1").get(0)
 							.getAllElements(HTMLElementName.IMG).get(0);
@@ -142,7 +142,7 @@ public class ParsePhone extends JerichoParse<PhoneItem> {
 				} catch (Exception e) {
 				}
 			}
-			Pattern p = Pattern.compile("\\[ÇĞ°ú»ç¹«½Ç :.+\\]");
+			Pattern p = Pattern.compile("\\[í•™ê³¼ì‚¬ë¬´ì‹¤ :.+\\]");
 			Matcher m = p.matcher(source);
 			while (m.find()) {
 				list_num.add(StringUtil.removeRegex(m.group().split(":")[1],

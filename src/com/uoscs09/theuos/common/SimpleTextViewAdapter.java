@@ -14,7 +14,7 @@ import com.uoscs09.theuos.common.impl.AbsArrayAdapter;
 import com.uoscs09.theuos.common.util.AppUtil;
 import com.uoscs09.theuos.common.util.AppUtil.AppTheme;
 
-/** TextView°¡ ÇÏ³ªÀÖ°í, iconÀÌ ºÙÀº layoutÀÇ Adapter¸¦ Á¦°øÇÏ´Â Å¬·¡½º. */
+/** TextViewê°€ í•˜ë‚˜ìˆê³ , iconì´ ë¶™ì€ layoutì˜ Adapterë¥¼ ì œê³µí•˜ëŠ” í´ë˜ìŠ¤. */
 public class SimpleTextViewAdapter extends AbsArrayAdapter<Integer> {
 	protected int textViewId;
 	protected AppTheme textColorTheme;
@@ -104,7 +104,7 @@ public class SimpleTextViewAdapter extends AbsArrayAdapter<Integer> {
 		}
 	}
 
-	/** SimpleTextviewAdaterÀÇ Builder class */
+	/** SimpleTextviewAdaterì˜ Builder class */
 	public static class Builder {
 		private SimpleTextViewAdapter product;
 
@@ -112,31 +112,31 @@ public class SimpleTextViewAdapter extends AbsArrayAdapter<Integer> {
 			this.product = new SimpleTextViewAdapter(context, layout, list);
 		}
 
-		/** layout¿¡ Æ÷ÇÔµÈ TextViewÀÇ id¸¦ ¼³Á¤ÇÑ´Ù */
+		/** layoutì— í¬í•¨ëœ TextViewì˜ idë¥¼ ì„¤ì •í•œë‹¤ */
 		public Builder setTextViewId(int id) {
 			product.textViewId = id;
 			return this;
 		}
 
-		/** AdapterView¿¡¼­ Ç¥ÇöµÉ Theme¸¦ ¼³Á¤ÇÑ´Ù */
+		/** AdapterViewì—ì„œ í‘œí˜„ë  Themeë¥¼ ì„¤ì •í•œë‹¤ */
 		public Builder setTheme(AppTheme theme) {
 			product.textColorTheme = theme;
 			return this;
 		}
 
-		/** TextViewÀÇ iconÀÇ À§Ä¡¸¦ ¼³Á¤ÇÑ´Ù. */
+		/** TextViewì˜ iconì˜ ìœ„ì¹˜ë¥¼ ì„¤ì •í•œë‹¤. */
 		public Builder setDrawablePosition(DrawblePosition position) {
 			product.position = position;
 			return this;
 		}
 
-		/** TextViewÀÇ iconÀÇ Å©±â¸¦ ¼³Á¤ÇÑ´Ù. */
+		/** TextViewì˜ iconì˜ í¬ê¸°ë¥¼ ì„¤ì •í•œë‹¤. */
 		public Builder setDrawableBounds(Rect bounds) {
 			product.drawableBound = bounds;
 			return this;
 		}
 
-		/** TextViewÀÇ iconÀÇ Å×¸¶¸¦ ¼³Á¤ÇÑ´Ù. */
+		/** TextViewì˜ iconì˜ í…Œë§ˆë¥¼ ì„¤ì •í•œë‹¤. */
 		public Builder setDrawableTheme(AppTheme theme) {
 			product.iconTheme = theme;
 			return this;

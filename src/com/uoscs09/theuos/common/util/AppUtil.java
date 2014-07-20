@@ -45,15 +45,15 @@ public class AppUtil {
 	public static int timetable_limit;
 
 	/**
-	 * ¾îÇÃ¸®ÄÉÀÌ¼ÇÀÇ Å×¸¶¸¦ ³ªÅ¸³»´Â enum<br>
-	 * <li><b>White</b> : Èò»ö/È¸»ö °èÅëÀ¸·Î ±¸¼ºµÈ Å×¸¶</li><br>
-	 * <li><b>BlackAndWhite</b> : ¾Èµå·ÎÀÌµå ±âº» ¾×¼Ç¹Ù Å×¸¶, ¾×¼Ç¹Ù´Â °ËÀº»ö, ÀÏ¹İ ¹è°æÀº ÇÏ¾á»ö °èÅë</li><br>
-	 * <li><b>Black</b> : °ËÀº»ö °è¿­·Î ±¸¼ºµÈ Å×¸¶</li><br>
+	 * ì–´í”Œë¦¬ì¼€ì´ì…˜ì˜ í…Œë§ˆë¥¼ ë‚˜íƒ€ë‚´ëŠ” enum<br>
+	 * <li><b>White</b> : í°ìƒ‰/íšŒìƒ‰ ê³„í†µìœ¼ë¡œ êµ¬ì„±ëœ í…Œë§ˆ</li><br>
+	 * <li><b>BlackAndWhite</b> : ì•ˆë“œë¡œì´ë“œ ê¸°ë³¸ ì•¡ì…˜ë°” í…Œë§ˆ, ì•¡ì…˜ë°”ëŠ” ê²€ì€ìƒ‰, ì¼ë°˜ ë°°ê²½ì€ í•˜ì–€ìƒ‰ ê³„í†µ</li><br>
+	 * <li><b>Black</b> : ê²€ì€ìƒ‰ ê³„ì—´ë¡œ êµ¬ì„±ëœ í…Œë§ˆ</li><br>
 	 */
 	public enum AppTheme {
 		/** white textColortheme */
 		White,
-		/** android default, ¾×¼Ç¹Ù´Â °ËÀº»ö, ÀÏ¹İ ¹è°æÀº ÇÏ¾á»ö */
+		/** android default, ì•¡ì…˜ë°”ëŠ” ê²€ì€ìƒ‰, ì¼ë°˜ ë°°ê²½ì€ í•˜ì–€ìƒ‰ */
 		BlackAndWhite,
 		/** black textColortheme */
 		Black
@@ -73,7 +73,7 @@ public class AppUtil {
 		PAGE_SIZE = test ? 12 : 10;
 	}
 
-	/** ÀúÀåµÈ ÅÇ ¼ø¼­¸¦ ºÒ·¯¿È */
+	/** ì €ì¥ëœ íƒ­ ìˆœì„œë¥¼ ë¶ˆëŸ¬ì˜´ */
 	public static ArrayList<Integer> loadPageOrder(Context context) {
 		PrefUtil pref = PrefUtil.getInstance(context);
 		ArrayList<Integer> tabList = new ArrayList<Integer>();
@@ -87,20 +87,20 @@ public class AppUtil {
 	}
 
 	private static int[] getPages() {
-		return new int[] { R.string.title_section1_announce, /* °øÁö»çÇ× */
-		R.string.title_section2_rest, /* ½Ä´ç¸Ş´º */
-		R.string.title_section3_book, /* µµ¼­°Ë»ö */
-		R.string.title_section4_lib, /* µµ¼­°üÁÂ¼® */
-		R.string.title_section5_map, /* ÇĞ±³Áöµµ */
-		R.string.title_section6_tel, /* ÀüÈ­¹øÈ£ */
-		R.string.title_section7_time, /* ½Ã°£Ç¥ */
-		R.string.title_tab_search_empty_room, /* ºó°­ÀÇ½Ç */
-		R.string.title_tab_search_subject, /* ±³°ú¸ñ */
-		R.string.title_tab_transport, /* ±³ÅëÁ¤º¸ */
-		R.string.title_tab_score /* ¼ö¾÷Æò°¡ */};
+		return new int[] { R.string.title_section1_announce, /* ê³µì§€ì‚¬í•­ */
+		R.string.title_section2_rest, /* ì‹ë‹¹ë©”ë‰´ */
+		R.string.title_section3_book, /* ë„ì„œê²€ìƒ‰ */
+		R.string.title_section4_lib, /* ë„ì„œê´€ì¢Œì„ */
+		R.string.title_section5_map, /* í•™êµì§€ë„ */
+		R.string.title_section6_tel, /* ì „í™”ë²ˆí˜¸ */
+		R.string.title_section7_time, /* ì‹œê°„í‘œ */
+		R.string.title_tab_search_empty_room, /* ë¹ˆê°•ì˜ì‹¤ */
+		R.string.title_tab_search_subject, /* êµê³¼ëª© */
+		R.string.title_tab_transport, /* êµí†µì •ë³´ */
+		R.string.title_tab_score /* ìˆ˜ì—…í‰ê°€ */};
 	}
 
-	/** ±âº» ÅÇ ¼ø¼­¸¦ ºÒ·¯¿È */
+	/** ê¸°ë³¸ íƒ­ ìˆœì„œë¥¼ ë¶ˆëŸ¬ì˜´ */
 	public static ArrayList<Integer> loadDefaultPageOrder() {
 		ArrayList<Integer> list = new ArrayList<Integer>();
 		int[] pages = getPages();
@@ -110,7 +110,7 @@ public class AppUtil {
 		return list;
 	}
 
-	/** ±âº» page titleÀÇ resource id¿¡ µû¸¥ page¼ø¼­¸¦ ¹İÈ¯ÇÑ´Ù. */
+	/** ê¸°ë³¸ page titleì˜ resource idì— ë”°ë¥¸ pageìˆœì„œë¥¼ ë°˜í™˜í•œë‹¤. */
 	public static int titleResIdToOrder(int titleResId) {
 		switch (titleResId) {
 		case R.string.title_section0_home:
@@ -146,7 +146,7 @@ public class AppUtil {
 		}
 	}
 
-	/** ±âº» page¼ø¼­¿¡ µû¸¥ page titleÀÇ resource id¸¦ ¹İÈ¯ÇÑ´Ù. */
+	/** ê¸°ë³¸ pageìˆœì„œì— ë”°ë¥¸ page titleì˜ resource idë¥¼ ë°˜í™˜í•œë‹¤. */
 	public static int getTitleResId(int order) {
 		switch (order) {
 		case 0:
@@ -182,7 +182,7 @@ public class AppUtil {
 		}
 	}
 
-	/** page ¼ø¼­¸¦ ÀúÀåÇÑ´Ù. */
+	/** page ìˆœì„œë¥¼ ì €ì¥í•œë‹¤. */
 	public static void savePageOrder(List<Integer> list, Context context) {
 		PrefUtil pref = PrefUtil.getInstance(context);
 		String PAGE = "page";
@@ -191,7 +191,7 @@ public class AppUtil {
 		}
 	}
 
-	/** ÅÇ ¾ÆÀÌÄÜÀ» ºÒ·¯¿È */
+	/** íƒ­ ì•„ì´ì½˜ì„ ë¶ˆëŸ¬ì˜´ */
 	public static int getPageIcon(int pageStringResourceId, AppTheme theme) {
 		switch (theme) {
 		case BlackAndWhite:
@@ -203,7 +203,7 @@ public class AppUtil {
 		}
 	}
 
-	/** ÅÇ ¾ÆÀÌÄÜÀ» ºÒ·¯¿È */
+	/** íƒ­ ì•„ì´ì½˜ì„ ë¶ˆëŸ¬ì˜´ */
 	public static int getPageIcon(int pageStringResourceId) {
 		switch (theme) {
 		case BlackAndWhite:
@@ -289,7 +289,7 @@ public class AppUtil {
 		}
 	}
 
-	/** ¸ŞÀÎ ¾×Æ¼ºñÆ¼¿¡ Á¾·á ÀÎÅÙÆ®¸¦ º¸³½´Ù. */
+	/** ë©”ì¸ ì•¡í‹°ë¹„í‹°ì— ì¢…ë£Œ ì¸í…íŠ¸ë¥¼ ë³´ë‚¸ë‹¤. */
 	public static void exit(Context context) {
 		Intent clearTop = new Intent(context, PagerFragmentActivity.class);
 		clearTop.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -307,8 +307,8 @@ public class AppUtil {
 	
 	/**
 	 * @param pageTitleResId
-	 *            ¾òÀ¸·Á´Â page¿¡ ¾Ë¸Â´Â string ¸®¼Ò½º id
-	 * @return fragment Å¬·¡½º
+	 *            ì–»ìœ¼ë ¤ëŠ” pageì— ì•Œë§ëŠ” string ë¦¬ì†ŒìŠ¤ id
+	 * @return fragment í´ë˜ìŠ¤
 	 */
 	public static Class<? extends Fragment> getPageClass(int pageTitleResId) {
 		switch (pageTitleResId) {
@@ -371,11 +371,11 @@ public class AppUtil {
 	}
 
 	/**
-	 * ÀÎÅÙÆ®¸¦ ÅëÇØ ÀÎÅÍ³İ ÆäÀÌÁö¸¦ ¶ç¿î´Ù.
+	 * ì¸í…íŠ¸ë¥¼ í†µí•´ ì¸í„°ë„· í˜ì´ì§€ë¥¼ ë„ìš´ë‹¤.
 	 * 
 	 * @param webURL
-	 *            Á¢¼ÓÇÏ·Á´Â ÆäÀÌÁöÀÇ url
-	 * @return urlÀÌ ¼³Á¤µÈ intent
+	 *            ì ‘ì†í•˜ë ¤ëŠ” í˜ì´ì§€ì˜ url
+	 * @return urlì´ ì„¤ì •ëœ intent
 	 */
 	public static Intent setWebPageIntent(String webURL) {
 		Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -421,7 +421,7 @@ public class AppUtil {
 		}
 	}
 
-	/** °øÁö»çÇ× ¾Ë¸®¹Ì ¼­ºñ½º¸¦ ½ÃÀÛ/Á¤ÁöÇÑ´Ù. */
+	/** ê³µì§€ì‚¬í•­ ì•Œë¦¬ë¯¸ ì„œë¹„ìŠ¤ë¥¼ ì‹œì‘/ì •ì§€í•œë‹¤. */
 	public static boolean startOrStopServiceAnounce(Context context) {
 		boolean isServiceEnable = PrefUtil.getInstance(context).get(
 				context.getString(R.string.pref_key_check_anounce_service),
@@ -436,14 +436,14 @@ public class AppUtil {
 	}
 
 	/**
-	 * ±âº» ¸Ş½ÃÁö°¡ <b>R.string.progress_while_updating</b>ÀÎ <br>
-	 * ProgressDialog¸¦ »ı¼ºÇÑ´Ù.
+	 * ê¸°ë³¸ ë©”ì‹œì§€ê°€ <b>R.string.progress_while_updating</b>ì¸ <br>
+	 * ProgressDialogë¥¼ ìƒì„±í•œë‹¤.
 	 * 
 	 * @param context
 	 * @param isHorizontal
-	 *            ÁøÇà¹Ù°¡ ¸·´ë ¸ğ¾çÀÎÁö ¿ø ¸ğ¾çÀÎÁö °áÁ¤ÇÑ´Ù.
+	 *            ì§„í–‰ë°”ê°€ ë§‰ëŒ€ ëª¨ì–‘ì¸ì§€ ì› ëª¨ì–‘ì¸ì§€ ê²°ì •í•œë‹¤.
 	 * @param cancelButtonListener
-	 *            Ãë¼Ò ¹öÆ°À» ´­·¶À» ¶§, ºÒ¸± callback
+	 *            ì·¨ì†Œ ë²„íŠ¼ì„ ëˆŒë €ì„ ë•Œ, ë¶ˆë¦´ callback
 	 */
 	public static ProgressDialog getProgressDialog(Context context,
 			boolean isHorizontal, OnClickListener cancelButtonListener) {
@@ -453,15 +453,15 @@ public class AppUtil {
 	}
 
 	/**
-	 * ProgressDialog¸¦ »ı¼ºÇÑ´Ù.
+	 * ProgressDialogë¥¼ ìƒì„±í•œë‹¤.
 	 * 
 	 * @param context
 	 * @param isHorizontal
-	 *            ÁøÇà¹Ù°¡ ¸·´ë ¸ğ¾çÀÎÁö ¿ø ¸ğ¾çÀÎÁö °áÁ¤ÇÑ´Ù.
+	 *            ì§„í–‰ë°”ê°€ ë§‰ëŒ€ ëª¨ì–‘ì¸ì§€ ì› ëª¨ì–‘ì¸ì§€ ê²°ì •í•œë‹¤.
 	 * @param msg
-	 *            dialog¿¡ ³ªÅ¸³¯ message
+	 *            dialogì— ë‚˜íƒ€ë‚  message
 	 * @param cancelButtonListener
-	 *            Ãë¼Ò ¹öÆ°À» ´­·¶À» ¶§, ºÒ¸± callback
+	 *            ì·¨ì†Œ ë²„íŠ¼ì„ ëˆŒë €ì„ ë•Œ, ë¶ˆë¦´ callback
 	 */
 	public static ProgressDialog getProgressDialog(Context context,
 			boolean isHorizontal, CharSequence msg,
@@ -478,9 +478,9 @@ public class AppUtil {
 	}
 
 	/**
-	 * ¾×Æ¼ºñÆ¼ ÀüÈ¯ ¾Ö´Ï¸ŞÀÌ¼ÇÀ» ¹Ù²Û´Ù.<br>
-	 * <li>1 : È­¸éÀÌ fadeµÈ´Ù.</li><br>
-	 * <li>2 : È­¸éÀÌ È®´ë/Ãà¼Ò µÈ´Ù.</li>
+	 * ì•¡í‹°ë¹„í‹° ì „í™˜ ì• ë‹ˆë©”ì´ì…˜ì„ ë°”ê¾¼ë‹¤.<br>
+	 * <li>1 : í™”ë©´ì´ fadeëœë‹¤.</li><br>
+	 * <li>2 : í™”ë©´ì´ í™•ëŒ€/ì¶•ì†Œ ëœë‹¤.</li>
 	 */
 	public static void overridePendingTransition(Activity activity, int how) {
 		switch (how) {
@@ -496,15 +496,15 @@ public class AppUtil {
 		}
 	}
 
-	/** ¿­·ÁÁø DB¸¦ ¸ğµÎ ´İ´Â´Ù. */
+	/** ì—´ë ¤ì§„ DBë¥¼ ëª¨ë‘ ë‹«ëŠ”ë‹¤. */
 	public static void closeAllDatabase(Context context) {
 		if (PhoneNumberDB.isOpen())
 			PhoneNumberDB.getInstance(context).close();
 	}
 
 	/**
-	 * ÇöÀç ¼³Á¤µÈ {@link AppUtil.AppTheme} °ª¿¡ µû¶ó Å×¸¶¸¦ Àû¿ëÇÔ. <br>
-	 * ¹İµå½Ã activityÀÇ onCreate()½ÇÇà Ã³À½¿¡ ºÒ·Á¾ß ÇÑ´Ù.
+	 * í˜„ì¬ ì„¤ì •ëœ {@link AppUtil.AppTheme} ê°’ì— ë”°ë¼ í…Œë§ˆë¥¼ ì ìš©í•¨. <br>
+	 * ë°˜ë“œì‹œ activityì˜ onCreate()ì‹¤í–‰ ì²˜ìŒì— ë¶ˆë ¤ì•¼ í•œë‹¤.
 	 */
 	public static void applyTheme(Context appContext) {
 		if (theme == null) {
@@ -526,8 +526,8 @@ public class AppUtil {
 	}
 
 	/**
-	 * ÁÖ¾îÁø idx¿¡ µû¶ó color¸¦ ¾òÀ½, ¹üÀ§´Â 0~9<br>
-	 * ½Ã°£Ç¥ °ú¸ñ¸¶´Ù »öÀ» ´Ş¸®ÇÏ´Âµ¥ »ç¿ëµÊ
+	 * ì£¼ì–´ì§„ idxì— ë”°ë¼ colorë¥¼ ì–»ìŒ, ë²”ìœ„ëŠ” 0~9<br>
+	 * ì‹œê°„í‘œ ê³¼ëª©ë§ˆë‹¤ ìƒ‰ì„ ë‹¬ë¦¬í•˜ëŠ”ë° ì‚¬ìš©ë¨
 	 */
 	public static int getColor(int idx) {
 		switch (idx) {
@@ -557,10 +557,10 @@ public class AppUtil {
 	}
 
 	/**
-	 * <b>{@code @ReleaseWhenDestroy}</b> annotationÀÌ ºÙÀº Field¸¦ null·Î ¼³Á¤ÇÑ´Ù.
+	 * <b>{@code @ReleaseWhenDestroy}</b> annotationì´ ë¶™ì€ Fieldë¥¼ nullë¡œ ì„¤ì •í•œë‹¤.
 	 * 
 	 * @param receiver
-	 *            ÇØÁ¦ µÉ field°¡ ÀÖ´Â object
+	 *            í•´ì œ ë  fieldê°€ ìˆëŠ” object
 	 */
 	public static void releaseResource(Object receiver) {
 		Field[] fields = receiver.getClass().getDeclaredFields();
@@ -592,10 +592,10 @@ public class AppUtil {
 	}
 
 	/**
-	 * ÁÖ¾îÁø View¿Í ViewÀÇ childÀÇ drawableÀ» Á¦°ÅÇÑ´Ù.
+	 * ì£¼ì–´ì§„ Viewì™€ Viewì˜ childì˜ drawableì„ ì œê±°í•œë‹¤.
 	 * 
 	 * @param view
-	 *            - ÇØÁ¦µÉ View
+	 *            - í•´ì œë  View
 	 */
 	public static void unbindDrawables(View view) {
 		view.destroyDrawingCache();

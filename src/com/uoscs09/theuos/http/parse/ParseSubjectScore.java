@@ -40,7 +40,7 @@ public class ParseSubjectScore extends OApiParse<ArrayList<String>> {
 		StringBuilder sb = new StringBuilder();
 		sb.append(list.get(0)).append(" (").append(list.get(1)).append('/')
 				.append(list.get(2)).append(") \n").append(list.get(3))
-				.append("¸í ¼ö°­\n").append(list.get(4)).append(" (")
+				.append("ëª… ìˆ˜ê°•\n").append(list.get(4)).append(" (")
 				.append(list.get(5)).append(')');
 		return sb.toString();
 	}

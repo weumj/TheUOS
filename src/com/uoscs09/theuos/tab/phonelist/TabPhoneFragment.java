@@ -72,14 +72,14 @@ public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>> {
 		initProgress();
 		dialog = settingAlertDialog();
 
-		// ¸®½ºÆ® ¾î´ğÅÍ »ı¼º
+		// ë¦¬ìŠ¤íŠ¸ ì–´ëŒ‘í„° ìƒì„±
 		phoneAdapter = new PhoneListAdapter(getActivity(),
 				R.layout.list_layout_phone, mPhoneList, mOnClickListener);
-		// ¸®½ºÆ® ºä
+		// ë¦¬ìŠ¤íŠ¸ ë·°
 		ListView phoneListView = (ListView) rootView
 				.findViewById(R.id.tab_phone_list_phone);
 
-		// ¾î´ğÅÍ ¼³Á¤
+		// ì–´ëŒ‘í„° ì„¤ì •
 		phoneListView.setAdapter(phoneAdapter);
 
 		return rootView;
@@ -180,7 +180,7 @@ public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>> {
 
 				progress.setProgress(progressNumber * i - 1);
 			}
-			// DB ¿¡ µ¥ÀÌÅÍ µî·Ï
+			// DB ì— ë°ì´í„° ë“±ë¡
 			PhoneNumberDB telDB = PhoneNumberDB.getInstance(getActivity());
 			for (PhoneItem item : phoneNumberList) {
 				telDB.insertOrUpdate(item);
@@ -238,7 +238,7 @@ public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>> {
 	}
 
 	private ArrayList<String> getUrlList() {
-		// ¿©±â´Â °ú »ç¹«½Ç ÆÄ½Ì
+		// ì—¬ê¸°ëŠ” ê³¼ ì‚¬ë¬´ì‹¤ íŒŒì‹±
 		String publicAffairs = "http://www.uos.ac.kr/kor_2010/html/academic/colleges/claw/claw5.jsp?x=1&y=1&w=2";
 		String engineering = "http://www.uos.ac.kr/kor_2010/html/academic/colleges/cengineering/cengineering5.jsp?x=1&y=3&w=2";
 		String humanities = "http://www.uos.ac.kr/kor_2010/html/academic/colleges/chumanities/chumanities5.jsp?x=1&y=4&w=2";
@@ -248,12 +248,12 @@ public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>> {
 		String openMajor = "http://www.uos.ac.kr/kor_2010/html/academic/colleges/openmajor/openmajor4.jsp?x=1&y=8&w=2";
 		String general = "http://www.uos.ac.kr/kor_2010/html/academic/colleges/liberal/liberal4.jsp?x=1&y=9&w=2";
 
-		// ¿©±â´Â ¾Æ·¡ ºÎºĞ¸¸ ÆÄ½Ì
+		// ì—¬ê¸°ëŠ” ì•„ë˜ ë¶€ë¶„ë§Œ íŒŒì‹±
 		String house = "http://www.uos.ac.kr/kor_2010/html/clife/campus/house/house.jsp?x=1&y=1&w=6";
 		String health = "http://www.uos.ac.kr/kor_2010/html/clife/campus/health/health.jsp?x=1&y=2&w=6";
 		String stdSubject = "http://www.uos.ac.kr/kor_2010/html/clife/campus/insurance/insurance.jsp?x=1&y=4&w=6";
 		String sports = "http://www.uos.ac.kr/kor_2010/html/clife/campus/scomplex/scomplex.jsp?x=1&y=6&w=6";
-		// ¿©±âºÎÅÍ´Â ³»ºÎ ³»¿ëÀ» ÆÄ½Ì
+		// ì—¬ê¸°ë¶€í„°ëŠ” ë‚´ë¶€ ë‚´ìš©ì„ íŒŒì‹±
 		String store = "http://www.uos.ac.kr/kor_2010/html/clife/campus/etc/etc.jsp?x=1&y=7&w=60";
 		String store2 = "http://www.uos.ac.kr/kor_2010/html/clife/campus/etc/etc2.jsp?x=1&y=7&w=6";
 		String vending = "http://www.uos.ac.kr/kor_2010/html/clife/campus/etc/etc3.jsp?x=1&y=7&w=6";
@@ -317,7 +317,7 @@ public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>> {
 		}
 
 		private String parseTelNumber(String telNumber) {
-			if (telNumber.startsWith("µµ¼­°ü")) {
+			if (telNumber.startsWith("ë„ì„œê´€")) {
 				return telNumber.split(StringUtil.SPACE)[2];
 			} else {
 				return telNumber.split("~")[0].split(",")[0];

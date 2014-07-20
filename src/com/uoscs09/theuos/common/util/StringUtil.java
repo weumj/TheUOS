@@ -3,8 +3,8 @@ package com.uoscs09.theuos.common.util;
 public final class StringUtil {
 	public static final String STR_HOUR = "hour";
 	public static final String STR_MIN = "min";
-	public static final String STR_AM = "¿ÀÀü ";
-	public static final String STR_PM = "¿ÀÈÄ ";
+	public static final String STR_AM = "ì˜¤ì „ ";
+	public static final String STR_PM = "ì˜¤í›„ ";
 	public final static String SPACE = " ";
 	public final static String NEW_LINE = "\n";
 	public final static String NULL = "";

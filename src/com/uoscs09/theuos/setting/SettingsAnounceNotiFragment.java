@@ -70,7 +70,7 @@ public class SettingsAnounceNotiFragment extends PreferenceFragment implements
 						.setSummary(R.string.setting_anounce_keyword_desc);
 			} else {
 				connectionPref.setSummary(sharedPreferences.getString(key,
-						StringUtil.NULL) + "\n°¡(ÀÌ) Æ÷ÇÔµÈ °øÁö»çÇ×À» °Ë»öÇÕ´Ï´Ù.");
+						StringUtil.NULL) + "\nê°€(ì´) í¬í•¨ëœ ê³µì§€ì‚¬í•­ì„ ê²€ìƒ‰í•©ë‹ˆë‹¤.");
 			}
 		} else if (key.equals(PrefUtil.KEY_NOTI_TIME)) {
 			Preference connectionPref = findPreference(key);
@@ -87,8 +87,8 @@ public class SettingsAnounceNotiFragment extends PreferenceFragment implements
 					if (hour != 12)
 						hour -= 12;
 				}
-				String text = am_pm + String.valueOf(hour) + "½Ã "
-						+ String.valueOf(min) + "ºĞ¿¡ ¾Ë·ÁÁİ´Ï´Ù.";
+				String text = am_pm + String.valueOf(hour) + "ì‹œ "
+						+ String.valueOf(min) + "ë¶„ì— ì•Œë ¤ì¤ë‹ˆë‹¤.";
 				connectionPref.setSummary(text);
 				AppUtil.startOrStopServiceAnounce(getActivity());
 			}
@@ -142,13 +142,13 @@ public class SettingsAnounceNotiFragment extends PreferenceFragment implements
 									hourOfDay -= 12;
 							}
 							StringBuilder sb = new StringBuilder();
-							sb.append("¾Ë¸² ½Ã°£ÀÌ \"")
+							sb.append("ì•Œë¦¼ ì‹œê°„ì´ \"")
 									.append(am_pm)
 									.append(hourOfDay)
-									.append("½Ã ")
+									.append("ì‹œ ")
 									.append((minute < 10 ? '0'
 											: StringUtil.NULL)).append(minute)
-									.append("ºĞ\" À¸·Î ")
+									.append("ë¶„\" ìœ¼ë¡œ ")
 									.append(getText(R.string.setting_confirm));
 
 							AppUtil.showToast(activity, sb.toString());

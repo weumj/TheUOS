@@ -47,14 +47,14 @@ public class TabRestaurantFragment extends
 	private static final String BUTTON = "button";
 	private static final String REST = "rest_list";
 	private static final String[] timeSemester = {
-			"ÇĞ±âÁß				\nÁ¶½Ä : 08:00~10:00	\nÁß½Ä : 11:00~14:00	\n 		       15:00~17:00",
-			"ÇĞ±âÁß				\nÁß½Ä : 11:30~14:00	\n¼®½Ä : 15:00~19:00	\nÅä¿äÀÏ : ÈŞ¹«",
-			"ÇĞ±âÁß					\nÁß½Ä : 11:30~13:30\n¼®½Ä : 17:00~18:30\nÅä¿äÀÏ : ÈŞ¹«",
+			"í•™ê¸°ì¤‘				\nì¡°ì‹ : 08:00~10:00	\nì¤‘ì‹ : 11:00~14:00	\n 		       15:00~17:00",
+			"í•™ê¸°ì¤‘				\nì¤‘ì‹ : 11:30~14:00	\nì„ì‹ : 15:00~19:00	\ní† ìš”ì¼ : íœ´ë¬´",
+			"í•™ê¸°ì¤‘					\nì¤‘ì‹ : 11:30~13:30\nì„ì‹ : 17:00~18:30\ní† ìš”ì¼ : íœ´ë¬´",
 			StringUtil.NULL, StringUtil.NULL };
 	private static final String[] timeVacation = {
-			"¹æÇĞÁß				\nÁ¶½Ä : 09:00~10:00\n	         08:30~10:00 (°èÀıÇĞ±â ±â°£)\nÁß½Ä : 11:00~14:00\n	         15:00~17:00\n¼®½Ä : 17:00~18:30\nÅä¿äÀÏ : ÈŞ¹«",
-			"¹æÇĞÁß				\nÁß½Ä : 11:30~14:00\n¼®½Ä : 16:00~18:30\nÅä¿äÀÏ : ÈŞ¹«",
-			"¹æÇĞÁß : ÈŞ°ü		\n\n\n", StringUtil.NULL, StringUtil.NULL };
+			"ë°©í•™ì¤‘				\nì¡°ì‹ : 09:00~10:00\n	         08:30~10:00 (ê³„ì ˆí•™ê¸° ê¸°ê°„)\nì¤‘ì‹ : 11:00~14:00\n	         15:00~17:00\nì„ì‹ : 17:00~18:30\ní† ìš”ì¼ : íœ´ë¬´",
+			"ë°©í•™ì¤‘				\nì¤‘ì‹ : 11:30~14:00\nì„ì‹ : 16:00~18:30\ní† ìš”ì¼ : íœ´ë¬´",
+			"ë°©í•™ì¤‘ : íœ´ê´€		\n\n\n", StringUtil.NULL, StringUtil.NULL };
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
@@ -164,23 +164,23 @@ public class TabRestaurantFragment extends
 		switch (buttonId) {
 		case R.id.tab_rest_button_students_hall:
 			setSemesterAndVacationText(0);
-			setBody("ÇĞ»ıÈ¸°ü 1Ãş");
+			setBody("í•™ìƒíšŒê´€ 1ì¸µ");
 			break;
 		case R.id.tab_rest_button_anekan:
 			setSemesterAndVacationText(1);
-			setBody("¾ç½Ä´ç (¾Æ´ÀÄ­)");
+			setBody("ì–‘ì‹ë‹¹ (ì•„ëŠì¹¸)");
 			break;
 		case R.id.tab_rest_button_natural:
 			setSemesterAndVacationText(2);
-			setBody("ÀÚ¿¬°úÇĞ°ü");
+			setBody("ìì—°ê³¼í•™ê´€");
 			break;
 		case R.id.tab_rest_button_main_8th:
 			setSemesterAndVacationText(3);
-			setBody("º»°ü 8Ãş");
+			setBody("ë³¸ê´€ 8ì¸µ");
 			break;
 		case R.id.tab_rest_button_living:
 			setSemesterAndVacationText(4);
-			setBody("»ıÈ°°ü");
+			setBody("ìƒí™œê´€");
 			break;
 		default:
 			return;
@@ -237,12 +237,12 @@ public class TabRestaurantFragment extends
 			} catch (Exception e) {
 			}
 		}
-		// web¿¡¼­ ÀĞ¾î¿ÂÁö ¿À·¡µÇ¾ú°Å³ª, ÆÄÀÏÀÌ Á¸ÀçÇÏÁö ¾ÊÀº°æ¿ì
-		// wer¿¡¼­ ÀĞ¾î¿È
+		// webì—ì„œ ì½ì–´ì˜¨ì§€ ì˜¤ë˜ë˜ì—ˆê±°ë‚˜, íŒŒì¼ì´ ì¡´ì¬í•˜ì§€ ì•Šì€ê²½ìš°
+		// werì—ì„œ ì½ì–´ì˜´
 		return getRestListFromWeb(context);
 	}
 
-	/** web¿¡¼­ ½Ä´ÜÇ¥À» ÀĞ¾î¿Â´Ù. */
+	/** webì—ì„œ ì‹ë‹¨í‘œì„ ì½ì–´ì˜¨ë‹¤. */
 	@SuppressWarnings("unchecked")
 	public static ArrayList<RestItem> getRestListFromWeb(Context context)
 			throws IOException {

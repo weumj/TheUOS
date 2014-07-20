@@ -1,12 +1,12 @@
 package com.uoscs09.theuos.http.parse;
 
 public class ParseFactory {
-	/* TODO enum typeÀ¸·Î ¹Ù²Ü °Í*/
+	/* TODO enum typeìœ¼ë¡œ ë°”ê¿€ ê²ƒ*/
 	public enum What{
 		Anounce, Book, Rest, Seat, Phone, TimeTable, EmptyRoom,
 		Subject, SubjectInfo, SubjectList, SubjectScore, Transport
 	}
-	/* TODO enum typeÀ¸·Î ¹Ù²Ü °Í*/
+	/* TODO enum typeìœ¼ë¡œ ë°”ê¿€ ê²ƒ*/
 	public static final class Value {
 		public final static int BASIC = 0;
 		public final static int BOTTOM = 999;

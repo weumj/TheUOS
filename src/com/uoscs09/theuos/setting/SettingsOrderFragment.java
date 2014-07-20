@@ -22,7 +22,7 @@ import com.uoscs09.theuos.common.DropAndDragListView.DropListener;
 import com.uoscs09.theuos.common.util.AppUtil;
 import com.uoscs09.theuos.common.util.AppUtil.AppTheme;
 
-/** page ¼ø¼­¸¦ ¹Ù²Ù´Â ¼³Á¤ÀÌ ÀÖ´Â fragment */
+/** page ìˆœì„œë¥¼ ë°”ê¾¸ëŠ” ì„¤ì •ì´ ìˆëŠ” fragment */
 public class SettingsOrderFragment extends Fragment implements DragListener,
 		DropListener {
 	private ArrayList<Integer> orderList;

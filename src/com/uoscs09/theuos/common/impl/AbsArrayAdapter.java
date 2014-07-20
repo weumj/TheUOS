@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
-/** View Holder ÆĞÅÏÀ» »ç¿ëÇÏ´Â ArrayAdapter */
+/** View Holder íŒ¨í„´ì„ ì‚¬ìš©í•˜ëŠ” ArrayAdapter */
 public abstract class AbsArrayAdapter<T> extends ArrayAdapter<T> {
 	protected int layout;
 
@@ -52,24 +52,24 @@ public abstract class AbsArrayAdapter<T> extends ArrayAdapter<T> {
 	}
 
 	/**
-	 * getView ÀÇ ¿ªÇÒÀ» ÇÏ´Â ¸Ş¼ÒµåÀÌ´Ù.
+	 * getView ì˜ ì—­í• ì„ í•˜ëŠ” ë©”ì†Œë“œì´ë‹¤.
 	 * 
 	 * @param position
-	 *            ¸®½ºÆ®ÀÇ À§Ä¡
+	 *            ë¦¬ìŠ¤íŠ¸ì˜ ìœ„ì¹˜
 	 * @param convertView
-	 *            ¼³Á¤ ÇÏ·Á´Â View
+	 *            ì„¤ì • í•˜ë ¤ëŠ” View
 	 * @param holder
-	 *            getView¿¡¼­ ¼³Á¤µÇ´Â ViewHolder
-	 * @return convertView - ¹İµå½Ã ¼³Á¤ÇÑ convertView¸¦ ¹İÈ¯ÇØ¾ßÇÑ´Ù.
+	 *            getViewì—ì„œ ì„¤ì •ë˜ëŠ” ViewHolder
+	 * @return convertView - ë°˜ë“œì‹œ ì„¤ì •í•œ convertViewë¥¼ ë°˜í™˜í•´ì•¼í•œë‹¤.
 	 */
 	public abstract View setView(int position, View convertView,
 			ViewHolder holder);
 
 	/**
 	 * @param view
-	 *            ViewHolder °´Ã¼¸¦ ¸¸µå´Âµ¥ »ç¿ëµÉ View
-	 * @return AbsArrayAdapter¸¦ »ó¼Ó¹ŞÀº Å¬·¡½º°¡<br>
-	 *         ±¸ÇöÇÑ ViewHolder
+	 *            ViewHolder ê°ì²´ë¥¼ ë§Œë“œëŠ”ë° ì‚¬ìš©ë  View
+	 * @return AbsArrayAdapterë¥¼ ìƒì†ë°›ì€ í´ë˜ìŠ¤ê°€<br>
+	 *         êµ¬í˜„í•œ ViewHolder
 	 */
 	public abstract ViewHolder getViewHolder(View convertView);
 

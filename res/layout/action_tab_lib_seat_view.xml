@@ -9,6 +9,7 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:gravity="right"
+        android:textColor="?color_action_text"
         android:paddingLeft="90dp"
         android:paddingRight="10dp"
         android:textStyle="bold" />

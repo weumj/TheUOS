@@ -34,50 +34,50 @@ import com.uoscs09.theuos.http.parse.ParseFactory;
 
 public class TabLibrarySeatFragment extends
 		AbsDrawableProgressFragment<ArrayList<SeatItem>> {
-	/** ÁÂ¼® ÇöÈ² ¸®½ºÆ® ºäÀÇ adapter */
+	/** ì¢Œì„ í˜„í™© ë¦¬ìŠ¤íŠ¸ ë·°ì˜ adapter */
 	@ReleaseWhenDestroy
 	private ArrayAdapter<SeatItem> mSeatAdapter;
-	/** ÇØÁö µÉ ÁÂ¼® Á¤º¸ ¸®½ºÆ® ºäÀÇ adapter */
+	/** í•´ì§€ ë  ì¢Œì„ ì •ë³´ ë¦¬ìŠ¤íŠ¸ ë·°ì˜ adapter */
 	@ReleaseWhenDestroy
 	private ArrayAdapter<String> mInfoAdapter;
-	/** ÁÂ¼® Á¤º¸ ¸®½ºÆ® */
+	/** ì¢Œì„ ì •ë³´ ë¦¬ìŠ¤íŠ¸ */
 	@AsyncData
-	private ArrayList<SeatItem> mSearList;
-	/** ÇØÁö µÉ ÁÂ¼® Á¤º¸ ¸®½ºÆ® */
+	private ArrayList<SeatItem> mSeatList;
+	/** í•´ì§€ ë  ì¢Œì„ ì •ë³´ ë¦¬ìŠ¤íŠ¸ */
 	private ArrayList<String> mDissmissInfoList;
-	/** ÁÂ¼® Á¤º¸ ¸®½ºÆ® ºä */
+	/** ì¢Œì„ ì •ë³´ ë¦¬ìŠ¤íŠ¸ ë·° */
 	@ReleaseWhenDestroy
 	private ListView mSeatListView;
-	/** ÇØÁö µÉ ÁÂ¼® Á¤º¸ ¸®½ºÆ® ºä, infoDialog¿¡¼­ º¸¿©Áø´Ù. */
+	/** í•´ì§€ ë  ì¢Œì„ ì •ë³´ ë·°, infoDialogì—ì„œ ë³´ì—¬ì§„ë‹¤. */
 	@ReleaseWhenDestroy
-	private ListView mInfoListView;
-	/** »ó´Ü ¾×¼Ç¹Ù¿¡ ¼³Á¤µÇ´Â layout, timeTextView°¡ Æ÷ÇÔµÇ¾î µ¿±âÈ­ ½Ã°£À» ³ªÅ¸³½´Ù. */
+	private View mDismissDialogView;
+	/** ìƒë‹¨ ì•¡ì…˜ë°”ì— ì„¤ì •ë˜ëŠ” layout, timeTextViewê°€ í¬í•¨ë˜ì–´ ë™ê¸°í™” ì‹œê°„ì„ ë‚˜íƒ€ë‚¸ë‹¤. */
 	@ReleaseWhenDestroy
 	private View mActionViewLayout;
-	/** »ó´Ü ¾×¼Ç¹Ù¿¡ ¼³Á¤µÇ¾î µ¿±âÈ­ ½Ã°£À» ³ªÅ¸³»´Â TextView */
+	/** ìƒë‹¨ ì•¡ì…˜ë°”ì— ì„¤ì •ë˜ì–´ ë™ê¸°í™” ì‹œê°„ì„ ë‚˜íƒ€ë‚´ëŠ” TextView */
 	@ReleaseWhenDestroy
 	private TextView mTimeTextView;
 	/**
-	 * »ó´Ü ¾×¼Ç¹Ù¿¡ ¼³Á¤µÇ´Â timeTextView¿¡ ¼³Á¤µÉ Text.<br>
+	 * ìƒë‹¨ ì•¡ì…˜ë°”ì— ì„¤ì •ë˜ëŠ” timeTextViewì— ì„¤ì •ë  Text.<br>
 	 * 
-	 * {@code onSaveonSaveInstanceState()} ¿¡¼­ "COMMIT_TIME"¶ó´Â ÀÌ¸§À¸·Î ÀúÀåµÈ´Ù.
+	 * {@code onSaveonSaveInstanceState()} ì—ì„œ "COMMIT_TIME"ë¼ëŠ” ì´ë¦„ìœ¼ë¡œ ì €ì¥ëœë‹¤.
 	 */
 	private String mCommitTime = StringUtil.NULL;
 	/**
-	 * ÇØÁöµÉ ÁÂ¼® Á¤º¸ ¹öÆ° ({@code R.id.action_info})À» ¼±ÅÃÇÏ¸é ³ªÅ¸³ª´Â AlertDialog<br>
-	 * ÇØÁöµÉ ÁÂ¼® Á¤º¸¸¦ º¸¿©ÁØ´Ù.
+	 * í•´ì§€ë  ì¢Œì„ ì •ë³´ ë²„íŠ¼ ({@code R.id.action_info})ì„ ì„ íƒí•˜ë©´ ë‚˜íƒ€ë‚˜ëŠ” AlertDialog<br>
+	 * í•´ì§€ë  ì¢Œì„ ì •ë³´ë¥¼ ë³´ì—¬ì¤€ë‹¤.
 	 */
 	@ReleaseWhenDestroy
 	private AlertDialog mInfoDialog;
-	/** Áß¾Ó µµ¼­°ü ÁÂ¼® Á¤º¸ È®ÀÎ ÆäÀÌÁö */
+	/** ì¤‘ì•™ ë„ì„œê´€ ì¢Œì„ ì •ë³´ í™•ì¸ í˜ì´ì§€ */
 	private final static String URL = "http://203.249.102.34:8080/seat/domian5.asp";
-	/** bundle¿¡¼­ µ¿±âÈ­ ½Ã°£ Á¤º¸ StringÀ» °¡¸®Å²´Ù. */
+	/** bundleì—ì„œ ë™ê¸°í™” ì‹œê°„ ì •ë³´ Stringì„ ê°€ë¦¬í‚¨ë‹¤. */
 	private final static String COMMIT_TIME = "COMMIT_TIME";
-	/** bundle¿¡¼­ ÁÂ¼® Á¤º¸ List¸¦ °¡¸®Å²´Ù. */
+	/** bundleì—ì„œ ì¢Œì„ ì •ë³´ Listë¥¼ ê°€ë¦¬í‚¨ë‹¤. */
 	private final static String BUNDLE_LIST = "SeatList";
-	/** bundle¿¡¼­ ÇØÁöµÉ ÁÂ¼® Á¤º¸ List¸¦ °¡¸®Å²´Ù. */
+	/** bundleì—ì„œ í•´ì§€ë  ì¢Œì„ ì •ë³´ Listë¥¼ ê°€ë¦¬í‚¨ë‹¤. */
 	private final static String INFO_LIST = "InfoList";
-	/** {@code SubSeatWebActivity}¿¡ Àü´ŞÇÒ SeatItemÀ» °¡¸®Å²´Ù. */
+	/** {@code SubSeatWebActivity}ì— ì „ë‹¬í•  SeatItemì„ ê°€ë¦¬í‚¨ë‹¤. */
 	protected final static String ITEM = "item";
 
 	@Override
@@ -85,11 +85,11 @@ public class TabLibrarySeatFragment extends
 		setMenuRefresh(false);
 		if (savedInstanceState != null) {
 			mCommitTime = savedInstanceState.getString(COMMIT_TIME);
-			mSearList = savedInstanceState.getParcelableArrayList(BUNDLE_LIST);
+			mSeatList = savedInstanceState.getParcelableArrayList(BUNDLE_LIST);
 			mDissmissInfoList = savedInstanceState
 					.getStringArrayList(INFO_LIST);
 		} else {
-			this.mSearList = new ArrayList<SeatItem>();
+			this.mSeatList = new ArrayList<SeatItem>();
 			mDissmissInfoList = new ArrayList<String>();
 		}
 		Activity activity = getActivity();
@@ -109,15 +109,16 @@ public class TabLibrarySeatFragment extends
 				false);
 		Activity activity = getActivity();
 		mSeatAdapter = new SeatListAdapter(activity, R.layout.list_layout_seat,
-				mSearList);
+				mSeatList);
 		viewInit(rootView);
 
 		mSeatListView.setOnItemClickListener(itemClickListenerOfLanguageList);
 
-		mInfoListView = new ListView(activity);
-		TextView emptyView = new TextView(activity);
-		emptyView.setText(R.string.tab_library_seat_dissmiss_info_not_loading);
-		mInfoListView.setEmptyView(emptyView);
+		View dialogView = View.inflate(activity,
+				R.layout.dialog_library_dismiss_info, null);
+		ListView mInfoListView = (ListView) dialogView
+				.findViewById(R.id.tab_library_listview_dismiss);
+		mInfoListView.setEmptyView(dialogView.findViewById(android.R.id.empty));
 		mInfoListView.setAdapter(mInfoAdapter);
 
 		return rootView;
@@ -126,14 +127,14 @@ public class TabLibrarySeatFragment extends
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		outState.putString(COMMIT_TIME, mCommitTime);
-		outState.putParcelableArrayList(BUNDLE_LIST, mSearList);
+		outState.putParcelableArrayList(BUNDLE_LIST, mSeatList);
 		outState.putStringArrayList(INFO_LIST, mDissmissInfoList);
 		super.onSaveInstanceState(outState);
 	}
 
 	@Override
 	public void onResume() {
-		if (mSearList.isEmpty()) {
+		if (mSeatList.isEmpty()) {
 			if (getExecutor() != null || !isRunning()) {
 				excute();
 			}
@@ -166,14 +167,13 @@ public class TabLibrarySeatFragment extends
 		case R.id.action_info:
 			if (getExecutor() != null && isRunning()) {
 				AppUtil.showToast(getActivity(),
-						R.string.tab_library_seat_dissmiss_info_not_loading,
-						true);
+						R.string.progress_while_loading, true);
 				return true;
 			}
 			if (mInfoDialog == null) {
 				mInfoDialog = new AlertDialog.Builder(getActivity())
 						.setTitle(getText(R.string.action_dissmiss_info))
-						.setView(mInfoListView).create();
+						.setView(mDismissDialogView).create();
 			}
 			mInfoDialog.show();
 			return true;
@@ -200,7 +200,7 @@ public class TabLibrarySeatFragment extends
 				mSeatListView.addFooterView(getLoadingView());
 			}
 		}
-		mSearList.clear();
+		mSeatList.clear();
 		mSeatAdapter.clear();
 		super.excute();
 	}
@@ -227,7 +227,7 @@ public class TabLibrarySeatFragment extends
 		ArrayList<SeatItem> callSeatList = (ArrayList<SeatItem>) ParseFactory
 				.create(ParseFactory.What.Seat, body, 0).parse();
 
-		// 'ÇØÁöµÉ ÁÂ¼® Á¤º¸' Á¤º¸¸¦ ¸®½ºÆ®¿¡ Ãß°¡
+		// 'í•´ì§€ë  ì¢Œì„ ì •ë³´' ì •ë³´ë¥¼ ë¦¬ìŠ¤íŠ¸ì— ì¶”ê°€
 		SeatItem dissmisInfo = callSeatList.remove(callSeatList.size() - 1);
 		if (mDissmissInfoList != null)
 			mDissmissInfoList.clear();
@@ -238,7 +238,7 @@ public class TabLibrarySeatFragment extends
 			mDissmissInfoList.add(array[i] + "+" + array[i + 1]);
 		}
 
-		// ÀÌ¿ë·üÀÌ 50%°¡ ³Ñ´Â ½ºÅÍµğ·ëÀº º¸¿©ÁÖÁö ¾ÊÀ½
+		// ì´ìš©ë¥ ì´ 50%ê°€ ë„˜ëŠ” ìŠ¤í„°ë””ë£¸ì€ ë³´ì—¬ì£¼ì§€ ì•ŠìŒ
 		if (PrefUtil.getInstance(getActivity()).get(PrefUtil.KEY_CHECK_SEAT,
 				false)) {
 			getFilteredList(callSeatList);
@@ -248,7 +248,7 @@ public class TabLibrarySeatFragment extends
 
 	private void getFilteredList(ArrayList<SeatItem> originalList) {
 		SeatItem item;
-		// ½ºÅÍµğ·ë ÀÎµ¦½º
+		// ìŠ¤í„°ë””ë£¸ ì¸ë±ìŠ¤
 		final int[] filterArr = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 23,
 				24, 25, 26, 27, 28 };
 		final int size = filterArr.length;
@@ -278,7 +278,7 @@ public class TabLibrarySeatFragment extends
 	};
 
 	private void updateTimeView() {
-		// Fragment°¡ Attatch µÇÁö ¾ÊÀº °æ¿ì
+		// Fragmentê°€ Attatch ë˜ì§€ ì•Šì€ ê²½ìš°
 		if (getActivity() == null)
 			return;
 		Calendar c = Calendar.getInstance();

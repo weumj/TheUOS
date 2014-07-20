@@ -53,10 +53,10 @@ public class ClassRoomItem implements Parcelable {
 	};
 
 	/**
-	 * ¸®½ºÆ® Á¤·Ä¿¡ »ç¿ëµÇ´Â Comparator °´Ã¼¸¦ ¹İÈ¯ÇÑ´Ù.
+	 * ë¦¬ìŠ¤íŠ¸ ì •ë ¬ì— ì‚¬ìš©ë˜ëŠ” Comparator ê°ì²´ë¥¼ ë°˜í™˜í•œë‹¤.
 	 * 
 	 * @param field
-	 *            - Á¤·Ä ÁÖÃ¼°¡ µÉ ¹®ÀÚ¿­ ÇÊµå<br>
+	 *            - ì •ë ¬ ì£¼ì²´ê°€ ë  ë¬¸ìì—´ í•„ë“œ<br>
 	 * */
 	public static final Comparator<ClassRoomItem> getComparator(
 			final int field, final boolean isReverse) {

@@ -79,7 +79,7 @@ public class SettingsTimetableFragment extends PreferenceFragment implements
 		}
 	}
 
-	/** ½Ã°£Ç¥ Ç¥½ÃÁ¦ÇÑ¿¡ »ç¿ëµÇ´Â NumberPicker¸¦ º¸¿©ÁØ´Ù. °ªÀÌ nullÀÌ¶ó¸é ÃÊ±âÈ­µµ ÇÑ´Ù. */
+	/** ì‹œê°„í‘œ í‘œì‹œì œí•œì— ì‚¬ìš©ë˜ëŠ” NumberPickerë¥¼ ë³´ì—¬ì¤€ë‹¤. ê°’ì´ nullì´ë¼ë©´ ì´ˆê¸°í™”ë„ í•œë‹¤. */
 	private void showNumberPicker() {
 		if (timetableLimitPickerDialog == null) {
 			NumberPicker np = new NumberPicker(getActivity());
@@ -94,7 +94,7 @@ public class SettingsTimetableFragment extends PreferenceFragment implements
 			});
 			timetableLimitPickerDialog = new AlertDialog.Builder(getActivity())
 					.setView(np)
-					.setTitle("Ç¥½Ã µÉ ±³½Ã¸¦ ¼±ÅÃÇÏ¼¼¿ä.")
+					.setTitle("í‘œì‹œ ë  êµì‹œë¥¼ ì„ íƒí•˜ì„¸ìš”.")
 					.setPositiveButton(android.R.string.ok,
 							new OnClickListener() {
 
@@ -112,7 +112,7 @@ public class SettingsTimetableFragment extends PreferenceFragment implements
 													limit);
 									AppUtil.showToast(context,
 											String.valueOf(limit)
-													+ "±³½Ã ±îÁö Ç¥½ÃµË´Ï´Ù.", true);
+													+ "êµì‹œ ê¹Œì§€ í‘œì‹œë©ë‹ˆë‹¤.", true);
 									AppUtil.timetable_limit = limit;
 									onSharedPreferenceChanged(
 											getPreferenceScreen()

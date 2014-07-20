@@ -76,8 +76,8 @@ public class PhoneNumberDB implements Runnable {
 	}
 
 	/**
-	 * @return update : updateµÈ row °¹¼ö <br>
-	 *         insert : ¼º°ø -> -1, ½ÇÆĞ -> -2
+	 * @return update : updateëœ row ê°¯ìˆ˜ <br>
+	 *         insert : ì„±ê³µ -> -1, ì‹¤íŒ¨ -> -2
 	 */
 	public int insertOrUpdate(PhoneItem item) {
 		if (read(item.siteName) != null) {
@@ -141,88 +141,88 @@ public class PhoneNumberDB implements Runnable {
 
 	private synchronized void init() {
 		if (!pref.get(TABLE_Name, false)) {
-			insert(new PhoneItem("Á¤°æ´ëÇĞ", "02-6490-2003"));
-			insert(new PhoneItem("ÇàÁ¤ÇĞ°ú", "02-6490-2010"));
-			insert(new PhoneItem("±¹Á¦°ü°èÇĞ°ú", "02-6490-2035"));
-			insert(new PhoneItem("°æÁ¦ÇĞºÎ", "02-6490-2051"));
-			insert(new PhoneItem("»çÈ¸º¹ÁöÇĞ°ú", "02-6490-2075"));
-			insert(new PhoneItem("¼¼¹«ÇĞ°ú", "02-6490-2095"));
-			insert(new PhoneItem("¹ıÇĞºÎ", "02-6490-2110"));
+			insert(new PhoneItem("ì •ê²½ëŒ€í•™", "02-6490-2003"));
+			insert(new PhoneItem("í–‰ì •í•™ê³¼", "02-6490-2010"));
+			insert(new PhoneItem("êµ­ì œê´€ê³„í•™ê³¼", "02-6490-2035"));
+			insert(new PhoneItem("ê²½ì œí•™ë¶€", "02-6490-2051"));
+			insert(new PhoneItem("ì‚¬íšŒë³µì§€í•™ê³¼", "02-6490-2075"));
+			insert(new PhoneItem("ì„¸ë¬´í•™ê³¼", "02-6490-2095"));
+			insert(new PhoneItem("ë²•í•™ë¶€", "02-6490-2110"));
 
-			insert(new PhoneItem("°æ¿µ´ëÇĞ", "02-6490-2201"));
-			insert(new PhoneItem("°æ¿µÇĞºÎ", "02-6490-2210"));
+			insert(new PhoneItem("ê²½ì˜ëŒ€í•™", "02-6490-2201"));
+			insert(new PhoneItem("ê²½ì˜í•™ë¶€", "02-6490-2210"));
 
-			insert(new PhoneItem("°ø°ú´ëÇĞ", "02-6490-2304"));
-			insert(new PhoneItem("ÀüÀÚÀü±âÄÄÇ»ÅÍ°øÇĞºÎ", "02-6490-2310"));
-			insert(new PhoneItem("È­ÇĞ°øÇĞ°ú", "02-6490-2360"));
-			insert(new PhoneItem("±â°èÁ¤º¸°øÇĞ°ú", "02-6490-2380"));
-			insert(new PhoneItem("½Å¼ÒÀç°øÇĞ°ú", "02-6490-2400"));
-			insert(new PhoneItem("Åä¸ñ°øÇĞ°ú", "02-6490-2420"));
-			insert(new PhoneItem("ÄÄÇ»ÅÍ°úÇĞºÎ", "02-6490-2440"));
+			insert(new PhoneItem("ê³µê³¼ëŒ€í•™", "02-6490-2304"));
+			insert(new PhoneItem("ì „ìì „ê¸°ì»´í“¨í„°ê³µí•™ë¶€", "02-6490-2310"));
+			insert(new PhoneItem("í™”í•™ê³µí•™ê³¼", "02-6490-2360"));
+			insert(new PhoneItem("ê¸°ê³„ì •ë³´ê³µí•™ê³¼", "02-6490-2380"));
+			insert(new PhoneItem("ì‹ ì†Œì¬ê³µí•™ê³¼", "02-6490-2400"));
+			insert(new PhoneItem("í† ëª©ê³µí•™ê³¼", "02-6490-2420"));
+			insert(new PhoneItem("ì»´í“¨í„°ê³¼í•™ë¶€", "02-6490-2440"));
 
-			insert(new PhoneItem("ÀÎ¹®´ëÇĞ", "02-6490-2505"));
-			insert(new PhoneItem("¿µ¾î¿µ¹®ÇĞ°ú", "02-6490-2510"));
-			insert(new PhoneItem("±¹¾î±¹¹®ÇĞ°ú", "02-6490-2530"));
-			insert(new PhoneItem("±¹»çÇĞ°ú", "02-6490-2550"));
-			insert(new PhoneItem("Ã¶ÇĞ°ú", "02-6490-2570"));
-			insert(new PhoneItem("Áß±¹¾î¹®È­ÇĞ°ú", "02-6490-2586"));
+			insert(new PhoneItem("ì¸ë¬¸ëŒ€í•™", "02-6490-2505"));
+			insert(new PhoneItem("ì˜ì–´ì˜ë¬¸í•™ê³¼", "02-6490-2510"));
+			insert(new PhoneItem("êµ­ì–´êµ­ë¬¸í•™ê³¼", "02-6490-2530"));
+			insert(new PhoneItem("êµ­ì‚¬í•™ê³¼", "02-6490-2550"));
+			insert(new PhoneItem("ì² í•™ê³¼", "02-6490-2570"));
+			insert(new PhoneItem("ì¤‘êµ­ì–´ë¬¸í™”í•™ê³¼", "02-6490-2586"));
 
-			insert(new PhoneItem("ÀÚ¿¬°úÇĞ´ëÇĞ", "02-6490-2601"));
-			insert(new PhoneItem("¼öÇĞ°ú", "02-6490-2606"));
-			insert(new PhoneItem("Åë°èÇĞ°ú", "02-6490-2625"));
-			insert(new PhoneItem("¹°¸®ÇĞ°ú", "02-6490-2640"));
-			insert(new PhoneItem("»ı¸í°úÇĞ°ú", "02-6490-2660"));
-			insert(new PhoneItem("È¯°æ¿ø¿¹ÇĞ°ú", "02-6490-2680"));
+			insert(new PhoneItem("ìì—°ê³¼í•™ëŒ€í•™", "02-6490-2601"));
+			insert(new PhoneItem("ìˆ˜í•™ê³¼", "02-6490-2606"));
+			insert(new PhoneItem("í†µê³„í•™ê³¼", "02-6490-2625"));
+			insert(new PhoneItem("ë¬¼ë¦¬í•™ê³¼", "02-6490-2640"));
+			insert(new PhoneItem("ìƒëª…ê³¼í•™ê³¼", "02-6490-2660"));
+			insert(new PhoneItem("í™˜ê²½ì›ì˜ˆí•™ê³¼", "02-6490-2680"));
 
-			insert(new PhoneItem("µµ½Ã°úÇĞ´ëÇĞ", "02-6490-2702"));
-			insert(new PhoneItem("°ÇÃàÇĞºÎ(°ÇÃà°øÇĞ)", "02-6490-2753"));
-			insert(new PhoneItem("°ÇÃàÇĞºÎ(°ÇÃàÇĞ)", "02-6490-2751"));
-			insert(new PhoneItem("µµ½Ã°øÇĞ°ú", "02-6490-2790"));
-			insert(new PhoneItem("±³Åë°øÇĞ°ú", "02-6490-2815"));
-			insert(new PhoneItem("Á¶°æÇĞ°ú", "02-6490-2835"));
-			insert(new PhoneItem("µµ½ÃÇàÁ¤ÇĞ°ú", "02-6490-2710"));
-			insert(new PhoneItem("µµ½Ã»çÈ¸ÇĞ°ú", "02-6490-2730"));
-			insert(new PhoneItem("°ø°£Á¤º¸°øÇĞ°ú", "02-6490-2880"));
-			insert(new PhoneItem("È¯°æ°øÇĞºÎ", "02-6490-2853"));
+			insert(new PhoneItem("ë„ì‹œê³¼í•™ëŒ€í•™", "02-6490-2702"));
+			insert(new PhoneItem("ê±´ì¶•í•™ë¶€(ê±´ì¶•ê³µí•™)", "02-6490-2753"));
+			insert(new PhoneItem("ê±´ì¶•í•™ë¶€(ê±´ì¶•í•™)", "02-6490-2751"));
+			insert(new PhoneItem("ë„ì‹œê³µí•™ê³¼", "02-6490-2790"));
+			insert(new PhoneItem("êµí†µê³µí•™ê³¼", "02-6490-2815"));
+			insert(new PhoneItem("ì¡°ê²½í•™ê³¼", "02-6490-2835"));
+			insert(new PhoneItem("ë„ì‹œí–‰ì •í•™ê³¼", "02-6490-2710"));
+			insert(new PhoneItem("ë„ì‹œì‚¬íšŒí•™ê³¼", "02-6490-2730"));
+			insert(new PhoneItem("ê³µê°„ì •ë³´ê³µí•™ê³¼", "02-6490-2880"));
+			insert(new PhoneItem("í™˜ê²½ê³µí•™ë¶€", "02-6490-2853"));
 
-			insert(new PhoneItem("¿¹¼úÃ¼À°´ëÇĞ", "02-6490-2902"));
-			insert(new PhoneItem("À½¾ÇÇĞ°ú", "02-6490-2930"));
-			insert(new PhoneItem("»ê¾÷µğÀÚÀÎÇĞ°ú", "02-6490-2906"));
-			insert(new PhoneItem("È¯°æÁ¶°¢ÇĞ°ú", "02-6490-2916"));
-			insert(new PhoneItem("½ºÆ÷Ã÷°úÇĞ°ú", "02-6490-2945"));
+			insert(new PhoneItem("ì˜ˆìˆ ì²´ìœ¡ëŒ€í•™", "02-6490-2902"));
+			insert(new PhoneItem("ìŒì•…í•™ê³¼", "02-6490-2930"));
+			insert(new PhoneItem("ì‚°ì—…ë””ìì¸í•™ê³¼", "02-6490-2906"));
+			insert(new PhoneItem("í™˜ê²½ì¡°ê°í•™ê³¼", "02-6490-2916"));
+			insert(new PhoneItem("ìŠ¤í¬ì¸ ê³¼í•™ê³¼", "02-6490-2945"));
 
-			insert(new PhoneItem("ÀÚÀ¯Àü°øÇĞºÎ", "02-6490-2126"));
+			insert(new PhoneItem("ììœ ì „ê³µí•™ë¶€", "02-6490-2126"));
 
-			insert(new PhoneItem("±³¾ç±³À°ºÎ", "02-6490-5202"));
-			insert(new PhoneItem("±Û¾²±â¼¾ÅÍ", "02-6490-5274"));
-			insert(new PhoneItem("´ëÇĞ¿µ¾î¼¾ÅÍ", "02-6490-5206"));
-			insert(new PhoneItem("±³¾ç¼öÇĞ", "02-6490-5235"));
-			insert(new PhoneItem("±³¾çÄÄÇ»ÅÍ", "02-6490-5265"));
-			insert(new PhoneItem("±³¾ç¹°¸®", "02-6490-5245"));
-			insert(new PhoneItem("±³¾çÈ­ÇĞ", "02-6490-5255"));
-			insert(new PhoneItem("±³¾ç»ı¹°", "02-6490-5262"));
-			insert(new PhoneItem("±³¾çÃ¼À°", "02-6490-2945"));
+			insert(new PhoneItem("êµì–‘êµìœ¡ë¶€", "02-6490-5202"));
+			insert(new PhoneItem("ê¸€ì“°ê¸°ì„¼í„°", "02-6490-5274"));
+			insert(new PhoneItem("ëŒ€í•™ì˜ì–´ì„¼í„°", "02-6490-5206"));
+			insert(new PhoneItem("êµì–‘ìˆ˜í•™", "02-6490-5235"));
+			insert(new PhoneItem("êµì–‘ì»´í“¨í„°", "02-6490-5265"));
+			insert(new PhoneItem("êµì–‘ë¬¼ë¦¬", "02-6490-5245"));
+			insert(new PhoneItem("êµì–‘í™”í•™", "02-6490-5255"));
+			insert(new PhoneItem("êµì–‘ìƒë¬¼", "02-6490-5262"));
+			insert(new PhoneItem("êµì–‘ì²´ìœ¡", "02-6490-2945"));
 
-			insert(new PhoneItem("»ıÈ°°ü", "02-6490-5186"));
-			insert(new PhoneItem("´ëÇĞº¸°Ç¼Ò", "02-6490-6590"));
-			insert(new PhoneItem("ÇĞ»ı°ú", "02-6490-6212"));
-			insert(new PhoneItem("Ã¼À°°ü", "02-6490-5165"));
-			insert(new PhoneItem("ÇĞ»ıÈ¸°ü ÆíÀÇÁ¡", "02-6490-5861"));
-			insert(new PhoneItem("Áß¾Óµµ¼­°ü ÆíÀÇÁ¡", "02-6490-5862"));
-			insert(new PhoneItem("»ıÈ°°ü ÆíÀÇÁ¡", "02-6490-5863"));
+			insert(new PhoneItem("ìƒí™œê´€", "02-6490-5186"));
+			insert(new PhoneItem("ëŒ€í•™ë³´ê±´ì†Œ", "02-6490-6590"));
+			insert(new PhoneItem("í•™ìƒê³¼", "02-6490-6212"));
+			insert(new PhoneItem("ì²´ìœ¡ê´€", "02-6490-5165"));
+			insert(new PhoneItem("í•™ìƒíšŒê´€ í¸ì˜ì ", "02-6490-5861"));
+			insert(new PhoneItem("ì¤‘ì•™ë„ì„œê´€ í¸ì˜ì ", "02-6490-5862"));
+			insert(new PhoneItem("ìƒí™œê´€ í¸ì˜ì ", "02-6490-5863"));
 			insert(new PhoneItem("WEB", "02-6490-5865"));
 			insert(new PhoneItem("Free Zone", "02-6490-5866"));
-			insert(new PhoneItem("±×¸®°í...ÈŞ", "02-6490-5867"));
-			insert(new PhoneItem("ÆÄ¸®¹Ù°Ô¶ß", "02-6490-5864"));
-			insert(new PhoneItem("ÀÚÆÇ±â", "02-6490-5852"));
-			insert(new PhoneItem("¼­Á¡", "02-2210-2344"));
-			insert(new PhoneItem("¹®±¸", "02-2210-2344"));
-			insert(new PhoneItem("º¹»ç", "02-2210-2358"));
-			insert(new PhoneItem("¾È°æÁ¡", "02-2210-2360"));
-			insert(new PhoneItem("±â³äÇ°¸ÅÀå", "02-2210-2192"));
-			insert(new PhoneItem("¿ìÃ¼±¹", "02-2210-2293"));
+			insert(new PhoneItem("ê·¸ë¦¬ê³ ...íœ´", "02-6490-5867"));
+			insert(new PhoneItem("íŒŒë¦¬ë°”ê²Œëœ¨", "02-6490-5864"));
+			insert(new PhoneItem("ìíŒê¸°", "02-6490-5852"));
+			insert(new PhoneItem("ì„œì ", "02-2210-2344"));
+			insert(new PhoneItem("ë¬¸êµ¬", "02-2210-2344"));
+			insert(new PhoneItem("ë³µì‚¬", "02-2210-2358"));
+			insert(new PhoneItem("ì•ˆê²½ì ", "02-2210-2360"));
+			insert(new PhoneItem("ê¸°ë…í’ˆë§¤ì¥", "02-2210-2192"));
+			insert(new PhoneItem("ìš°ì²´êµ­", "02-2210-2293"));
 
-			// DB°¡ ÃÊ±âÈ­ µÇ¾ú´Ù´Â Ç¥½Ã¸¦ ÇÔ.
+			// DBê°€ ì´ˆê¸°í™” ë˜ì—ˆë‹¤ëŠ” í‘œì‹œë¥¼ í•¨.
 			pref.put(TABLE_Name, true);
 		}
 

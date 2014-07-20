@@ -20,9 +20,9 @@ import com.uoscs09.theuos.common.impl.annotaion.AsyncData;
 import com.uoscs09.theuos.common.util.AppUtil;
 
 /**
- * {@code Fragment}¿¡ {@code AsyncExcutor} ÀÎÅÍÆäÀÌ½º¸¦ ±¸ÇöÇÑ Å¬·¡½º<br>
- * ÀÌ Å¬·¡½º¸¦ »ó¼Ó ¹Ş´Â Å¬·¡½º´Â {@code Callable} ÀÎÅÍÆäÀÌ½º¸¦ ¹İµå½Ã ±¸ÇöÇØ¾ßÇÑ´Ù.<br>
- * ±¸ÇöÇÑ {@code Callable} Àº ¹é±×¶ó¿îµå ÀÛ¾÷ÀÌ ½ÇÇàµÇ´Â Äİ¹éÀÌ´Ù.
+ * {@code Fragment}ì— {@code AsyncExcutor} ì¸í„°í˜ì´ìŠ¤ë¥¼ êµ¬í˜„í•œ í´ë˜ìŠ¤<br>
+ * ì´ í´ë˜ìŠ¤ë¥¼ ìƒì† ë°›ëŠ” í´ë˜ìŠ¤ëŠ” {@code Callable} ì¸í„°í˜ì´ìŠ¤ë¥¼ ë°˜ë“œì‹œ êµ¬í˜„í•´ì•¼í•œë‹¤.<br>
+ * êµ¬í˜„í•œ {@code Callable} ì€ ë°±ê·¸ë¼ìš´ë“œ ì‘ì—…ì´ ì‹¤í–‰ë˜ëŠ” ì½œë°±ì´ë‹¤.
  */
 public abstract class AbsAsyncFragment<T> extends BaseFragment implements
 		AsyncCallback<T>, Callable<T> {
@@ -32,8 +32,8 @@ public abstract class AbsAsyncFragment<T> extends BaseFragment implements
 	private Context mContext;
 
 	/**
-	 * {@code super.onCreate()}¸¦ È£ÃâÇÏ¸é, ÀÌÀüÀÇ ºñ µ¿±â ÀÛ¾÷ Ã³¸® °á°ú¿¡ µû¶ó<br>
-	 * {@code @AsyncData} annotationÀÌ ¼³Á¤µÈ °´Ã¼ÀÇ °ªÀÌ ¼³Á¤ µÉ ¼öµµ ÀÖ´Ù.
+	 * {@code super.onCreate()}ë¥¼ í˜¸ì¶œí•˜ë©´, ì´ì „ì˜ ë¹„ ë™ê¸° ì‘ì—… ì²˜ë¦¬ ê²°ê³¼ì— ë”°ë¼<br>
+	 * {@code @AsyncData} annotationì´ ì„¤ì •ëœ ê°ì²´ì˜ ê°’ì´ ì„¤ì • ë  ìˆ˜ë„ ìˆë‹¤.
 	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -53,21 +53,21 @@ public abstract class AbsAsyncFragment<T> extends BaseFragment implements
 						e.printStackTrace();
 					}
 					f.setAccessible(false);
-					break; // ÇöÀç ÇÏ³ªÀÇ º¯¼ö¸¸ Ãë±ŞÇÔ
+					break; // í˜„ì¬ í•˜ë‚˜ì˜ ë³€ìˆ˜ë§Œ ì·¨ê¸‰í•¨
 				}
 			}
 		}
 	}
 
-	/** ÇöÀç ¹é±×¶ó¿îµå ÀÛ¾÷ÀÌ ½ÇÇà Áß ÀÎÁö ¿©ºÎ¸¦ ¹İÈ¯ÇÑ´Ù. */
+	/** í˜„ì¬ ë°±ê·¸ë¼ìš´ë“œ ì‘ì—…ì´ ì‹¤í–‰ ì¤‘ ì¸ì§€ ì—¬ë¶€ë¥¼ ë°˜í™˜í•œë‹¤. */
 	public final boolean isRunning() {
 		return mRunning;
 	}
 
 	/**
-	 * Main Thread¿¡¼­ ºñµ¿±â ÀÛ¾÷À» ¼³Á¤ÇÏ°í, ½ÇÇàÇÏ´Â ¸Ş¼Òµå<br>
-	 * ºñµ¿±â ÀÛ¾÷ÀÌ ½ÇÇàµÇ±â Àü¿¡ ÇÊ¿äÇÑ ÀÛ¾÷Àº ÀÌ ¸Ş¼Òµå¸¦ È£ÃâÇÏ±â Àü¿¡ <br>
-	 * Ã³¸®ÇÏ°Å³ª, ÀÌ ¸Ş¼Òµå¸¦ »ó¼Ó¹Ş¾Æ ÀûÀıÈ÷ ±¸ÇöÇÑ´Ù.<br>
+	 * Main Threadì—ì„œ ë¹„ë™ê¸° ì‘ì—…ì„ ì„¤ì •í•˜ê³ , ì‹¤í–‰í•˜ëŠ” ë©”ì†Œë“œ<br>
+	 * ë¹„ë™ê¸° ì‘ì—…ì´ ì‹¤í–‰ë˜ê¸° ì „ì— í•„ìš”í•œ ì‘ì—…ì€ ì´ ë©”ì†Œë“œë¥¼ í˜¸ì¶œí•˜ê¸° ì „ì— <br>
+	 * ì²˜ë¦¬í•˜ê±°ë‚˜, ì´ ë©”ì†Œë“œë¥¼ ìƒì†ë°›ì•„ ì ì ˆíˆ êµ¬í˜„í•œë‹¤.<br>
 	 */
 	protected void excute() {
 		if (executor != null && !executor.isCancelled()) {
@@ -80,11 +80,11 @@ public abstract class AbsAsyncFragment<T> extends BaseFragment implements
 	}
 
 	/**
-	 * ¹é±×¶ó¿îµå ÀÛ¾÷À» ¼³Á¤ÇÑ´Ù.
+	 * ë°±ê·¸ë¼ìš´ë“œ ì‘ì—…ì„ ì„¤ì •í•œë‹¤.
 	 * 
 	 * @param force
-	 *            ´Ù¸¥ ÀÛ¾÷ÀÌ ½ÇÇàÁßÀÎ°Í°ú °ü°è¾øÀÌ °­Á¦·Î ¼³Á¤ÇÏ´ÂÁö ¿©ºÎ
-	 * @return ¼³Á¤ ¿©ºÎ
+	 *            ë‹¤ë¥¸ ì‘ì—…ì´ ì‹¤í–‰ì¤‘ì¸ê²ƒê³¼ ê´€ê³„ì—†ì´ ê°•ì œë¡œ ì„¤ì •í•˜ëŠ”ì§€ ì—¬ë¶€
+	 * @return ì„¤ì • ì—¬ë¶€
 	 */
 	public final boolean setExcuter(boolean force) {
 		if (!force && executor.getStatus().equals(AsyncTask.Status.RUNNING))
@@ -97,12 +97,12 @@ public abstract class AbsAsyncFragment<T> extends BaseFragment implements
 	}
 
 	/**
-	 * ÇöÀç ½ÇÇàµÇ°í ÀÖ´Â ¹é±×¶ó¿îµå ÀÛ¾÷À» Ãë¼ÒÇÑ´Ù.
+	 * í˜„ì¬ ì‹¤í–‰ë˜ê³  ìˆëŠ” ë°±ê·¸ë¼ìš´ë“œ ì‘ì—…ì„ ì·¨ì†Œí•œë‹¤.
 	 * 
-	 * @return {@code true} - ÀÛ¾÷À» ¼º°øÀûÀ¸·Î Ãë¼ÒÇÏ¿´À» ¶§<br>
-	 *         {@code false} - ÀÛ¾÷ÀÌ ¼³Á¤µÇÁö ¾Ê¾Ò°Å³ª ({@code null}),<br>
-	 *         ÀÛ¾÷À» Ãë¼ÒÇÒ ¼ö ¾øÀ» ¶§<br>
-	 *         (´ë°³ ÀÌ·±°æ¿ì´Â ÀÛ¾÷ÀÌ ÀÌ¹Ì Á¤»óÀûÀ¸·Î Á¾·áµÈ °æ¿ìÀÌ´Ù.)
+	 * @return {@code true} - ì‘ì—…ì„ ì„±ê³µì ìœ¼ë¡œ ì·¨ì†Œí•˜ì˜€ì„ ë•Œ<br>
+	 *         {@code false} - ì‘ì—…ì´ ì„¤ì •ë˜ì§€ ì•Šì•˜ê±°ë‚˜ ({@code null}),<br>
+	 *         ì‘ì—…ì„ ì·¨ì†Œí•  ìˆ˜ ì—†ì„ ë•Œ<br>
+	 *         (ëŒ€ê°œ ì´ëŸ°ê²½ìš°ëŠ” ì‘ì—…ì´ ì´ë¯¸ ì •ìƒì ìœ¼ë¡œ ì¢…ë£Œëœ ê²½ìš°ì´ë‹¤.)
 	 */
 	protected final boolean cancelExecutor() {
 		if (executor != null) {
@@ -116,7 +116,7 @@ public abstract class AbsAsyncFragment<T> extends BaseFragment implements
 		}
 	}
 
-	/** ÀÛ¾÷À» Ã³¸®ÇÏ´Â AsyncExcutor °´Ã¼¸¦ ¾ò´Â´Ù. */
+	/** ì‘ì—…ì„ ì²˜ë¦¬í•˜ëŠ” AsyncExcutor ê°ì²´ë¥¼ ì–»ëŠ”ë‹¤. */
 	protected final AsyncExecutor<T> getExecutor() {
 		return executor;
 	}
@@ -129,7 +129,7 @@ public abstract class AbsAsyncFragment<T> extends BaseFragment implements
 		}
 	}
 
-	/** ÇöÀç Fragment°¡ Á¸ÀçÇÏ´Â »óÅÂ¿¡¼­ ºñµ¿±â ÀÛ¾÷ÀÌ ³¡³ª°í UI Thread·Î ÁøÀÔ ÇÒ ¶§ È£ÃâµÈ´Ù. */
+	/** í˜„ì¬ Fragmentê°€ ì¡´ì¬í•˜ëŠ” ìƒíƒœì—ì„œ ë¹„ë™ê¸° ì‘ì—…ì´ ëë‚˜ê³  UI Threadë¡œ ì§„ì… í•  ë•Œ í˜¸ì¶œëœë‹¤. */
 	protected abstract void onTransactPostExcute();
 
 	@Override
@@ -164,15 +164,15 @@ public abstract class AbsAsyncFragment<T> extends BaseFragment implements
 	}
 
 	/**
-	 * ºñµ¿±â ÀÛ¾÷ÀÌ ³¡³µÁö¸¸, Fragment°¡ ÆÄ±«µÇ¾úÀ» ¶§, È£ÃâµÈ´Ù. <br>
+	 * ë¹„ë™ê¸° ì‘ì—…ì´ ëë‚¬ì§€ë§Œ, Fragmentê°€ íŒŒê´´ë˜ì—ˆì„ ë•Œ, í˜¸ì¶œëœë‹¤. <br>
 	 * <br>
-	 * ±âº»ÀûÀ¸·Î ±¸ÇöµÈ ÀÛ¾÷Àº notificationÀ» ¶ç¿ì´Â °ÍÀÌ´Ù.
+	 * ê¸°ë³¸ì ìœ¼ë¡œ êµ¬í˜„ëœ ì‘ì—…ì€ notificationì„ ë„ìš°ëŠ” ê²ƒì´ë‹¤.
 	 * 
 	 * @param context
-	 *            FragmentÀÇ Activity
+	 *            Fragmentì˜ Activity
 	 * @param result
-	 *            ÀÛ¾÷ÀÌ ¼º°øÇßÀ» ½Ã - 'T' °´Ã¼<br>
-	 *            ÀÛ¾÷ÀÌ ½ÇÆĞÇÏ¿´À» ¶§ - Exception °´Ã¼
+	 *            ì‘ì—…ì´ ì„±ê³µí–ˆì„ ì‹œ - 'T' ê°ì²´<br>
+	 *            ì‘ì—…ì´ ì‹¤íŒ¨í•˜ì˜€ì„ ë•Œ - Exception ê°ì²´
 	 */
 	protected void notifyFinishWhenBackground(Context context, Object result) {
 		NotificationManager nm = (NotificationManager) context
@@ -207,18 +207,18 @@ public abstract class AbsAsyncFragment<T> extends BaseFragment implements
 		super.onDetach();
 	}
 
-	/** ÇöÀç Fragment°¡ Á¸ÀçÇÏ°í, ºñµ¿±â ÀÛ¾÷ÀÌ ¼º°øÀûÀ¸·Î ³¡³µÀ» ¶§ È£ÃâµÈ´Ù. */
+	/** í˜„ì¬ Fragmentê°€ ì¡´ì¬í•˜ê³ , ë¹„ë™ê¸° ì‘ì—…ì´ ì„±ê³µì ìœ¼ë¡œ ëë‚¬ì„ ë•Œ í˜¸ì¶œëœë‹¤. */
 	public abstract void onTransactResult(T result);
 
 	/**
-	 * ºñµ¿±â ÀÛ¾÷ÀÌ ³¡³­ ÈÄ, Fragment°¡ ÀÌ¹Ì ÆÄ±«µÇ¾úÀ» ¶§ È£ÃâµÇ¾î <br>
-	 * Àü¿ªÀûÀÎ Map¿¡ µ¥ÀÌÅÍ¸¦ º¸°üÇÑ´Ù.
+	 * ë¹„ë™ê¸° ì‘ì—…ì´ ëë‚œ í›„, Fragmentê°€ ì´ë¯¸ íŒŒê´´ë˜ì—ˆì„ ë•Œ í˜¸ì¶œë˜ì–´ <br>
+	 * ì „ì—­ì ì¸ Mapì— ë°ì´í„°ë¥¼ ë³´ê´€í•œë‹¤.
 	 * 
 	 * @param key
-	 *            º¸°üÇÒ µ¥ÀÌÅÍÀÇ key, ¾îÇÃ¸®ÄÉÀÌ¼Ç¿¡¼­ Àü¿ªÀûÀÎ µ¥ÀÌÅÍÀÌ¹Ç·Î °ãÄ¡Áö ¾Ê°Ô ÁÖÀÇÇÏ¿©¾ß ÇÑ´Ù.
+	 *            ë³´ê´€í•  ë°ì´í„°ì˜ key, ì–´í”Œë¦¬ì¼€ì´ì…˜ì—ì„œ ì „ì—­ì ì¸ ë°ì´í„°ì´ë¯€ë¡œ ê²¹ì¹˜ì§€ ì•Šê²Œ ì£¼ì˜í•˜ì—¬ì•¼ í•œë‹¤.
 	 * @param obj
-	 *            º¸°üÇÒ µ¥ÀÌÅÍ
-	 * @return ÀúÀå ¼º°ø ¿©ºÎ, ÇØ´ç key°¡ Á¸ÀçÇß´Ù¸é ÀúÀåµÇÁö ¾Ê°í false¸¦ ¹İÈ¯ÇÑ´Ù.
+	 *            ë³´ê´€í•  ë°ì´í„°
+	 * @return ì €ì¥ ì„±ê³µ ì—¬ë¶€, í•´ë‹¹ keyê°€ ì¡´ì¬í–ˆë‹¤ë©´ ì €ì¥ë˜ì§€ ì•Šê³  falseë¥¼ ë°˜í™˜í•œë‹¤.
 	 */
 	protected boolean putAsyncData(String key, T obj) {
 		if (!sAsyncDataStoreMap.containsKey(key)) {
@@ -229,11 +229,11 @@ public abstract class AbsAsyncFragment<T> extends BaseFragment implements
 	}
 
 	/**
-	 * ºñµ¿±â ÀÛ¾÷À¸·Î ÀÎÇØ ÀúÀåµÈ data¸¦ °¡Á®¿Â´Ù. °¡Á®¿Â data´Â Map¿¡¼­ »èÁ¦µÈ´Ù.
+	 * ë¹„ë™ê¸° ì‘ì—…ìœ¼ë¡œ ì¸í•´ ì €ì¥ëœ dataë¥¼ ê°€ì ¸ì˜¨ë‹¤. ê°€ì ¸ì˜¨ dataëŠ” Mapì—ì„œ ì‚­ì œëœë‹¤.
 	 * 
 	 * @param key
-	 *            ÀúÀåµÈ data¸¦ °¡Á®¿Ã key
-	 * @return ÀúÀåµÈ data, ÀúÀåµÈ data°¡ ¾ø´Ù¸é nullÀ» ¹İÈ¯ÇÑ´Ù.
+	 *            ì €ì¥ëœ dataë¥¼ ê°€ì ¸ì˜¬ key
+	 * @return ì €ì¥ëœ data, ì €ì¥ëœ dataê°€ ì—†ë‹¤ë©´ nullì„ ë°˜í™˜í•œë‹¤.
 	 * */
 	protected final static Object getAsyncData(String key) {
 		return sAsyncDataStoreMap.remove(key);

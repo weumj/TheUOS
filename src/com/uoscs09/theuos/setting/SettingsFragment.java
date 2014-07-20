@@ -31,7 +31,7 @@ import com.uoscs09.theuos.common.util.AppUtil.AppTheme;
 import com.uoscs09.theuos.common.util.PrefUtil;
 import com.uoscs09.theuos.http.HttpRequest;
 
-/** ¸ŞÀÎ ¼³Á¤È­¸éÀ» ³ªÅ¸³»´Â {@code PreferenceFragment} */
+/** ë©”ì¸ ì„¤ì •í™”ë©´ì„ ë‚˜íƒ€ë‚´ëŠ” {@code PreferenceFragment} */
 public class SettingsFragment extends PreferenceFragment implements
 		OnSharedPreferenceChangeListener {
 	private AlertDialog themeSelectorDialog;
@@ -155,7 +155,7 @@ public class SettingsFragment extends PreferenceFragment implements
 		}).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 
-	/** Å×¸¶¸¦ ¼±ÅÃÇÏ´Â dialog¸¦ º¸¿©ÁØ´Ù.dialog°¡ nullÀÏ½Ã ÃÊ±âÈ­µµ °°ÀÌÇÑ´Ù. */
+	/** í…Œë§ˆë¥¼ ì„ íƒí•˜ëŠ” dialogë¥¼ ë³´ì—¬ì¤€ë‹¤.dialogê°€ nullì¼ì‹œ ì´ˆê¸°í™”ë„ ê°™ì´í•œë‹¤. */
 	private void showThemeDialog() {
 		if (themeSelectorDialog == null) {
 			AppTheme[] values = AppTheme.values();
@@ -191,13 +191,23 @@ public class SettingsFragment extends PreferenceFragment implements
 		themeSelectorDialog.show();
 	}
 
-	/** ¾îÇÃ¸®ÄÉÀÌ¼ÇÀÇ ¸ğµç Ä³½¬¸¦ »èÁ¦ÇÑ´Ù. */
+	/** ì–´í”Œë¦¬ì¼€ì´ì…˜ì˜ ëª¨ë“  ìºì‰¬ë¥¼ ì‚­ì œí•œë‹¤. */
 	private void deleteCache(Context context) {
-		AsyncLoader.excute(new Runnable() {
+		new AsyncLoader<Void>().excute(new Callable<Void>() {
 			@Override
-			public void run() {
+			public Void call() throws Exception {
 				AppUtil.clearCache(getActivity());
-				AppUtil.showToast(getActivity(), R.string.excute_delete);
+				return null;
+			}
+		}, new AsyncLoader.OnTaskFinishedListener() {
+			@Override
+			public void onTaskFinished(boolean isExceptionOccoured, Object data) {
+				if (isExceptionOccoured) {
+					AppUtil.showErrorToast(getActivity(), (Exception) data,
+							true);
+				} else {
+					AppUtil.showToast(getActivity(), R.string.excute_delete);
+				}
 			}
 		});
 	}
@@ -235,7 +245,7 @@ public class SettingsFragment extends PreferenceFragment implements
 		super.onPause();
 	}
 
-	/** ¼³Á¤È­¸é ÁøÀÔ½Ã ÇöÀç ¼³Á¤µÈ °ª¿¡ µû¶ó ¼³¸íÀÌ ¹Ù²î¾î¾ß ÇÒ ¾ÆÀÌÅÛµéÀÇ ¼³¸íÀ» ¹Ù²Û´Ù. */
+	/** ì„¤ì •í™”ë©´ ì§„ì…ì‹œ í˜„ì¬ ì„¤ì •ëœ ê°’ì— ë”°ë¼ ì„¤ëª…ì´ ë°”ë€Œì–´ì•¼ í•  ì•„ì´í…œë“¤ì˜ ì„¤ëª…ì„ ë°”ê¾¼ë‹¤. */
 	private void bindPreferenceSummaryToValue() {
 		SharedPreferences pref = getPreferenceScreen().getSharedPreferences();
 		pref.registerOnSharedPreferenceChangeListener(this);
@@ -266,7 +276,7 @@ public class SettingsFragment extends PreferenceFragment implements
 			AppUtil.theme = AppTheme.values()[sharedPreferences.getInt(key, 0)];
 			AppUtil.applyTheme(activity.getApplicationContext());
 			connectionPref.setSummary(getString(R.string.setting_theme_desc)
-					+ "\nÇöÀç Àû¿ëµÈ Å×¸¶ : " + AppUtil.theme.toString());
+					+ "\ní˜„ì¬ ì ìš©ëœ í…Œë§ˆ : " + AppUtil.theme.toString());
 		} else if (key.equals(PrefUtil.KEY_HOME)) {
 			getActivity().setResult(AppUtil.RELAUNCH_ACTIVITY);
 		}

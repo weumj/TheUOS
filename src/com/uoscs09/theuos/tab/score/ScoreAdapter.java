@@ -64,9 +64,9 @@ public class ScoreAdapter extends BaseExpandableListAdapter {
 		DetailScoreItem item = (DetailScoreItem) getChild(g, c);
 		t1.setText(item.type);
 		t2.setText(item.class_eval_item);
-		t3.setText("¿øÁ¡¼ö : " + item.raw_score);
-		t4.setText("Ç¥ÁØÁ¡¼ö : " + item.eval_grade);
-		t5.setText("Æò±ÕÁ¡¼ö :" + item.ave);
+		t3.setText("ì›ì ìˆ˜ : " + item.raw_score);
+		t4.setText("í‘œì¤€ì ìˆ˜ : " + item.eval_grade);
+		t5.setText("í‰ê· ì ìˆ˜ :" + item.ave);
 		return v;
 	}
 

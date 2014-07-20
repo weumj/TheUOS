@@ -148,7 +148,7 @@ public abstract class TimeTableWidget extends AppWidgetProvider {
 					AppWidgetManager.EXTRA_APPWIDGET_ID,
 					AppWidgetManager.INVALID_APPWIDGET_ID) };
 			onUpdate(context, m, ids);
-			//AppUtil.showToast(context, "»õ·Î°íÄ§...", true);
+			//AppUtil.showToast(context, "ìƒˆë¡œê³ ì¹¨...", true);
 			AppWidgetManager.getInstance(context)
 					.notifyAppWidgetViewDataChanged(ids,
 							R.id.widget_timetable_listview);

@@ -9,24 +9,24 @@ import android.os.AsyncTask;
 
 public class AsyncLoader<Data> {
 	/**
-	 * ºñµ¿±â ÀÛ¾÷À» ½ÇÇàÇÑ´Ù.
+	 * ë¹„ë™ê¸° ì‘ì—…ì„ ì‹¤í–‰í•œë‹¤.
 	 * 
 	 * @param task
-	 *            ºñµ¿±â ÀÛ¾÷ÀÌ ½Ç½ÃµÉ {@link Callable}
+	 *            ë¹„ë™ê¸° ì‘ì—…ì´ ì‹¤ì‹œë  {@link Callable}
 	 * @param l
-	 *            ÀÛ¾÷ Á¾·áÈÄ È£ÃâµÉ callback
+	 *            ì‘ì—… ì¢…ë£Œí›„ í˜¸ì¶œë  callback
 	 */
 	public void excute(Callable<Data> task, OnTaskFinishedListener l) {
 		getTasker(task, l).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 
 	/**
-	 * ºñµ¿±â ÀÛ¾÷À» ½ÇÇàÇÑ´Ù.
+	 * ë¹„ë™ê¸° ì‘ì—…ì„ ì‹¤í–‰í•œë‹¤.
 	 * 
 	 * @param task
-	 *            ºñµ¿±â ÀÛ¾÷ÀÌ ½Ç½ÃµÉ {@link Callable}
+	 *            ë¹„ë™ê¸° ì‘ì—…ì´ ì‹¤ì‹œë  {@link Callable}
 	 * @param callback
-	 *            ÀÛ¾÷ Á¾·áÈÄ È£ÃâµÉ callback
+	 *            ì‘ì—… ì¢…ë£Œí›„ í˜¸ì¶œë  callback
 	 */
 	public void excute(Callable<Data> task, AsyncCallback<Data> callback) {
 		new AsyncExecutor<Data>().setCallable(task).setCallback(callback)
@@ -34,10 +34,10 @@ public class AsyncLoader<Data> {
 	}
 
 	/**
-	 * °á°ú¸¦ ¹İÈ¯ÇÏÁö ¾Ê´Â ºñµ¿±â ÀÛ¾÷À» ½ÇÇàÇÑ´Ù.
+	 * ê²°ê³¼ë¥¼ ë°˜í™˜í•˜ì§€ ì•ŠëŠ” ë¹„ë™ê¸° ì‘ì—…ì„ ì‹¤í–‰í•œë‹¤.
 	 * 
 	 * @param r
-	 *            ºñµ¿±â ÀÛ¾÷ÀÌ ½Ç½ÃµÉ {@link Runnable}
+	 *            ë¹„ë™ê¸° ì‘ì—…ì´ ì‹¤ì‹œë  {@link Runnable}
 	 */
 	public static void excute(Runnable r) {
 		AsyncTask.THREAD_POOL_EXECUTOR.execute(r);
@@ -60,16 +60,16 @@ public class AsyncLoader<Data> {
 				});
 	}
 
-	/** ºñ µ¿±â ÀÛ¾÷ ÈÄ È£ÃâµÉ listener */
+	/** ë¹„ ë™ê¸° ì‘ì—… í›„ í˜¸ì¶œë  listener */
 	public interface OnTaskFinishedListener {
 		/**
-		 * ºñ µ¿±â ÀÛ¾÷ ÈÄ È£ÃâµÇ´Â ¸Ş¼Òµå
+		 * ë¹„ ë™ê¸° ì‘ì—… í›„ í˜¸ì¶œë˜ëŠ” ë©”ì†Œë“œ
 		 * 
 		 * @param isExceptionOccoured
-		 *            Exception ¹ß»ı ¿©ºÎ
+		 *            Exception ë°œìƒ ì—¬ë¶€
 		 * @param data
-		 *            <li>ExceptionÀÌ ¹ß»ıÇÑ °æ¿ì : {@link Exception}°´Ã¼</li> <li>
-		 *            ExceptionÀÌ ¹ß»ıÇÏÁö ¾ÊÀº °æ¿ì : {@link Callable} ¿¡¼­ ¹İÈ¯µÈ °á°ú</li>
+		 *            <li>Exceptionì´ ë°œìƒí•œ ê²½ìš° : {@link Exception}ê°ì²´</li> <li>
+		 *            Exceptionì´ ë°œìƒí•˜ì§€ ì•Šì€ ê²½ìš° : {@link Callable} ì—ì„œ ë°˜í™˜ëœ ê²°ê³¼</li>
 		 */
 		public void onTaskFinished(boolean isExceptionOccoured, Object data);
 	}

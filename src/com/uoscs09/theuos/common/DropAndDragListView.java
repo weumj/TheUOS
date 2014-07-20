@@ -16,17 +16,17 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import com.uoscs09.theuos.R;
-/** drag and dropÀÌ °¡´ÉÇÑ {@code ListView} <br>
- * stackoverflow¿¡¼­ °Ë»öÇÔ*/
+/** drag and dropì´ ê°€ëŠ¥í•œ {@code ListView} <br>
+ * stackoverflowì—ì„œ ê²€ìƒ‰í•¨*/
 public class DropAndDragListView extends ListView {
 	private Context mContext;
 	private ImageView mDragView;
     private WindowManager mWindowManager;
     private WindowManager.LayoutParams mWindowParams;
-    private int mDragPos;      // µå·¡±× ¾ÆÀÌÅÛÀÇ À§Ä¡
-    private int mFirstDragPos; // µå·¡±× ¾ÆÀÌÅÛÀÇ ¿ø·¡ À§Ä¡
+    private int mDragPos;      // ë“œë˜ê·¸ ì•„ì´í…œì˜ ìœ„ì¹˜
+    private int mFirstDragPos; // ë“œë˜ê·¸ ì•„ì´í…œì˜ ì›ë˜ ìœ„ì¹˜
     private int mDragPoint;
-    private int mCoordOffset;  // ½ºÅ©¸°¿¡¼­ÀÇ À§Ä¡¿Í ºä³»¿¡¼­ÀÇ À§Ä¡ÀÇ Â÷ÀÌ
+    private int mCoordOffset;  // ìŠ¤í¬ë¦°ì—ì„œì˜ ìœ„ì¹˜ì™€ ë·°ë‚´ì—ì„œì˜ ìœ„ì¹˜ì˜ ì°¨ì´
     private DragListener mDragListener;
     private DropListener mDropListener;
     private int mUpperBound;
@@ -57,25 +57,25 @@ public class DropAndDragListView extends ListView {
                     if (itemnum == AdapterView.INVALID_POSITION) {
                         break;
                     }
-                    View item = getChildAt(itemnum - getFirstVisiblePosition()); // µå·¡±× ¾ÆÀÌÅÛ
-                    mItemHeightNormal = item.getHeight(); // ¾ÆÀÌÅÛÀÇ ³ôÀÌ
-                    //mItemHeightExpanded = mItemHeightNormal * 2; // ¾ÆÀÌÅÛÀÌ µå·¡±× ÇÒ¶§ ¹ú¾îÁöÁú ³ôÀÌ
+                    View item = getChildAt(itemnum - getFirstVisiblePosition()); // ë“œë˜ê·¸ ì•„ì´í…œ
+                    mItemHeightNormal = item.getHeight(); // ì•„ì´í…œì˜ ë†’ì´
+                    //mItemHeightExpanded = mItemHeightNormal * 2; // ì•„ì´í…œì´ ë“œë˜ê·¸ í• ë•Œ ë²Œì–´ì§€ì§ˆ ë†’ì´
                     mDragPoint = y - item.getTop();
                     mCoordOffset = ((int)ev.getRawY()) - y;
-                    View dragger = item.findViewById(dndViewId); // µå·¡±× ÀÌº¥Æ®¸¦ ÇÒ ¾ÆÀÌÅÛ³»¿¡¼­ÀÇ ºä
+                    View dragger = item.findViewById(dndViewId); // ë“œë˜ê·¸ ì´ë²¤íŠ¸ë¥¼ í•  ì•„ì´í…œë‚´ì—ì„œì˜ ë·°
                     if(dragger == null)
                     	dragger = item;
                     Rect r = mTempRect;
                     dragger.getDrawingRect(r);
                     if (x < r.right * 2) {
                         item.setDrawingCacheEnabled(true);
-                        // µå·¡±× ÇÏ´Â ¾ÆÀÌÅÛÀÇ ÀÌ¹ÌÁö Ä¸ÃÄ
+                        // ë“œë˜ê·¸ í•˜ëŠ” ì•„ì´í…œì˜ ì´ë¯¸ì§€ ìº¡ì³
                         Bitmap bitmap = Bitmap.createBitmap(item.getDrawingCache(true));
                         startDragging(bitmap, y);
                         mDragPos = itemnum;
                         mFirstDragPos = mDragPos;
                         mHeight = getHeight();
-                        // ½ºÅ©·Ñ¸µÀ» À§ÇÑ °ª È¹µæ
+                        // ìŠ¤í¬ë¡¤ë§ì„ ìœ„í•œ ê°’ íšë“
                         int touchSlop = mTouchSlop;
                         mUpperBound = Math.min(y - touchSlop, mHeight / 3);
                         mLowerBound = Math.max(y + touchSlop, mHeight * 2 /3);
@@ -117,15 +117,15 @@ public class DropAndDragListView extends ListView {
                                 mDragListener.drag(mDragPos, itemnum);
                             }
                             mDragPos = itemnum;
-                            doExpansion(); // Ã³À½ µå·¡±×ÇÑ ¾ÆÀÌÅÛ°ú ´Ù¸¥ À§Ä¡¿¡ ÀÖÀ» °æ¿ì ÆîÃÄÁö°Ô ÇÑ´Ù.
+                            doExpansion(); // ì²˜ìŒ ë“œë˜ê·¸í•œ ì•„ì´í…œê³¼ ë‹¤ë¥¸ ìœ„ì¹˜ì— ìˆì„ ê²½ìš° í¼ì³ì§€ê²Œ í•œë‹¤.
                         }
                         int speed = 0;
-                        adjustScrollBounds(y); // ½ºÅ©·Ñ °è»ê
+                        adjustScrollBounds(y); // ìŠ¤í¬ë¡¤ ê³„ì‚°
                         if (y > mLowerBound) {
-                            // ½ºÅ©·Ñ ÃÖ»óÀ§
+                            // ìŠ¤í¬ë¡¤ ìµœìƒìœ„
                             speed = y > (mHeight + mLowerBound) / 2 ? 16 : 4;
                         } else if (y < mUpperBound) {
-                            // ½ºÅ©·Ñ ÃÖÇÏÀ§
+                            // ìŠ¤í¬ë¡¤ ìµœí•˜ìœ„
                             speed = y < mUpperBound / 2 ? -16 : -4;
                         }
                         if (speed != 0) {
@@ -240,7 +240,7 @@ public class DropAndDragListView extends ListView {
         }
     }
     
-	// µå·¡±× ½ÃÀÛ
+	// ë“œë˜ê·¸ ì‹œì‘
 	private void startDragging(Bitmap bm, int y) {
         stopDragging();
 
@@ -269,13 +269,13 @@ public class DropAndDragListView extends ListView {
         mDragView = v;
     }
 	
-	// µå·¡±×¸¦ À§ÇØ ¸¸µé¾î ÁØ ºäÀÇ ÀÌµ¿
+	// ë“œë˜ê·¸ë¥¼ ìœ„í•´ ë§Œë“¤ì–´ ì¤€ ë·°ì˜ ì´ë™
 	private void dragView(int x, int y) {
         mWindowParams.y = y - mDragPoint + mCoordOffset;
         mWindowManager.updateViewLayout(mDragView, mWindowParams);
     }
     
-	// µå·¡±× Á¾·á Ã³¸®
+	// ë“œë˜ê·¸ ì¢…ë£Œ ì²˜ë¦¬
     private void stopDragging() {
         if (mDragView != null) {
             WindowManager wm = (WindowManager)mContext.getSystemService("window");
@@ -290,32 +290,32 @@ public class DropAndDragListView extends ListView {
     }
     
     /**
-     * µå·¡±× ÀÌº¥Æ® ¸®½º³Ê µî·Ï
-     * @param l µå·¡±× ÀÌº¥Æ® ¸®½º³Ê
+     * ë“œë˜ê·¸ ì´ë²¤íŠ¸ ë¦¬ìŠ¤ë„ˆ ë“±ë¡
+     * @param l ë“œë˜ê·¸ ì´ë²¤íŠ¸ ë¦¬ìŠ¤ë„ˆ
      */
 	public void setDragListener(DragListener l) {
         mDragListener = l;
     }
     
 	/**
-	 * µå¶ø ÀÌº¥Æ® ¸®½º³Ê µî·Ï
-	 * @param l µå¶ø ÀÌº¥Æ® ¸®½º³Ê
+	 * ë“œë ì´ë²¤íŠ¸ ë¦¬ìŠ¤ë„ˆ ë“±ë¡
+	 * @param l ë“œë ì´ë²¤íŠ¸ ë¦¬ìŠ¤ë„ˆ
 	 */
     public void setDropListener(DropListener l) {
         mDropListener = l;
     }
     
     /**
-     * ¸®½ºÆ® ¾ÆÀÌÅÛ¿¡ ÀÖ´Â ºäµé Áß µå·¡±× µå¶ø ÀÌº¥Æ®¸¦ ¹ß»ı½ÃÅ³ ºäÀÇ ¾ÆÀÌ 
-     * @param id µå·¡±× µå¶ø ÀÌº¥Æ®¸¦ ¹ß»ı½ÃÅ³ ºäÀÇ ¾ÆÀÌµğ
+     * ë¦¬ìŠ¤íŠ¸ ì•„ì´í…œì— ìˆëŠ” ë·°ë“¤ ì¤‘ ë“œë˜ê·¸ ë“œë ì´ë²¤íŠ¸ë¥¼ ë°œìƒì‹œí‚¬ ë·°ì˜ ì•„ì´ 
+     * @param id ë“œë˜ê·¸ ë“œë ì´ë²¤íŠ¸ë¥¼ ë°œìƒì‹œí‚¬ ë·°ì˜ ì•„ì´ë””
      */
     public void setDndView(int id){
     	dndViewId = id;
     }
     
     /**
-     * µå·¡±×½Ã Ç¥½ÃµÇ´Â ºäÀÇ ½ºÅ©¸°¿¡¼­ÀÇ left padding
-     * @param x ½ºÅ©¸°¿¡¼­ÀÇ left padding, ¼³Á¤¾ÈÇÏ¸é 0
+     * ë“œë˜ê·¸ì‹œ í‘œì‹œë˜ëŠ” ë·°ì˜ ìŠ¤í¬ë¦°ì—ì„œì˜ left padding
+     * @param x ìŠ¤í¬ë¦°ì—ì„œì˜ left padding, ì„¤ì •ì•ˆí•˜ë©´ 0
      */
     public void setDragImageX(int x){
     	dragImageX = x;

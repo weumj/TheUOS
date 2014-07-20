@@ -35,7 +35,7 @@
         <item name="ic_location_web_site">@drawable/ic_action_location_web_site</item>
         <item name="ic_navigation_accept">@drawable/ic_action_navigation_accept</item>
         <item name="ic_navigation_back">@drawable/ic_action_navigation_back</item>
-        <item name="ic_navigation_cancel">@drawable/ic_action_navigation_cancel_dark</item>
+        <item name="ic_navigation_cancel">@drawable/ic_action_content_remove</item>
         <item name="ic_navigation_collapse">@drawable/ic_action_navigation_collapse</item>
         <item name="ic_navigation_expand">@drawable/ic_action_navigation_expand</item>
         <item name="ic_navigation_forward">@drawable/ic_action_navigation_forward</item>
@@ -66,7 +66,7 @@
         <item name="menu_ic_location_web_site">@drawable/ic_action_location_web_site_dark</item>
         <item name="menu_ic_navigation_accept">@drawable/ic_action_navigation_accept_dark</item>
         <item name="menu_ic_navigation_back">@drawable/ic_action_navigation_back_dark</item>
-        <item name="menu_ic_navigation_cancel">@drawable/ic_action_navigation_cancel_dark</item>
+        <item name="menu_ic_navigation_cancel">@drawable/ic_action_content_remove_dark</item>
         <item name="menu_ic_navigation_collapse">@drawable/ic_action_navigation_collapse_dark</item>
         <item name="menu_ic_navigation_expand">@drawable/ic_action_navigation_expand_dark</item>
         <item name="menu_ic_navigation_forward">@drawable/ic_action_navigation_forward_dark</item>

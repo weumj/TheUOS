@@ -16,7 +16,7 @@ import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.util.AppUtil;
 import com.uoscs09.theuos.common.util.GraphicUtil;
 
-/** ¸®½ºÆ®ºä¸¦ ºñÆ®¸ÊÀ¸·Î º¯È¯ÇØ ÆÄÀÏ·Î ÀúÀåÇÏ´Â ÀÛ¾÷À» ºñµ¿±âÀûÀ¸·Î Ã³¸®ÇÏ´Â Å¬·¡½º */
+/** ë¦¬ìŠ¤íŠ¸ë·°ë¥¼ ë¹„íŠ¸ë§µìœ¼ë¡œ ë³€í™˜í•´ íŒŒì¼ë¡œ ì €ì¥í•˜ëŠ” ì‘ì—…ì„ ë¹„ë™ê¸°ì ìœ¼ë¡œ ì²˜ë¦¬í•˜ëŠ” í´ë˜ìŠ¤ */
 public class ListViewBitmapWriteTask implements Callable<String>,
 		AsyncCallback<String>, DialogInterface.OnClickListener {
 	private WeakReference<Context> contextRef;
@@ -95,7 +95,7 @@ public class ListViewBitmapWriteTask implements Callable<String>,
 		return bitmap;
 	}
 
-	/** progressDialogÀÇ cancel listener */
+	/** progressDialogì˜ cancel listener */
 	@Override
 	public void onClick(DialogInterface dialog, int which) {
 		cancel();

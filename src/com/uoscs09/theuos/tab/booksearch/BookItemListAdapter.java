@@ -49,11 +49,11 @@ public class BookItemListAdapter extends AbsArrayAdapter<BookItem> {
 
 	@Override
 	public View setView(int position, View convertView, ViewHolder holder) {
-		/* ºä ¼³Á¤ */
+		/* ë·° ì„¤ì • */
 		final BookItem item = getItem(position);
 		Holder h = (Holder) holder;
 
-		// Ã¥ ÀÌ¹ÌÁö ¼³Á¤
+		// ì±… ì´ë¯¸ì§€ ì„¤ì •
 		imageLoader.displayImage(item.coverSrc, h.coverImg);
 		h.coverImg.setOnClickListener(l);
 		h.coverImg.setTag(item);
@@ -85,7 +85,7 @@ public class BookItemListAdapter extends AbsArrayAdapter<BookItem> {
 			}
 			break;
 		case 2:
-			if (title.contains("´ëÃâ°¡´É") || title.contains("¿Â¶óÀÎ")) {
+			if (title.contains("ëŒ€ì¶œê°€ëŠ¥") || title.contains("ì˜¨ë¼ì¸")) {
 				styledText.setSpan(
 						new ForegroundColorSpan(getContext().getResources()
 								.getColor(android.R.color.holo_green_light)),

@@ -9,8 +9,7 @@
         android:id="@+id/tab_timetable_list_text_peroid"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
-        android:gravity="center"
-        />
+        android:gravity="center" />
 
     <LinearLayout
         android:layout_width="1dp"
@@ -21,7 +20,8 @@
         android:id="@+id/tab_timetable_list_text_mon"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
-        android:gravity="center" />
+        android:gravity="center"
+        android:textColor="?color_text" />
 
     <LinearLayout
         android:layout_width="1dp"
@@ -32,7 +32,8 @@
         android:id="@+id/tab_timetable_list_text_tue"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
-        android:gravity="center" />
+        android:gravity="center"
+        android:textColor="?color_text" />
 
     <LinearLayout
         android:layout_width="1dp"
@@ -43,7 +44,8 @@
         android:id="@+id/tab_timetable_list_text_wed"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
-        android:gravity="center" />
+        android:gravity="center"
+        android:textColor="?color_text" />
 
     <LinearLayout
         android:layout_width="1dp"
@@ -54,7 +56,8 @@
         android:id="@+id/tab_timetable_list_text_thr"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
-        android:gravity="center" />
+        android:gravity="center"
+        android:textColor="?color_text" />
 
     <LinearLayout
         android:layout_width="1dp"
@@ -65,7 +68,8 @@
         android:id="@+id/tab_timetable_list_text_fri"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
-        android:gravity="center" />
+        android:gravity="center"
+        android:textColor="?color_text" />
 
     <LinearLayout
         android:layout_width="1dp"
@@ -76,6 +80,7 @@
         android:id="@+id/tab_timetable_list_text_sat"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
-        android:gravity="center" />
+        android:gravity="center"
+        android:textColor="?color_text" />
 
 </LinearLayout>

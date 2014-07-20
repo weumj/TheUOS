@@ -5,7 +5,7 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
-/** onCreate¿¡¼­ Å×¸¶ ¼³Á¤À» ÇÏ´Â fragment¾×Æ¼ºñÆ¼ */
+/** onCreateì—ì„œ í…Œë§ˆ ì„¤ì •ì„ í•˜ëŠ” fragmentì•¡í‹°ë¹„í‹° */
 @SuppressLint("Registered")
 public class BaseFragmentActivity extends FragmentActivity {
 	@Override

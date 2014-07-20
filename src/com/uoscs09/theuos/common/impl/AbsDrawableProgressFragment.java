@@ -36,17 +36,17 @@ public abstract class AbsDrawableProgressFragment<T> extends
 					.getResources().getDrawable(R.anim.loading_animation);
 	}
 
-	/** '·Îµù Áß' À» ³ªÅ¸³»´Â View¸¦ ¹İÈ¯ÇÑ´Ù. */
+	/** 'ë¡œë”© ì¤‘' ì„ ë‚˜íƒ€ë‚´ëŠ” Viewë¥¼ ë°˜í™˜í•œë‹¤. */
 	public final View getLoadingView() {
 		return mLoadingView;
 	}
 
-	/** Loading View¿¡ ¼ÓÇÑ, Loading AnimationDrawableÀ» ¹İÈ¯ÇÑ´Ù. */
+	/** Loading Viewì— ì†í•œ, Loading AnimationDrawableì„ ë°˜í™˜í•œë‹¤. */
 	public final AnimationDrawable getLoadingAnimDrawable() {
 		return mLoadingAnimation;
 	}
 
-	/** ¸Ş´º ¾ÆÀÌÄÜ¿¡ ·Îµù AnimationÀ» Àû¿ëÇÒÁöÀÇ ¿©ºÎ¸¦ ¼³Á¤ÇÑ´Ù. */
+	/** ë©”ë‰´ ì•„ì´ì½˜ì— ë¡œë”© Animationì„ ì ìš©í• ì§€ì˜ ì—¬ë¶€ë¥¼ ì„¤ì •í•œë‹¤. */
 	protected final void setMenuRefresh(boolean isRefresh) {
 		mIsMenuRefresh = isRefresh;
 	}
@@ -124,6 +124,6 @@ public abstract class AbsDrawableProgressFragment<T> extends
 		super.onDetach();
 	}
 
-	/** ·Îµù ¾ÆÀÌÄÜÀ¸·Î º¯°æÇÒ MenuItemÀ» ¹İÈ¯ÇÑ´Ù. */
+	/** ë¡œë”© ì•„ì´ì½˜ìœ¼ë¡œ ë³€ê²½í•  MenuItemì„ ë°˜í™˜í•œë‹¤. */
 	abstract protected MenuItem getLoadingMenuItem(Menu menu);
 }

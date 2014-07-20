@@ -35,21 +35,21 @@ import com.uoscs09.theuos.http.HttpRequest;
 import com.uoscs09.theuos.http.parse.ParseFactory;
 
 /**
- * ¼ö¾÷ °èÈ¹¼­¸¦ º¸¿©ÁÖ´Â DialogFragment<br>
- * {@code Fragment.setArgument()}¿Í {@code Bundle.putPacelable()}<br>
- * À» ÅëÇØ ¼ö¾÷°èÈ¹¼­¸¦ º¸¿©ÁÙ SubjectItem°ú ÇĞ±â Á¤º¸¸¦ Àü´ŞÇØ¾ß ÇÑ´Ù
+ * ìˆ˜ì—… ê³„íšì„œë¥¼ ë³´ì—¬ì£¼ëŠ” DialogFragment<br>
+ * {@code Fragment.setArgument()}ì™€ {@code Bundle.putPacelable()}<br>
+ * ì„ í†µí•´ ìˆ˜ì—…ê³„íšì„œë¥¼ ë³´ì—¬ì¤„ SubjectItemê³¼ í•™ê¸° ì •ë³´ë¥¼ ì „ë‹¬í•´ì•¼ í•œë‹¤
  */
 public class SubjectInfoDialFrag extends DialogFragment implements
 		AsyncCallback<ArrayList<String>>, Callable<ArrayList<String>>,
 		OnClickListener {
-	/** ±³°ú¸ñ °´Ã¼ */
+	/** êµê³¼ëª© ê°ì²´ */
 	private SubjectItem item;
-	/** ÇĞ±â Á¤º¸¸¦ ³ªÅ¸³»´Â º¯¼ö */
+	/** í•™ê¸° ì •ë³´ë¥¼ ë‚˜íƒ€ë‚´ëŠ” ë³€ìˆ˜ */
 	private Term term;
-	/** OAPI¿¡ QueryÇÒ ¸Å°³º¯¼öµé */
+	/** OAPIì— Queryí•  ë§¤ê°œë³€ìˆ˜ë“¤ */
 	private Hashtable<String, String> params;
 	private ArrayList<String> infoList;
-	/** ºñµ¿±â ÀÛ¾÷ °´Ã¼, OAPI¸¦ queryÇÒ ¶§ »ç¿ëµÈ´Ù. */
+	/** ë¹„ë™ê¸° ì‘ì—… ê°ì²´, OAPIë¥¼ queryí•  ë•Œ ì‚¬ìš©ëœë‹¤. */
 	protected AsyncExecutor<ArrayList<String>> ex;
 	/** Progress */
 	private ProgressDialog prog;
@@ -61,7 +61,7 @@ public class SubjectInfoDialFrag extends DialogFragment implements
 
 	private final static String URL = "http://wise.uos.ac.kr/uosdoc/api.ApiApiCoursePlanView.oapi";
 	private final static String INFO = "info";
-	private final static String TITLE = "¼ö¾÷°èÈ¹¼­";
+	private final static String TITLE = "ìˆ˜ì—…ê³„íšì„œ";
 
 	public static void showDialog(FragmentManager fm, SubjectItem item,
 			Context context, int term) {
@@ -120,7 +120,7 @@ public class SubjectInfoDialFrag extends DialogFragment implements
 		return v;
 	}
 
-	/** ÀúÀå ¹öÆ°À» ´©¸£¸é È£ÃâµÇ´Â Callback */
+	/** ì €ì¥ ë²„íŠ¼ì„ ëˆ„ë¥´ë©´ í˜¸ì¶œë˜ëŠ” Callback */
 	@Override
 	public void onClick(View v) {
 		StringBuilder sb = new StringBuilder();

@@ -47,13 +47,13 @@ public class TabBookSearchFragment extends
 		AbsDrawableProgressFragment<ArrayList<BookItem>> implements
 		OnQueryTextListener, AbsListView.OnScrollListener,
 		View.OnClickListener, View.OnLongClickListener {
-	/** ¸®½ºÆ® ºä°¡ ½ºÅ©·Ñ µÇ´ÂÁö ¿©ºÎ */
+	/** ë¦¬ìŠ¤íŠ¸ ë·°ê°€ ìŠ¤í¬ë¡¤ ë˜ëŠ”ì§€ ì—¬ë¶€ */
 	private boolean isInvokeScroll = true;
-	/** ºñµ¿±â ÀÛ¾÷ °á°ú°¡ ºñ¾ú´ÂÁö ¿©ºÎ */
+	/** ë¹„ë™ê¸° ì‘ì—… ê²°ê³¼ê°€ ë¹„ì—ˆëŠ”ì§€ ì—¬ë¶€ */
 	private boolean isResultEmpty = true;
-	/** ÇöÀç page */
+	/** í˜„ì¬ page */
 	protected int page = 1;
-	/** Áß¾Ó µµ¼­°ü¿¡ ÁúÀÇÇÒ ¸Å°³º¯¼öµé */
+	/** ì¤‘ì•™ ë„ì„œê´€ì— ì§ˆì˜í•  ë§¤ê°œë³€ìˆ˜ë“¤ */
 	private String query;
 	private String rawQuery;
 	@ReleaseWhenDestroy
@@ -64,10 +64,10 @@ public class TabBookSearchFragment extends
 	private AnimationAdapter aAdapter;
 	@ReleaseWhenDestroy
 	private ListView mListView;
-	/** ListViewÀÇ emptyView */
+	/** ListViewì˜ emptyView */
 	@ReleaseWhenDestroy
 	private View emptyView;
-	/** ActionBar¿¡ ¶ç¿ï View, µµ¼­ °Ë»ö optionÀÌ ¼±ÅÃµÈ »çÇ×À» ³ªÅ¸³½´Ù. */
+	/** ActionBarì— ë„ìš¸ View, ë„ì„œ ê²€ìƒ‰ optionì´ ì„ íƒëœ ì‚¬í•­ì„ ë‚˜íƒ€ë‚¸ë‹¤. */
 	@ReleaseWhenDestroy
 	private TextView optionTextView;
 	@ReleaseWhenDestroy
@@ -80,10 +80,10 @@ public class TabBookSearchFragment extends
 	/** option : sort */
 	@ReleaseWhenDestroy
 	protected Spinner os;
-	/** ¿É¼ÇÀ» ¼±ÅÃÇÏ°Ô ÇÏ´Â Dialog */
+	/** ì˜µì…˜ì„ ì„ íƒí•˜ê²Œ í•˜ëŠ” Dialog */
 	@ReleaseWhenDestroy
 	protected AlertDialog optionDialog;
-	/** °Ë»ö ¸Ş´º, °Ë»öÇÒ ´Ü¾î°¡ ÀÔ·ÂµÇ´Â °÷ */
+	/** ê²€ìƒ‰ ë©”ë‰´, ê²€ìƒ‰í•  ë‹¨ì–´ê°€ ì…ë ¥ë˜ëŠ” ê³³ */
 	@ReleaseWhenDestroy
 	protected MenuItem searchMenu;
 	@ReleaseWhenDestroy
@@ -161,9 +161,9 @@ public class TabBookSearchFragment extends
 
 	protected void setActionText() {
 		String text1 = oi.getSelectedItemPosition() == 0 ? StringUtil.NULL
-				: "ºĞ·ù : " + oi.getSelectedItem();
+				: "ë¶„ë¥˜ : " + oi.getSelectedItem();
 		String text2 = os.getSelectedItemPosition() == 0 ? StringUtil.NULL
-				: "Á¤·Ä : " + os.getSelectedItem();
+				: "ì •ë ¬ : " + os.getSelectedItem();
 		String text = !text1.equals(StringUtil.NULL) ? text1
 				+ StringUtil.NEW_LINE + text2 : text2;
 		optionTextView.setText(text);
@@ -199,12 +199,12 @@ public class TabBookSearchFragment extends
 		} else {
 			emptyView.setVisibility(View.VISIBLE);
 		}
-		// ¸®½ºÆ® ºä
+		// ë¦¬ìŠ¤íŠ¸ ë·°
 		mListView = (ListView) rootView.findViewById(R.id.tab_book_list_search);
 		mListView.addFooterView(getLoadingView());
 		aAdapter = new AlphaInAnimationAdapter(bookListAdapter);
 		aAdapter.setAbsListView(mListView);
-		// ½ºÅ©·Ñ ¸®½º³Ê µî·Ï
+		// ìŠ¤í¬ë¡¤ ë¦¬ìŠ¤ë„ˆ ë“±ë¡
 		mListView.setOnScrollListener(this);
 		mListView.setAdapter(aAdapter);
 		return rootView;
@@ -354,7 +354,7 @@ public class TabBookSearchFragment extends
 				.create(ParseFactory.What.Book, body, ParseFactory.Value.BASIC)
 				.parse();
 
-		// ´ë¿© °¡´É µµ¼­¸¸ °¡Á®¿È
+		// ëŒ€ì—¬ ê°€ëŠ¥ ë„ì„œë§Œ ê°€ì ¸ì˜´
 		if (PrefUtil.getInstance(getActivity()).get(PrefUtil.KEY_CHECK_BORROW,
 				false)
 				&& bookList.size() > 0) {
@@ -392,7 +392,7 @@ public class TabBookSearchFragment extends
 			ArrayList<BookItem> originalList) {
 		ArrayList<BookItem> newList = new ArrayList<BookItem>();
 		BookItem item;
-		final String cando = "°¡´É";
+		final String cando = "ê°€ëŠ¥";
 		int size = originalList.size();
 		for (int i = 0; i < size; i++) {
 			item = originalList.get(i);
@@ -415,9 +415,9 @@ public class TabBookSearchFragment extends
 	@Override
 	public void onScroll(AbsListView view, int firstVisibleItem,
 			int visibleItemCount, int totalItemCount) {
-		// ¸®½ºÆ®ÀÇ ¸¶Áö¸·¿¡ µµ´ŞÇÏ¿´À» °æ¿ì¿¡
-		// ÀÌ ÀÌº¥Æ®°¡ Ã³À½ ÀÏ¾î³µ°í, ÀÌÀü¿¡ °Ë»ö°á°ú°¡ 0ÀÌ ¾Æ´Ñ °æ¿ì¿¡¸¸
-		// »õ·Î¿î °Ë»öÀ» ½ÃµµÇÑ´Ù.
+		// ë¦¬ìŠ¤íŠ¸ì˜ ë§ˆì§€ë§‰ì— ë„ë‹¬í•˜ì˜€ì„ ê²½ìš°ì—
+		// ì´ ì´ë²¤íŠ¸ê°€ ì²˜ìŒ ì¼ì–´ë‚¬ê³ , ì´ì „ì— ê²€ìƒ‰ê²°ê³¼ê°€ 0ì´ ì•„ë‹Œ ê²½ìš°ì—ë§Œ
+		// ìƒˆë¡œìš´ ê²€ìƒ‰ì„ ì‹œë„í•œë‹¤.
 		if (totalItemCount > 1
 				&& (firstVisibleItem + visibleItemCount) == totalItemCount) {
 			if (!isInvokeScroll && !isResultEmpty) {
@@ -491,8 +491,8 @@ public class TabBookSearchFragment extends
 	}
 
 	/**
-	 * listViewÀÇ ³»ºÎ View¸¦ ¼±ÅÃÇÒ ½Ã ºÒ¸®´Â Callback <br>
-	 * Adapter¿¡¼­ È£ÃâµÈ´Ù.
+	 * listViewì˜ ë‚´ë¶€ Viewë¥¼ ì„ íƒí•  ì‹œ ë¶ˆë¦¬ëŠ” Callback <br>
+	 * Adapterì—ì„œ í˜¸ì¶œëœë‹¤.
 	 */
 	private View.OnClickListener l = new View.OnClickListener() {
 		@Override
@@ -523,7 +523,7 @@ public class TabBookSearchFragment extends
 		return menu.findItem(R.id.action_search);
 	}
 
-	/** listView ³»ºÎÀÇ TextView¿¡¼­ È£Ãâ µÊ */
+	/** listView ë‚´ë¶€ì˜ TextViewì—ì„œ í˜¸ì¶œ ë¨ */
 	@Override
 	public boolean onLongClick(View v) {
 		if (actionMode == null)

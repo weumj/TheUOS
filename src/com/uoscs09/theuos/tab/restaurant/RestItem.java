@@ -14,7 +14,7 @@ public class RestItem implements Parcelable, Serializable {
 	public String supper;
 
 	public RestItem() {
-
+		title = body = breakfast = lunch = supper = "";
 	}
 
 	public RestItem(String title, String body, String breakfast, String lunch,

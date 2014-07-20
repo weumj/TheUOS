@@ -33,27 +33,27 @@ public class ParseSeat extends JerichoParse<SeatItem> {
 		Element table = tableList.get(1);
 		Element dismissTable = tableList.get(3);
 		trList = table.getAllElements(HTMLElementName.TR);
-		// 0-12 ½ºÅÍµğ·ë
+		// 0-12 ìŠ¤í„°ë””ë£¸
 		for (index = 16; index <= 28; index++) {
 			resultList.add(parseWeb(index));
 		}
 
-		// ! 13 Áß¾Óµµ¼­°ü ½ºÅÍµğ·ë ³ëÆ®ºÏ ÄÚ³Ê
+		// ! 13 ì¤‘ì•™ë„ì„œê´€ ìŠ¤í„°ë””ë£¸ ë…¸íŠ¸ë¶ ì½”ë„ˆ
 		resultList.add(parseWeb(10));
 
-		// !14-21 Áß¾Óµµ¼­°ü Á¦1 ¿­¶÷½Ç ~ Á¦4 ¿­¶÷½Ç, ÀüÀÚ Á¤º¸½Ç
+		// !14-21 ì¤‘ì•™ë„ì„œê´€ ì œ1 ì—´ëŒì‹¤ ~ ì œ4 ì—´ëŒì‹¤, ì „ì ì •ë³´ì‹¤
 		for (index = 2; index <= 9; index++) {
 			resultList.add(parseWeb(index));
 		}
 
-		// ! 22 °æ¿µ°æÁ¦Àü¹®µµ¼­°ü ÀÚÀ¯¿­¶÷¼®
+		// ! 22 ê²½ì˜ê²½ì œì „ë¬¸ë„ì„œê´€ ììœ ì—´ëŒì„
 		resultList.add(parseWeb(15));
 
-		// 23-28 °æ¿µ°æÁ¦Àü¹®µµ¼­°ü ±×·ì ½ºÅÍµğ·ë 1 ~ 5, ¼¼¹Ì³ª½Ç
+		// 23-28 ê²½ì˜ê²½ì œì „ë¬¸ë„ì„œê´€ ê·¸ë£¹ ìŠ¤í„°ë””ë£¸ 1 ~ 5, ì„¸ë¯¸ë‚˜ì‹¤
 		for (index = 29; index <= 34; index++) {
 			resultList.add(parseWeb(index));
 		}
-		// !29-32 ¹ıÇĞÀü¹®µµ¼­°ü
+		// !29-32 ë²•í•™ì „ë¬¸ë„ì„œê´€
 		for (index = 11; index <= 14; index++) {
 			resultList.add(parseWeb(index));
 		}
@@ -70,7 +70,7 @@ public class ParseSeat extends JerichoParse<SeatItem> {
 					+ tds.get(1).getTextExtractor().toString()
 					+ StringUtil.NEW_LINE);
 		}
-		resultList.add(new SeatItem("ÁÂ¼® ÇØÁö ¿¹»ó ½Ã°£Ç¥", sb.toString(),
+		resultList.add(new SeatItem("ì¢Œì„ í•´ì§€ ì˜ˆìƒ ì‹œê°„í‘œ", sb.toString(),
 				StringUtil.NULL, StringUtil.NULL, -1));
 		return resultList;
 	}
@@ -84,34 +84,34 @@ public class ParseSeat extends JerichoParse<SeatItem> {
 
 		tr = trList.get(i);
 
-		// roomName ¿­¶÷½Ç¸í ¾ò±â. ¿¹) Áß¾Óµµ¼­°ü Á¦ 1 ¿­¶÷½Ç
+		// roomName ì—´ëŒì‹¤ëª… ì–»ê¸°. ì˜ˆ) ì¤‘ì•™ë„ì„œê´€ ì œ 1 ì—´ëŒì‹¤
 		td = tr.getAllElements(HTMLElementName.TD).get(1);
 		a = td.getFirstElement(HTMLElementName.A);
-		tmp = new String(a.getTextExtractor().toString().substring(1));// ¿ø¹® ¾Õ¿¡
-																		// " " ºó
-																		// ¹®ÀÚ°¡
-		// µé¾î°¡ ÀÖÀ½
-		// tmp = new String(tmp.getBytes(), "EUC-KR"); //±ÛÀÚ ±úÁü ¹æÁö ÀÎÄÚµù º¯°æ!
+		tmp = new String(a.getTextExtractor().toString().substring(1));// ì›ë¬¸ ì•ì—
+																		// " " ë¹ˆ
+																		// ë¬¸ìê°€
+		// ë“¤ì–´ê°€ ìˆìŒ
+		// tmp = new String(tmp.getBytes(), "EUC-KR"); //ê¸€ì ê¹¨ì§ ë°©ì§€ ì¸ì½”ë”© ë³€ê²½!
 		roomName = tmp;
 
-		// occupySeat »ç¿ë ÁÂ¼®¼ö ¾ò±â. ¿¹) 81
+		// occupySeat ì‚¬ìš© ì¢Œì„ìˆ˜ ì–»ê¸°. ì˜ˆ) 81
 		td = tr.getAllElements(HTMLElementName.TD).get(3);
 		font = td.getAllElements(HTMLElementName.FONT).get(0);
 		tmp = font.getTextExtractor().toString();
 		occupySeat = tmp;
 
-		// vacancySeat ÀÜ¿© ÁÂ¼®¼ö ¾ò±â. ¿¹) 317
+		// vacancySeat ì”ì—¬ ì¢Œì„ìˆ˜ ì–»ê¸°. ì˜ˆ) 317
 		td = tr.getAllElements(HTMLElementName.TD).get(4);
 		font = td.getAllElements(HTMLElementName.FONT).get(0);
 		tmp = font.getTextExtractor().toString();
 		vacancySeat = tmp;
 
-		// utilizationRate ÀÌ¿ëÀ² ¾ò±â. ¿¹) 20.35
+		// utilizationRate ì´ìš©ìœ¨ ì–»ê¸°. ì˜ˆ) 20.35
 		td = tr.getAllElements(HTMLElementName.TD).get(5);
 		font = td.getAllElements(HTMLElementName.FONT).get(0);
 		tmp = font.getTextExtractor().toString();
 
-		// ¿ø¹® ³¡¿¡ " %"°¡ µé¾î°¡ ÀÖÀ½.
+		// ì›ë¬¸ ëì— " %"ê°€ ë“¤ì–´ê°€ ìˆìŒ.
 		utilizationRate = new String(tmp.substring(0, tmp.length() - 2));
 
 		return new SeatItem(roomName, occupySeat, vacancySeat, utilizationRate,

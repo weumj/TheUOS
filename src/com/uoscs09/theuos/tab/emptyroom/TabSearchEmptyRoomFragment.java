@@ -38,7 +38,7 @@ import com.uoscs09.theuos.common.util.StringUtil;
 import com.uoscs09.theuos.http.HttpRequest;
 import com.uoscs09.theuos.http.parse.ParseFactory;
 
-/** ºó °­ÀÇ½ÇÀ» Á¶È¸ÇÏ´Â fragment */
+/** ë¹ˆ ê°•ì˜ì‹¤ì„ ì¡°íšŒí•˜ëŠ” fragment */
 public class TabSearchEmptyRoomFragment extends
 		AbsDrawableProgressFragment<ArrayList<ClassRoomItem>> implements
 		DialogInterface.OnClickListener, View.OnClickListener {

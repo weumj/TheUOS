@@ -23,10 +23,10 @@ public class IOUtil {
 	public static final String FILE_REST = "rest_file";
 
 	/**
-	 * ÁÖ¾îÁø ÀÌ¸§ÀÇ ÆÄÀÏÀ» ÀĞ¾î¿Â´Ù.
+	 * ì£¼ì–´ì§„ ì´ë¦„ì˜ íŒŒì¼ì„ ì½ì–´ì˜¨ë‹¤.
 	 * 
-	 * @return ÆÄÀÏÀÌ Á¸ÀçÇÏ°í, ¼º°øÀûÀ¸·Î ÀĞ¾î¿ÔÀ» °æ¿ì : ÇØ´ç °´Ã¼ <br>
-	 *         ÆÄÀÏÀÌ ¾ø°Å³ª ¿¹¿Ü°¡ ¹ß»ıÇÒ °æ¿ì : null
+	 * @return íŒŒì¼ì´ ì¡´ì¬í•˜ê³ , ì„±ê³µì ìœ¼ë¡œ ì½ì–´ì™”ì„ ê²½ìš° : í•´ë‹¹ ê°ì²´ <br>
+	 *         íŒŒì¼ì´ ì—†ê±°ë‚˜ ì˜ˆì™¸ê°€ ë°œìƒí•  ê²½ìš° : null
 	 * @throws IOException
 	 * @throws StreamCorruptedException
 	 * @throws ClassNotFoundException
@@ -72,13 +72,13 @@ public class IOUtil {
 	}
 
 	/**
-	 * ÁÖ¾îÁø ÀÌ¸§À¸·Î ÆÄÀÏÀ» ÀúÀåÇÑ´Ù.
+	 * ì£¼ì–´ì§„ ì´ë¦„ìœ¼ë¡œ íŒŒì¼ì„ ì €ì¥í•œë‹¤.
 	 * 
 	 * @param mode
-	 *            Context Å¬·¡½ºÀÇ mode º¯¼ö
+	 *            Context í´ë˜ìŠ¤ì˜ mode ë³€ìˆ˜
 	 * @param obj
-	 *            ÀúÀåÇÒ °´Ã¼
-	 * @return ¼º°ø ¿©ºÎ
+	 *            ì €ì¥í•  ê°ì²´
+	 * @return ì„±ê³µ ì—¬ë¶€
 	 * @throws IOException
 	 */
 	public static boolean saveToFile(Context context, String fileName,
@@ -111,9 +111,9 @@ public class IOUtil {
 	}
 
 	/**
-	 * ÆÄÀÏÀ» ºñ µ¿±âÀûÀ¸·Î ÀĞ´Â´Ù. <br>
-	 * ¸®½º³ÊÀÇ result¿¡ exception ¹ß»ı ¿©ºÎ°¡ Àü´ŞµÇ°í, <br>
-	 * data¿¡ ¼º°ø ÇÒ °æ¿ì ¿øÇÏ´Â data, ½ÇÆĞ ÇßÀ» °æ¿ì exceptionÀÌ Àü´ŞµÈ´Ù.
+	 * íŒŒì¼ì„ ë¹„ ë™ê¸°ì ìœ¼ë¡œ ì½ëŠ”ë‹¤. <br>
+	 * ë¦¬ìŠ¤ë„ˆì˜ resultì— exception ë°œìƒ ì—¬ë¶€ê°€ ì „ë‹¬ë˜ê³ , <br>
+	 * dataì— ì„±ê³µ í•  ê²½ìš° ì›í•˜ëŠ” data, ì‹¤íŒ¨ í–ˆì„ ê²½ìš° exceptionì´ ì „ë‹¬ëœë‹¤.
 	 */
 	public static void readFromFileAsync(final Context context,
 			final String fileName, OnTaskFinishedListener l) {
@@ -126,9 +126,9 @@ public class IOUtil {
 	}
 
 	/**
-	 * ÆÄÀÏÀ» ºñ µ¿±âÀûÀ¸·Î ÀúÀåÇÑ´Ù. <br>
-	 * ¸®½º³ÊÀÇ result¿¡ exception ¹ß»ı ¿©ºÎ°¡ Àü´ŞµÇ°í, <br>
-	 * data¿¡ ¼º°ø ÇÒ °æ¿ì ¼º°ø ¿©ºÎ, ½ÇÆĞ ÇßÀ» °æ¿ì exceptionÀÌ Àü´ŞµÈ´Ù.
+	 * íŒŒì¼ì„ ë¹„ ë™ê¸°ì ìœ¼ë¡œ ì €ì¥í•œë‹¤. <br>
+	 * ë¦¬ìŠ¤ë„ˆì˜ resultì— exception ë°œìƒ ì—¬ë¶€ê°€ ì „ë‹¬ë˜ê³ , <br>
+	 * dataì— ì„±ê³µ í•  ê²½ìš° ì„±ê³µ ì—¬ë¶€, ì‹¤íŒ¨ í–ˆì„ ê²½ìš° exceptionì´ ì „ë‹¬ëœë‹¤.
 	 */
 	public static void saveToFileAsync(final Context context,
 			final String fileName, final int mode, final Object obj,
@@ -141,7 +141,7 @@ public class IOUtil {
 		}, l);
 	}
 
-	/** ÆÄÀÏ ¶Ç´Â Æú´õ¸¦ »èÁ¦ÇÑ´Ù. Æú´õÀÇ °æ¿ì Àç±ÍÀûÀ¸·Î Å½»öÇÏ¿© ³»ºÎÀÇ ÆÄÀÏ±îÁö ¸ğµÎ »èÁ¦ÇÑ´Ù. */
+	/** íŒŒì¼ ë˜ëŠ” í´ë”ë¥¼ ì‚­ì œí•œë‹¤. í´ë”ì˜ ê²½ìš° ì¬ê·€ì ìœ¼ë¡œ íƒìƒ‰í•˜ì—¬ ë‚´ë¶€ì˜ íŒŒì¼ê¹Œì§€ ëª¨ë‘ ì‚­ì œí•œë‹¤. */
 	public static void clearApplicationFile(File dir) {
 		if (dir == null || !dir.isDirectory())
 			return;

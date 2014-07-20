@@ -29,13 +29,13 @@ import com.uoscs09.theuos.http.HttpRequest;
 import com.uoscs09.theuos.http.parse.ParseFactory;
 
 /**
- * °øÁö»çÇ× ¾Ë¸®¹Ì°¡ ½ÇÇàµÇ´Â {@code Service}<br>
- * °øÁö»çÇ× ¾Ë¸®¹Ì´Â ÀÎÅÍ³İ ¿¬°áÀÌ ÇÊ¿äÇÏ¹Ç·Î ³»ºÎÀÇ {@code Thread}¸¦ ÅëÇØ ½ÇÇàµÈ´Ù.<br>
- * ÇöÀç ±¸Çö ¹æ½ÄÀº ¼­¹ö¸¦ »ç¿ëÇÏÁö ¾Ê´Â ¹æ½ÄÀÌ´Ù. <br>
- * ÀÌ¸¦ À§ÇØ »ç¿ëÀÚÀÇ ÇÚµåÆù¿¡¼­ Æ¯Á¤ ½Ã°£¸¶´Ù Ã³¸®¸¦ ÇÏ´Â ¹æÇâÀ¸·Î ¼³Á¤µÇ¾ú´Ù. <br>
+ * ê³µì§€ì‚¬í•­ ì•Œë¦¬ë¯¸ê°€ ì‹¤í–‰ë˜ëŠ” {@code Service}<br>
+ * ê³µì§€ì‚¬í•­ ì•Œë¦¬ë¯¸ëŠ” ì¸í„°ë„· ì—°ê²°ì´ í•„ìš”í•˜ë¯€ë¡œ ë‚´ë¶€ì˜ {@code Thread}ë¥¼ í†µí•´ ì‹¤í–‰ëœë‹¤.<br>
+ * í˜„ì¬ êµ¬í˜„ ë°©ì‹ì€ ì„œë²„ë¥¼ ì‚¬ìš©í•˜ì§€ ì•ŠëŠ” ë°©ì‹ì´ë‹¤. <br>
+ * ì´ë¥¼ ìœ„í•´ ì‚¬ìš©ìì˜ í•¸ë“œí°ì—ì„œ íŠ¹ì • ì‹œê°„ë§ˆë‹¤ ì²˜ë¦¬ë¥¼ í•˜ëŠ” ë°©í–¥ìœ¼ë¡œ ì„¤ì •ë˜ì—ˆë‹¤. <br>
  * <br>
- * ÃßÈÄ »ç¿ëÀÚ ÆíÀÇ¸¦ À§ÇØ ¼­¹ö¸¦ ±¸µ¿ÇÏ¿© ¾Ë·ÁÁÖ´Â ¹æ½ÄÀ¸·Î ±¸ÇöÇÏ·Á¸é, <br>
- * <b>GCM</b>µîÀ» ÀÌ¿ëÇÏ¿© <b>JSON</b> µ¥ÀÌÅÍ¸¦ Àü´ŞÇÏ´Â ¹æ½ÄµîÀ» »ç¿ëÇÏ¸é µÉ °ÍÀÌ´Ù.
+ * ì¶”í›„ ì‚¬ìš©ì í¸ì˜ë¥¼ ìœ„í•´ ì„œë²„ë¥¼ êµ¬ë™í•˜ì—¬ ì•Œë ¤ì£¼ëŠ” ë°©ì‹ìœ¼ë¡œ êµ¬í˜„í•˜ë ¤ë©´, <br>
+ * <b>GCM</b>ë“±ì„ ì´ìš©í•˜ì—¬ <b>JSON</b> ë°ì´í„°ë¥¼ ì „ë‹¬í•˜ëŠ” ë°©ì‹ë“±ì„ ì‚¬ìš©í•˜ë©´ ë  ê²ƒì´ë‹¤.
  * */
 public class ServiceForAnounce extends Service {
 	protected static final String TAG = "Service_Anounce";
@@ -47,7 +47,7 @@ public class ServiceForAnounce extends Service {
 	private Thread worker;
 	protected PrefUtil pref;
 	protected boolean isServiceEnabled;
-	/** Á¢¼ÓÇÒ URL */
+	/** ì ‘ì†í•  URL */
 	protected static final String[] URL_LIST = {
 			"http://www.uos.ac.kr/korNotice/mSubjectList.do?list_id=FA1&pageIndex=1",
 			"http://www.uos.ac.kr/korNotice/mSubjectList.do?list_id=FA2&pageIndex=1",
@@ -96,11 +96,11 @@ public class ServiceForAnounce extends Service {
 				if (!isServiceEnabled) {
 					break;
 				}
-				// ÇöÀç ½Ã°¢°ú ¾Ë¸² ¼³Á¤ ½Ã°£À» ºñ±³ÇÏ¿©
-				// ½º·¹µåÀÇ ´ë±â ½Ã°£À» ¼³Á¤
+				// í˜„ì¬ ì‹œê°ê³¼ ì•Œë¦¼ ì„¤ì • ì‹œê°„ì„ ë¹„êµí•˜ì—¬
+				// ìŠ¤ë ˆë“œì˜ ëŒ€ê¸° ì‹œê°„ì„ ì„¤ì •
 				try {
 					while (true) {
-						// °ªÀÌ ¼³Á¤ µÇÁö ¾Ê¾Ò´Ù¸é ´ë±â
+						// ê°’ì´ ì„¤ì • ë˜ì§€ ì•Šì•˜ë‹¤ë©´ ëŒ€ê¸°
 						int hour = pref.get(StringUtil.STR_HOUR, -1);
 						int min = pref.get(StringUtil.STR_MIN, -1);
 						if (hour == -1 || min == -1) {
@@ -109,8 +109,8 @@ public class ServiceForAnounce extends Service {
 							}
 						} else {
 							long waitTimeByMill = getWaitTime(hour, min);
-							// °è»êÇØ¼­ ±¸ÇÑ ´ë±â ½Ã°£ÀÌ WAIT_TIME º¸´Ù ÀÛÀ¸¸é
-							// ±× ¸¸Å­¸¸ ´ë±âÇÏ°í ¾Ë¸² ¼³Á¤ ´Ü°è·Î ÁøÇàÇÑ´Ù.
+							// ê³„ì‚°í•´ì„œ êµ¬í•œ ëŒ€ê¸° ì‹œê°„ì´ WAIT_TIME ë³´ë‹¤ ì‘ìœ¼ë©´
+							// ê·¸ ë§Œí¼ë§Œ ëŒ€ê¸°í•˜ê³  ì•Œë¦¼ ì„¤ì • ë‹¨ê³„ë¡œ ì§„í–‰í•œë‹¤.
 							synchronized (this) {
 								this.wait(waitTimeByMill + 1);
 							}
@@ -118,7 +118,7 @@ public class ServiceForAnounce extends Service {
 								hour = pref.get(StringUtil.STR_HOUR, -1);
 								min = pref.get(StringUtil.STR_MIN, -1);
 								waitTimeByMill = getWaitTime(hour, min);
-								// notify È®ÀÎ ¹× Áö¿¬ ½Ã°£ º¸Á¤
+								// notify í™•ì¸ ë° ì§€ì—° ì‹œê°„ ë³´ì •
 								if (waitTimeByMill < WAIT_MIN
 										|| waitTimeByMill > WAIT_MAX) {
 									break;
@@ -148,11 +148,11 @@ public class ServiceForAnounce extends Service {
 		}
 
 		/**
-		 * ÁÖ¾îÁø Å°¿öµå¸¦ °¡Áö°í, °øÁö»çÇ×À» °Ë»öÇÏ¿© <br>
-		 * Á¶°Ç¿¡ ¸Â´Â °øÁö»çÇ×À» {@code NotificationManager}¿¡ µî·ÏÇÑ´Ù.
+		 * ì£¼ì–´ì§„ í‚¤ì›Œë“œë¥¼ ê°€ì§€ê³ , ê³µì§€ì‚¬í•­ì„ ê²€ìƒ‰í•˜ì—¬ <br>
+		 * ì¡°ê±´ì— ë§ëŠ” ê³µì§€ì‚¬í•­ì„ {@code NotificationManager}ì— ë“±ë¡í•œë‹¤.
 		 * 
 		 * @param keywords
-		 *            ¼³Á¤È­¸é¿¡¼­ ¼³Á¤µÈ °Ë»ö Å°¿öµå ¸®½ºÆ®
+		 *            ì„¤ì •í™”ë©´ì—ì„œ ì„¤ì •ëœ ê²€ìƒ‰ í‚¤ì›Œë“œ ë¦¬ìŠ¤íŠ¸
 		 */
 		@SuppressWarnings("unchecked")
 		private void setNotification(final String[] keywords)
@@ -171,7 +171,7 @@ public class ServiceForAnounce extends Service {
 				if (keyword.equals(StringUtil.NULL))
 					continue;
 				for (int j = 0; j < URL_LIST.length; j++) {
-					// TODO Ã¹ÆäÀÌÁö Å½»öÀÌ ¾Æ´Ñ °øÁö»çÇ×À» °Ë»öÇÏ´Â ¹æ¹ıÀ¸·Î ¼öÁ¤
+					// TODO ì²«í˜ì´ì§€ íƒìƒ‰ì´ ì•„ë‹Œ ê³µì§€ì‚¬í•­ì„ ê²€ìƒ‰í•˜ëŠ” ë°©ë²•ìœ¼ë¡œ ìˆ˜ì •
 					body = HttpRequest.getBody(URL_LIST[j]);
 					list = (List<AnounceItem>) ParseFactory.create(
 							ParseFactory.What.Anounce,
@@ -179,9 +179,9 @@ public class ServiceForAnounce extends Service {
 							j == 2 ? ParseFactory.Value.BODY
 									: ParseFactory.Value.BASIC).parse();
 
-					// ¼³Á¤ÇÑ Å°¿öµå°¡ Á¦¸ñ¿¡ Æ÷ÇÔµÈ °øÁö»çÇ×À» ¾Ë¸²¼³Á¤ÇÔ
+					// ì„¤ì •í•œ í‚¤ì›Œë“œê°€ ì œëª©ì— í¬í•¨ëœ ê³µì§€ì‚¬í•­ì„ ì•Œë¦¼ì„¤ì •í•¨
 					int size = list.size();
-					String type = "°øÁö";
+					String type = "ê³µì§€";
 					for (int i = 0; i < size; i++) {
 						item = list.get(i);
 						if (item.date.contains(date)

@@ -49,7 +49,7 @@ public class ScoreFragment extends AbsAsyncFragment<ArrayList<ScoreItem>>
 		View dialogView = View.inflate(context, R.layout.dialog_score, null);
 		datePicker = (NumberPicker) dialogView
 				.findViewById(R.id.score_datePicker);
-		int currentYear_1 = Integer.valueOf(OApiUtil.getYear()) - 1;
+		int currentYear_1 = Integer.valueOf(OApiUtil.getYear());
 		datePicker.setMaxValue(currentYear_1);
 		datePicker.setMinValue(2007);
 		datePicker.setValue(currentYear_1);

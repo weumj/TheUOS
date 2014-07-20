@@ -298,7 +298,7 @@ public class TabTimeTableFragment extends
 
 	private void saveTimetable() {
 		if (adapter.isEmpty()) {
-			AppUtil.showToast(getActivity(), "½Ã°£Ç¥ Á¤º¸°¡ ¾ø½À´Ï´Ù.", true);
+			AppUtil.showToast(getActivity(), "ì‹œê°„í‘œ ì •ë³´ê°€ ì—†ìŠµë‹ˆë‹¤.", true);
 			return;
 		}
 		StringBuilder sb = new StringBuilder();
@@ -342,7 +342,7 @@ public class TabTimeTableFragment extends
 	}
 
 	/**
-	 * View¸¦ Ã£±â ½±°ÔÇÏ±âÀ§ÇÏ¿© ¸ŞÀÎ View¿¡ '½Ã°£, ¿ù ~ Åä' ¸¦ ³ªÅ¸³»´Â TextView¸¦ µî·ÏÇÑ´Ù.
+	 * Viewë¥¼ ì°¾ê¸° ì‰½ê²Œí•˜ê¸°ìœ„í•˜ì—¬ ë©”ì¸ Viewì— 'ì‹œê°„, ì›” ~ í† ' ë¥¼ ë‚˜íƒ€ë‚´ëŠ” TextViewë¥¼ ë“±ë¡í•œë‹¤.
 	 */
 	private void setHolderTag(View rootView) {
 		for (int id : titleViewIds) {
@@ -351,7 +351,7 @@ public class TabTimeTableFragment extends
 	}
 
 	/**
-	 * '½Ã°£, ¿ù ~ Åä' ¸¦ ³ªÅ¸³»´Â TextViewÀÇ ³Êºñ¸¦ ¼³Á¤ÇÑ´Ù.
+	 * 'ì‹œê°„, ì›” ~ í† ' ë¥¼ ë‚˜íƒ€ë‚´ëŠ” TextViewì˜ ë„ˆë¹„ë¥¼ ì„¤ì •í•œë‹¤.
 	 */
 	private void setTitleViewSize(int width) {
 		for (int id : titleViewIds) {
@@ -398,10 +398,10 @@ public class TabTimeTableFragment extends
 	public ArrayList<TimeTableItem> call() throws Exception {
 		ArrayList<TimeTableItem> result;
 		Context context = getActivity();
-		// Fragment°¡ Ã³À½ AttachµÇ¾úÀ» ¶§, ÆÄÀÏ¿¡¼­ ½Ã°£Ç¥À» ÀĞ¾î¿Â´Ù.
+		// Fragmentê°€ ì²˜ìŒ Attachë˜ì—ˆì„ ë•Œ, íŒŒì¼ì—ì„œ ì‹œê°„í‘œì„ ì½ì–´ì˜¨ë‹¤.
 		if (mIsOnLoad) {
 			result = (ArrayList<TimeTableItem>) readTimetable(context);
-		} else { // »ç¿ëÀÚ°¡ WISE¿¡ ½Ã°£Ç¥ Á¤º¸¸¦ ¿äÃ»ÇÏ¿´À» ¶§
+		} else { // ì‚¬ìš©ìê°€ WISEì— ì‹œê°„í‘œ ì •ë³´ë¥¼ ìš”ì²­í•˜ì˜€ì„ ë•Œ
 			term = Term.values()[termSpinner.getSelectedItemPosition()];
 			String body = TimeTableHttpRequest.getHttpBodyPost(
 					idView.getText(), passwdView.getText(), term);
@@ -414,8 +414,8 @@ public class TabTimeTableFragment extends
 			saveColorTable(context, makeColorTable(result));
 		}
 
-		// ½Ã°£Ç¥¸¦ Á¤»óÀûÀ¸·Î ºÒ·¯¿Ô´Ù¸é, ½Ã°£Ç¥¸¦ ÀúÀåÇÏ°í,
-		// ½Ã°£Ç¥ÀÇ °ú¸ñ°ú °ú¸ñÀÇ »öÀ» MappingÇÑ´Ù.
+		// ì‹œê°„í‘œë¥¼ ì •ìƒì ìœ¼ë¡œ ë¶ˆëŸ¬ì™”ë‹¤ë©´, ì‹œê°„í‘œë¥¼ ì €ì¥í•˜ê³ ,
+		// ì‹œê°„í‘œì˜ ê³¼ëª©ê³¼ ê³¼ëª©ì˜ ìƒ‰ì„ Mappingí•œë‹¤.
 		if (!result.isEmpty()) {
 			IOUtil.saveToFile(context, IOUtil.FILE_TIMETABLE,
 					Activity.MODE_PRIVATE, result);
@@ -437,9 +437,9 @@ public class TabTimeTableFragment extends
 	}
 
 	/**
-	 * ½Ã°£Ç¥ Á¤º¸¸¦ ÆÄÀÏ·ÎºÎÅÍ ÀĞ¾î¿Â´Ù.
+	 * ì‹œê°„í‘œ ì •ë³´ë¥¼ íŒŒì¼ë¡œë¶€í„° ì½ì–´ì˜¨ë‹¤.
 	 * 
-	 * @return ½Ã°£Ç¥ Á¤º¸ list, ÆÄÀÏÀÌ ¾ø´Ù¸é ºó list
+	 * @return ì‹œê°„í‘œ ì •ë³´ list, íŒŒì¼ì´ ì—†ë‹¤ë©´ ë¹ˆ list
 	 */
 	public static List<TimeTableItem> readTimetable(Context context) {
 		List<TimeTableItem> list = IOUtil.readFromFileSuppressed(context,
@@ -462,12 +462,12 @@ public class TabTimeTableFragment extends
 	}
 
 	/**
-	 * ÁÖ¾îÁø ½Ã°£Ç¥Á¤º¸¸¦ ÅëÇØ ½Ã°£Ç¥ °¢ °ú¸ñ°ú ÄÃ·¯¸¦ mappingÇÏ´Â MapÀ» ÀÛ¼ºÇÑ´Ù.
+	 * ì£¼ì–´ì§„ ì‹œê°„í‘œì •ë³´ë¥¼ í†µí•´ ì‹œê°„í‘œ ê° ê³¼ëª©ê³¼ ì»¬ëŸ¬ë¥¼ mappingí•˜ëŠ” Mapì„ ì‘ì„±í•œë‹¤.
 	 * 
 	 * @param timetable
-	 *            ½Ã°£Ç¥
-	 * @return °ú¸ñÀÌ¸§ÀÌ KeyÀÌ°í, Value°¡ ÄÃ·¯¸¦ °¡¸®Å°´Â IntegerÀÎ Map<br>
-	 *         * ÄÃ·¯´Â ´Ü¼øÇÑ Á¤¼öÀÌ¸ç, AppUtilÀ» ÅëÇØ Color integer¸¦ ¾ò¾î¿Í¾ß ÇÑ´Ù.
+	 *            ì‹œê°„í‘œ
+	 * @return ê³¼ëª©ì´ë¦„ì´ Keyì´ê³ , Valueê°€ ì»¬ëŸ¬ë¥¼ ê°€ë¦¬í‚¤ëŠ” Integerì¸ Map<br>
+	 *         * ì»¬ëŸ¬ëŠ” ë‹¨ìˆœí•œ ì •ìˆ˜ì´ë©°, AppUtilì„ í†µí•´ Color integerë¥¼ ì–»ì–´ì™€ì•¼ í•œë‹¤.
 	 */
 	public static Hashtable<String, Integer> makeColorTable(
 			List<TimeTableItem> timetable) {
@@ -493,12 +493,12 @@ public class TabTimeTableFragment extends
 	}
 
 	/**
-	 * ÁÖ¾îÁø ½Ã°£Ç¥Á¤º¸¸¦ ÅëÇØ ½Ã°£Ç¥ °¢ °ú¸ñ°ú ÄÃ·¯¸¦ mappingÇÏ´Â MapÀ» ÆÄÀÏ¿¡¼­ ÀĞ¾î¿À°Å³ª ÀÛ¼ºÇÑ´Ù.
+	 * ì£¼ì–´ì§„ ì‹œê°„í‘œì •ë³´ë¥¼ í†µí•´ ì‹œê°„í‘œ ê° ê³¼ëª©ê³¼ ì»¬ëŸ¬ë¥¼ mappingí•˜ëŠ” Mapì„ íŒŒì¼ì—ì„œ ì½ì–´ì˜¤ê±°ë‚˜ ì‘ì„±í•œë‹¤.
 	 * 
 	 * @param timetable
-	 *            ½Ã°£Ç¥
+	 *            ì‹œê°„í‘œ
 	 * @param context
-	 * @return ½Ã°£Ç¥ÀÇ °¢ °ú¸ñ°ú ÄÃ·¯¸¦ mappingÇÏ´Â Map
+	 * @return ì‹œê°„í‘œì˜ ê° ê³¼ëª©ê³¼ ì»¬ëŸ¬ë¥¼ mappingí•˜ëŠ” Map
 	 */
 	public static Hashtable<String, Integer> getColorTable(
 			List<TimeTableItem> timetable, Context context) {
@@ -512,7 +512,7 @@ public class TabTimeTableFragment extends
 	}
 
 	/**
-	 * ÁÖ¾îÁø ½Ã°£Ç¥ ÄÃ·¯ MapÀ» ÆÄÀÏ·Î ÀúÀåÇÑ´Ù.
+	 * ì£¼ì–´ì§„ ì‹œê°„í‘œ ì»¬ëŸ¬ Mapì„ íŒŒì¼ë¡œ ì €ì¥í•œë‹¤.
 	 * 
 	 * @param colorTable
 	 *            color map
@@ -525,7 +525,7 @@ public class TabTimeTableFragment extends
 	}
 
 	/**
-	 * color mapÀ» ÆÄÀÏ·Î ºÎÅÍ ÀĞ¾î¿Â´Ù.
+	 * color mapì„ íŒŒì¼ë¡œ ë¶€í„° ì½ì–´ì˜¨ë‹¤.
 	 */
 	public static Hashtable<String, Integer> readColorTableFromFile(
 			Context context) {

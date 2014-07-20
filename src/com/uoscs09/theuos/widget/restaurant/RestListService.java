@@ -59,15 +59,15 @@ public class RestListService extends RemoteViewsService {
 			}
 			switch (position) {
 			case 0:
-				rv.setTextViewText(R.id.widget_rest_title, "¾ÆÄ§");
+				rv.setTextViewText(R.id.widget_rest_title, "ì•„ì¹¨");
 				rv.setTextViewText(R.id.widget_rest_content, item.breakfast);
 				break;
 			case 1:
-				rv.setTextViewText(R.id.widget_rest_title, "Á¡½É");
+				rv.setTextViewText(R.id.widget_rest_title, "ì ì‹¬");
 				rv.setTextViewText(R.id.widget_rest_content, item.lunch);
 				break;
 			case 2:
-				rv.setTextViewText(R.id.widget_rest_title, "Àú³á");
+				rv.setTextViewText(R.id.widget_rest_title, "ì €ë…");
 				rv.setTextViewText(R.id.widget_rest_content, item.supper);
 				break;
 			default:

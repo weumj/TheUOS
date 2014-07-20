@@ -299,12 +299,12 @@ public class TabSearchSubjectFragment extends
 						.getSelectedItemPosition()]));
 		switch (sp1.getSelectedItemPosition()) {
 		default:
-		case 0:// ±³¾ç
+		case 0:// êµì–‘
 			query = "http://wise.uos.ac.kr/uosdoc/api.ApiUcrCultTimeInq.oapi";
 			params.put("subjectDiv",
 					getCultSubjectDiv(sp2.getSelectedItemPosition()));
 			break;
-		case 1:// Àü°ø
+		case 1:// ì „ê³µ
 			query = "http://wise.uos.ac.kr/uosdoc/api.ApiUcrMjTimeInq.oapi";
 			switch (selections[1]) {
 			case R.array.search_subj_major_2_0_0:
@@ -370,55 +370,63 @@ public class TabSearchSubjectFragment extends
 		case R.id.etc_search_subj_spinner2: {
 			int array, array2 = 0;
 			if (sp1.getSelectedItemPosition() == 0) {
+				// ì²˜ìŒ spinnerê°€ "êµì–‘"ì¸ ê²½ìš°
 				sp4.setVisibility(View.INVISIBLE);
 				array = R.array.search_cult_2;
 			} else {
+				// ì²˜ìŒ spinnerê°€ "ì „ê³µ"ì¸ ê²½ìš°
 				sp4.setVisibility(View.VISIBLE);
-				switch (pos) {
-				case 0:
+				switch (pos) { // ë‘ ë²ˆì¬ spinnerì˜ ìœ„ì¹˜
+				case 0: // "ëŒ€í•™"
 					array = R.array.search_subj_major_2_0_0;
 					break;
-				case 1:
+				case 1: // "ëŒ€í•™ì›"
 					array = R.array.search_subj_major_2_0_1;
 					array2 = R.array.search_subj_major_3_0_1_0;
 					break;
-				case 2:
+				case 2: // "ì„¸ë¬´ì „ë¬¸ëŒ€í•™ì›"
 					array = R.array.search_subj_major_2_0_2;
 					array2 = R.array.search_subj_major_3_0_2_0;
 					break;
-				case 3:
+				case 3: // "ë””ìì¸ì „ë¬¸ëŒ€í•™ì›"
 					array = R.array.search_subj_major_2_0_3;
 					array2 = R.array.search_subj_major_3_0_3_0;
 					break;
-				case 4:
+				case 4: // "ë²•í•™ì „ë¬¸ëŒ€í•™ì›"
 					array = R.array.search_subj_major_2_0_4;
 					array2 = R.array.search_subj_major_3_0_4_0;
 					break;
-				case 5:
+				case 5: // "ë„ì‹œê³¼í•™ëŒ€í•™ì›"
 					array = R.array.search_subj_major_2_0_5;
 					array2 = R.array.search_subj_major_3_0_5_0;
 					break;
-				case 6:
+				case 6: // "ê²½ì˜ëŒ€í•™ì›"
 					array = R.array.search_subj_major_2_0_6;
 					array2 = R.array.search_subj_major_3_0_6_0;
 					break;
-				case 7:
+				case 7: // "ê³¼í•™ê¸°ìˆ ëŒ€í•™ì›"
 					array = R.array.search_subj_major_2_0_7;
 					array2 = R.array.search_subj_major_3_0_7_0;
 					break;
-				case 8:
+				case 8: // "êµìœ¡ëŒ€í•™ì›"
 					array = R.array.search_subj_major_2_0_8;
 					array2 = R.array.search_subj_major_3_0_8_0;
 					break;
+				case 9: // "êµ­ì œë„ì‹œê³¼í•™ëŒ€í•™ì›"
+					array = R.array.search_subj_major_2_0_9;
+					array2 = R.array.search_subj_major_3_0_9_0;
 				default:
 					return;
 				}
+				// ë‘ ë²ˆì§¸ spinnerì˜ ì„ íƒì´ "ëŒ€í•™"ì´ ì•„ë‹Œê²½ìš°
+				// ë„¤ ë²ˆì§¸ spinnerì˜ í•­ëª©ì„ ë³€ê²½í•œë‹¤.
 				if (pos > 0) {
 					ArrayAdapter<CharSequence> aaa = createArrayAdapter(array2);
 					sp4.setAdapter(aaa);
 					selections[2] = array2;
 				}
 			}
+			// ìœ„ì—ì„œ íŒë³„í•œ ê²°ê³¼ì— ë”°ë¼ ì„¸ ë²ˆì§¸ spinnerì˜ í•­ëª©ì„ ë³€ê²½í•œë‹¤.
 			selections[1] = array;
 			ArrayAdapter<CharSequence> aa = createArrayAdapter(array);
 			sp3.setAdapter(aa);
@@ -427,33 +435,35 @@ public class TabSearchSubjectFragment extends
 		case R.id.etc_search_subj_spinner3: {
 			int array;
 			if (sp1.getSelectedItemPosition() == 0) {
+				// ì²« ë²ˆì§¸ spinnerì˜ í•­ëª©ì´ "êµì–‘" ì¸ ê²½ìš° ì•„ë¬´ê²ƒë„ í•˜ì§€ ì•ŠëŠ”ë‹¤.
 				return;
 			} else {
+				// ì²« ë²ˆì§¸ spinnerì˜ í•­ëª©ì´ "ì „ê³µ" ì¸ ê²½ìš°
 				switch (sp2.getSelectedItemPosition()) {
-				case 0:// ´ëÇĞ
+				case 0:// ë‘ ë²ˆì§¸ spinnerì˜ í•­ëª©ì´ "ëŒ€í•™" ì¸ ê²½ìš°
 					switch (pos) {
-					case 0:
+					case 0: // "ì •ê²½ëŒ€í•™"
 						array = R.array.search_subj_major_3_0_0_0;
 						break;
-					case 1:
+					case 1:// "ê²½ì˜ëŒ€í•™"
 						array = R.array.search_subj_major_3_0_0_1;
 						break;
-					case 2:
+					case 2:// "ê³µê³¼ëŒ€í•™"
 						array = R.array.search_subj_major_3_0_0_2;
 						break;
-					case 3:
+					case 3:// "ì¸ë¬¸ëŒ€í•™"
 						array = R.array.search_subj_major_3_0_0_3;
 						break;
-					case 4:
+					case 4:// "ìì—°ê³¼í•™ëŒ€í•™"
 						array = R.array.search_subj_major_3_0_0_4;
 						break;
-					case 5:
+					case 5:// "ë„ì‹œê³¼í•™ëŒ€í•™"
 						array = R.array.search_subj_major_3_0_0_5;
 						break;
-					case 6:
+					case 6:// "ì˜ˆìˆ ì²´ìœ¡ëŒ€í•™"
 						array = R.array.search_subj_major_3_0_0_6;
 						break;
-					case 7:
+					case 7:// "êµ­ì œêµìœ¡ì›"
 						array = R.array.search_subj_major_3_0_0_7;
 						break;
 					default:
@@ -461,9 +471,12 @@ public class TabSearchSubjectFragment extends
 					}
 					break;
 				default:
+					// ë‘ ë²ˆì§¸ spinnerì˜ í•­ëª©ì´ "ëŒ€í•™" ì´ ì•„ë‹Œ ë‹¤ë¥¸ í•­ëª©ì´ë©´
+					// ì•„ë¬´ê²ƒë„ í•˜ì§€ ì•ŠëŠ”ë‹¤ (ì´ë¯¸ ë‘ ë²ˆì§¸ spinnerì—ì„œ ì²˜ë¦¬)
 					return;
 				}
 			}
+			// íŒë³„í•œ ê²°ê³¼ì— ë”°ë¼ ë„¤ ë²ˆì§¸ spinnerì˜ í•­ëª©ë“¤ì„ ë³€ê²½í•œë‹¤.
 			selections[3] = array;
 			ArrayAdapter<CharSequence> aa = createArrayAdapter(array);
 			sp4.setAdapter(aa);
@@ -475,6 +488,7 @@ public class TabSearchSubjectFragment extends
 	}
 
 	private ArrayAdapter<CharSequence> createArrayAdapter(int arrayResource) {
+		// TODO themeê´€ë ¨ ì½”ë“œ ìˆ˜ì • ìš”ë§
 		ArrayAdapter<CharSequence> aa = ArrayAdapter
 				.createFromResource(
 						getActivity(),
@@ -507,159 +521,159 @@ public class TabSearchSubjectFragment extends
 	private Hashtable<String, String> getMajorDeptDiv(int deptDiv, int subDept) {
 		Hashtable<String, String> table = new Hashtable<String, String>(3);
 		switch (deptDiv) {
-		case 0:// Á¤°æ´ëÇĞ
+		case 0:// ì •ê²½ëŒ€í•™
 			table.put("deptDiv", "210");
 			table.put("dept", "A201120212");
 			switch (subDept) {
-			case 0:// ÇàÁ¤
+			case 0:// í–‰ì •
 				table.put("subDept", "A201140214");
 				break;
-			case 1:// ±¹Á¦°ü°è
+			case 1:// êµ­ì œê´€ê³„
 				table.put("subDept", "A201150215");
 				break;
-			case 2:// °æÁ¦
+			case 2:// ê²½ì œ
 				table.put("subDept", "A201160216");
 				break;
-			case 3:// »çÈ¸º¹Áö
+			case 3:// ì‚¬íšŒë³µì§€
 				table.put("subDept", "A201170217");
 				break;
-			case 4:// ¼¼¹«
+			case 4:// ì„¸ë¬´
 				table.put("subDept", "A201180218");
 				break;
-			case 5:// ¹ıÇĞ
+			case 5:// ë²•í•™
 				table.put("subDept", "A202200320");
 				break;
 			}
 			break;
-		case 1:// °æ¿µ´ëÇĞ
+		case 1:// ê²½ì˜ëŒ€í•™
 			table.put("deptDiv", "210");
 			table.put("dept", "A201130213");
 			table.put("subDept", "A201190219");
 			break;
-		case 2:// °ø°ú´ëÇĞ
+		case 2:// ê³µê³¼ëŒ€í•™
 			table.put("deptDiv", "220");
 			table.put("dept", "A200110111");
 			switch (subDept) {
 			case 0:
-				table.put("subDept", "A200160116");// -ÀüÀÚÀü±âÄÄÇ»ÅÍ°øÇĞºÎ
+				table.put("subDept", "A200160116");// -ì „ìì „ê¸°ì»´í“¨í„°ê³µí•™ë¶€
 				break;
 			case 1:
-				table.put("subDept", "A200130113");// -È­ÇĞ°øÇĞ°ú
+				table.put("subDept", "A200130113");// -í™”í•™ê³µí•™ê³¼
 				break;
 			case 2:
-				table.put("subDept", "A200170117");// -±â°èÁ¤º¸°øÇĞ°ú
+				table.put("subDept", "A200170117");// -ê¸°ê³„ì •ë³´ê³µí•™ê³¼
 				break;
 			case 3:
-				table.put("subDept", "A200180118");// -½Å¼ÒÀç°øÇĞ°ú
+				table.put("subDept", "A200180118");// -ì‹ ì†Œì¬ê³µí•™ê³¼
 				break;
 			case 4:
-				table.put("subDept", "A200190119");// -Åä¸ñ°øÇĞ°ú
+				table.put("subDept", "A200190119");// -í† ëª©ê³µí•™ê³¼
 				break;
 			case 5:
-				table.put("subDept", "A200200120");// -ÄÄÇ»ÅÍ°úÇĞºÎ
+				table.put("subDept", "A200200120");// -ì»´í“¨í„°ê³¼í•™ë¶€
 				break;
 			}
 			break;
-		case 3:// ÀÎ¹®´ëÇĞ
+		case 3:// ì¸ë¬¸ëŒ€í•™
 			table.put("deptDiv", "210");
 			table.put("dept", "A200220122");
 			switch (subDept) {
 			case 0:
-				table.put("subDept", "A200230123");// -¿µ¾î¿µ¹®ÇĞ°ú
+				table.put("subDept", "A200230123");// -ì˜ì–´ì˜ë¬¸í•™ê³¼
 				break;
 			case 1:
-				table.put("subDept", "A200240124");// -±¹¾î±¹¹®ÇĞ°ú
+				table.put("subDept", "A200240124");// -êµ­ì–´êµ­ë¬¸í•™ê³¼
 				break;
 			case 2:
-				table.put("subDept", "A200250125");// -±¹»çÇĞ°ú
+				table.put("subDept", "A200250125");// -êµ­ì‚¬í•™ê³¼
 				break;
 			case 3:
-				table.put("subDept", "A200260126");// -Ã¶ÇĞ°ú
+				table.put("subDept", "A200260126");// -ì² í•™ê³¼
 				break;
 			case 4:
-				table.put("subDept", "A201020202");// -Áß±¹¾î¹®È­ÇĞ°ú
+				table.put("subDept", "A201020202");// -ì¤‘êµ­ì–´ë¬¸í™”í•™ê³¼
 				break;
 			}
 			break;
-		case 4:// ÀÚ¿¬°úÇĞ´ëÇĞ
+		case 4:// ìì—°ê³¼í•™ëŒ€í•™
 			table.put("deptDiv", "210");
 			table.put("dept", "A200280128");
 			switch (subDept) {
 			case 0:
-				table.put("subDept", "A200310131");// -¼öÇĞ°ú
+				table.put("subDept", "A200310131");// -ìˆ˜í•™ê³¼
 				break;
 			case 1:
-				table.put("subDept", "A200300130");// -Åë°èÇĞ°ú
+				table.put("subDept", "A200300130");// -í†µê³„í•™ê³¼
 				break;
 			case 2:
-				table.put("subDept", "A200320132");// -¹°¸®ÇĞ°ú
+				table.put("subDept", "A200320132");// -ë¬¼ë¦¬í•™ê³¼
 				break;
 			case 3:
-				table.put("subDept", "A200330133");// -»ı¸í°úÇĞ°ú
+				table.put("subDept", "A200330133");// -ìƒëª…ê³¼í•™ê³¼
 				break;
 			case 4:
-				table.put("subDept", "A200290129");// -È¯°æ¿ø¿¹ÇĞ°ú
+				table.put("subDept", "A200290129");// -í™˜ê²½ì›ì˜ˆí•™ê³¼
 				break;
 			}
 			break;
-		case 5:// µµ½Ã°úÇĞ´ëÇĞ
+		case 5:// ë„ì‹œê³¼í•™ëŒ€í•™
 			table.put("deptDiv", "210");
 			table.put("dept", "A200370137");
 			switch (subDept) {
 			case 0:
-				table.put("subDept", "A200380138");// -µµ½ÃÇàÁ¤ÇĞ°ú
+				table.put("subDept", "A200380138");// -ë„ì‹œí–‰ì •í•™ê³¼
 				break;
 			case 1:
-				table.put("subDept", "A200400140");// -µµ½Ã»çÈ¸ÇĞ°ú
+				table.put("subDept", "A200400140");// -ë„ì‹œì‚¬íšŒí•™ê³¼
 				break;
 			case 2:
-				table.put("subDept", "A200890189");// -°ÇÃàÇĞÀü°ø
+				table.put("subDept", "A200890189");// -ê±´ì¶•í•™ì „ê³µ
 				break;
 			case 3:
-				table.put("subDept", "A200900190");// -°ÇÃà°øÇĞÀü°ø
+				table.put("subDept", "A200900190");// -ê±´ì¶•ê³µí•™ì „ê³µ
 				break;
 			case 4:
-				table.put("subDept", "A200490149");// -µµ½Ã°øÇĞ°ú
+				table.put("subDept", "A200490149");// -ë„ì‹œê³µí•™ê³¼
 				break;
 			case 5:
-				table.put("subDept", "A200500150");// -±³Åë°øÇĞ°ú
+				table.put("subDept", "A200500150");// -êµí†µê³µí•™ê³¼
 				break;
 			case 6:
-				table.put("subDept", "A200510151");// -Á¶°æÇĞ°ú
+				table.put("subDept", "A200510151");// -ì¡°ê²½í•™ê³¼
 				break;
 			case 7:
-				table.put("subDept", "A200450145");// -È¯°æ°øÇĞºÎ
+				table.put("subDept", "A200450145");// -í™˜ê²½ê³µí•™ë¶€
 				break;
 			case 8:
-				table.put("subDept", "A201000200");// -°ø°£Á¤º¸°øÇĞ°ú
+				table.put("subDept", "A201000200");// -ê³µê°„ì •ë³´ê³µí•™ê³¼
 				break;
 			case 9:
-				table.put("subDept", "A201010201");// -¼Ò¹æ¹æÀçÇĞ°ú
+				table.put("subDept", "A201010201");// -ì†Œë°©ë°©ì¬í•™ê³¼
 				break;
 			}
 			break;
-		case 6:// ¿¹¼úÃ¼À°´ëÇĞ
+		case 6:// ì˜ˆìˆ ì²´ìœ¡ëŒ€í•™
 			table.put("deptDiv", "210");
 			table.put("dept", "A200590159");
 			switch (subDept) {
 			case 0:
-				table.put("subDept", "A200810181");// -°ø¾÷µğÀÚÀÎÀü°ø
+				table.put("subDept", "A200810181");// -ê³µì—…ë””ìì¸ì „ê³µ
 				break;
 			case 1:
-				table.put("subDept", "A200820182");// -½Ã°¢µğÀÚÀÎÀü°ø
+				table.put("subDept", "A200820182");// -ì‹œê°ë””ìì¸ì „ê³µ
 				break;
 			case 2:
-				table.put("subDept", "A200610161");// -È¯°æÁ¶°¢ÇĞ°ú
+				table.put("subDept", "A200610161");// -í™˜ê²½ì¡°ê°í•™ê³¼
 				break;
 			case 3:
-				table.put("subDept", "A200620162");// -À½¾ÇÇĞ°ú
+				table.put("subDept", "A200620162");// -ìŒì•…í•™ê³¼
 				break;
 			case 4:
-				table.put("subDept", "A200540154");// -½ºÆ÷Ã÷°úÇĞ°ú
+				table.put("subDept", "A200540154");// -ìŠ¤í¬ì¸ ê³¼í•™ê³¼
 				break;
 			}
 			break;
-		case 7:// ±¹Á¦±³À°¿ø
+		case 7:// êµ­ì œêµìœ¡ì›
 			table.put("deptDiv", "210");
 			table.put("dept", "A201100210");
 			table.put("subDept", "A201110211");
@@ -671,224 +685,224 @@ public class TabSearchSubjectFragment extends
 	private Hashtable<String, String> getMajorDeptDiv2(int deptDiv, int subDept) {
 		Hashtable<String, String> table = new Hashtable<String, String>(3);
 		switch (deptDiv) {
-		case R.array.search_subj_major_2_0_1:// ´ëÇĞ¿ø
+		case R.array.search_subj_major_2_0_1:// ëŒ€í•™ì›
 			table.put("deptDiv", "310");
 			table.put("dept", "A300010101");
 			switch (subDept) {
-			case 0:// µµ½ÃÇàÁ¤ÇĞ°ú
+			case 0:// ë„ì‹œí–‰ì •í•™ê³¼
 				table.put("subDept", "A300030103");
 				break;
-			case 1:// ÇàÁ¤ÇĞ°ú
+			case 1:// í–‰ì •í•™ê³¼
 				table.put("subDept", "A300040104");
 				break;
-			case 2:// -»çÈ¸º¹ÁöÇĞ°ú
+			case 2:// -ì‚¬íšŒë³µì§€í•™ê³¼
 				table.put("subDept", "A300320132");
 				break;
-			case 3:// -µµ½Ã»çÈ¸ÇĞ°ú
+			case 3:// -ë„ì‹œì‚¬íšŒí•™ê³¼
 				table.put("subDept", "A300360136");
 				break;
-			case 4:// -¹ıÇĞ°ú
+			case 4:// -ë²•í•™ê³¼
 				table.put("subDept", "A300050105");
 				break;
-			case 5:// -±¹Á¦°ü°èÇĞ°ú
+			case 5:// -êµ­ì œê´€ê³„í•™ê³¼
 				table.put("subDept", "A300370137");
 				break;
-			case 6:// -°æ¿µÇĞ°ú
+			case 6:// -ê²½ì˜í•™ê³¼
 				table.put("subDept", "A300060106");
 				break;
-			case 7:// -°æÁ¦ÇĞ°ú
+			case 7:// -ê²½ì œí•™ê³¼
 				table.put("subDept", "A300070107");
 				break;
-			case 8:// -±¹¾î±¹¹®ÇĞ°ú
+			case 8:// -êµ­ì–´êµ­ë¬¸í•™ê³¼
 				table.put("subDept", "A300270127");
 				break;
-			case 9:// -¿µ¾î¿µ¹®ÇĞ°ú
+			case 9:// -ì˜ì–´ì˜ë¬¸í•™ê³¼
 				table.put("subDept", "A300260126");
 				break;
-			case 10:// -±¹»çÇĞ°ú
+			case 10:// -êµ­ì‚¬í•™ê³¼
 				table.put("subDept", "A300280128");
 				break;
-			case 11:// -Ã¶ÇĞ°ú
+			case 11:// -ì² í•™ê³¼
 				table.put("subDept", "A300310131");
 				break;
-			case 12:// -Á¶°æÇĞ°ú
+			case 12:// -ì¡°ê²½í•™ê³¼
 				table.put("subDept", "A300200120");
 				break;
-			case 13:// -È¯°æ¿ø¿¹ÇĞ°ú
+			case 13:// -í™˜ê²½ì›ì˜ˆí•™ê³¼
 				table.put("subDept", "A300210121");
 				break;
-			case 14:// -ÄÄÇ»ÅÍ°úÇĞ°ú
+			case 14:// -ì»´í“¨í„°ê³¼í•™ê³¼
 				table.put("subDept", "A302160316");
 				break;
-			case 15:// ¹°¸®ÇĞ°ú
+			case 15:// ë¬¼ë¦¬í•™ê³¼
 				table.put("subDept", "A300240124");
 				break;
-			case 16:// -»ı¸í°úÇĞ°ú
+			case 16:// -ìƒëª…ê³¼í•™ê³¼
 				table.put("subDept", "A300250125");
 				break;
-			case 17:// -Åä¸ñ°øÇĞ°ú
+			case 17:// -í† ëª©ê³µí•™ê³¼
 				table.put("subDept", "A300110111");
 				break;
-			case 18:// --°ÇÃà°øÇĞ°ú
+			case 18:// --ê±´ì¶•ê³µí•™ê³¼
 				table.put("subDept", "A300120112");
 				break;
-			case 19:// --°ÇÃàÇĞ°ú
+			case 19:// --ê±´ì¶•í•™ê³¼
 				table.put("subDept", "A300410141");
 				break;
-			case 20:// A300130113-È¯°æ°øÇĞ°ú
+			case 20:// A300130113-í™˜ê²½ê³µí•™ê³¼
 				table.put("subDept", "A300130113");
 				break;
-			case 21:// -È­ÇĞ°øÇĞ°ú
+			case 21:// -í™”í•™ê³µí•™ê³¼
 				table.put("subDept", "A300140114");
 				break;
-			case 22:// -µµ½Ã°øÇĞ°ú
+			case 22:// -ë„ì‹œê³µí•™ê³¼
 				table.put("subDept", "A300160116");
 				break;
-			case 23:// -±³Åë°øÇĞ°ú
+			case 23:// -êµí†µê³µí•™ê³¼
 				table.put("subDept", "A300170117");
 				break;
-			case 24:// - -½Å¼ÒÀç°øÇĞ°ú
+			case 24:// - -ì‹ ì†Œì¬ê³µí•™ê³¼
 				table.put("subDept", "A300390139");
 				break;
-			case 25:// -±â°èÁ¤º¸°øÇĞ°ú
+			case 25:// -ê¸°ê³„ì •ë³´ê³µí•™ê³¼
 				table.put("subDept", "A300340134");
 				break;
-			case 26:// -°ø°£Á¤º¸°øÇĞ°ú
+			case 26:// -ê³µê°„ì •ë³´ê³µí•™ê³¼
 				table.put("subDept", "A301860286");
 				break;
-			case 27:// È¯°æÁ¶°¢ÇĞ°ú
+			case 27:// í™˜ê²½ì¡°ê°í•™ê³¼
 				table.put("subDept", "A300420142");
 				break;
-			case 28:// -ÀüÀÚÀü±âÄÄÇ»ÅÍ°øÇĞ°ú
+			case 28:// -ì „ìì „ê¸°ì»´í“¨í„°ê³µí•™ê³¼
 				table.put("subDept", "A302040304");
 				break;
-			case 29:// -À½¾ÇÇĞ°ú
+			case 29:// -ìŒì•…í•™ê³¼
 				table.put("subDept", "A301940294");
 				break;
-			case 30:// -½ºÆ÷Ã÷°úÇĞ°ú
+			case 30:// -ìŠ¤í¬ì¸ ê³¼í•™ê³¼
 				table.put("subDept", "A302310331");
 				break;
 			default:
 				return null;
 			}
 			break;
-		case R.array.search_subj_major_2_0_2:// ¼¼¹«Àü¹®´ëÇĞ¿ø
+		case R.array.search_subj_major_2_0_2:// ì„¸ë¬´ì „ë¬¸ëŒ€í•™ì›
 			table.put("deptDiv", "310");
 			table.put("dept", "A300430143");
 			table.put("subDept", "A302100310");
 			break;
-		case R.array.search_subj_major_2_0_3:// µğÀÚÀÎ
+		case R.array.search_subj_major_2_0_3:// ë””ìì¸
 			table.put("deptDiv", "310");
 			table.put("dept", "A300500150");
 			table.put("subDept", "A300520152");
 			break;
-		case R.array.search_subj_major_2_0_4:// ¹ıÇĞ
+		case R.array.search_subj_major_2_0_4:// ë²•í•™
 			table.put("deptDiv", "310");
 			table.put("dept", "A302020302");
 			table.put("subDept", "A302030303");
 			break;
-		case R.array.search_subj_major_2_0_5:// µµ½Ã
+		case R.array.search_subj_major_2_0_5:// ë„ì‹œ
 			table.put("deptDiv", "310");
 			table.put("dept", "A300570157");
 			switch (subDept) {
-			case 0:// µµ½ÃÇàÁ¤ÇĞ°ú
+			case 0:// ë„ì‹œí–‰ì •í•™ê³¼
 				table.put("subDept", "A300590159");
 				break;
-			case 1:// ¹æÀç°øÇĞ°ú
+			case 1:// ë°©ì¬ê³µí•™ê³¼
 				table.put("subDept", "A300720172");
 				break;
-			case 2:// -»çÈ¸º¹ÁöÇĞ°ú
+			case 2:// -ì‚¬íšŒë³µì§€í•™ê³¼
 				table.put("subDept", "A300750175");
 				break;
-			case 3:// -±³Åë°ü¸®ÇĞ°ú
+			case 3:// -êµí†µê´€ë¦¬í•™ê³¼
 				table.put("subDept", "A300640164");
 				break;
-			case 4:// -°ÇÃà°øÇĞ°ú
+			case 4:// -ê±´ì¶•ê³µí•™ê³¼
 				table.put("subDept", "A300690169");
 				break;
-			case 5:// -Á¶°æÇĞ°ú
+			case 5:// -ì¡°ê²½í•™ê³¼
 				table.put("subDept", "A300700170");
 				break;
-			case 6:// -È¯°æ°øÇĞ°ú
+			case 6:// -í™˜ê²½ê³µí•™ê³¼
 				table.put("subDept", "A300710171");
 				break;
-			case 7:// -ºÎµ¿»êÇĞ°ú
+			case 7:// -ë¶€ë™ì‚°í•™ê³¼
 				table.put("subDept", "A301840284");
 				break;
-			case 8:// -°ü±¤¹®È­ÇĞ°ú
+			case 8:// -ê´€ê´‘ë¬¸í™”í•™ê³¼
 				table.put("subDept", "A301900290");
 				break;
 			default:
 				return null;
 			}
 			break;
-		case R.array.search_subj_major_2_0_6:// °æ¿µ
+		case R.array.search_subj_major_2_0_6:// ê²½ì˜
 			table.put("deptDiv", "310");
 			table.put("dept", "A300760176");
 			table.put("subDept", "A300780178");
 			break;
-		case R.array.search_subj_major_2_0_7:// °úÇĞ±â¼ú
+		case R.array.search_subj_major_2_0_7:// ê³¼í•™ê¸°ìˆ 
 			table.put("deptDiv", "301");
 			table.put("dept", "A302190319");
 			switch (subDept) {
-			case 0:// È­ÇĞ°øÇĞ°ú
+			case 0:// í™”í•™ê³µí•™ê³¼
 				table.put("subDept", "A302210321");
 				break;
-			case 1:// ½Å¼ÒÀç°øÇĞ°ú
+			case 1:// ì‹ ì†Œì¬ê³µí•™ê³¼
 				table.put("subDept", "A302230323");
 				break;
-			case 2:// ±â°è°øÇĞ°ú
+			case 2:// ê¸°ê³„ê³µí•™ê³¼
 				table.put("subDept", "A302240324");
 				break;
-			case 3:// È¯°æ¿ø¿¹ÇĞ°ú
+			case 3:// í™˜ê²½ì›ì˜ˆí•™ê³¼
 				table.put("subDept", "A302250325");
 				break;
-			case 4:// Åä¸ñ°øÇĞ°ú
+			case 4:// í† ëª©ê³µí•™ê³¼
 				table.put("subDept", "A302260326");
 				break;
-			case 5:// ÀüÀÚÀü±â°øÇĞ°ú
+			case 5:// ì „ìì „ê¸°ê³µí•™ê³¼
 				table.put("subDept", "A302220322");
 				break;
 			default:
 				return null;
 			}
 			break;
-		case R.array.search_subj_major_2_0_8:// ±³À°
+		case R.array.search_subj_major_2_0_8:// êµìœ¡
 			table.put("deptDiv", "321");
 			table.put("dept", "A300960196");
 			switch (subDept) {
-			case 0:// ±¹¾î±³À°Àü°ø
+			case 0:// êµ­ì–´êµìœ¡ì „ê³µ
 				table.put("subDept", "A300980198");
 				break;
-			case 1:// ¿µ¾î±³À°Àü°ø
+			case 1:// ì˜ì–´êµìœ¡ì „ê³µ
 				table.put("subDept", "A300990199");
 				break;
-			case 2:// ¼öÇĞ±³À°Àü°ø
+			case 2:// ìˆ˜í•™êµìœ¡ì „ê³µ
 				table.put("subDept", "A301000200");
 				break;
-			case 3:// ¿ª»ç±³À°Àü°ø
+			case 3:// ì—­ì‚¬êµìœ¡ì „ê³µ
 				table.put("subDept", "A301010201");
 				break;
-			case 4:// ±³¼öÇĞ½À/»ó´ãÀü°ø
+			case 4:// êµìˆ˜í•™ìŠµ/ìƒë‹´ì „ê³µ
 				table.put("subDept", "A302300330");
 				break;
 			default:
 				return null;
 			}
 			break;
-		case R.array.search_subj_major_2_0_9:// ±¹Á¦
+		case R.array.search_subj_major_2_0_9:// êµ­ì œ
 			switch (subDept) {
-			case 0:// ±Û·Î¹ú°Ç¼³°æ¿µÇĞ°ú
+			case 0:// ê¸€ë¡œë²Œê±´ì„¤ê²½ì˜í•™ê³¼
 				table.put("deptDiv", "310");
 				table.put("dept", "A303100410");
 				table.put("subDept", "A303110411");
 				break;
-			case 1:// Ã·´Ü³ì»öµµ½Ã°³¹ßÇĞ°ú
+			case 1:// ì²¨ë‹¨ë…¹ìƒ‰ë„ì‹œê°œë°œí•™ê³¼
 				table.put("deptDiv", "310");
 				table.put("dept", "A303100410");
 				table.put("subDept", "A303120412");
 				break;
-			case 2:// ±¹Á¦µµ½Ã°³¹ßÇÁ·Î±×·¥
+			case 2:// êµ­ì œë„ì‹œê°œë°œí”„ë¡œê·¸ë¨
 				table.put("deptDiv", "321");
 				table.put("dept", "A302280328");
 				table.put("subDept", "A302290329");

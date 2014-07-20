@@ -6,7 +6,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
 
-/** onCreate¿¡¼­ Å×¸¶ ¼³Á¤À» ÇÏ´Â ¾×Æ¼ºñÆ¼ */
+/** onCreateì—ì„œ í…Œë§ˆ ì„¤ì •ì„ í•˜ëŠ” ì•¡í‹°ë¹„í‹° */
 @SuppressLint("Registered")
 public class BaseActivity extends Activity {
 	@Override
