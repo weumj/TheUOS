@@ -3,7 +3,6 @@ package com.uoscs09.theuos;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 
 public class TitleActivity extends Activity {
 	@Override
@@ -11,7 +10,7 @@ public class TitleActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_title);
 
-		new Handler().postDelayed(new Runnable() {
+		getWindow().getDecorView().postDelayed(new Runnable() {
 
 			@Override
 			public void run() {
@@ -20,6 +19,6 @@ public class TitleActivity extends Activity {
 				overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 				finish();
 			}
-		}, 500);
+		}, 400);
 	}
 }

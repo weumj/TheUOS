@@ -1,9 +1,10 @@
 package com.uoscs09.theuos.common.util;
 
-import android.annotation.SuppressLint;
+import java.util.Map;
+import java.util.Set;
+
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 
@@ -26,7 +27,6 @@ public class PrefUtil {
 	public static final int TIMETABLE_LIMIT_MAX = 15;
 	private static PrefUtil instance;
 	private SharedPreferences pref;
-	private Editor edit;
 
 	public static synchronized PrefUtil getInstance(Context context) {
 		if (instance == null)
@@ -34,11 +34,9 @@ public class PrefUtil {
 		return instance;
 	}
 
-	@SuppressLint("CommitPrefEdits")
 	private PrefUtil(Context context) {
 		this.pref = PreferenceManager.getDefaultSharedPreferences(context
 				.getApplicationContext());
-		this.edit = pref.edit();
 	}
 
 	@Override
@@ -48,28 +46,27 @@ public class PrefUtil {
 	}
 
 	public synchronized void put(String key, boolean value) {
-		edit.putBoolean(key, value);
-		edit.commit();
+		pref.edit().putBoolean(key, value).commit();
 	}
 
 	public synchronized void put(String key, int value) {
-		edit.putInt(key, value);
-		edit.commit();
+		pref.edit().putInt(key, value).commit();
 	}
 
 	public synchronized void put(String key, String value) {
-		edit.putString(key, value);
-		edit.commit();
+		pref.edit().putString(key, value).commit();
 	}
 
 	public synchronized void put(String key, float value) {
-		edit.putFloat(key, value);
-		edit.commit();
+		pref.edit().putFloat(key, value).commit();
 	}
 
 	public synchronized void put(String key, long value) {
-		edit.putLong(key, value);
-		edit.commit();
+		pref.edit().putLong(key, value).commit();
+	}
+
+	public synchronized void put(String key, Set<String> values) {
+		pref.edit().putStringSet(key, values).commit();
 	}
 
 	public boolean get(String key, boolean defValue) {
@@ -90,6 +87,10 @@ public class PrefUtil {
 
 	public long get(String key, long defValue) {
 		return pref.getLong(key, defValue);
+	}
+
+	public Map<String, ?> getAll() {
+		return pref.getAll();
 	}
 
 	public static String getSaveRoute(Context context) {

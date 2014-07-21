@@ -59,8 +59,9 @@
     <string name="tab_book_book_opt_sub">분류와 정렬 방식을 선택해 주세요</string>
     <string name="tab_book_not_found">검색된 페이지에 대여 가능 도서가 없습니다.</string>
     <string name="tab_book_subject_opt">검색 옵션을 선택해주세요</string>
-    <string name="tab_book_empty_text1"> 버튼을 터치하여 도서 검색을 해 보세요</string>
-    <string name="tab_book_empty_text2"> 버튼을 터치하여 도서 검색 옵션을 설정하세요</string>
+    <string name="tab_book_empty_text1"> 버튼을 터치하여 도서 검색을 해 보세요.</string>
+    <string name="tab_book_empty_text2"> 버튼을 터치하여 도서 검색 옵션을 설정하세요.</string>
+    <string name="tab_book_empty_text3"> 리스트나 책 이미지를 터치하면 자세한 정보를 볼 수 있습니다.</string>
     <string name="tab_library_seat_last_update">최근 조회 시간\n</string>
     <string name="tab_library_seat_dissmiss_info_not_exist_in_1hr">1시간 내에 해지될 좌석이 없습니다.</string>
     <string name="tab_library_seat_vacancy"> 잔여 좌석수 : </string>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.uoscs09.theuos"
-    android:versionCode="45"
+    android:versionCode="47"
     android:versionName="@string/setting_app_version_desc" >
 
     <uses-sdk
@@ -136,6 +136,7 @@
                 <action android:name="android.intent.action.ACTION_EXTERNAL_APPLICATION_AVAILABLE" />
             </intent-filter>
         </receiver>
+        <!-- 
         <receiver
             android:name="com.uoscs09.theuos.widget.restaurant.RestWidget"
             android:label="@string/widget_rest_desc" >
@@ -151,6 +152,7 @@
                 <action android:name="android.intent.action.ACTION_EXTERNAL_APPLICATION_AVAILABLE" />
             </intent-filter>
         </receiver>
+         -->
     </application>
 
 </manifest>

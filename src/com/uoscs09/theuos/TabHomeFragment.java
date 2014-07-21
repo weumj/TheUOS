@@ -96,9 +96,9 @@ public class TabHomeFragment extends BaseFragment implements
 		View v = inflater.inflate(R.layout.tab_home, container, false);
 		GridView gridView = (GridView) v.findViewById(R.id.tab_home_gridview);
 		SwingBottomInAnimationAdapter animatorAdapter = new SwingBottomInAnimationAdapter(
-				adapter, 100);
+				adapter, 80);
 		animatorAdapter.setAbsListView(gridView);
-		animatorAdapter.setInitialDelayMillis(200);
+		animatorAdapter.setInitialDelayMillis(150);
 		gridView.setOnItemClickListener(this);
 		gridView.setAdapter(animatorAdapter);
 

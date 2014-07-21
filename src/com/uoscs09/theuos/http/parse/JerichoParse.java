@@ -4,7 +4,8 @@ import java.io.IOException;
 import java.util.List;
 
 import net.htmlparser.jericho.Source;
-/** JerichoParser¸¦ »ç¿ëÇÏ´Â Å¬·¡½º*/
+
+/** JerichoParserë¥¼ ì‚¬ìš©í•˜ëŠ” íŒŒì„œ */
 public abstract class JerichoParse<T> implements IParseHttp {
 	protected String htmlBody;
 
@@ -17,6 +18,5 @@ public abstract class JerichoParse<T> implements IParseHttp {
 		return parseHttpBody(source);
 	}
 
-	protected abstract List<T> parseHttpBody(Source source)
-			throws IOException;
+	protected abstract List<T> parseHttpBody(Source source) throws IOException;
 }

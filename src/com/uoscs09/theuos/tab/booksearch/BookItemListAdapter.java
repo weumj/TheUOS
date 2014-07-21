@@ -16,6 +16,7 @@ import android.text.style.StyleSpan;
 import android.text.style.URLSpan;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
@@ -34,14 +35,10 @@ public class BookItemListAdapter extends AbsArrayAdapter<BookItem> {
 	private View.OnClickListener l;
 	private View.OnLongClickListener ll;
 
-	private BookItemListAdapter(Context context) {
-		super(context, 0);
-	}
-
 	public BookItemListAdapter(Context context, int layout,
-			List<BookItem> bookList, View.OnClickListener l,
+			List<BookItem> list, View.OnClickListener l,
 			View.OnLongClickListener ll) {
-		super(context, layout, bookList);
+		super(context, layout, list);
 		this.l = l;
 		this.ll = ll;
 		setupImgConfig();
@@ -49,10 +46,8 @@ public class BookItemListAdapter extends AbsArrayAdapter<BookItem> {
 
 	@Override
 	public View setView(int position, View convertView, ViewHolder holder) {
-		/* 뷰 설정 */
+		final GroupHolder h = (GroupHolder) holder;
 		final BookItem item = getItem(position);
-		Holder h = (Holder) holder;
-
 		// 책 이미지 설정
 		imageLoader.displayImage(item.coverSrc, h.coverImg);
 		h.coverImg.setOnClickListener(l);
@@ -68,7 +63,146 @@ public class BookItemListAdapter extends AbsArrayAdapter<BookItem> {
 		h.location.setOnClickListener(l);
 		h.location.setTag(item);
 
+		setBookStateLayout(h.stateInfoLayout, item.bookStateInfoList);
+		h.stateInfoLayout.setVisibility(View.GONE);
+		convertView.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				if (h.stateInfoLayout.getVisibility() == View.GONE
+						&& !item.bookStateInfoList.isEmpty())
+					h.stateInfoLayout.setVisibility(View.VISIBLE);
+				else
+					h.stateInfoLayout.setVisibility(View.GONE);
+				v.requestLayout();
+			}
+		});
 		return convertView;
+	}
+
+	private void setBookStateLayout(LinearLayout layout,
+			List<BookStateInfo> list) {
+		final int attachingViewsSize = list.size();
+		int childCount = layout.getChildCount();
+		if (attachingViewsSize < childCount) {
+			// bookStateInfo의 갯수가 LinearLayout의 childView의 갯수보다 적은 경우
+			// LinearLayout에 그 차이 만큼 View를 삭제하고, childCount를 변경한다.
+			layout.removeViews(attachingViewsSize, childCount
+					- attachingViewsSize);
+			childCount = layout.getChildCount();
+		} else if (attachingViewsSize > childCount) {
+			// bookStateInfo의 갯수가 LinearLayout의 childView의 갯수보다 많은 경우
+			// LinearLayout에 그 차이 만큼 View를 추가한다.
+			for (int i = childCount; i < attachingViewsSize; i++) {
+				View v = View.inflate(getContext(),
+						R.layout.list_layout_book_state, null);
+				setChildViewContent(v, list.get(i));
+				layout.addView(v);
+			}
+		}
+		for (int i = 0; i < childCount; i++) {
+			setChildViewContent(layout.getChildAt(i), list.get(i));
+		}
+	}
+
+	private void setChildViewContent(View v, BookStateInfo info) {
+		ChildHolder h = new ChildHolder(v);
+		h.code.setText(info.infoArray[0]);
+		h.location.setText(info.infoArray[1]);
+		h.state.setText(setSpannableText(info.infoArray[2], 2));
+	}
+
+	@Override
+	public ViewHolder getViewHolder(View convertView) {
+		return new GroupHolder(convertView);
+	}
+
+	protected static class GroupHolder implements ViewHolder {
+		public TextView title;
+		public TextView writer;
+		public TextView publish_year;
+		public TextView location;
+		public TextView bookState;
+		public ImageView coverImg;
+		public LinearLayout stateInfoLayout;
+
+		public GroupHolder(View v) {
+			bookState = (TextView) v
+					.findViewById(R.id.tab_booksearch_list_text_book_state);
+			coverImg = (ImageView) v
+					.findViewById(R.id.tab_booksearch_list_image_book_image);
+			location = (TextView) v
+					.findViewById(R.id.tab_booksearch_list_text_book_site);
+			title = (TextView) v
+					.findViewById(R.id.tab_booksearch_list_text_book_title);
+			publish_year = (TextView) v
+					.findViewById(R.id.tab_booksearch_list_text_book_publish_and_year);
+			writer = (TextView) v
+					.findViewById(R.id.tab_booksearch_list_text_book_writer);
+			stateInfoLayout = (LinearLayout) v
+					.findViewById(R.id.tab_booksearch_layout_book_state);
+		}
+	}
+
+	protected static class ChildHolder {
+		public TextView location;
+		public TextView code;
+		public TextView state;
+
+		public ChildHolder(View v) {
+			location = (TextView) v
+					.findViewById(R.id.tab_booksearch_bookstate_location);
+			code = (TextView) v
+					.findViewById(R.id.tab_booksearch_bookstate_code);
+			state = (TextView) v
+					.findViewById(R.id.tab_booksearch_bookstate_state);
+		}
+	}
+
+	protected void setupImgConfig() {
+		if (!imageLoader.isInited()) {
+			Context mContext = getContext();
+			File cacheDir = mContext.getCacheDir();
+			Executor ex = Executors.newCachedThreadPool(new ThreadFactory() {
+				private final AtomicInteger mCount = new AtomicInteger(1);
+
+				public Thread newThread(Runnable r) {
+					return new Thread(r, "ImageLoader #"
+							+ mCount.getAndIncrement());
+				}
+			});
+			BitmapFactory.Options bitmapOpt = new BitmapFactory.Options();
+			bitmapOpt.inSampleSize = 4;
+			// Create configuration for ImageLoader
+			DisplayImageOptions option = new DisplayImageOptions.Builder()
+					.showImageForEmptyUri(R.drawable.noimg_en1)
+					.showImageOnFail(R.drawable.noimg_en1)
+					.decodingOptions(bitmapOpt)
+					.showImageOnLoading(R.anim.loading_animation)
+					.cacheInMemory(true).cacheOnDisc(true).build();
+			ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
+					mContext)
+					.memoryCacheExtraOptions(480, 800)
+					.taskExecutor(ex)
+					.taskExecutorForCachedImages(ex)
+					.threadPoolSize(
+							ImageLoaderConfiguration.Builder.DEFAULT_THREAD_POOL_SIZE)
+					.threadPriority(Thread.NORM_PRIORITY - 1)
+					.tasksProcessingOrder(QueueProcessingType.FIFO)
+					.denyCacheImageMultipleSizesInMemory()
+					.memoryCache(
+							new UsingFreqLimitedMemoryCache(2 * 1024 * 1024))
+					.memoryCacheSize(2 * 1024 * 1024)
+					.discCache(new UnlimitedDiscCache(cacheDir))
+					.discCacheSize(50 * 1024 * 1024)
+					.discCacheFileCount(100)
+					.discCacheFileNameGenerator(new HashCodeFileNameGenerator())
+					.imageDownloader(new BaseImageDownloader(mContext))
+					.defaultDisplayImageOptions(option).build();
+
+			// Initialize ImageLoader with created configuration. Do it once.
+			imageLoader.init(config);
+		}
 	}
 
 	protected Spannable setSpannableText(final String title, int which) {
@@ -102,77 +236,4 @@ public class BookItemListAdapter extends AbsArrayAdapter<BookItem> {
 		return styledText;
 	}
 
-	protected void setupImgConfig() {
-		if (!imageLoader.isInited()) {
-			File cacheDir = getContext().getCacheDir();
-			Executor ex = Executors.newCachedThreadPool(new ThreadFactory() {
-				private final AtomicInteger mCount = new AtomicInteger(1);
-
-				public Thread newThread(Runnable r) {
-					return new Thread(r, "ImageLoader #"
-							+ mCount.getAndIncrement());
-				}
-			});
-			BitmapFactory.Options bitmapOpt = new BitmapFactory.Options();
-			bitmapOpt.inSampleSize = 4;
-			// Create configuration for ImageLoader
-			DisplayImageOptions option = new DisplayImageOptions.Builder()
-					.showImageForEmptyUri(R.drawable.noimg_en1)
-					.showImageOnFail(R.drawable.noimg_en1)
-					.decodingOptions(bitmapOpt)
-					.showImageOnLoading(R.anim.loading_animation)
-					.cacheInMemory(true).cacheOnDisc(true).build();
-			ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
-					getContext())
-					.memoryCacheExtraOptions(480, 800)
-					.taskExecutor(ex)
-					.taskExecutorForCachedImages(ex)
-					.threadPoolSize(
-							ImageLoaderConfiguration.Builder.DEFAULT_THREAD_POOL_SIZE)
-					.threadPriority(Thread.NORM_PRIORITY - 1)
-					.tasksProcessingOrder(QueueProcessingType.FIFO)
-					.denyCacheImageMultipleSizesInMemory()
-					.memoryCache(
-							new UsingFreqLimitedMemoryCache(2 * 1024 * 1024))
-					.memoryCacheSize(2 * 1024 * 1024)
-					.discCache(new UnlimitedDiscCache(cacheDir))
-					.discCacheSize(50 * 1024 * 1024)
-					.discCacheFileCount(100)
-					.discCacheFileNameGenerator(new HashCodeFileNameGenerator())
-					.imageDownloader(new BaseImageDownloader(getContext()))
-					.defaultDisplayImageOptions(option).build();
-
-			// Initialize ImageLoader with created configuration. Do it once.
-			imageLoader.init(config);
-		}
-	}
-
-	@Override
-	public ViewHolder getViewHolder(View v) {
-		return new Holder(v);
-	}
-
-	protected static class Holder implements ViewHolder {
-		public TextView title;
-		public TextView writer;
-		public TextView publish_year;
-		public TextView location;
-		public TextView bookState;
-		public ImageView coverImg;
-
-		public Holder(View v) {
-			bookState = (TextView) v
-					.findViewById(R.id.tab_booksearch_list_text_book_state);
-			coverImg = (ImageView) v
-					.findViewById(R.id.tab_booksearch_list_image_book_image);
-			location = (TextView) v
-					.findViewById(R.id.tab_booksearch_list_text_book_site);
-			title = (TextView) v
-					.findViewById(R.id.tab_booksearch_list_text_book_title);
-			publish_year = (TextView) v
-					.findViewById(R.id.tab_booksearch_list_text_book_publish_and_year);
-			writer = (TextView) v
-					.findViewById(R.id.tab_booksearch_list_text_book_writer);
-		}
-	}
 }

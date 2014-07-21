@@ -12,7 +12,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-
 import android.os.Bundle;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -45,8 +44,7 @@ import com.uoscs09.theuos.http.parse.ParseFactory;
 
 public class TabBookSearchFragment extends
 		AbsDrawableProgressFragment<ArrayList<BookItem>> implements
-		OnQueryTextListener, AbsListView.OnScrollListener,
-		View.OnClickListener, View.OnLongClickListener {
+		OnQueryTextListener, AbsListView.OnScrollListener, View.OnClickListener {
 	/** 리스트 뷰가 스크롤 되는지 여부 */
 	private boolean isInvokeScroll = true;
 	/** 비동기 작업 결과가 비었는지 여부 */
@@ -58,10 +56,10 @@ public class TabBookSearchFragment extends
 	private String rawQuery;
 	@ReleaseWhenDestroy
 	protected ArrayAdapter<BookItem> bookListAdapter;
+	@ReleaseWhenDestroy
+	protected AnimationAdapter animAdapter;
 	@AsyncData
 	private ArrayList<BookItem> mBookList;
-	@ReleaseWhenDestroy
-	private AnimationAdapter aAdapter;
 	@ReleaseWhenDestroy
 	private ListView mListView;
 	/** ListView의 emptyView */
@@ -138,8 +136,8 @@ public class TabBookSearchFragment extends
 							public void onClick(DialogInterface dialog,
 									int which) {
 								setActionText();
-								if (!bookListAdapter.isEmpty()) {
-									bookListAdapter.clear();
+								if (!mBookList.isEmpty()) {
+									mBookList.clear();
 									page = 1;
 									excute();
 								}
@@ -183,8 +181,6 @@ public class TabBookSearchFragment extends
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		bookListAdapter = new BookItemListAdapter(getActivity(),
-				R.layout.list_layout_book, mBookList, l, this);
 		View rootView = inflater.inflate(R.layout.tab_book_search, container,
 				false);
 
@@ -199,14 +195,18 @@ public class TabBookSearchFragment extends
 		} else {
 			emptyView.setVisibility(View.VISIBLE);
 		}
+		
+		bookListAdapter = new BookItemListAdapter(getActivity(),
+				R.layout.list_layout_book, mBookList, l, mLongClickListener);
+		animAdapter = new AlphaInAnimationAdapter(bookListAdapter);
 		// 리스트 뷰
-		mListView = (ListView) rootView.findViewById(R.id.tab_book_list_search);
+		mListView = (ListView) rootView
+				.findViewById(R.id.tab_book_list_search);
 		mListView.addFooterView(getLoadingView());
-		aAdapter = new AlphaInAnimationAdapter(bookListAdapter);
-		aAdapter.setAbsListView(mListView);
 		// 스크롤 리스너 등록
 		mListView.setOnScrollListener(this);
-		mListView.setAdapter(aAdapter);
+		animAdapter.setAbsListView(mListView);
+		mListView.setAdapter(animAdapter);
 		return rootView;
 	}
 
@@ -283,7 +283,7 @@ public class TabBookSearchFragment extends
 			}
 			query = lastQuery;
 			page = 1;
-			bookListAdapter.clear();
+			mBookList.clear();
 			queryTextview.setText(rawQuery);
 			excute();
 		}
@@ -375,9 +375,8 @@ public class TabBookSearchFragment extends
 				AppUtil.showToast(context, String.valueOf(result.size())
 						+ context.getString(R.string.search_found),
 						isMenuVisible());
-				bookListAdapter.addAll(result);
+				mBookList.addAll(result);
 				bookListAdapter.notifyDataSetChanged();
-				aAdapter.notifyDataSetChanged();
 			}
 		}
 	}
@@ -524,19 +523,22 @@ public class TabBookSearchFragment extends
 	}
 
 	/** listView 내부의 TextView에서 호출 됨 */
-	@Override
-	public boolean onLongClick(View v) {
-		if (actionMode == null)
-			actionMode = getActivity().startActionMode(mActionModeCallback);
+	private View.OnLongClickListener mLongClickListener = new View.OnLongClickListener() {
 
-		// View prevView = (View) actionMode.getTag();
-		// if (prevView != null)
-		// prevView.setSelected(false);
-		// v.setSelected(true);
-		actionMode.setTag(v);
-		actionMode.setTitle(((TextView) v).getText());
-		return true;
-	}
+		@Override
+		public boolean onLongClick(View v) {
+			if (actionMode == null)
+				actionMode = getActivity().startActionMode(mActionModeCallback);
+
+			// View prevView = (View) actionMode.getTag();
+			// if (prevView != null)
+			// prevView.setSelected(false);
+			// v.setSelected(true);
+			actionMode.setTag(v);
+			actionMode.setTitle(((TextView) v).getText());
+			return true;
+		}
+	};
 
 	@Override
 	protected boolean putAsyncData(String key, ArrayList<BookItem> obj) {

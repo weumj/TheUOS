@@ -4,14 +4,12 @@ import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.impl.AbsExpendableAdapter;
-import com.uoscs09.theuos.common.util.AppUtil;
 import com.uoscs09.theuos.common.util.SeoulOApiUtil;
 import com.uoscs09.theuos.common.util.StringUtil;
 
@@ -29,15 +27,6 @@ public class TransportAdapter extends
 		GroupHolder gh = (GroupHolder) h;
 		gh.title.setText(SeoulOApiUtil
 				.getStationName(getGroupKey(groupPosition).toString()));
-		switch (AppUtil.theme) {
-		case BlackAndWhite:
-		case White:
-			gh.title.setTextColor(Color.BLACK);
-			break;
-		case Black:
-		default:
-			break;
-		}
 	}
 
 	@Override
@@ -53,17 +42,6 @@ public class TransportAdapter extends
 		} else {
 			ch.tvs[0].setText(StringUtil.NULL);
 			ch.tvs[1].setText(text);
-		}
-		switch (AppUtil.theme) {
-		case BlackAndWhite:
-		case White:
-			for (TextView tv : ch.tvs) {
-				tv.setTextColor(Color.BLACK);
-			}
-			break;
-		case Black:
-		default:
-			break;
 		}
 	}
 

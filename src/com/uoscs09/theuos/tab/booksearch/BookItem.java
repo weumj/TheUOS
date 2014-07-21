@@ -1,25 +1,39 @@
 package com.uoscs09.theuos.tab.booksearch;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.uoscs09.theuos.common.util.StringUtil;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 public class BookItem implements Parcelable {
+	/** 책 제목 */
 	public String title;
+	/** 저자 */
 	public String writer;
+	/** 출판사 / 연도 */
 	public String bookInfo;
+	/** 책 위치 */
 	public String site;
+	/** 대여 상태 */
 	public String bookState;
+	/** 책 표지 url */
 	public String coverSrc;
+	/** 책 url */
 	public String url;
+	/** 책 정보 리스트 */
+	public List<BookStateInfo> bookStateInfoList;
 
 	public BookItem() {
 		title = writer = bookInfo = site = bookState = coverSrc = url = StringUtil.NULL;
+		bookStateInfoList = null;
 	}
 
 	public BookItem(String title, String writer, String bookInfo, String site,
-			String bookState, String coverSrc, String url) {
+			String bookState, String coverSrc, String url,
+			List<BookStateInfo> list) {
 		this.title = title.trim();
 		this.writer = writer.trim();
 		this.bookInfo = bookInfo.trim();
@@ -27,6 +41,7 @@ public class BookItem implements Parcelable {
 		this.bookState = bookState.trim();
 		this.coverSrc = coverSrc.trim();
 		this.url = url.trim();
+		this.bookStateInfoList = list;
 	}
 
 	private BookItem(Parcel source) {
@@ -37,6 +52,8 @@ public class BookItem implements Parcelable {
 		bookState = source.readString();
 		coverSrc = source.readString();
 		url = source.readString();
+		bookStateInfoList = new ArrayList<BookStateInfo>();
+		source.readList(bookStateInfoList, BookStateInfo.class.getClassLoader());
 	}
 
 	@Override
@@ -53,6 +70,7 @@ public class BookItem implements Parcelable {
 		dest.writeString(bookState);
 		dest.writeString(coverSrc);
 		dest.writeString(url);
+		dest.writeList(bookStateInfoList);
 	}
 
 	public static final Parcelable.Creator<BookItem> CREATOR = new Parcelable.Creator<BookItem>() {

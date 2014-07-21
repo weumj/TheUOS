@@ -1,87 +1,102 @@
 package com.uoscs09.theuos.http.parse;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
 
 import com.uoscs09.theuos.common.util.StringUtil;
 import com.uoscs09.theuos.http.HttpRequest;
 import com.uoscs09.theuos.tab.booksearch.BookItem;
+import com.uoscs09.theuos.tab.booksearch.BookStateInfo;
 
-public class ParseBook implements IParseHttp {
-	private final static String PATTERN_IMG = "<iframe src=\"";
-	private final static String PATTERN_URL = "<a href=\"/search/detail/";
-	private final static String PATTERN_TITLE = "<span class=\"object\">";
-	private final static String PATTERN_INFO = "<span class=\"info\">";
-	private final static String PATTERN_SITE = "<span class='book_state'>";
-	private final static String PATTERN_SITE_PAGE = "<a href=\"/search/media";
-	private final static String M_LIB = "http://mlibrary.uos.ac.kr/search/media";
-	private final static String ETC_CHAR = "(\r|\t|\n)";
-	private final static String SEARCH_DETAIL = "/search/detail/";
-	private final static String BACK_SLASH = "\"";
-	private final static String CLOSE_A = "</a>";
-	private final static String BR = "<br/>";
-	private final static String SRC = "src";
-	private final static String CLOSE_TD = "</td>";
-	private final static String CLOSE_SPAN = "</span>";
-	private String body;
+public class ParseBook extends JerichoParse<BookItem> {
+	private static final String HREF = "href";
+	private static final String SRC = "src";
+	private static final String IFRAME = "iframe";
+	private static final String COVER = "cover";
+	private static final String LI = "li";
+	private static final String ITEM = "item";
+	private static final String[] BOOK_STATE_XML_TAGS = { "call_no",
+			"place_name", "book_state" };
 
 	protected ParseBook(String body) {
-		this.body = body;
+		super(body);
 	}
 
 	@Override
-	public List<BookItem> parse() {
-		String[] bodyArray = body.split("<span id=\"bookImg_");
-		String[] tempArray;
-		String coverSrc, writer, bookInfo, site, bookState, url, title, temp;
-		ArrayList<BookItem> list = new ArrayList<BookItem>();
-		for (int i = 1; i < bodyArray.length; i++) {
-			temp = bodyArray[i];
-			try {
-				temp = temp.split(PATTERN_IMG)[1];
-				coverSrc = temp.split(BACK_SLASH)[0];
-			} catch (Exception e) {
-				coverSrc = StringUtil.NULL;
+	protected List<BookItem> parseHttpBody(Source source) throws IOException {
+		List<Element> briefList = source.getAllElementsByClass("briefList");
+		List<Element> bookHtmlList = briefList.get(0).getAllElements(LI);
+
+		ArrayList<BookItem> bookItemList = new ArrayList<BookItem>();
+		for (Element rawBookHtml : bookHtmlList) {
+			BookItem item = new BookItem();
+			Element bookUrl = rawBookHtml.getFirstElement(HTMLElementName.A);
+			if (bookUrl != null) {
+				item.url = bookUrl.getAttributeValue(HREF);
 			}
-			temp = temp.split(PATTERN_URL)[1];
-			url = SEARCH_DETAIL + temp.split(BACK_SLASH)[0];
-			temp = temp.split(PATTERN_TITLE)[1];
-			title = StringUtil.replaceHtmlCode(temp.split(CLOSE_SPAN)[0]);
 
-			tempArray = temp.split(PATTERN_INFO);
-			writer = StringUtil
-					.replaceHtmlCode(tempArray[1].split(CLOSE_SPAN)[0]);
-
-			bookInfo = StringUtil
-					.replaceHtmlCode(tempArray[2].split(CLOSE_SPAN)[0]
-							.replaceAll(ETC_CHAR, StringUtil.NULL));
 			try {
-				temp = tempArray[3];
-				temp = temp.split(CLOSE_A)[1];
-				String[] tempArr = temp.split(PATTERN_SITE);
-				site = StringUtil.replaceHtmlCode(tempArr[0]);
-				bookState = StringUtil.replaceHtmlCode(tempArr[1]
-						.split(CLOSE_SPAN)[0]);
+				Element cover = rawBookHtml.getFirstElementByClass(COVER)
+						.getFirstElement(IFRAME);
+				item.coverSrc = getImgSrc(cover.getAttributeValue(SRC));
 			} catch (Exception e) {
-				try {
-					temp = temp.split(PATTERN_SITE_PAGE)[1].split(CLOSE_TD)[0]
-							.replaceAll(ETC_CHAR, StringUtil.NULL);
-					site = M_LIB
-							+ StringUtil
-									.replaceHtmlCode(temp.split(BACK_SLASH)[0]);
-					bookState = StringUtil.replaceHtmlCode(temp.split(BR)[1]);
-				} catch (Exception ee) {
-					site = bookState = StringUtil.NULL;
+			}
+
+			Element title = rawBookHtml.getFirstElementByClass("object");
+			if (title != null) {
+				item.title = title.getTextExtractor().toString();
+			}
+
+			List<Element> infoList = rawBookHtml.getAllElementsByClass("info");
+			if (infoList != null) {
+				Element writer = infoList.get(0);
+				item.writer = writer.getTextExtractor().toString();
+				Element publisher = infoList.get(1);
+				item.bookInfo = publisher.getTextExtractor().toString();
+
+				if (infoList.size() > 2) {
+					Element stateAndLocation = infoList.get(2);
+					String[] stateAndLocations = stateAndLocation
+							.getTextExtractor().toString()
+							.split(StringUtil.SPACE);
+					item.site = stateAndLocations[0];
+					item.bookState = stateAndLocations[1];
+				} else {
+					Element onlineUrl = rawBookHtml.getAllElements(
+							HTMLElementName.A).get(1);
+					item.site = "http://mlibrary.uos.ac.kr"
+							+ onlineUrl.getAttributeValue(HREF);
+					item.bookState = "온라인 이용 가능";
 				}
 			}
-			list.add(new BookItem(title, writer, bookInfo, site, bookState,
-					getImgSrc(coverSrc), url));
+			Element bookStateInfos = rawBookHtml
+					.getFirstElementByClass("downIcon");
+			if (bookStateInfos != null) {
+				Element a = bookStateInfos.getFirstElement(HTMLElementName.A);
+				if (a != null) {
+					String functionCallLoc = a.getAttributeValue(HREF);
+					String[] params = functionCallLoc.split("', '");
+
+					String sysdCtrl = params[2], location = params[3]
+							.split("'")[0];
+
+					String stateInfoUrl = "http://mlibrary.uos.ac.kr/search/prevLoc/"
+							+ sysdCtrl + "?loc=" + location;
+					item.bookStateInfoList = getBookStateInfo(HttpRequest
+							.getBody(stateInfoUrl));
+				}
+			} else {
+				item.bookStateInfoList = new ArrayList<BookStateInfo>();
+			}
+
+			bookItemList.add(item);
 		}
-		list.trimToSize();
-		return list;
+		return bookItemList;
 	}
 
 	private String getImgSrc(String imgUrl) {
@@ -95,6 +110,41 @@ public class ParseBook implements IParseHttp {
 		} catch (Exception e) {
 		}
 		return imgSrc;
+	}
+
+	private List<BookStateInfo> getBookStateInfo(String html) {
+		Source source = new Source(html);
+		ArrayList<BookStateInfo> bookStateInfoList = new ArrayList<BookStateInfo>();
+		List<Element> itemList = source.getAllElements(ITEM);
+
+		for (Element infoItem : itemList) {
+			BookStateInfo stateInfo = new BookStateInfo();
+			for (int i = 0; i < BOOK_STATE_XML_TAGS.length; i++) {
+				Element element = infoItem
+						.getFirstElement(BOOK_STATE_XML_TAGS[i]);
+				if (element != null) {
+					stateInfo.infoArray[i] = removeExtra(element.getContent()
+							.toString());
+				} else {
+					stateInfo.infoArray[i] = StringUtil.NULL;
+					if (i == 1) {
+						element = infoItem.getFirstElement("shelf");
+						if (element != null) {
+							stateInfo.infoArray[i] = removeExtra(element
+									.getContent().toString());
+						}
+					}
+				}
+			}
+
+			bookStateInfoList.add(stateInfo);
+		}
+
+		return bookStateInfoList;
+	}
+
+	private String removeExtra(String str) {
+		return str.substring(9, str.length() - 3).toString();
 	}
 
 }
