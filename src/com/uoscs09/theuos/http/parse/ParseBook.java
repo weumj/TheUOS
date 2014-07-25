@@ -67,11 +67,14 @@ public class ParseBook extends JerichoParse<BookItem> {
 					item.site = stateAndLocations[0];
 					item.bookState = stateAndLocations[1];
 				} else {
-					Element onlineUrl = rawBookHtml.getAllElements(
-							HTMLElementName.A).get(1);
-					item.site = "http://mlibrary.uos.ac.kr"
-							+ onlineUrl.getAttributeValue(HREF);
-					item.bookState = "온라인 이용 가능";
+					List<Element> aElements = rawBookHtml
+							.getAllElements(HTMLElementName.A);
+					if (aElements != null && aElements.size() > 1) {
+						Element onlineUrl = aElements.get(1);
+						item.site = "http://mlibrary.uos.ac.kr"
+								+ onlineUrl.getAttributeValue(HREF);
+						item.bookState = "온라인 이용 가능";
+					}
 				}
 			}
 			Element bookStateInfos = rawBookHtml

@@ -6,5 +6,7 @@
     <string name="widget_timetable5x4">The UOS 시간표 5x4</string>
     <string name="widget_rest">식단표 위젯</string>
     <string name="widget_rest_desc">The UOS 식단표</string>
+    <string name="widget_library_seat">스터디룸 위젯</string>
+    <string name="widget_library_seat_desc">The UOS 스터디룸 위젯</string>
 
 </resources>

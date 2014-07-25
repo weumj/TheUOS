@@ -8,7 +8,6 @@ import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.common.util.PrefUtil;
 import com.uoscs09.theuos.tab.restaurant.RestItem;
 
 public class RestListService extends RemoteViewsService {
@@ -21,12 +20,14 @@ public class RestListService extends RemoteViewsService {
 	private static class ListRemoteViewsFactory implements RemoteViewsFactory {
 		private List<RestItem> list;
 		private Context mContext;
+		private int position;
 
 		public ListRemoteViewsFactory(Context context, Intent intent) {
 			this.mContext = context;
-			this.list = RestWidget.getList(context);
-			// this.position =
-			// intent.getIntExtra(RestWidget.REST_WIDGET_POSITION, 0);
+			this.list = intent.getBundleExtra(RestWidget.REST_WIDGET_ITEM)
+					.getParcelableArrayList(RestWidget.REST_WIDGET_ITEM);
+			this.position = intent.getIntExtra(RestWidget.REST_WIDGET_POSITION,
+					0);
 		}
 
 		@Override
@@ -49,14 +50,8 @@ public class RestListService extends RemoteViewsService {
 			RemoteViews rv = new RemoteViews(mContext.getPackageName(),
 					R.layout.list_layout_widget_rest);
 			RestItem item;
-			try {
-				item = list.get(PrefUtil.getInstance(mContext).get(
-						RestWidget.REST_WIDGET_POSITION, 0));
-			} catch (Exception e) {
-				item = list.get(0);
-				PrefUtil.getInstance(mContext).put(
-						RestWidget.REST_WIDGET_POSITION, 0);
-			}
+			item = list.get(this.position);
+
 			switch (position) {
 			case 0:
 				rv.setTextViewText(R.id.widget_rest_title, "아침");
@@ -92,7 +87,6 @@ public class RestListService extends RemoteViewsService {
 
 		@Override
 		public void onDataSetChanged() {
-			list = RestWidget.getList(mContext);
 		}
 
 		@Override

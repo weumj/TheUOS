@@ -18,34 +18,30 @@ public class ParseRest extends JerichoParse<RestItem> {
 	}
 
 	@Override
-	protected List<RestItem> parseHttpBody(Source source)
-			throws IOException {
+	protected List<RestItem> parseHttpBody(Source source) throws IOException {
 		String AMP = "amp;";
 		ArrayList<RestItem> resultList = new ArrayList<RestItem>();
 
 		List<Element> restList = source.getAllElementsByClass("d1 talign_l");
 		List<Element> menuList = source.getAllElementsByClass("right_L");
-		RestItem item;
 		String title, breakfast, lunch, supper;
 		for (int i = 0; i < restList.size(); i++) {
 			title = restList.get(i).getTextExtractor().toString()
-					.split(StringUtil.SPACE)[0];
+					.split(StringUtil.SPACE)[0].trim();
 			breakfast = StringUtil.remove(
 					StringUtil.replaceHtmlCode(menuList.get(6 * i + 1)
-							.getAllElements(HTMLElementName.PRE).get(0)
-							.getContent().toString()), AMP);
+							.getFirstElement(HTMLElementName.PRE).getContent()
+							.toString()), AMP).trim();
 			lunch = StringUtil.remove(
 					StringUtil.replaceHtmlCode(menuList.get(6 * i + 3)
-							.getAllElements(HTMLElementName.PRE).get(0)
-							.getContent().toString()), AMP);
+							.getFirstElement(HTMLElementName.PRE).getContent()
+							.toString()), AMP).trim();
 			supper = StringUtil.remove(
 					StringUtil.replaceHtmlCode(menuList.get(6 * i + 5)
-							.getAllElements(HTMLElementName.PRE).get(0)
-							.getContent().toString()), AMP);
-
-			item = new RestItem(title, StringUtil.NULL, breakfast, lunch,
-					supper);
-			resultList.add(item);
+							.getFirstElement(HTMLElementName.PRE).getContent()
+							.toString()), AMP).trim();
+			resultList.add(new RestItem(title, StringUtil.NULL, breakfast,
+					lunch, supper));
 		}
 		resultList.trimToSize();
 		return resultList;

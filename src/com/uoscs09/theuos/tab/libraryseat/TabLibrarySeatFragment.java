@@ -70,7 +70,7 @@ public class TabLibrarySeatFragment extends
 	@ReleaseWhenDestroy
 	private AlertDialog mInfoDialog;
 	/** 중앙 도서관 좌석 정보 확인 페이지 */
-	private final static String URL = "http://203.249.102.34:8080/seat/domian5.asp";
+	public final static String URL = "http://203.249.102.34:8080/seat/domian5.asp";
 	/** bundle에서 동기화 시간 정보 String을 가리킨다. */
 	private final static String COMMIT_TIME = "COMMIT_TIME";
 	/** bundle에서 좌석 정보 List를 가리킨다. */
@@ -114,11 +114,11 @@ public class TabLibrarySeatFragment extends
 
 		mSeatListView.setOnItemClickListener(itemClickListenerOfLanguageList);
 
-		View dialogView = View.inflate(activity,
+		mDismissDialogView = View.inflate(activity,
 				R.layout.dialog_library_dismiss_info, null);
-		ListView mInfoListView = (ListView) dialogView
+		ListView mInfoListView = (ListView) mDismissDialogView
 				.findViewById(R.id.tab_library_listview_dismiss);
-		mInfoListView.setEmptyView(dialogView.findViewById(android.R.id.empty));
+		mInfoListView.setEmptyView(mDismissDialogView.findViewById(android.R.id.empty));
 		mInfoListView.setAdapter(mInfoAdapter);
 
 		return rootView;
@@ -172,7 +172,7 @@ public class TabLibrarySeatFragment extends
 			}
 			if (mInfoDialog == null) {
 				mInfoDialog = new AlertDialog.Builder(getActivity())
-						.setTitle(getText(R.string.action_dissmiss_info))
+						.setTitle(R.string.action_dissmiss_info)
 						.setView(mDismissDialogView).create();
 			}
 			mInfoDialog.show();

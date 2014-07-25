@@ -1,10 +1,7 @@
 package com.uoscs09.theuos.widget.restaurant;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -12,11 +9,12 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Handler;
-import android.util.Log;
+import android.os.Bundle;
 import android.widget.RemoteViews;
 
 import com.uoscs09.theuos.R;
+import com.uoscs09.theuos.common.AsyncLoader;
+import com.uoscs09.theuos.common.util.AppUtil;
 import com.uoscs09.theuos.common.util.IOUtil;
 import com.uoscs09.theuos.common.util.OApiUtil;
 import com.uoscs09.theuos.common.util.PrefUtil;
@@ -29,104 +27,96 @@ public class RestWidget extends AppWidgetProvider {
 	public static final String REST_WIDGET_POSITION = "REST_WIDGET_POSITION";
 	public static final String REST_WIDGET_ITEM = "REST_WIDGET_ITEM";
 
-	public static List<RestItem> getList(final Context context) {
-		if (OApiUtil.getDateTime()
-				- PrefUtil.getInstance(context).get(
-						PrefUtil.KEY_REST_DATE_TIME, 0) < 3) {
-			List<RestItem> list = IOUtil.readFromFileSuppressed(context,
-					IOUtil.FILE_REST);
-			if (list == null)
-				list = getRestListByThreading(context);
-			return list;
-		} else {
-			return getRestListByThreading(context);
-		}
-	}
-
-	protected static List<RestItem> getRestListByThreading(final Context context) {
-		ExecutorService es = Executors.newFixedThreadPool(2);
-		List<RestItem> list = null;
-		try {
-			list = es.submit(new Callable<List<RestItem>>() {
-				@Override
-				public List<RestItem> call() throws Exception {
-					return TabRestaurantFragment.getRestListFromWeb(context);
-				}
-			}).get();
-		} catch (Exception e) {
-			e.printStackTrace();
-			list = new ArrayList<RestItem>();
-		} finally {
-			es.shutdown();
-		}
-		return list;
-	}
-
 	@Override
-	public void onUpdate(Context context, AppWidgetManager appWidgetManager,
-			int[] appWidgetIds) {
-		new Handler().post(new UpdateThread(context, appWidgetManager,
-				appWidgetIds));
-	}
+	public void onUpdate(final Context context,
+			final AppWidgetManager appWidgetManager, final int[] appWidgetIds) {
+		new AsyncLoader<ArrayList<RestItem>>().excute(
+				new Callable<ArrayList<RestItem>>() {
 
-	protected class UpdateThread implements Runnable {
-		private Context context;
-		private AppWidgetManager appWidgetManager;
-		private int[] appWidgetIds;
-
-		public UpdateThread(Context context, AppWidgetManager appWidgetManager,
-				int[] appWidgetIds) {
-			this.context = context;
-			this.appWidgetManager = appWidgetManager;
-			this.appWidgetIds = appWidgetIds;
-		}
-
-		@Override
-		public void run() {
-			RemoteViews rv = new RemoteViews(context.getPackageName(),
-					R.layout.widget_rest);
-			List<RestItem> list = getList(context);
-			RestItem item;
-			int position = PrefUtil.getInstance(context).get(
-					REST_WIDGET_POSITION, 0);
-			for (int id : appWidgetIds) {
-				try {
-					item = list.get(position);
-				} catch (Exception e) {
-					e.printStackTrace();
-					position = 0;
-					try {
-						list = getRestListByThreading(context);
-						Log.w("restwidget", String.valueOf(list.size()));
-						item = list.get(position);
-					} catch (Exception e2) {
-						Log.w("restwidget", e2);
-						position = PrefUtil.getInstance(context).get(
-								REST_WIDGET_POSITION, 0);
-						list = IOUtil.readFromFileSuppressed(context,
-								IOUtil.FILE_REST);
-						item = list.get(position);
+					@Override
+					public ArrayList<RestItem> call() throws Exception {
+						if (OApiUtil.getDateTime()
+								- PrefUtil.getInstance(context).get(
+										PrefUtil.KEY_REST_DATE_TIME, 0) < 3) {
+							ArrayList<RestItem> list = IOUtil
+									.readFromFileSuppressed(context,
+											IOUtil.FILE_REST);
+							if (list == null)
+								list = TabRestaurantFragment
+										.getRestListFromWeb(context);
+							return list;
+						} else {
+							return TabRestaurantFragment
+									.getRestListFromWeb(context);
+						}
 					}
-				}
-				Intent intent = new Intent(context, RestListService.class)
-						.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id)
-						.putExtra(REST_WIDGET_POSITION, position);
-				intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
-				rv.setRemoteAdapter(R.id.widget_rest_listview, intent);
-				rv.setTextViewText(R.id.widget_rest_main_title, item.title);
-				rv.setOnClickPendingIntent(
-						R.id.widget_rest_btn_next,
-						getMoveIntent(context, id, REST_WIDGET_NEXT_ACTION,
-								position));
-				rv.setOnClickPendingIntent(
-						R.id.widget_rest_btn_prev,
-						getMoveIntent(context, id, REST_WIDGET_PREV_ACTION,
-								position));
-				appWidgetManager.updateAppWidget(id, rv);
-				appWidgetManager.notifyAppWidgetViewDataChanged(id,
-						R.id.widget_rest_listview);
-			}
-			return;
+				}, new AsyncLoader.OnTaskFinishedListener() {
+					@Override
+					public void onTaskFinished(boolean isExceptionOccoured,
+							Object data) {
+						if (isExceptionOccoured) {
+							AppUtil.showErrorToast(context, (Exception) data,
+									true);
+						} else {
+							RemoteViews rv = new RemoteViews(context
+									.getPackageName(), R.layout.widget_rest);
+							@SuppressWarnings("unchecked")
+							ArrayList<RestItem> list = (ArrayList<RestItem>) data;
+							RestItem item;
+							int position = PrefUtil.getInstance(context).get(
+									REST_WIDGET_POSITION, 0);
+							for (int id : appWidgetIds) {
+								if (position >= list.size()) {
+									position = 0;
+								} else if (position < 0) {
+									position = list.size() - 1;
+								}
+								PrefUtil.getInstance(context).put(
+										REST_WIDGET_POSITION, position);
+								item = list.get(position);
+								Bundle bundle = new Bundle();
+								bundle.putParcelableArrayList(REST_WIDGET_ITEM,
+										list);
+								Intent intent = new Intent(context,
+										RestListService.class)
+										.putExtra(
+												AppWidgetManager.EXTRA_APPWIDGET_ID,
+												id)
+										.putExtra(REST_WIDGET_POSITION,
+												position)
+										.putExtra(REST_WIDGET_ITEM, bundle);
+								intent.setData(Uri.parse(intent
+										.toUri(Intent.URI_INTENT_SCHEME)));
+								rv.setRemoteAdapter(R.id.widget_rest_listview,
+										intent);
+								rv.setTextViewText(R.id.widget_rest_main_title,
+										item.title);
+								rv.setOnClickPendingIntent(
+										R.id.widget_rest_btn_next,
+										getMoveIntent(context, id,
+												REST_WIDGET_NEXT_ACTION,
+												position));
+								rv.setOnClickPendingIntent(
+										R.id.widget_rest_btn_prev,
+										getMoveIntent(context, id,
+												REST_WIDGET_PREV_ACTION,
+												position));
+								appWidgetManager.updateAppWidget(id, rv);
+								appWidgetManager
+										.notifyAppWidgetViewDataChanged(id,
+												R.id.widget_rest_listview);
+							}
+						}
+					}
+				});
+		RemoteViews rv = new RemoteViews(context.getPackageName(),
+				R.layout.widget_rest);
+		for (int id : appWidgetIds) {
+			rv.setTextViewText(R.id.widget_rest_main_title,
+					context.getText(R.string.progress_while_loading));
+			rv.setOnClickPendingIntent(R.id.widget_rest_btn_next, null);
+			rv.setOnClickPendingIntent(R.id.widget_rest_btn_prev, null);
+			appWidgetManager.updateAppWidget(id, rv);
 		}
 	}
 
@@ -145,11 +135,7 @@ public class RestWidget extends AppWidgetProvider {
 	public void onReceive(Context context, Intent intent) {
 		final String action = intent.getAction();
 		if (REST_WIDGET_NEXT_ACTION.equals(action)) {
-			List<RestItem> list = getList(context);
-			int size = list.size();
-			int position = intent.getIntExtra(REST_WIDGET_POSITION, 0);
-			if (++position >= size)
-				position = 0;
+			int position = intent.getIntExtra(REST_WIDGET_POSITION, 0) + 1;
 			PrefUtil.getInstance(context).put(REST_WIDGET_POSITION, position);
 			int[] ids = new int[] { intent.getIntExtra(
 					AppWidgetManager.EXTRA_APPWIDGET_ID,
@@ -159,10 +145,7 @@ public class RestWidget extends AppWidgetProvider {
 					AppWidgetManager.ACTION_APPWIDGET_UPDATE).putExtra(
 					AppWidgetManager.EXTRA_APPWIDGET_ID, ids[0]));
 		} else if (REST_WIDGET_PREV_ACTION.equals(action)) {
-			List<RestItem> list = getList(context);
-			int position = intent.getIntExtra(REST_WIDGET_POSITION, 0);
-			if (--position < 0)
-				position = list.size() - 1;
+			int position = intent.getIntExtra(REST_WIDGET_POSITION, 0) - 1;
 			PrefUtil.getInstance(context).put(REST_WIDGET_POSITION, position);
 			int[] ids = new int[] { intent.getIntExtra(
 					AppWidgetManager.EXTRA_APPWIDGET_ID,

@@ -9,7 +9,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -66,6 +65,9 @@ public class TabAnounceFragment extends
 	protected int pageNum;
 	@ReleaseWhenDestroy
 	protected AlertDialog pageSelectDialog;
+	@ReleaseWhenDestroy
+	protected NumberPicker mPageNumberPicker;
+	protected boolean mChangePageMaxValue = false;
 
 	/** 이전 페이지 번호, 공지사항 검색 결과가 없으면 현재 페이지 번호를 변하지 않게하는 역할 */
 	private int prevPageNum = pageNum;
@@ -179,6 +181,7 @@ public class TabAnounceFragment extends
 			if (spinnerSelection == 0)
 				return;
 			setPageValue(1);
+			mChangePageMaxValue = true;
 			excute();
 		}
 
@@ -300,6 +303,21 @@ public class TabAnounceFragment extends
 			adapter.clear();
 			adapter.addAll(result);
 			adapter.notifyDataSetChanged();
+
+			// 페이지 선택에서 이동 가능한 최대 페이지 번호를
+			// 공지사항의 인덱스를 기준으로 설정함
+			if (mChangePageMaxValue) {
+				for (int i = 0; i < result.size(); i++) {
+					try {
+						int maxPageNumber = Integer
+								.parseInt(result.get(i).type);
+						mPageNumberPicker.setMaxValue(maxPageNumber / 10 + 1);
+						break;
+					} catch (Exception e) {
+					}
+				}
+				mChangePageMaxValue = false;
+			}
 		}
 		updatePageNumber();
 	}
@@ -327,19 +345,21 @@ public class TabAnounceFragment extends
 	/** 페이지 선택 dialog를 생성한다. */
 	private void initDialog() {
 		Context context = getActivity();
-		final NumberPicker np = new NumberPicker(context);
-		np.setMinValue(1);
-		np.setMaxValue(999);
+		mPageNumberPicker = new NumberPicker(context);
+		mPageNumberPicker.setLayoutParams(new NumberPicker.LayoutParams(
+				NumberPicker.LayoutParams.WRAP_CONTENT,
+				NumberPicker.LayoutParams.WRAP_CONTENT));
+		mPageNumberPicker.setMinValue(1);
+		mPageNumberPicker.setMaxValue(999);
 		pageSelectDialog = new AlertDialog.Builder(context)
-				.setTitle("이동할 페이지를 선택하세요")
-				.setView(np)
+				.setTitle(R.string.tab_anounce_plz_select_page)
+				.setView(mPageNumberPicker)
 				.setPositiveButton(android.R.string.ok,
 						new DialogInterface.OnClickListener() {
-
 							@Override
 							public void onClick(DialogInterface dialog,
 									int which) {
-								setPageValue(np.getValue());
+								setPageValue(mPageNumberPicker.getValue());
 								excute();
 							}
 						}).setNegativeButton(android.R.string.no, null)

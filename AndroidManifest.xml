@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.uoscs09.theuos"
-    android:versionCode="47"
+    android:versionCode="49"
     android:versionName="@string/setting_app_version_desc" >
 
     <uses-sdk
@@ -88,6 +88,12 @@
             android:permission="android.permission.BIND_REMOTEVIEWS" >
         </service>
         <service
+            android:name="com.uoscs09.theuos.widget.libraryseat.LibrarySeatListService"
+            android:exported="true"
+            android:label="@string/widget_library_seat"
+            android:permission="android.permission.BIND_REMOTEVIEWS" >
+        </service>
+        <service
             android:name="com.uoscs09.theuos.tab.anounce.ServiceForAnounce"
             android:label="@string/setting_anounce_noti" >
         </service>
@@ -102,7 +108,9 @@
                 <data android:scheme="package" />
             </intent-filter>
         </receiver>
-        <receiver android:name="com.uoscs09.theuos.tab.timetable.TimeTableNotiReceiver" >
+        <receiver
+            android:name="com.uoscs09.theuos.tab.timetable.TimeTableNotiReceiver"
+            android:exported="false" >
             <intent-filter>
                 <action android:name="com.uoscs09.theuos.tab.timetable.set_alarm" >
                 </action>
@@ -136,7 +144,6 @@
                 <action android:name="android.intent.action.ACTION_EXTERNAL_APPLICATION_AVAILABLE" />
             </intent-filter>
         </receiver>
-        <!-- 
         <receiver
             android:name="com.uoscs09.theuos.widget.restaurant.RestWidget"
             android:label="@string/widget_rest_desc" >
@@ -152,7 +159,18 @@
                 <action android:name="android.intent.action.ACTION_EXTERNAL_APPLICATION_AVAILABLE" />
             </intent-filter>
         </receiver>
-         -->
+        <receiver
+            android:name="com.uoscs09.theuos.widget.libraryseat.LibrarySeatWidget"
+            android:label="@string/widget_library_seat_desc" >
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_conf_library_seat" />
+
+            <intent-filter>
+                <action android:name="com.uoscs09.theuos.widget.libraryseat.REFRESH" />
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

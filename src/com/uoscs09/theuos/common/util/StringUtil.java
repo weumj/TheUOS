@@ -21,7 +21,9 @@ public final class StringUtil {
 	public final static String CODE_GT_CODE = "&gt;";
 	public final static String CODE_GT = ">";
 	public final static String CODE_SPACE = "&nbsp;";
-	
+	public final static String CODE_QUOT_CODE = "&quot;";
+	public final static String CODE_QUOT = "\"";
+
 	public static String remove(String target, String remove) {
 		return target.replace(remove, NULL);
 	}
@@ -35,6 +37,7 @@ public final class StringUtil {
 				.replace(CODE_GT_CODE, CODE_GT)
 				.replace(CODE_L_PRNTSIS_CODE, CODE_L_PRNTSIS)
 				.replace(CODE_LT_CODE, CODE_LT)
-				.replace(CODE_R_PRNTSIS_CODE, CODE_R_PRNTSIS);
+				.replace(CODE_R_PRNTSIS_CODE, CODE_R_PRNTSIS)
+				.replace(CODE_QUOT_CODE, CODE_QUOT);
 	}
 }

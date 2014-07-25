@@ -54,7 +54,8 @@
     <string name="action_dissmiss_info">좌석 해지 예상 시간표</string>
     <string name="action_location_direction">경로 검색</string>
     <string name="tab_anounce_empty_view_desc"> 공지사항을 선택해 주세요.</string>
-    <string name="tab_anounce_invaild_category">카테고리를 선택해 주세요</string>
+    <string name="tab_anounce_invaild_category">카테고리를 선택해 주세요.</string>
+    <string name="tab_anounce_plz_select_page">이동할 페이지를 선택해 주세요.</string>
     <string name="tab_book_book_opt">도서 검색 옵션</string>
     <string name="tab_book_book_opt_sub">분류와 정렬 방식을 선택해 주세요</string>
     <string name="tab_book_not_found">검색된 페이지에 대여 가능 도서가 없습니다.</string>

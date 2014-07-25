@@ -31,9 +31,11 @@ public abstract class AbsDrawableProgressFragment<T> extends
 					.findViewById(R.id.iv_list_footer_loading)).getBackground();
 			mLoadingView.setVisibility(View.INVISIBLE);
 		}
-		if (mIsMenuRefresh)
-			mLoadingAnimForMenu = (AnimationDrawable) getActivity()
-					.getResources().getDrawable(R.anim.loading_animation);
+		if (mIsMenuRefresh) {
+			mLoadingAnimForMenu = (AnimationDrawable) ((ImageView) View
+					.inflate(getActivity(), R.layout.footer_loading_view, null)
+					.findViewById(R.id.iv_list_footer_loading)).getBackground();
+		}
 	}
 
 	/** '로딩 중' 을 나타내는 View를 반환한다. */
@@ -102,7 +104,7 @@ public abstract class AbsDrawableProgressFragment<T> extends
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		if (isRunning()) {
 			getLoadingMenuItem(menu).setIcon(mLoadingAnimForMenu);
-			animationStart();
+			mLoadingAnimForMenu.start();
 		}
 		super.onCreateOptionsMenu(menu, inflater);
 	}
