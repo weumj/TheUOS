@@ -9,5 +9,6 @@
     <dimen name="widget_timetable_5x4_time_margin">53dip</dimen>
     <dimen name="widget_timetable_4x4_subject_margin">48dip</dimen>
     <dimen name="widget_timetable_4x4_time_margin">41dip</dimen>
+    <dimen name="activity_left_drawer">240dp</dimen>
 
 </resources>

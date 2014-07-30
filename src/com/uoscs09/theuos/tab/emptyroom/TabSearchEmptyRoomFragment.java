@@ -67,7 +67,6 @@ public class TabSearchEmptyRoomFragment extends
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		initTable();
-		setLoadingViewEnable(false);
 		Context context = getActivity();
 		timeTextView = (TextView) View.inflate(context,
 				R.layout.action_textview, null);

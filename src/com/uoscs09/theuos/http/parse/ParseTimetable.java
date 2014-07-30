@@ -30,7 +30,7 @@ public class ParseTimetable implements IParseHttp {
 		String[] timeArray = new String[7];
 		clearArray(timeArray);
 		int i = 0;
-		String timeReplace = "\n~\n", cr = "\n", pri = "±≥Ω√", temp;
+		String timeReplace = "\n~\n", cr = "\n", pri = "ÍµêÏãú", temp;
 
 		for (int j = 1; j < splitedBody.length; j++) {
 			try {

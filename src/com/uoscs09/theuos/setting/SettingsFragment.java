@@ -9,6 +9,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.FragmentManager.OnBackStackChangedListener;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -39,6 +40,19 @@ public class SettingsFragment extends PreferenceFragment implements
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		getFragmentManager().addOnBackStackChangedListener(
+				new OnBackStackChangedListener() {
+
+					@Override
+					public void onBackStackChanged() {
+						if (getFragmentManager() != null) {
+							if (getFragmentManager().getBackStackEntryCount() < 1) {
+								getFragmentManager().beginTransaction()
+										.show(SettingsFragment.this).commit();
+							}
+						}
+					}
+				});
 		setHasOptionsMenu(true);
 		addPreferencesFromResource(R.xml.prefrence);
 		bindPreferenceSummaryToValue();
@@ -221,6 +235,9 @@ public class SettingsFragment extends PreferenceFragment implements
 		actionBar.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP
 				| ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE);
 
+		if (getFragmentManager().findFragmentByTag("front") != null) {
+			getFragmentManager().beginTransaction().hide(this).commit();
+		}
 		super.onResume();
 	}
 
@@ -254,6 +271,12 @@ public class SettingsFragment extends PreferenceFragment implements
 		for (String key : keys) {
 			onSharedPreferenceChanged(pref, key);
 		}
+	}
+	
+	@Override
+	public void onDetach() {
+		getFragmentManager().addOnBackStackChangedListener(null);
+		super.onDetach();
 	}
 
 	@Override

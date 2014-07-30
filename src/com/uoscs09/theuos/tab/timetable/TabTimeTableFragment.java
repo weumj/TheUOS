@@ -87,7 +87,6 @@ public class TabTimeTableFragment extends
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		Context context = getActivity();
-		setLoadingViewEnable(false);
 		if (savedInstanceState != null) {
 			mTimetableList = savedInstanceState
 					.getParcelableArrayList(IOUtil.FILE_TIMETABLE);
@@ -401,6 +400,7 @@ public class TabTimeTableFragment extends
 		// Fragment가 처음 Attach되었을 때, 파일에서 시간표을 읽어온다.
 		if (mIsOnLoad) {
 			result = (ArrayList<TimeTableItem>) readTimetable(context);
+			mIsOnLoad = false;
 		} else { // 사용자가 WISE에 시간표 정보를 요청하였을 때
 			term = Term.values()[termSpinner.getSelectedItemPosition()];
 			String body = TimeTableHttpRequest.getHttpBodyPost(

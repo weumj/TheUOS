@@ -21,6 +21,7 @@ public class IOUtil {
 	public static final String FILE_TIMETABLE = "timetable_file_v_semester";
 	public static final String FILE_COLOR_TABLE = "color_table_file";
 	public static final String FILE_REST = "rest_file";
+	public static final String FILE_LIBRARY_SEAT = "file_library_seat";
 
 	/**
 	 * 주어진 이름의 파일을 읽어온다.

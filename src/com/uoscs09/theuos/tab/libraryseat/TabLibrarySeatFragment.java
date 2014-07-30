@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -118,7 +119,8 @@ public class TabLibrarySeatFragment extends
 				R.layout.dialog_library_dismiss_info, null);
 		ListView mInfoListView = (ListView) mDismissDialogView
 				.findViewById(R.id.tab_library_listview_dismiss);
-		mInfoListView.setEmptyView(mDismissDialogView.findViewById(android.R.id.empty));
+		mInfoListView.setEmptyView(mDismissDialogView
+				.findViewById(android.R.id.empty));
 		mInfoListView.setAdapter(mInfoAdapter);
 
 		return rootView;
@@ -271,7 +273,7 @@ public class TabLibrarySeatFragment extends
 				return;
 			Activity activity = getActivity();
 			Intent intent = new Intent(activity, SubSeatWebActivity.class);
-			intent.putExtra(ITEM, item);
+			intent.putExtra(ITEM, (Parcelable) item);
 			startActivity(intent);
 			AppUtil.overridePendingTransition(activity, 1);
 		}

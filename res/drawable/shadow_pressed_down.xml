@@ -53,7 +53,7 @@
 
     <item>
         <shape>
-            <solid android:color="@color/light_gray" />
+            <solid android:color="@color/bright_gray" />
 
             <corners android:radius="5dip" />
         </shape>

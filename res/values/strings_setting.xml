@@ -74,11 +74,16 @@
     <string name="setting_web_page">웹 사이트</string>
     <string name="setting_web_page_desc">유용한 사이트의 링크를 제공합니다.</string>
     <string name="web_page_uos">서울시립대학교</string>
+    <string name="web_page_uos_desc">서울시립대학교 홈페이지</string>
     <string name="web_page_portal">UOS 포털</string>
+    <string name="web_page_portal_desc">포털</string>
     <string name="web_page_square">시립대 광장</string>
+    <string name="web_page_square_desc">시립대 학생 커뮤니티</string>
     <string name="web_page_library">중앙도서관</string>
+    <string name="web_page_library_desc">도서관 홈페이지</string>
     <string name="web_page_club">UOS Club</string>
+    <string name="web_page_club_desc">에듀 클래스</string>
     <string name="web_page_uostime">UOSTIME</string>
-    <string name="web_page_uostable">UOSTABLE</string>
+    <string name="web_page_uostime_desc">시간표 짜기\nprogrammed by square^, supported by codingsroom</string>
 
 </resources>

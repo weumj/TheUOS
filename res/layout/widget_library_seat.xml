@@ -41,4 +41,13 @@
         android:dividerHeight="1dip" >
     </ListView>
 
+    <TextView
+        android:id="@android:id/empty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="@string/widget_library_seat_empty"
+        android:textColor="@android:color/black"
+        android:visibility="gone" />
+
 </RelativeLayout>

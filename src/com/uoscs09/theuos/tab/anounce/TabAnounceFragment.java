@@ -36,8 +36,7 @@ import com.uoscs09.theuos.http.HttpRequest;
 import com.uoscs09.theuos.http.parse.ParseFactory;
 
 public class TabAnounceFragment extends
-		AbsDrawableProgressFragment<ArrayList<AnounceItem>> implements
-		SearchView.OnQueryTextListener {
+		AbsDrawableProgressFragment<ArrayList<AnounceItem>> {
 	/** 상단 액션바에 추가될 레이아웃, spinner와 pageView가 배치된다. */
 	@ReleaseWhenDestroy
 	private View actionViewLayout;
@@ -54,20 +53,20 @@ public class TabAnounceFragment extends
 	private ArrayList<AnounceItem> mDataList;
 	/** searchView */
 	@ReleaseWhenDestroy
-	private MenuItem searchMenu;
+	protected MenuItem searchMenu;
 	/** viewpager 이동 시 스피너의 아이템 리스너를 한번만 발동시키게 하는 변수 */
 	private boolean once;
 	/** 검색기능 활성화시 true 가 되는 변수 */
 	private boolean isSearch;
 	/** (검색 메뉴 선택시)검색어를 저장함 */
-	private String searchQuery;
+	protected String searchQuery;
 	protected int spinnerSelection = 0;
 	protected int pageNum;
 	@ReleaseWhenDestroy
 	protected AlertDialog pageSelectDialog;
 	@ReleaseWhenDestroy
 	protected NumberPicker mPageNumberPicker;
-	protected boolean mChangePageMaxValue = false;
+	protected boolean mShouldChangeMaxValueOfPage = false;
 
 	/** 이전 페이지 번호, 공지사항 검색 결과가 없으면 현재 페이지 번호를 변하지 않게하는 역할 */
 	private int prevPageNum = pageNum;
@@ -75,6 +74,7 @@ public class TabAnounceFragment extends
 	protected static final String LIST_AN = "list_an";
 	private static final String SP_SELECTION = "spinner_selection";
 
+	/* TODO Fragment Callback */
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		outState.putInt(PAGE_NUM, pageNum);
@@ -86,7 +86,6 @@ public class TabAnounceFragment extends
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		queryTable = new Hashtable<String, String>();
-		setLoadingViewEnable(false);
 		getDataFromBundle(savedInstanceState);
 		Context context = getActivity();
 		initDialog();
@@ -95,7 +94,7 @@ public class TabAnounceFragment extends
 				R.layout.action_tab_anounce_spinner, null);
 		spinner = (Spinner) actionViewLayout
 				.findViewById(R.id.tab_announce_action_spinner1);
-		spinner.setOnItemSelectedListener(mOnItemSelectedListener);
+		spinner.setOnItemSelectedListener(mSpinnerOnItemSelectedListener);
 		pageView = (TextView) actionViewLayout
 				.findViewById(R.id.tab_anounce_action_textView_page);
 		pageView.setOnClickListener(new View.OnClickListener() {
@@ -110,6 +109,7 @@ public class TabAnounceFragment extends
 				}
 			}
 		});
+		// FIXME 테마 관련 코드
 		adapter = new AnounceAdapter(context, R.layout.list_layout_announce,
 				mDataList);
 		if (AppUtil.theme == AppTheme.BlackAndWhite) {
@@ -142,96 +142,10 @@ public class TabAnounceFragment extends
 			}
 		});
 		listView.setEmptyView(emptyView);
-		listView.setOnItemClickListener(mOnItemClickListener);
+		listView.setOnItemClickListener(mListViewOnItemClickListener);
 		listView.setAdapter(adapter);
 
 		return rootView;
-	}
-
-	/** 공지사항 리스트중 하나가 선택되면 호출됨 */
-	private AdapterView.OnItemClickListener mOnItemClickListener = new AdapterView.OnItemClickListener() {
-		@Override
-		public void onItemClick(AdapterView<?> adapterView, View view, int pos,
-				long itemId) {
-			if (!isMenuVisible() || spinnerSelection == 0)
-				return;
-			Activity activity = getActivity();
-			Intent intent = new Intent(activity, SubAnounceWebActivity.class);
-			intent.putExtra(
-					LIST_AN,
-					((AnounceItem) adapterView.getItemAtPosition(pos)).onClickString);
-			intent.putExtra(PAGE_NUM, spinnerSelection);
-			startActivity(intent);
-			AppUtil.overridePendingTransition(activity, 1);
-		}
-	};
-
-	/** spinner가 선택되면(카테고리 선택) 호출됨 */
-	private AdapterView.OnItemSelectedListener mOnItemSelectedListener = new AdapterView.OnItemSelectedListener() {
-		@Override
-		public void onItemSelected(AdapterView<?> adapterView, View view,
-				int position, long itemId) {
-			spinnerSelection = position;
-			searchQuery = null;
-			isSearch = false;
-			if (!isMenuVisible() || !once) {
-				once = true;
-				return;
-			}
-			if (spinnerSelection == 0)
-				return;
-			setPageValue(1);
-			mChangePageMaxValue = true;
-			excute();
-		}
-
-		@Override
-		public void onNothingSelected(AdapterView<?> arg0) {
-		}
-	};
-
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		inflater.inflate(R.menu.tab_anounce, menu);
-		searchMenu = menu.findItem(R.id.action_search);
-		SearchView searchView = (SearchView) searchMenu.getActionView();
-		searchView.setOnQueryTextListener(this);
-		searchView.setSubmitButtonEnabled(true);
-		searchView.setQueryHint(getText(R.string.search_hint));
-		searchMenu.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM
-				| MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
-		spinner.setSelection(spinnerSelection);
-		updatePageNumber();
-		ActionBar actionBar = getActivity().getActionBar();
-		actionBar.setCustomView(actionViewLayout);
-		actionBar.setDisplayShowCustomEnabled(true);
-		super.onCreateOptionsMenu(menu, inflater);
-	}
-
-	@Override
-	public boolean onQueryTextChange(String newText) {
-		return true;
-	}
-
-	@Override
-	public boolean onQueryTextSubmit(String query) {
-		InputMethodManager ipm = (InputMethodManager) getActivity()
-				.getSystemService(Context.INPUT_METHOD_SERVICE);
-		SearchView v = (SearchView) searchMenu.getActionView();
-		ipm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-		searchMenu.collapseActionView();
-
-		if (spinnerSelection == 0) {
-			AppUtil.showToast(getActivity(),
-					R.string.tab_anounce_invaild_category, true);
-			isSearch = false;
-		} else {
-			searchQuery = query.trim();
-			setPageValue(1);
-			isSearch = true;
-			excute();
-		}
-		return true;
 	}
 
 	@Override
@@ -258,13 +172,109 @@ public class TabAnounceFragment extends
 		}
 	}
 
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.tab_anounce, menu);
+		searchMenu = menu.findItem(R.id.action_search);
+		SearchView searchView = (SearchView) searchMenu.getActionView();
+		searchView.setOnQueryTextListener(mSearchViewOnQueryTextListener);
+		searchView.setSubmitButtonEnabled(true);
+		searchView.setQueryHint(getText(R.string.search_hint));
+		searchMenu.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM
+				| MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+		spinner.setSelection(spinnerSelection);
+		updatePageNumber();
+		ActionBar actionBar = getActivity().getActionBar();
+		actionBar.setCustomView(actionViewLayout);
+		actionBar.setDisplayShowCustomEnabled(true);
+		super.onCreateOptionsMenu(menu, inflater);
+	}
+
+	/* TODO Fragment Callback end */
+
+	/* TODO Listener Callback */
+	/** 공지사항 리스트중 하나가 선택되면 호출됨 */
+	private AdapterView.OnItemClickListener mListViewOnItemClickListener = new AdapterView.OnItemClickListener() {
+		@Override
+		public void onItemClick(AdapterView<?> adapterView, View view, int pos,
+				long itemId) {
+			if (!isMenuVisible() || spinnerSelection == 0)
+				return;
+			Activity activity = getActivity();
+			Intent intent = new Intent(activity, SubAnounceWebActivity.class);
+			intent.putExtra(
+					LIST_AN,
+					((AnounceItem) adapterView.getItemAtPosition(pos)).onClickString);
+			intent.putExtra(PAGE_NUM, spinnerSelection);
+			startActivity(intent);
+			AppUtil.overridePendingTransition(activity, 1);
+		}
+	};
+
+	/** spinner가 선택되면(카테고리 선택) 호출됨 */
+	private AdapterView.OnItemSelectedListener mSpinnerOnItemSelectedListener = new AdapterView.OnItemSelectedListener() {
+		@Override
+		public void onItemSelected(AdapterView<?> adapterView, View view,
+				int position, long itemId) {
+			spinnerSelection = position;
+			searchQuery = null;
+			isSearch = false;
+			if (!isMenuVisible() || !once) {
+				once = true;
+				return;
+			}
+			if (spinnerSelection == 0)
+				return;
+			setPageValue(1);
+			mShouldChangeMaxValueOfPage = true;
+			excute();
+		}
+
+		@Override
+		public void onNothingSelected(AdapterView<?> arg0) {
+		}
+	};
+
+	private SearchView.OnQueryTextListener mSearchViewOnQueryTextListener = new SearchView.OnQueryTextListener() {
+
+		@Override
+		public boolean onQueryTextChange(String newText) {
+			return true;
+		}
+
+		@Override
+		public boolean onQueryTextSubmit(String query) {
+			InputMethodManager ipm = (InputMethodManager) getActivity()
+					.getSystemService(Context.INPUT_METHOD_SERVICE);
+			SearchView v = (SearchView) searchMenu.getActionView();
+			ipm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+			searchMenu.collapseActionView();
+
+			if (spinnerSelection == 0) {
+				AppUtil.showToast(getActivity(),
+						R.string.tab_anounce_invaild_category, true);
+				isSearch = false;
+			} else {
+				searchQuery = query.trim();
+				setPageValue(1);
+				isSearch = true;
+				mShouldChangeMaxValueOfPage = true;
+				excute();
+			}
+			return true;
+		}
+	};
+
+	/* TODO Listener end */
+
+	/* TODO AsyncExcutor Callback */
 	@SuppressWarnings("unchecked")
 	@Override
 	public ArrayList<AnounceItem> call() throws Exception {
 		// TODO 최적화 필요, 필요없이 지우고 쓰고 함
 		queryTable.clear();
-		int howTo;
-		String url;
+		final int howTo;
+		final String url;
 		if (spinnerSelection == 3) {
 			if (isSearch) {
 				queryTable.put("sword", searchQuery);
@@ -306,8 +316,9 @@ public class TabAnounceFragment extends
 
 			// 페이지 선택에서 이동 가능한 최대 페이지 번호를
 			// 공지사항의 인덱스를 기준으로 설정함
-			if (mChangePageMaxValue) {
-				for (int i = 0; i < result.size(); i++) {
+			if (mShouldChangeMaxValueOfPage) {
+				final int size = result.size();
+				for (int i = 0; i < size; i++) {
 					try {
 						int maxPageNumber = Integer
 								.parseInt(result.get(i).type);
@@ -316,11 +327,13 @@ public class TabAnounceFragment extends
 					} catch (Exception e) {
 					}
 				}
-				mChangePageMaxValue = false;
+				mShouldChangeMaxValueOfPage = false;
 			}
 		}
 		updatePageNumber();
 	}
+
+	/* TODO AsyncExcutor Callback end */
 
 	protected void updatePageNumber() {
 		if (pageView != null)
@@ -367,7 +380,7 @@ public class TabAnounceFragment extends
 	}
 
 	/** 현재 page의 번호를 설정한다. */
-	private void setPageValue(int newValue) {
+	protected void setPageValue(int newValue) {
 		prevPageNum = pageNum;
 		pageNum = newValue;
 	}

@@ -202,7 +202,7 @@ public class PagerFragmentActivity extends BaseFragmentActivity implements
 						navigateItem(position, true);
 					}
 				});
-		mViewPager.setOffscreenPageLimit(1);
+		//mViewPager.setOffscreenPageLimit(2);
 		switch (AppUtil.theme) {
 		case BlackAndWhite:
 			mViewPager.setPageTransformer(true, new PagerTransformer(2));
@@ -319,7 +319,8 @@ public class PagerFragmentActivity extends BaseFragmentActivity implements
 
 	@Override
 	public void onBackPressed() {
-		if (slidingLayout.isSlideable() && slidingLayout.isOpen()) {
+		if (AppUtil.isScreenSizeSmall(this) && slidingLayout.isSlideable()
+				&& slidingLayout.isOpen()) {
 			slidingLayout.closePane();
 		} else if (PrefUtil.getInstance(getApplicationContext()).get(
 				PrefUtil.KEY_HOME, true)) {

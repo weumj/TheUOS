@@ -13,7 +13,8 @@ public class SettingActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		getFragmentManager().beginTransaction()
-				.replace(android.R.id.content, new SettingsFragment()).commit();
+				.replace(android.R.id.content, new SettingsFragment(), "main")
+				.commit();
 	}
 
 	@Override

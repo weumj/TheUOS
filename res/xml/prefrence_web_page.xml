@@ -2,35 +2,32 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
-    
+
     <PreferenceCategory android:title="@string/setting_web_page" >
         <PreferenceScreen
-            android:summary="학교 홈페이지"
+            android:summary="@string/web_page_uos_desc"
             android:title="@string/web_page_uos" >
         </PreferenceScreen>
         <PreferenceScreen
-            android:summary="포털"
+            android:summary="@string/web_page_portal_desc"
             android:title="@string/web_page_portal" >
         </PreferenceScreen>
         <PreferenceScreen
-            android:summary="에듀 클래스"
+            android:summary="@string/web_page_club_desc"
             android:title="@string/web_page_club" >
         </PreferenceScreen>
         <PreferenceScreen
-            android:summary="중앙 도서관 홈페이지"
+            android:summary="@string/web_page_library_desc"
             android:title="@string/web_page_library" >
         </PreferenceScreen>
         <PreferenceScreen
-            android:summary="시립대 커뮤니티"
+            android:summary="@string/web_page_square_desc"
             android:title="@string/web_page_square" >
         </PreferenceScreen>
         <PreferenceScreen
-            android:summary="시간표 짜기\nmade by square^"
+            android:summary="@string/web_page_uostime_desc"
             android:title="@string/web_page_uostime" >
         </PreferenceScreen>
-        <PreferenceScreen
-            android:summary="시간표 짜기\nmade by Gnu Shim"
-            android:title="@string/web_page_uostable" >
-        </PreferenceScreen>
     </PreferenceCategory>
+
 </PreferenceScreen>

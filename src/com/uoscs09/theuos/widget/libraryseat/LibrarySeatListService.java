@@ -1,6 +1,6 @@
 package com.uoscs09.theuos.widget.libraryseat;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import android.content.Context;
@@ -9,94 +9,62 @@ import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.uoscs09.theuos.R;
+import com.uoscs09.theuos.common.impl.AbsListRemoteViewsFactory;
+import com.uoscs09.theuos.common.util.IOUtil;
 import com.uoscs09.theuos.tab.libraryseat.SeatItem;
 
 public class LibrarySeatListService extends RemoteViewsService {
-	private ListRemoteViewsFactory mFactory;
 
 	@Override
 	public RemoteViewsFactory onGetViewFactory(Intent intent) {
-		mFactory = new ListRemoteViewsFactory(getApplicationContext(), intent);
-		return mFactory;
+		return new ListRemoteViewsFactory(this, intent);
 	}
 
-	private static class ListRemoteViewsFactory implements RemoteViewsFactory {
-		private Context mContext;
-		protected List<SeatItem> mDataList = new ArrayList<SeatItem>();
+	private static class ListRemoteViewsFactory extends
+			AbsListRemoteViewsFactory<SeatItem> {
 
 		public ListRemoteViewsFactory(Context context, Intent intent) {
-			this.mContext = context;
-			setList(intent);
-		}
-
-		private void setList(Intent intent) {
+			super(context);
 			List<SeatItem> extraList = intent.getBundleExtra(
 					LibrarySeatWidget.LIBRARY_SEAT_WIDGET_DATA)
 					.getParcelableArrayList(
 							LibrarySeatWidget.LIBRARY_SEAT_WIDGET_DATA);
 			if (!extraList.isEmpty()) {
-				mDataList.clear();
-				mDataList.addAll(extraList);
+				clear();
+				addAll(0, extraList);
 			}
-
-		}
-
-		@Override
-		public void onCreate() {
-		}
-
-		@Override
-		public void onDataSetChanged() {
-		}
-
-		@Override
-		public void onDestroy() {
-		}
-
-		@Override
-		public int getCount() {
-			return mDataList.size();
 		}
 
 		@Override
 		public RemoteViews getViewAt(int position) {
-			SeatItem item = mDataList.get(position);
-			RemoteViews rv = new RemoteViews(mContext.getPackageName(),
+			SeatItem item = getItem(position);
+			RemoteViews rv = new RemoteViews(getContext().getPackageName(),
 					R.layout.list_layout_widget_library_seat);
 			rv.setTextViewText(android.R.id.text1, item.roomName);
-			if (Double.parseDouble(item.utilizationRate) < 50d) {
-				rv.setInt(android.R.id.text2, "setBackgroundResource",
-						android.R.color.holo_green_light);
-			} else {
-				rv.setInt(android.R.id.text2, "setBackgroundResource",
-						android.R.color.holo_red_light);
-			}
 			int size = Integer.valueOf(item.vacancySeat.trim())
 					+ Integer.valueOf(item.occupySeat.trim());
 			rv.setTextViewText(android.R.id.text2, item.vacancySeat + "/"
 					+ size);
+			int color;
+			try {
+				color = Float.valueOf(item.utilizationRate) < 50 ? android.R.color.holo_green_light
+						: android.R.color.holo_red_light;
+			} catch (Exception e) {
+				color = android.R.color.holo_green_light;
+			}
+			rv.setInt(android.R.id.text2, "setBackgroundResource", color);
 			return rv;
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
-		public RemoteViews getLoadingView() {
-			return null;
+		public void onDataSetChanged() {
+			super.onDataSetChanged();
+			clear();
+			addAll(0,
+					(Collection<? extends SeatItem>) IOUtil
+							.readFromFileSuppressed(getContext(),
+									IOUtil.FILE_LIBRARY_SEAT));
 		}
-
-		@Override
-		public int getViewTypeCount() {
-			return 1;
-		}
-
-		@Override
-		public long getItemId(int position) {
-			return position;
-		}
-
-		@Override
-		public boolean hasStableIds() {
-			return false;
-		}
-
 	}
 }

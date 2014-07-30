@@ -10,6 +10,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.content.res.Configuration;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
@@ -299,12 +300,11 @@ public class AppUtil {
 		context.startActivity(clearTop);
 	}
 
-	
-	public static void clearCache(Context context){
+	public static void clearCache(Context context) {
 		IOUtil.clearApplicationFile(context.getCacheDir());
 		IOUtil.clearApplicationFile(context.getExternalCacheDir());
 	}
-	
+
 	/**
 	 * @param pageTitleResId
 	 *            얻으려는 page에 알맞는 string 리소스 id
@@ -608,6 +608,18 @@ public class AppUtil {
 			}
 			if (!(view instanceof AdapterView))
 				((ViewGroup) view).removeAllViews();
+		}
+	}
+
+	public static boolean isScreenSizeSmall(Context context) {
+		int sizeInfoMasked = context.getResources().getConfiguration().screenLayout
+				& Configuration.SCREENLAYOUT_SIZE_MASK;
+		switch (sizeInfoMasked) {
+		case Configuration.SCREENLAYOUT_SIZE_NORMAL:
+		case Configuration.SCREENLAYOUT_SIZE_SMALL:
+			return true;
+		default:
+			return false;
 		}
 	}
 }
