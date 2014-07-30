@@ -67,7 +67,6 @@ public class TabSearchSubjectFragment extends
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		params = new Hashtable<String, String>();
-		setLoadingViewEnable(false);
 		Context context = getActivity();
 		View dialogView = View.inflate(context, R.layout.dialog_search_subject,
 				null);
@@ -201,6 +200,7 @@ public class TabSearchSubjectFragment extends
 		default:
 			return;
 		}
+		//FIXME theme 관련 코드
 		int drawableId;
 		switch (AppUtil.theme) {
 		case Black:

@@ -1,6 +1,7 @@
 package com.uoscs09.theuos.widget.restaurant;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import android.content.Context;
 import android.content.Intent;
@@ -8,24 +9,29 @@ import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.uoscs09.theuos.R;
+import com.uoscs09.theuos.common.impl.AbsListRemoteViewsFactory;
+import com.uoscs09.theuos.common.util.IOUtil;
 import com.uoscs09.theuos.tab.restaurant.RestItem;
 
 public class RestListService extends RemoteViewsService {
 
 	@Override
 	public RemoteViewsFactory onGetViewFactory(Intent intent) {
-		return new ListRemoteViewsFactory(this.getApplicationContext(), intent);
+		return new ListRemoteViewsFactory(this, intent);
 	}
 
-	private static class ListRemoteViewsFactory implements RemoteViewsFactory {
-		private List<RestItem> list;
-		private Context mContext;
+	private static class ListRemoteViewsFactory extends
+			AbsListRemoteViewsFactory<RestItem> {
 		private int position;
 
+		@SuppressWarnings("unchecked")
 		public ListRemoteViewsFactory(Context context, Intent intent) {
-			this.mContext = context;
-			this.list = intent.getBundleExtra(RestWidget.REST_WIDGET_ITEM)
-					.getParcelableArrayList(RestWidget.REST_WIDGET_ITEM);
+			super(context);
+			clear();
+			addAll(0,
+					(Collection<? extends RestItem>) intent
+							.getBundleExtra(RestWidget.REST_WIDGET_ITEM)
+							.getParcelableArrayList(RestWidget.REST_WIDGET_ITEM));
 			this.position = intent.getIntExtra(RestWidget.REST_WIDGET_POSITION,
 					0);
 		}
@@ -36,21 +42,10 @@ public class RestListService extends RemoteViewsService {
 		}
 
 		@Override
-		public long getItemId(int position) {
-			return position;
-		}
-
-		@Override
-		public RemoteViews getLoadingView() {
-			return null;
-		}
-
-		@Override
 		public RemoteViews getViewAt(int position) {
-			RemoteViews rv = new RemoteViews(mContext.getPackageName(),
+			RemoteViews rv = new RemoteViews(getContext().getPackageName(),
 					R.layout.list_layout_widget_rest);
-			RestItem item;
-			item = list.get(this.position);
+			RestItem item = getItem(this.position);
 
 			switch (position) {
 			case 0:
@@ -71,28 +66,16 @@ public class RestListService extends RemoteViewsService {
 			return rv;
 		}
 
-		@Override
-		public int getViewTypeCount() {
-			return 1;
-		}
-
-		@Override
-		public boolean hasStableIds() {
-			return false;
-		}
-
-		@Override
-		public void onCreate() {
-		}
-
+		@SuppressWarnings("unchecked")
 		@Override
 		public void onDataSetChanged() {
+			super.onDataSetChanged();
+			clear();
+			addAll(0,
+					(ArrayList<? extends RestItem>) IOUtil
+							.readFromFileSuppressed(getContext(),
+									IOUtil.FILE_REST));
 		}
-
-		@Override
-		public void onDestroy() {
-		}
-
 	}
 
 }

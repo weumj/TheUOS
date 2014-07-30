@@ -20,6 +20,7 @@
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_marginRight="5dip"
+        android:background="@android:color/holo_green_light"
         android:textColor="@android:color/black" />
 
 </RelativeLayout>

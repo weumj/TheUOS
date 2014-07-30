@@ -8,5 +8,6 @@
     <string name="widget_rest_desc">The UOS 식단표</string>
     <string name="widget_library_seat">스터디룸 위젯</string>
     <string name="widget_library_seat_desc">The UOS 스터디룸 위젯</string>
+    <string name="widget_library_seat_empty">스터디룸이 모두 사용 중 입니다.</string>
 
 </resources>

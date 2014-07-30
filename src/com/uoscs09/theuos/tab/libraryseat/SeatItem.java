@@ -1,11 +1,14 @@
 package com.uoscs09.theuos.tab.libraryseat;
 
+import java.io.Serializable;
+
 import com.uoscs09.theuos.common.util.StringUtil;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class SeatItem implements Parcelable {
+public class SeatItem implements Parcelable, Serializable {
+	private static final long serialVersionUID = 2517523347755809098L;
 	public String roomName;
 	public String occupySeat;
 	public String vacancySeat;

@@ -9,9 +9,11 @@ public class TitleActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_title);
-
+	}
+	@Override
+	protected void onResume() {
+		super.onResume();
 		getWindow().getDecorView().postDelayed(new Runnable() {
-
 			@Override
 			public void run() {
 				startActivity(new Intent(getApplicationContext(),
@@ -19,6 +21,6 @@ public class TitleActivity extends Activity {
 				overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 				finish();
 			}
-		}, 400);
+		}, 300);
 	}
 }

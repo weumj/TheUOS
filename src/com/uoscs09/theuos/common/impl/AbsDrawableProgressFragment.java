@@ -15,27 +15,19 @@ import com.uoscs09.theuos.common.util.AppUtil;
 public abstract class AbsDrawableProgressFragment<T> extends
 		AbsAsyncFragment<T> {
 	@ReleaseWhenDestroy
-	private AnimationDrawable mLoadingAnimation, mLoadingAnimForMenu;
+	private AnimationDrawable mLoadingAnimation;
 	@ReleaseWhenDestroy
 	private View mLoadingView;
 	private boolean mIsMenuRefresh = true;
-	private boolean mIsViewEnable = true;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		if (mIsViewEnable) {
-			mLoadingView = View.inflate(getActivity(),
-					R.layout.footer_loading_view, null);
-			mLoadingAnimation = (AnimationDrawable) ((ImageView) mLoadingView
-					.findViewById(R.id.iv_list_footer_loading)).getBackground();
-			mLoadingView.setVisibility(View.INVISIBLE);
-		}
-		if (mIsMenuRefresh) {
-			mLoadingAnimForMenu = (AnimationDrawable) ((ImageView) View
-					.inflate(getActivity(), R.layout.footer_loading_view, null)
-					.findViewById(R.id.iv_list_footer_loading)).getBackground();
-		}
+		mLoadingView = View.inflate(getActivity(),
+				R.layout.footer_loading_view, null);
+		mLoadingAnimation = (AnimationDrawable) ((ImageView) mLoadingView
+				.findViewById(R.id.iv_list_footer_loading)).getBackground();
+		mLoadingView.setVisibility(View.INVISIBLE);
 	}
 
 	/** '로딩 중' 을 나타내는 View를 반환한다. */
@@ -53,10 +45,6 @@ public abstract class AbsDrawableProgressFragment<T> extends
 		mIsMenuRefresh = isRefresh;
 	}
 
-	protected final void setLoadingViewEnable(boolean enable) {
-		mIsViewEnable = enable;
-	}
-
 	@Override
 	protected void onTransactPostExcute() {
 		if (getActivity() != null && mIsMenuRefresh)
@@ -65,21 +53,29 @@ public abstract class AbsDrawableProgressFragment<T> extends
 	}
 
 	protected final void animationStart() {
-		if (mLoadingView != null)
+		if (mLoadingView != null) {
 			mLoadingView.setVisibility(View.VISIBLE);
-		if (mLoadingAnimForMenu != null)
-			mLoadingAnimForMenu.start();
-		if (mLoadingAnimation != null)
-			mLoadingAnimation.start();
+			mLoadingView.post(new Runnable() {
+				@Override
+				public void run() {
+					if (mLoadingAnimation != null)
+						mLoadingAnimation.start();
+				}
+			});
+		}
 	}
 
 	protected final void animationStop() {
-		if (mLoadingAnimation != null)
-			mLoadingAnimation.stop();
-		if (mLoadingAnimForMenu != null)
-			mLoadingAnimForMenu.stop();
-		if (mLoadingView != null)
+		if (mLoadingView != null) {
 			mLoadingView.setVisibility(View.INVISIBLE);
+			mLoadingView.post(new Runnable() {
+				@Override
+				public void run() {
+					if (mLoadingAnimation != null)
+						mLoadingAnimation.stop();
+				}
+			});
+		}
 	}
 
 	@Override
@@ -102,9 +98,14 @@ public abstract class AbsDrawableProgressFragment<T> extends
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		if (isRunning()) {
-			getLoadingMenuItem(menu).setIcon(mLoadingAnimForMenu);
-			mLoadingAnimForMenu.start();
+		MenuItem refreshItem = getLoadingMenuItem(menu);
+		if (refreshItem != null) {
+			if (isRunning()) {
+				refreshItem.setIcon(mLoadingAnimation);
+				animationStart();
+			} else {
+				animationStop();
+			}
 		}
 		super.onCreateOptionsMenu(menu, inflater);
 	}
@@ -114,10 +115,6 @@ public abstract class AbsDrawableProgressFragment<T> extends
 		if (mLoadingAnimation != null) {
 			mLoadingAnimation.setCallback(null);
 			mLoadingAnimation = null;
-		}
-		if (mLoadingAnimForMenu != null) {
-			mLoadingAnimForMenu.setCallback(null);
-			mLoadingAnimForMenu = null;
 		}
 		if (mLoadingView != null) {
 			AppUtil.unbindDrawables(mLoadingView);

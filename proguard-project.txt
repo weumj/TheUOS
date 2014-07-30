@@ -52,5 +52,7 @@
 -libraryjars libs/asyncexcutor.jar
 -libraryjars libs/dworks.libs.actionbartoggle.jar
 
+-keepattributes SourceFile,LineNumberTable
+
 -dontwarn net.htmlparser.jericho.**
 -dontwarn com.google.android.gms.**

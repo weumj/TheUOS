@@ -87,7 +87,6 @@ public class TabTimeTableFragment extends
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		Context context = getActivity();
-		setLoadingViewEnable(false);
 		if (savedInstanceState != null) {
 			mTimetableList = savedInstanceState
 					.getParcelableArrayList(IOUtil.FILE_TIMETABLE);

@@ -66,7 +66,6 @@ public class TabRestaurantFragment extends
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		Context context = getActivity();
-		setLoadingViewEnable(false);
 		if (savedInstanceState != null) {
 			buttonID = savedInstanceState.getInt(BUTTON);
 			mRestList = savedInstanceState.getParcelableArrayList(REST);

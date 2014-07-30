@@ -31,12 +31,6 @@ public class TabTransportFragment extends
 	private Map<String, ArrayList<TransportItem>> data;
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		setLoadingViewEnable(false);
-		super.onCreate(savedInstanceState);
-	}
-
-	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.tab_transport, container, false);
