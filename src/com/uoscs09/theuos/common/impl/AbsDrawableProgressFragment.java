@@ -56,14 +56,16 @@ public abstract class AbsDrawableProgressFragment<T> extends
 		if (mLoadingView != null) {
 			mLoadingView.setVisibility(View.VISIBLE);
 		}
-		getActivity().runOnUiThread(mStartAction);
+		if (getActivity() != null)
+			getActivity().runOnUiThread(mStartAction);
 	}
 
 	protected final void animationStop() {
 		if (mLoadingView != null) {
 			mLoadingView.setVisibility(View.INVISIBLE);
 		}
-		getActivity().runOnUiThread(mStopAction);
+		if (getActivity() != null)
+			getActivity().runOnUiThread(mStopAction);
 	}
 
 	private final Runnable mStartAction = new Runnable() {
