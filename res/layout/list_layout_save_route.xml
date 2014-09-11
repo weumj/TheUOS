@@ -11,6 +11,6 @@
         android:layout_alignParentTop="true"
         android:layout_marginLeft="14dp"
         android:layout_marginTop="18dp"
-        android:drawableStart="?ic_collections_collection" />
+        android:drawableLeft="?ic_collections_collection" />
 
 </RelativeLayout>

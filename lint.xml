@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <lint>
+    <issue id="FieldGetter" severity="informational" />
     <issue id="MissingTranslation" severity="ignore" />
+    <issue id="RtlSymmetry" severity="warning" />
+    <issue id="UnusedIds" severity="informational" />
 </lint>

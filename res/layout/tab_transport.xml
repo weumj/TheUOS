@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:background="?selector_button"
-        android:drawableStart="?ic_navigation_refresh"
+        android:drawableLeft="?ic_navigation_refresh"
         android:gravity="center"
         android:text="@string/tab_transport_empty"
         android:visibility="invisible" />

@@ -141,7 +141,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
             android:layout_marginTop="30dp"
-            android:drawableStart="?ic_content_import_export"
+            android:drawableLeft="?ic_content_import_export"
             android:text="@string/tab_timetable_empty_text1" />
 
         <TextView
@@ -150,7 +150,7 @@
             android:layout_below="@id/tab_timetable_empty_text"
             android:layout_marginLeft="30dp"
             android:layout_marginTop="60dp"
-            android:drawableStart="?ic_navigation_accept"
+            android:drawableLeft="?ic_navigation_accept"
             android:text="@string/tab_timetable_empty_text2" />
     </RelativeLayout>
 

@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="40dp"
         android:layout_marginTop="100dp"
-        android:drawableStart="@drawable/ic_action_action_search_dark"
+        android:drawableLeft="@drawable/ic_action_action_search_dark"
         android:gravity="center"
         android:text="@string/emptyview_button_or_menu_to_search"
         android:visibility="invisible" />

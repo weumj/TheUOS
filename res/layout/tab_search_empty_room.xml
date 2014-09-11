@@ -95,7 +95,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:drawableStart="?ic_action_search"
+            android:drawableLeft="?ic_action_search"
             android:gravity="center_vertical"
             android:padding="2dp"
             android:text="@string/tab_subject_empty_view_hint" />
@@ -106,7 +106,7 @@
             android:layout_below="@id/empty1"
             android:layout_gravity="center"
             android:layout_marginTop="20dp"
-            android:drawableStart="?ic_content_import_export"
+            android:drawableLeft="?ic_content_import_export"
             android:gravity="center_vertical"
             android:padding="2dp"
             android:text="@string/tab_subject_empty_view_sort" />
