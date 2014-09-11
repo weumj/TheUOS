@@ -366,7 +366,8 @@ public class TabTimeTableFragment extends
 				mIsOnLoad = false;
 			} else {
 				AppUtil.showToast(context,
-						R.string.tab_timetable_wise_login_warning_fail, true);
+						R.string.tab_timetable_wise_login_warning_fail,
+						isMenuVisible());
 			}
 			return;
 		}

@@ -54,7 +54,7 @@ public class TabHomeFragment extends BaseFragment implements
 				R.layout.list_layout_home, list)
 				.setDrawablePosition(DrawblePosition.TOP)
 				.setTextViewId(R.id.tab_home_text_title)
-				.setDrawableTheme(AppTheme.White).setTheme(AppTheme.White)
+				.setDrawableTheme(AppTheme.Black).setTheme(AppTheme.Black)
 				.create();
 		initDialog(context);
 	}
