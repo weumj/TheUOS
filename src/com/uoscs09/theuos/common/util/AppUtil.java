@@ -43,7 +43,6 @@ public class AppUtil {
 	private static int PAGE_SIZE = 10;
 	public static boolean test;
 	public static AppTheme theme;
-	public static int timetable_limit;
 
 	/**
 	 * 어플리케이션의 테마를 나타내는 enum<br>
@@ -68,8 +67,6 @@ public class AppUtil {
 			pref.put(PrefUtil.KEY_THEME, v);
 		}
 		AppUtil.theme = vals[v];
-		AppUtil.timetable_limit = pref.get(PrefUtil.KEY_TIMETABLE_LIMIT,
-				PrefUtil.TIMETABLE_LIMIT_MAX);
 		AppUtil.test = pref.get("test", false);
 		PAGE_SIZE = test ? 12 : 10;
 	}
@@ -227,7 +224,7 @@ public class AppUtil {
 		case R.string.title_section3_book:
 			return R.drawable.ic_book_text;
 		case R.string.title_section4_lib:
-			return R.drawable.ic_chair;
+			return R.drawable.ic_action_book_with_pen;
 		case R.string.title_section5_map:
 			return R.drawable.ic_action_location_place;
 		case R.string.title_section6_tel:
@@ -264,7 +261,7 @@ public class AppUtil {
 		case R.string.title_section3_book:
 			return R.drawable.ic_book_text_dark;
 		case R.string.title_section4_lib:
-			return R.drawable.ic_chair_dark;
+			return R.drawable.ic_action_book_with_pen_dark;
 		case R.string.title_section5_map:
 			return R.drawable.ic_action_location_place_dark;
 		case R.string.title_section6_tel:

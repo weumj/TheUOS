@@ -55,7 +55,7 @@ public class PagerFragmentActivity extends BaseFragmentActivity implements
 		PrefUtil pref = PrefUtil.getInstance(this);
 		AppUtil.initStaticValues(pref);
 		mPageOrderList = AppUtil.loadPageOrder(this);
-		if (pref.get(PrefUtil.KEY_HOME, true)) {
+		if (pref.get(PrefUtil.KEY_HOME, AppUtil.isScreenSizeSmall(this))) {
 			mPageOrderList.add(0, R.string.title_section0_home);
 		}
 	}
@@ -202,7 +202,7 @@ public class PagerFragmentActivity extends BaseFragmentActivity implements
 						navigateItem(position, true);
 					}
 				});
-		//mViewPager.setOffscreenPageLimit(2);
+		// mViewPager.setOffscreenPageLimit(2);
 		switch (AppUtil.theme) {
 		case BlackAndWhite:
 			mViewPager.setPageTransformer(true, new PagerTransformer(2));

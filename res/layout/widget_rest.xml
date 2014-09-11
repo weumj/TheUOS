@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/selector_list" >
+    android:background="@drawable/rounded_box_widget" >
 
     <ImageButton
         android:id="@+id/widget_rest_btn_prev"
@@ -10,8 +10,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:contentDescription="@string/action_backward"
         android:background="@drawable/selector_button"
+        android:contentDescription="@string/action_backward"
         android:src="@drawable/ic_action_navigation_back" />
 
     <LinearLayout
@@ -35,8 +35,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:contentDescription="@string/action_forward"
         android:background="@drawable/selector_button"
+        android:contentDescription="@string/action_forward"
         android:src="@drawable/ic_action_navigation_forward" />
 
     <TextView
@@ -46,6 +46,7 @@
         android:layout_alignBottom="@+id/widget_rest_btn_prev"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
+        android:gravity="center"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@android:color/black" />
 

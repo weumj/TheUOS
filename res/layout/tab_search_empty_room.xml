@@ -10,20 +10,22 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:orientation="horizontal"
+        android:weightSum="359" >
 
         <TextView
             android:id="@+id/tab_search_empty_room_text_building_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="89"
             android:background="?selector_list_rec"
             android:gravity="center"
             android:text="@string/tab_empty_room_building"
             android:textStyle="bold" />
 
         <LinearLayout
-            android:layout_width="1dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="match_parent"
             android:background="@android:color/darker_gray" />
 
@@ -31,14 +33,15 @@
             android:id="@+id/tab_search_empty_room_text_room_no"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="89"
             android:background="?selector_list_rec"
             android:gravity="center"
             android:text="@string/tab_empty_room_room_no"
             android:textStyle="bold" />
 
-        <LinearLayout
-            android:layout_width="1dp"
+         <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="match_parent"
             android:background="@android:color/darker_gray" />
 
@@ -46,14 +49,15 @@
             android:id="@+id/tab_search_empty_room_text_room_subj"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="89"
             android:background="?selector_list_rec"
             android:gravity="center"
             android:text="@string/tab_empty_room_room_type"
             android:textStyle="bold" />
 
         <LinearLayout
-            android:layout_width="1dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="match_parent"
             android:background="@android:color/darker_gray" />
 
@@ -61,7 +65,7 @@
             android:id="@+id/tab_search_empty_room_text_room_person"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="89"
             android:background="?selector_list_rec"
             android:gravity="center"
             android:text="@string/tab_empty_room_room_person"

@@ -25,14 +25,16 @@ public class BookItem implements Parcelable {
 	public String url;
 	/** 책 정보 리스트 */
 	public List<BookStateInfo> bookStateInfoList;
+	/** 책 정보 리스트의 정보가 담긴 Url */
+	public String infoUrl;
 
 	public BookItem() {
-		title = writer = bookInfo = site = bookState = coverSrc = url = StringUtil.NULL;
+		title = writer = bookInfo = site = bookState = coverSrc = url = infoUrl = StringUtil.NULL;
 		bookStateInfoList = null;
 	}
 
 	public BookItem(String title, String writer, String bookInfo, String site,
-			String bookState, String coverSrc, String url,
+			String bookState, String coverSrc, String url, String infoUrl,
 			List<BookStateInfo> list) {
 		this.title = title.trim();
 		this.writer = writer.trim();
@@ -41,6 +43,7 @@ public class BookItem implements Parcelable {
 		this.bookState = bookState.trim();
 		this.coverSrc = coverSrc.trim();
 		this.url = url.trim();
+		this.infoUrl = infoUrl;
 		this.bookStateInfoList = list;
 	}
 
@@ -52,6 +55,7 @@ public class BookItem implements Parcelable {
 		bookState = source.readString();
 		coverSrc = source.readString();
 		url = source.readString();
+		infoUrl = source.readString();
 		bookStateInfoList = new ArrayList<BookStateInfo>();
 		source.readList(bookStateInfoList, BookStateInfo.class.getClassLoader());
 	}
@@ -70,6 +74,7 @@ public class BookItem implements Parcelable {
 		dest.writeString(bookState);
 		dest.writeString(coverSrc);
 		dest.writeString(url);
+		dest.writeString(infoUrl);
 		dest.writeList(bookStateInfoList);
 	}
 

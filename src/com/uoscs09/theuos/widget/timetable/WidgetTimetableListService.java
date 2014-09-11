@@ -34,13 +34,26 @@ public abstract class WidgetTimetableListService extends RemoteViewsService {
 		private List<TimeTableItem> mWidgetItems;
 		private Context mContext;
 		private int mAppWidgetId;
+		private int maxTime;
 		private Hashtable<String, Integer> colorTable;
 		private final int[] viewIds = { R.id.widget_time_table_list_peroid,
+				R.id.widget_time_table_list_mon_frame,
+				R.id.widget_time_table_list_tue_frame,
+				R.id.widget_time_table_list_wed_frame,
+				R.id.widget_time_table_list_thr_frame,
+				R.id.widget_time_table_list_fri_frame };
+		private final int[] textViewIds = { R.id.widget_time_table_list_peroid,
 				R.id.widget_time_table_list_mon,
 				R.id.widget_time_table_list_tue,
 				R.id.widget_time_table_list_wed,
 				R.id.widget_time_table_list_thr,
-				R.id.widget_time_table_list_fri, };
+				R.id.widget_time_table_list_fri };
+		private final int[] subViewIds = { R.id.widget_time_table_list_peroid,
+				R.id.widget_time_table_list_mon_sub,
+				R.id.widget_time_table_list_tue_sub,
+				R.id.widget_time_table_list_wed_sub,
+				R.id.widget_time_table_list_thr_sub,
+				R.id.widget_time_table_list_fri_sub };
 
 		public ListRemoteViewsFactory(Context applicationContext, Intent intent) {
 			this.mContext = applicationContext;
@@ -51,12 +64,22 @@ public abstract class WidgetTimetableListService extends RemoteViewsService {
 
 		@Override
 		public int getCount() {
-			if (mWidgetItems == null)
-				getData();
-			int showingSize = PrefUtil.getInstance(mContext).get(
-					PrefUtil.KEY_TIMETABLE_LIMIT, PrefUtil.TIMETABLE_LIMIT_MAX);
+			return PrefUtil.getInstance(mContext).get(
+					PrefUtil.KEY_TIMETABLE_LIMIT, false) ? maxTime
+					: mWidgetItems.size();
+		}
 
-			return Math.min(mWidgetItems.size(), showingSize);
+		private void calculateMaxTime() {
+			int size = mWidgetItems.size() - 1;
+
+			// 마지막 수업시간 판별, 14부터 시작
+			for (; size > 0 && mWidgetItems.get(size).isTimeTableEmpty(); size--)
+				;
+
+			maxTime = size;
+			if (maxTime < 0)
+				maxTime = mWidgetItems.size() == 0 ? 0
+						: mWidgetItems.size() - 1;
 		}
 
 		@Override
@@ -94,39 +117,57 @@ public abstract class WidgetTimetableListService extends RemoteViewsService {
 			}
 			Integer idx;
 			TimeTableItem upperItem;
+			String[] upperArray = null;
 			if (position != 0) {
 				upperItem = mWidgetItems.get(position - 1);
+				upperArray = new String[] { null, upperItem.mon, upperItem.tue,
+						upperItem.wed, upperItem.thr, upperItem.fri };
 			} else {
-				upperItem = new TimeTableItem();
+				upperItem = null;
 			}
-			String[] upperArray = { null, upperItem.mon, upperItem.tue,
-					upperItem.wed, upperItem.thr, upperItem.fri };
 
-			int id;
+			int id, subId;
 			for (int i = 1; i < viewIds.length; i++) {
-				id = viewIds[i];
+				id = textViewIds[i];
+				subId = subViewIds[i];
 				views.setTextColor(id, Color.WHITE);
-				// views.setInt(id, "setWidth", width);
-				if (OApiUtil.getSubjectName(upperArray[i]).equals(
-						OApiUtil.getSubjectName(arr[i]))) {
+				views.setTextColor(subId, Color.WHITE);
+
+				// 현재 표시하려는 과목과 리스트뷰의 한 단계 위의 과목의 이름이 같으면
+				// 내용을 표시하지 않음
+				if (upperArray != null
+						&& OApiUtil.getSubjectName(upperArray[i]).equals(
+								OApiUtil.getSubjectName(arr[i]))) {
 					views.setTextViewText(id, StringUtil.NULL);
+					views.setTextViewText(subId, StringUtil.NULL);
 				} else {
-					views.setTextViewText(id, removeTimetableProf(arr[i]));
+					String[] contents = removeTimetableProf(arr[i]);
+					if (contents != null) {
+						views.setTextViewText(id, contents[0]);
+						views.setTextViewText(subId, contents[1]);
+					} else {
+						views.setTextViewText(id, arr[i]);
+						views.setTextViewText(subId, StringUtil.NULL);
+					}
 				}
 
 				idx = colorTable.get(OApiUtil.getSubjectName(arr[i]));
 				if (idx != null) {
-					views.setInt(id, "setBackgroundResource",
+					views.setInt(viewIds[i], "setBackgroundResource",
 							AppUtil.getColor(idx));
 				} else {
-					views.setInt(id, "setBackgroundResource", 0);
+					views.setInt(viewIds[i], "setBackgroundResource", 0);
 				}
 			}
 
+			// 오늘 날짜의 과목의 글자색을 검은색으로 줌
 			int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 1;
-			if (day > 0 && day < viewIds.length) {
-				views.setTextColor(viewIds[day], Color.BLACK);
+			if (day > 0 && day < textViewIds.length) {
+				views.setTextColor(textViewIds[day], Color.BLACK);
+				views.setTextColor(subViewIds[day], Color.BLACK);
 			}
+
+			// 위젯 날짜가 시스템 날짜와 다르면 위젯을 업데이트 하라고 broadcast함
 			PrefUtil pref = PrefUtil.getInstance(mContext);
 			if (pref.get(TimeTableWidget.WIDGET_TIMETABLE_DAY, 0) != day) {
 				pref.put(TimeTableWidget.WIDGET_TIMETABLE_DAY, day);
@@ -164,15 +205,16 @@ public abstract class WidgetTimetableListService extends RemoteViewsService {
 			mWidgetItems = TabTimeTableFragment.readTimetable(mContext);
 			colorTable = TabTimeTableFragment.getColorTable(mWidgetItems,
 					mContext);
+			calculateMaxTime();
 		}
 
-		private String removeTimetableProf(String timetable) {
+		private String[] removeTimetableProf(String timetable) {
 			String[] arr = timetable.trim().split(StringUtil.NEW_LINE);
 			if (arr.length > 3) {
-				return arr[0] + StringUtil.NEW_LINE + arr[2]
-						+ StringUtil.NEW_LINE + arr[3];
+				return new String[] { arr[0].trim(),
+						arr[2].trim() + StringUtil.NEW_LINE + arr[3].trim() };
 			} else {
-				return timetable;
+				return null;
 			}
 		}
 	}

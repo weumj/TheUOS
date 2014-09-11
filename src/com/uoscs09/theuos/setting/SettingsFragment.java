@@ -86,7 +86,7 @@ public class SettingsFragment extends PreferenceFragment implements
 		case R.string.setting_timetable:
 			changeFragment(SettingsTimetableFragment.class);
 			return true;
-		case R.string.setting_save_route:
+		case R.string.setting_save_route_sub_title:
 			new SettingsFileSelectDialogFragment().show(getFragmentManager(),
 					null);
 			return true;

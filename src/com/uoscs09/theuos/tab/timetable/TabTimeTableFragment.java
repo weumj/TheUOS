@@ -9,14 +9,12 @@ import java.util.concurrent.Callable;
 
 import org.apache.http.client.ClientProtocolException;
 
-import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.text.method.TextKeyListener;
@@ -26,7 +24,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -76,12 +73,7 @@ public class TabTimeTableFragment extends
 	private TimeTableInfoCallback cb;
 	private boolean mIsOnLoad;
 	private Map<String, Integer> colorTable;
-
-	private int[] titleViewIds = { R.id.tab_time_peroid, R.id.tab_time_mon,
-			R.id.tab_time_tue, R.id.tab_time_wed, R.id.tab_time_thur,
-			R.id.tab_time_fri, R.id.tab_time_sat, };
-	protected static int px;
-	public final static int NUM_OF_TIMETABLE_VIEWS = 7;
+	//public final static int NUM_OF_TIMETABLE_VIEWS = 7;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -201,10 +193,6 @@ public class TabTimeTableFragment extends
 		listView.setEmptyView(emptyView);
 		listView.setAdapter(adapter);
 
-		setHolderTag(rootView);
-		if (px > 0)
-			setTitleViewSize(px);
-
 		return rootView;
 	}
 
@@ -217,51 +205,6 @@ public class TabTimeTableFragment extends
 		super.onResume();
 	}
 
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-		getView().getViewTreeObserver().addOnGlobalLayoutListener(viewObserver);
-	}
-
-	private ViewTreeObserver.OnGlobalLayoutListener viewObserver = new ViewTreeObserver.OnGlobalLayoutListener() {
-
-		@Override
-		public void onGlobalLayout() {
-			if (listView != null) {
-				int width = listView.getWidth();
-				if (width > 0) {
-					width = (width - 10) / NUM_OF_TIMETABLE_VIEWS;
-					if (px != width) {
-						px = width;
-						setTitleViewSize(px);
-						adapter.notifyDataSetChanged();
-					}
-				}
-			}
-		}
-	};
-
-	@SuppressLint("NewApi")
-	@SuppressWarnings("deprecation")
-	@Override
-	public void setUserVisibleHint(boolean isVisibleToUser) {
-		super.setUserVisibleHint(isVisibleToUser);
-		View v = getView();
-		if (v != null) {
-			if (!isVisibleToUser) {
-				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-					v.getViewTreeObserver().removeGlobalOnLayoutListener(
-							viewObserver);
-				} else {
-					v.getViewTreeObserver().removeOnGlobalLayoutListener(
-							viewObserver);
-				}
-			} else {
-				v.getViewTreeObserver().addOnGlobalLayoutListener(viewObserver);
-				setTitleViewSize(px);
-			}
-		}
-	}
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -340,36 +283,19 @@ public class TabTimeTableFragment extends
 		task.excute();
 	}
 
-	/**
-	 * View를 찾기 쉽게하기위하여 메인 View에 '시간, 월 ~ 토' 를 나타내는 TextView를 등록한다.
-	 */
-	private void setHolderTag(View rootView) {
-		for (int id : titleViewIds) {
-			rootView.setTag(id, rootView.findViewById(id));
-		}
-	}
-
-	/**
-	 * '시간, 월 ~ 토' 를 나타내는 TextView의 너비를 설정한다.
-	 */
-	private void setTitleViewSize(int width) {
-		for (int id : titleViewIds) {
-			((TextView) rootView.getTag(id)).setWidth(width);
-		}
-	}
-
 	@Override
 	public void onTransactResult(ArrayList<TimeTableItem> result) {
 		Context context = getActivity();
 		if (result.isEmpty()) {
-			if (mIsOnLoad) {
-				mIsOnLoad = false;
-			} else {
+			if (!mIsOnLoad) {
 				AppUtil.showToast(context,
-						R.string.tab_timetable_wise_login_warning_fail, true);
+						R.string.tab_timetable_wise_login_warning_fail,
+						isMenuVisible());
 			}
+			mIsOnLoad = false;
 			return;
 		}
+		mIsOnLoad = false;
 		mTimetableList.clear();
 		mTimetableList.addAll(result);
 		if (adapter != null)
@@ -400,7 +326,6 @@ public class TabTimeTableFragment extends
 		// Fragment가 처음 Attach되었을 때, 파일에서 시간표을 읽어온다.
 		if (mIsOnLoad) {
 			result = (ArrayList<TimeTableItem>) readTimetable(context);
-			mIsOnLoad = false;
 		} else { // 사용자가 WISE에 시간표 정보를 요청하였을 때
 			term = Term.values()[termSpinner.getSelectedItemPosition()];
 			String body = TimeTableHttpRequest.getHttpBodyPost(

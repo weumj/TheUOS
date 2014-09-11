@@ -5,6 +5,12 @@
     android:background="@drawable/univ_pic"
     android:gravity="center" >
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:foreground="@drawable/dim" >
+    </FrameLayout>
+
     <GridView
         android:id="@+id/tab_home_gridview"
         android:layout_width="match_parent"

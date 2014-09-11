@@ -125,7 +125,7 @@ public class SettingsFileSelectDialogFragment extends DialogFragment {
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		return new AlertDialog.Builder(getActivity())
-				.setTitle(R.string.setting_save_route)
+				.setTitle(R.string.setting_save_route_sub_title)
 				.setView(createView())
 				.setPositiveButton(android.R.string.ok,
 						new DialogInterface.OnClickListener() {

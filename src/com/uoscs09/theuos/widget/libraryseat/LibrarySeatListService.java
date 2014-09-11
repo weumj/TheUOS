@@ -11,6 +11,7 @@ import android.widget.RemoteViewsService;
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.impl.AbsListRemoteViewsFactory;
 import com.uoscs09.theuos.common.util.IOUtil;
+import com.uoscs09.theuos.common.util.StringUtil;
 import com.uoscs09.theuos.tab.libraryseat.SeatItem;
 
 public class LibrarySeatListService extends RemoteViewsService {
@@ -40,11 +41,14 @@ public class LibrarySeatListService extends RemoteViewsService {
 			SeatItem item = getItem(position);
 			RemoteViews rv = new RemoteViews(getContext().getPackageName(),
 					R.layout.list_layout_widget_library_seat);
-			rv.setTextViewText(android.R.id.text1, item.roomName);
+			String room = item.roomName;
+			if (room.contains("전문"))
+				room = room.replace("전문", StringUtil.NULL);
+			rv.setTextViewText(android.R.id.text1, room);
 			int size = Integer.valueOf(item.vacancySeat.trim())
 					+ Integer.valueOf(item.occupySeat.trim());
-			rv.setTextViewText(android.R.id.text2, item.vacancySeat + "/"
-					+ size);
+			rv.setTextViewText(android.R.id.text2, item.vacancySeat);
+			rv.setTextViewText(android.R.id.summary, "/" + size);
 			int color;
 			try {
 				color = Float.valueOf(item.utilizationRate) < 50 ? android.R.color.holo_green_light
@@ -52,7 +56,7 @@ public class LibrarySeatListService extends RemoteViewsService {
 			} catch (Exception e) {
 				color = android.R.color.holo_green_light;
 			}
-			rv.setInt(android.R.id.text2, "setBackgroundResource", color);
+			rv.setInt(android.R.id.content, "setBackgroundResource", color);
 			return rv;
 		}
 

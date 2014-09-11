@@ -21,7 +21,7 @@ public class PrefUtil {
 	public static final String KEY_THEME = "APP_THEME";
 	public static final String KEY_TIMETABLE_NOTIFY = "TIMETABLE_NOTIFY";
 	public static final String KEY_TIMETABLE_NOTIFY_TIME = "TIMETABLE_NOTIFY_TIME";
-	public static final String KEY_TIMETABLE_LIMIT = "TIMETABLE_LIMIT";
+	public static final String KEY_TIMETABLE_LIMIT = "TIMETABLE_LIMIT_LAST_TIME";
 	public static final String KEY_REST_DATE_TIME = "REST_DATE_TIME";
 	public static final int TIMETABLE_LIMIT_MIN = 9;
 	public static final int TIMETABLE_LIMIT_MAX = 15;

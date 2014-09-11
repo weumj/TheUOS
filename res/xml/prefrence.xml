@@ -36,17 +36,15 @@
             android:key="@string/pref_key_check_seat"
             android:title="@string/setting_check_seat" />
     </PreferenceCategory>
+    
     <PreferenceCategory android:title="@string/title_section7_time" >
         <PreferenceScreen
             android:summary="@string/setting_timetable_desc"
             android:title="@string/setting_timetable" >
         </PreferenceScreen>
     </PreferenceCategory>
+    
     <PreferenceCategory android:title="@string/setting_data" >
-        <PreferenceScreen
-            android:summary="@string/setting_save_route_desc"
-            android:title="@string/setting_save_route" >
-        </PreferenceScreen>
         <PreferenceScreen
             android:key="@string/pref_key_save_route"
             android:title="@string/setting_save_route_sub_title" >

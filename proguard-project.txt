@@ -48,7 +48,7 @@
 -libraryjars libs/google-play-services.jar
 -libraryjars libs/jericho-html-3.3.jar
 -libraryjars libs/nineoldandroids-2.4.0.jar
--libraryjars libs/universal-image-loader-1.9.1.jar
+-libraryjars libs/universal-image-loader-1.9.3.jar
 -libraryjars libs/asyncexcutor.jar
 -libraryjars libs/dworks.libs.actionbartoggle.jar
 

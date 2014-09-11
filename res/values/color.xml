@@ -4,7 +4,7 @@
     <!--
     <color name="sky_blue">#66CCFF</color>
     <color name="red">#FF0000</color>
-    <color name="lime">#c8ee25</color>
+    <color name="lime">#c8ee25</color>
     -->
     <color name="rosy_brown">#BC8F8F</color>
     <color name="rosy_brown_dark">#694444</color>
@@ -13,8 +13,8 @@
     <color name="bright_gray">#01121212</color>
     <color name="gray">#6d6d6d</color>
     <color name="gray_red">#d66161</color>
-    <color name="yellow">#e3e559</color>
-    <color name="green">#a2fb8e</color>
+    <color name="yellow">#f3e559</color>
+    <color name="green">#a2db8e</color>
     <color name="light_blue">#6cafdb</color>
     <color name="violet">#c578d8</color>
     <color name="purple">#b685df</color>
@@ -22,5 +22,6 @@
     <color name="blue_green">#96d4c4</color>
     <color name="yellow_green">#c0e770</color>
     <color name="red_yellow">#fdcd7f</color>
+    <color name="widget_white_divider">#80cccccc</color>
 
 </resources>

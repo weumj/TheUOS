@@ -9,7 +9,6 @@
         android:layout_height="100dip"
         android:background="@drawable/selector_list_circle"
         android:gravity="center"
-        android:padding="10dip"
-        android:textColor="@android:color/black" />
+        android:padding="10dip" />
 
 </RelativeLayout>

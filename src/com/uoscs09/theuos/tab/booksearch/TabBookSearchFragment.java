@@ -23,7 +23,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
@@ -197,7 +196,7 @@ public class TabBookSearchFragment extends
 		}
 		
 		bookListAdapter = new BookItemListAdapter(getActivity(),
-				R.layout.list_layout_book, mBookList, l, mLongClickListener);
+				R.layout.list_layout_book, mBookList, mLongClickListener);
 		animAdapter = new AlphaInAnimationAdapter(bookListAdapter);
 		// 리스트 뷰
 		mListView = (ListView) rootView
@@ -488,34 +487,6 @@ public class TabBookSearchFragment extends
 		intent.putExtra(SearchManager.QUERY, text);
 		startActivity(intent);
 	}
-
-	/**
-	 * listView의 내부 View를 선택할 시 불리는 Callback <br>
-	 * Adapter에서 호출된다.
-	 */
-	private View.OnClickListener l = new View.OnClickListener() {
-		@Override
-		public void onClick(View v) {
-			BookItem item;
-			Object o = v.getTag();
-			if (o != null && o instanceof BookItem) {
-				item = (BookItem) o;
-				if (v instanceof ImageView) {
-					Intent i = AppUtil
-							.setWebPageIntent("http://mlibrary.uos.ac.kr"
-									+ item.url);
-					// i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-					startActivity(i);
-				} else if (v instanceof TextView) {
-					if (item.site.startsWith("http")) {
-						Intent i = AppUtil.setWebPageIntent(item.site);
-						// i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-						startActivity(i);
-					}
-				}
-			}
-		}
-	};
 
 	@Override
 	protected MenuItem getLoadingMenuItem(Menu menu) {

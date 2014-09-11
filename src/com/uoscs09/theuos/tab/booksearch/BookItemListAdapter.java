@@ -1,15 +1,23 @@
 package com.uoscs09.theuos.tab.booksearch;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import net.htmlparser.jericho.Element;
+import net.htmlparser.jericho.Source;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.text.Spannable;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
@@ -25,31 +33,73 @@ import com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemor
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.nostra13.universalimageloader.core.download.BaseImageDownloader;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.uoscs09.theuos.R;
+import com.uoscs09.theuos.common.AsyncLoader;
 import com.uoscs09.theuos.common.impl.AbsArrayAdapter;
+import com.uoscs09.theuos.common.util.AppUtil;
+import com.uoscs09.theuos.common.util.StringUtil;
+import com.uoscs09.theuos.http.HttpRequest;
+import com.uoscs09.theuos.http.parse.JerichoParse;
 
 public class BookItemListAdapter extends AbsArrayAdapter<BookItem> {
 	private static final ImageLoader imageLoader = ImageLoader.getInstance();
-	private View.OnClickListener l;
 	private View.OnLongClickListener ll;
+	int imageWidth, imageHeight;
 
 	public BookItemListAdapter(Context context, int layout,
-			List<BookItem> list, View.OnClickListener l,
-			View.OnLongClickListener ll) {
+			List<BookItem> list, View.OnLongClickListener ll) {
 		super(context, layout, list);
-		this.l = l;
 		this.ll = ll;
 		setupImgConfig();
 	}
+
+	private View.OnClickListener l = new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			BookItem item;
+			Object o = v.getTag();
+			if (o != null && o instanceof BookItem) {
+				item = (BookItem) o;
+				if (v instanceof ImageView) {
+					Intent i = AppUtil
+							.setWebPageIntent("http://mlibrary.uos.ac.kr"
+									+ item.url);
+					i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+					getContext().startActivity(i);
+				} else if (v instanceof TextView) {
+					if (item.site.startsWith("http")) {
+						Intent i = AppUtil.setWebPageIntent(item.site);
+						i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+						getContext().startActivity(i);
+					}
+				}
+			}
+		}
+	};
 
 	@Override
 	public View setView(int position, View convertView, ViewHolder holder) {
 		final GroupHolder h = (GroupHolder) holder;
 		final BookItem item = getItem(position);
 		// 책 이미지 설정
-		imageLoader.displayImage(item.coverSrc, h.coverImg);
+		imageLoader.displayImage(item.coverSrc, h.coverImg,
+				new SimpleImageLoadingListener() {
+
+					@Override
+					public void onLoadingComplete(String imageUri, View view,
+							Bitmap loadedImage) {
+						if (loadedImage != null) {
+							Bitmap bitmapResized = Bitmap
+									.createScaledBitmap(loadedImage,
+											imageWidth, imageHeight, false);
+							((ImageView) view).setImageBitmap(bitmapResized);
+						}
+					}
+				});
 		h.coverImg.setOnClickListener(l);
 		h.coverImg.setTag(item);
 		h.title.setText(item.title);
@@ -63,25 +113,59 @@ public class BookItemListAdapter extends AbsArrayAdapter<BookItem> {
 		h.location.setOnClickListener(l);
 		h.location.setTag(item);
 
-		setBookStateLayout(h.stateInfoLayout, item.bookStateInfoList);
+		if (item.bookStateInfoList != null)
+			setBookStateLayout(h.stateInfoLayout, item.bookStateInfoList);
 		h.stateInfoLayout.setVisibility(View.GONE);
 		convertView.setOnClickListener(new View.OnClickListener() {
 
 			@Override
-			public void onClick(View v) {
-				if (h.stateInfoLayout.getVisibility() == View.GONE
-						&& !item.bookStateInfoList.isEmpty())
-					h.stateInfoLayout.setVisibility(View.VISIBLE);
-				else
-					h.stateInfoLayout.setVisibility(View.GONE);
-				v.requestLayout();
+			public void onClick(final View v) {
+				// 설정된 데이터가 없다면
+				// 해당 아이템을 처음 터치하는 것 이므로 데이터를 불러옴
+				if (item.bookStateInfoList == null) {
+					new AsyncLoader<List<BookStateInfo>>().excute(
+							new Callable<List<BookStateInfo>>() {
+
+								@Override
+								public List<BookStateInfo> call()
+										throws Exception {
+									if (item.infoUrl.equals(StringUtil.NULL)) {
+										return null;
+									} else {
+										return new ParseBookInfo(HttpRequest
+												.getBody(item.infoUrl)).parse();
+									}
+								}
+							}, new AsyncLoader.OnTaskFinishedListener() {
+
+								@SuppressWarnings("unchecked")
+								@Override
+								public void onTaskFinished(
+										boolean isExceptionOccured, Object data) {
+									if (!isExceptionOccured && data != null) {
+										item.bookStateInfoList = (List<BookStateInfo>) data;
+										setBookStateLayout(h.stateInfoLayout,
+												item.bookStateInfoList);
+										h.stateInfoLayout
+												.setVisibility(View.VISIBLE);
+										v.requestLayout();
+									}
+								}
+							});
+				} else {
+					if (h.stateInfoLayout.getVisibility() == View.GONE
+							&& !item.bookStateInfoList.isEmpty())
+						h.stateInfoLayout.setVisibility(View.VISIBLE);
+					else
+						h.stateInfoLayout.setVisibility(View.GONE);
+					v.requestLayout();
+				}
 			}
 		});
 		return convertView;
 	}
 
-	private void setBookStateLayout(LinearLayout layout,
-			List<BookStateInfo> list) {
+	void setBookStateLayout(LinearLayout layout, List<BookStateInfo> list) {
 		final int attachingViewsSize = list.size();
 		int childCount = layout.getChildCount();
 		if (attachingViewsSize < childCount) {
@@ -159,9 +243,13 @@ public class BookItemListAdapter extends AbsArrayAdapter<BookItem> {
 		}
 	}
 
-	protected void setupImgConfig() {
+	private void setupImgConfig() {
+		Context mContext = getContext();
+		Drawable extraDrawable = mContext.getResources().getDrawable(
+				R.drawable.noimg_en);
+		imageHeight = extraDrawable.getMinimumHeight();
+		imageWidth = extraDrawable.getMinimumWidth();
 		if (!imageLoader.isInited()) {
-			Context mContext = getContext();
 			File cacheDir = mContext.getCacheDir();
 			Executor ex = Executors.newCachedThreadPool(new ThreadFactory() {
 				private final AtomicInteger mCount = new AtomicInteger(1);
@@ -171,15 +259,18 @@ public class BookItemListAdapter extends AbsArrayAdapter<BookItem> {
 							+ mCount.getAndIncrement());
 				}
 			});
+
 			BitmapFactory.Options bitmapOpt = new BitmapFactory.Options();
-			bitmapOpt.inSampleSize = 4;
+			bitmapOpt.outHeight = extraDrawable.getMinimumHeight();
+			bitmapOpt.outWidth = extraDrawable.getMinimumWidth();
+
 			// Create configuration for ImageLoader
 			DisplayImageOptions option = new DisplayImageOptions.Builder()
-					.showImageForEmptyUri(R.drawable.noimg_en1)
-					.showImageOnFail(R.drawable.noimg_en1)
-					.decodingOptions(bitmapOpt)
+					.showImageForEmptyUri(extraDrawable)
+					.showImageOnFail(extraDrawable).decodingOptions(bitmapOpt)
+					.imageScaleType(ImageScaleType.IN_SAMPLE_INT)
 					.showImageOnLoading(R.anim.loading_animation)
-					.cacheInMemory(true).cacheOnDisc(true).build();
+					.cacheInMemory(true).cacheOnDisk(true).build();
 			ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
 					mContext)
 					.memoryCacheExtraOptions(480, 800)
@@ -193,10 +284,10 @@ public class BookItemListAdapter extends AbsArrayAdapter<BookItem> {
 					.memoryCache(
 							new UsingFreqLimitedMemoryCache(2 * 1024 * 1024))
 					.memoryCacheSize(2 * 1024 * 1024)
-					.discCache(new UnlimitedDiscCache(cacheDir))
-					.discCacheSize(50 * 1024 * 1024)
-					.discCacheFileCount(100)
-					.discCacheFileNameGenerator(new HashCodeFileNameGenerator())
+					.diskCache(new UnlimitedDiscCache(cacheDir))
+					.diskCacheSize(50 * 1024 * 1024)
+					.diskCacheFileCount(100)
+					.diskCacheFileNameGenerator(new HashCodeFileNameGenerator())
 					.imageDownloader(new BaseImageDownloader(mContext))
 					.defaultDisplayImageOptions(option).build();
 
@@ -236,4 +327,49 @@ public class BookItemListAdapter extends AbsArrayAdapter<BookItem> {
 		return styledText;
 	}
 
+}
+
+class ParseBookInfo extends JerichoParse<BookStateInfo> {
+	private static final String[] BOOK_STATE_XML_TAGS = { "call_no",
+			"place_name", "book_state" };
+
+	protected ParseBookInfo(String htmlBody) {
+		super(htmlBody);
+	}
+
+	@Override
+	protected List<BookStateInfo> parseHttpBody(Source source)
+			throws IOException {
+		ArrayList<BookStateInfo> bookStateInfoList = new ArrayList<BookStateInfo>();
+		List<Element> itemList = source.getAllElements("item");
+		final int size = itemList.size();
+		for (int n = 0; n < size; n++) {
+			Element infoItem = itemList.get(n);
+			BookStateInfo stateInfo = new BookStateInfo();
+			for (int i = 0; i < BOOK_STATE_XML_TAGS.length; i++) {
+				Element element = infoItem
+						.getFirstElement(BOOK_STATE_XML_TAGS[i]);
+				if (element != null) {
+					stateInfo.infoArray[i] = removeExtra(element.getContent()
+							.toString());
+				} else {
+					stateInfo.infoArray[i] = StringUtil.NULL;
+					if (i == 1) {
+						element = infoItem.getFirstElement("shelf");
+						if (element != null) {
+							stateInfo.infoArray[i] = removeExtra(element
+									.getContent().toString());
+						}
+					}
+				}
+			}
+			bookStateInfoList.add(stateInfo);
+		}
+
+		return bookStateInfoList;
+	}
+
+	private String removeExtra(String str) {
+		return str.substring(9, str.length() - 3).toString();
+	}
 }

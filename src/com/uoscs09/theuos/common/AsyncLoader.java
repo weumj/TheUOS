@@ -65,13 +65,13 @@ public class AsyncLoader<Data> {
 		/**
 		 * 비 동기 작업 후 호출되는 메소드
 		 * 
-		 * @param isExceptionOccoured
+		 * @param isExceptionOccured
 		 *            Exception 발생 여부
 		 * @param data
 		 *            <li>Exception이 발생한 경우 : {@link Exception}객체</li> <li>
 		 *            Exception이 발생하지 않은 경우 : {@link Callable} 에서 반환된 결과</li>
 		 */
-		public void onTaskFinished(boolean isExceptionOccoured, Object data);
+		public void onTaskFinished(boolean isExceptionOccured, Object data);
 	}
 
 }

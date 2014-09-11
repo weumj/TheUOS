@@ -3,24 +3,45 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
+    <!-- 스터디룸의 이름 -->
+
     <TextView
         android:id="@android:id/text1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="3dip"
-        android:layout_toLeftOf="@android:id/text2"
+        android:layout_margin="3dip"
+        android:layout_toLeftOf="@android:id/content"
+        android:gravity="center_vertical"
         android:textColor="@android:color/black" />
 
-    <TextView
-        android:id="@android:id/text2"
+    <!-- 스터디룸의 인원과 상태 -->
+
+    <LinearLayout
+        android:id="@android:id/content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
+        android:layout_marginBottom="3dip"
         android:layout_marginRight="5dip"
-        android:background="@android:color/holo_green_light"
-        android:textColor="@android:color/black" />
+        android:layout_marginTop="3dip"
+        android:orientation="horizontal"
+        android:padding="1dip" >
+
+        <TextView
+            android:id="@android:id/text2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@android:id/summary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
+            android:textSize="10sp" />
+    </LinearLayout>
 
 </RelativeLayout>

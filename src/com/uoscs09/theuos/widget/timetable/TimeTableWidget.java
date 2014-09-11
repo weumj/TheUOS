@@ -16,11 +16,14 @@ import android.widget.RemoteViews;
 
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.util.AppUtil;
+import com.uoscs09.theuos.common.util.OApiUtil;
 import com.uoscs09.theuos.common.util.PrefUtil;
+import com.uoscs09.theuos.common.util.OApiUtil.Term;
 
 public abstract class TimeTableWidget extends AppWidgetProvider {
 	public final static String WIDGET_TIMETABLE_REFRESH = "com.uoscs09.theuos.widget.timetable.refresh";
 	public final static String WIDGET_TIMETABLE_DAY = "WIDGET_TIMETABLE_DAY";
+
 	@Override
 	public void onEnabled(Context context) {
 		super.onEnabled(context);
@@ -67,6 +70,7 @@ public abstract class TimeTableWidget extends AppWidgetProvider {
 			RemoteViews views = getRemoteViews(context);
 
 			for (int appWidgetId : appWidgetIds) {
+				// adapter
 				Intent adapterIntent = new Intent(context,
 						getListServiceClass());
 				adapterIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
@@ -78,20 +82,41 @@ public abstract class TimeTableWidget extends AppWidgetProvider {
 				views.setEmptyView(R.id.widget_timetable_listview,
 						R.id.widget_timetable_empty);
 
-				Intent refreshIntent = getIntent(context, WIDGET_TIMETABLE_REFRESH);
+				// refresh button
+				Intent refreshIntent = getIntent(context,
+						WIDGET_TIMETABLE_REFRESH);
 				refreshIntent.setAction(WIDGET_TIMETABLE_REFRESH);
 				refreshIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
 						appWidgetId);
 				PendingIntent p = PendingIntent.getBroadcast(context, 0,
-						refreshIntent, 0);
+						refreshIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 				views.setOnClickPendingIntent(R.id.widget_time_refresh, p);
 
-				updateTitle(views);
-				Intent serviceIntent = new Intent(context,
-						getListServiceClass());
-				serviceIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
-						appWidgetId);
-				//context.startService(serviceIntent);
+				// title
+				SimpleDateFormat date = new SimpleDateFormat("yyyy MMM dd E",
+						Locale.getDefault());
+				views.setTextViewText(R.id.widget_time_date,
+						date.format(new Date()));
+				Term term;
+				int termValue = PrefUtil.getInstance(context).get(
+						"timetable_term", -1);
+				if (termValue != -1) {
+					term = Term.values()[termValue];
+				} else {
+					term = OApiUtil.getTerm();
+				}
+				views.setTextViewText(
+						R.id.widget_time_term,
+						OApiUtil.getSemesterYear(term)
+								+ "/"
+								+ context.getResources().getStringArray(
+										R.array.terms)[term.ordinal()]);
+
+				// Intent serviceIntent = new Intent(context,
+				// getListServiceClass());
+				// serviceIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
+				// appWidgetId);
+				// context.startService(serviceIntent);
 
 				appWidgetManager.updateAppWidget(appWidgetId, views);
 				appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId,
@@ -106,12 +131,6 @@ public abstract class TimeTableWidget extends AppWidgetProvider {
 	protected abstract Class<? extends WidgetTimetableListService> getListServiceClass();
 
 	protected abstract Class<? extends TimeTableWidget> getWidgetClass();
-
-	protected void updateTitle(RemoteViews rv) {
-		SimpleDateFormat date = new SimpleDateFormat("yyyy MMM dd E",
-				Locale.KOREA);
-		rv.setTextViewText(R.id.widget_time_date, date.format(new Date()));
-	}
 
 	protected Intent getIntent(Context context, String action) {
 		Intent intent = new Intent(context, getWidgetClass());
@@ -148,7 +167,7 @@ public abstract class TimeTableWidget extends AppWidgetProvider {
 					AppWidgetManager.EXTRA_APPWIDGET_ID,
 					AppWidgetManager.INVALID_APPWIDGET_ID) };
 			onUpdate(context, m, ids);
-			//AppUtil.showToast(context, "새로고침...", true);
+			// AppUtil.showToast(context, "새로고침...", true);
 			AppWidgetManager.getInstance(context)
 					.notifyAppWidgetViewDataChanged(ids,
 							R.id.widget_timetable_listview);

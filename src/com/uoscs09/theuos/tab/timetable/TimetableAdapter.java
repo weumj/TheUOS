@@ -14,14 +14,15 @@ import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.impl.AbsArrayAdapter;
 import com.uoscs09.theuos.common.util.AppUtil;
 import com.uoscs09.theuos.common.util.OApiUtil;
+import com.uoscs09.theuos.common.util.PrefUtil;
 import com.uoscs09.theuos.common.util.StringUtil;
 
 public class TimetableAdapter extends AbsArrayAdapter<TimeTableItem> {
 	private OnClickListener l;
 	private Map<String, Integer> colorTable;
-	private List<TimeTableItem> list;
 	private static int BACKGROUND_RES;
 	private static final int[] SELECTOR_REF = { R.attr.selector_button };
+	private int maxTime;
 
 	private TimetableAdapter(Context context) {
 		super(context, 0);
@@ -31,9 +32,9 @@ public class TimetableAdapter extends AbsArrayAdapter<TimeTableItem> {
 			List<TimeTableItem> list, Map<String, Integer> colorTable) {
 		super(context, layout, list);
 		l = null;
-		this.list = list;
 		this.colorTable = colorTable;
-		init(context);
+		initDrawable(context);
+		init();
 	}
 
 	public TimetableAdapter(Context context, int layout,
@@ -41,12 +42,12 @@ public class TimetableAdapter extends AbsArrayAdapter<TimeTableItem> {
 			View.OnClickListener l) {
 		super(context, layout, list);
 		this.l = l;
-		this.list = list;
 		this.colorTable = colorTable;
-		init(context);
+		initDrawable(context);
+		init();
 	}
 
-	private static void init(Context context) {
+	private static void initDrawable(Context context) {
 		// 시간표 기본 background resource을 얻어옴
 		TypedValue value = new TypedValue();
 		TypedArray a = context.obtainStyledAttributes(value.data, SELECTOR_REF);
@@ -54,15 +55,33 @@ public class TimetableAdapter extends AbsArrayAdapter<TimeTableItem> {
 		a.recycle();
 	}
 
+	private void init() {
+		int size = super.getCount() - 1;
+
+		// 마지막 수업시간 판별, 14부터 시작
+		for (; size > 0 && getItem(size).isTimeTableEmpty(); size--)
+			;
+
+		maxTime = size;
+		if (maxTime < 0)
+			maxTime = super.getCount() == 0 ? 0 : super.getCount() - 1;
+	}
+
+	@Override
+	public void notifyDataSetChanged() {
+		init();
+		super.notifyDataSetChanged();
+	}
+
 	@Override
 	public int getCount() {
-		int limit = AppUtil.timetable_limit;
-		return Math.min(list.size(), limit);
+		return PrefUtil.getInstance(getContext()).get(
+				PrefUtil.KEY_TIMETABLE_LIMIT, false) ? maxTime : super
+				.getCount();
 	}
 
 	@Override
 	public View setView(int position, View convertView, ViewHolder holder) {
-		int width = TabTimeTableFragment.px;
 		ViewWrapper w = (ViewWrapper) holder;
 		TimeTableItem item = getItem(position);
 
@@ -71,7 +90,6 @@ public class TimetableAdapter extends AbsArrayAdapter<TimeTableItem> {
 
 		w.textArray[0]
 				.setText(strArray[0].replace("\n\n", StringUtil.NEW_LINE));
-		w.textArray[0].setWidth(width);
 
 		Integer idx;
 		int color;
@@ -82,7 +100,7 @@ public class TimetableAdapter extends AbsArrayAdapter<TimeTableItem> {
 					upperItem.wed, upperItem.thr, upperItem.fri, upperItem.sat };
 		}
 
-		for (int i = 1; i < TabTimeTableFragment.NUM_OF_TIMETABLE_VIEWS; i++) {
+		for (int i = 1; i < 7; i++) {
 			if (upperArray != null
 					&& OApiUtil.getSubjectName(upperArray[i]).equals(
 							OApiUtil.getSubjectName(strArray[i]))) {
@@ -96,7 +114,6 @@ public class TimetableAdapter extends AbsArrayAdapter<TimeTableItem> {
 			w.textArray[i].setTag(strArray[i] + StringUtil.NEW_LINE + position
 					+ StringUtil.NEW_LINE + i);
 
-			w.textArray[i].setWidth(width);
 			idx = colorTable.get(OApiUtil.getSubjectName(strArray[i]));
 			if (idx != null) {
 				color = AppUtil.getColor(idx);

@@ -2,12 +2,13 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/rounded_box" >
+    android:background="@drawable/rounded_box_widget" >
 
     <TextView
         android:id="@android:id/text1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignBaseline="@android:id/selectedIcon"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_marginLeft="5dip"
@@ -36,9 +37,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@android:id/selectedIcon"
-        android:layout_margin="1dip"
-        android:divider="@color/light_gray"
-        android:dividerHeight="1dip" >
+        android:layout_marginLeft="2dip"
+        android:layout_marginRight="2dip"
+        android:clipToPadding="false"
+        android:divider="#33888888"
+        android:dividerHeight="1dip"
+        android:scrollbarStyle="outsideOverlay" >
     </ListView>
 
     <TextView
@@ -46,6 +50,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
+        android:layout_margin="3dip"
         android:text="@string/widget_library_seat_empty"
         android:textColor="@android:color/black"
         android:visibility="gone" />

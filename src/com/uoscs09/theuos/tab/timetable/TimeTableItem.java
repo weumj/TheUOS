@@ -89,4 +89,26 @@ public class TimeTableItem implements Parcelable, Serializable {
 			return new TimeTableItem(source);
 		}
 	};
+
+	/**
+	 * 시간표의 모든 요일의 수업이 공강인지 판별한다.
+	 * 
+	 * @return true - 모두 공강
+	 * @since 2.30
+	 */
+	public boolean isTimeTableEmpty() {
+		return isTimeTableAllEqual() && sat.contentEquals(StringUtil.NULL);
+	}
+
+	/**
+	 * 시간표의 모든 요일의 수업이 같은지 판별한다.
+	 * 
+	 * @return true - 모두 같음
+	 * @since 2.30
+	 */
+	public boolean isTimeTableAllEqual() {
+		return mon.contentEquals(tue) && tue.contentEquals(wed)
+				&& wed.contentEquals(thr) && thr.contentEquals(fri)
+				&& fri.contentEquals(sat);
+	}
 }

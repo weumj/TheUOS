@@ -11,7 +11,6 @@ import net.htmlparser.jericho.Source;
 import com.uoscs09.theuos.common.util.StringUtil;
 import com.uoscs09.theuos.http.HttpRequest;
 import com.uoscs09.theuos.tab.booksearch.BookItem;
-import com.uoscs09.theuos.tab.booksearch.BookStateInfo;
 
 public class ParseBook extends JerichoParse<BookItem> {
 	private static final String HREF = "href";
@@ -19,9 +18,6 @@ public class ParseBook extends JerichoParse<BookItem> {
 	private static final String IFRAME = "iframe";
 	private static final String COVER = "cover";
 	private static final String LI = "li";
-	private static final String ITEM = "item";
-	private static final String[] BOOK_STATE_XML_TAGS = { "call_no",
-			"place_name", "book_state" };
 
 	protected ParseBook(String body) {
 		super(body);
@@ -33,7 +29,10 @@ public class ParseBook extends JerichoParse<BookItem> {
 		List<Element> bookHtmlList = briefList.get(0).getAllElements(LI);
 
 		ArrayList<BookItem> bookItemList = new ArrayList<BookItem>();
-		for (Element rawBookHtml : bookHtmlList) {
+		final int size = bookHtmlList.size();
+		for (int i = 0; i<size;i++) {
+			Element rawBookHtml = bookHtmlList.get(i);
+			
 			BookItem item = new BookItem();
 			Element bookUrl = rawBookHtml.getFirstElement(HTMLElementName.A);
 			if (bookUrl != null) {
@@ -79,6 +78,7 @@ public class ParseBook extends JerichoParse<BookItem> {
 			}
 			Element bookStateInfos = rawBookHtml
 					.getFirstElementByClass("downIcon");
+			item.bookStateInfoList = null;
 			if (bookStateInfos != null) {
 				Element a = bookStateInfos.getFirstElement(HTMLElementName.A);
 				if (a != null) {
@@ -90,11 +90,8 @@ public class ParseBook extends JerichoParse<BookItem> {
 
 					String stateInfoUrl = "http://mlibrary.uos.ac.kr/search/prevLoc/"
 							+ sysdCtrl + "?loc=" + location;
-					item.bookStateInfoList = getBookStateInfo(HttpRequest
-							.getBody(stateInfoUrl));
+					item.infoUrl = stateInfoUrl;
 				}
-			} else {
-				item.bookStateInfoList = new ArrayList<BookStateInfo>();
 			}
 
 			bookItemList.add(item);
@@ -114,40 +111,4 @@ public class ParseBook extends JerichoParse<BookItem> {
 		}
 		return imgSrc;
 	}
-
-	private List<BookStateInfo> getBookStateInfo(String html) {
-		Source source = new Source(html);
-		ArrayList<BookStateInfo> bookStateInfoList = new ArrayList<BookStateInfo>();
-		List<Element> itemList = source.getAllElements(ITEM);
-
-		for (Element infoItem : itemList) {
-			BookStateInfo stateInfo = new BookStateInfo();
-			for (int i = 0; i < BOOK_STATE_XML_TAGS.length; i++) {
-				Element element = infoItem
-						.getFirstElement(BOOK_STATE_XML_TAGS[i]);
-				if (element != null) {
-					stateInfo.infoArray[i] = removeExtra(element.getContent()
-							.toString());
-				} else {
-					stateInfo.infoArray[i] = StringUtil.NULL;
-					if (i == 1) {
-						element = infoItem.getFirstElement("shelf");
-						if (element != null) {
-							stateInfo.infoArray[i] = removeExtra(element
-									.getContent().toString());
-						}
-					}
-				}
-			}
-
-			bookStateInfoList.add(stateInfo);
-		}
-
-		return bookStateInfoList;
-	}
-
-	private String removeExtra(String str) {
-		return str.substring(9, str.length() - 3).toString();
-	}
-
 }

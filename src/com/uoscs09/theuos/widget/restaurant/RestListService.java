@@ -45,8 +45,13 @@ public class RestListService extends RemoteViewsService {
 		public RemoteViews getViewAt(int position) {
 			RemoteViews rv = new RemoteViews(getContext().getPackageName(),
 					R.layout.list_layout_widget_rest);
-			RestItem item = getItem(this.position);
-
+			RestItem item;
+			try {
+				item = getItem(this.position);
+			} catch (Exception e) {
+				this.position = 0;
+				item = getItem(this.position);
+			}
 			switch (position) {
 			case 0:
 				rv.setTextViewText(R.id.widget_rest_title, "아침");

@@ -12,10 +12,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
-import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -129,7 +127,6 @@ public class TabSearchEmptyRoomFragment extends
 			}
 		});
 		listView.setEmptyView(empty);
-		setViewSize((getResources().getDisplayMetrics().widthPixels) / 4, root);
 		return root;
 	}
 
@@ -154,14 +151,6 @@ public class TabSearchEmptyRoomFragment extends
 		params.put(OApiUtil.TERM,
 				OApiUtil.getTermCode(Term.values()[termSpinner
 						.getSelectedItemPosition()]));
-	}
-
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-				newConfig.screenWidthDp, getResources().getDisplayMetrics()) / 4;
-		setViewSize(px, getView());
-		super.onConfigurationChanged(newConfig);
 	}
 
 	@Override
@@ -237,18 +226,6 @@ public class TabSearchEmptyRoomFragment extends
 					.create(ParseFactory.What.EmptyRoom, body,
 							ParseFactory.Value.BASIC).parse();
 		}
-	}
-
-	private void setViewSize(int px, View v) {
-		((TextView) v
-				.findViewById(R.id.tab_search_empty_room_text_building_name))
-				.setWidth(px);
-		((TextView) v.findViewById(R.id.tab_search_empty_room_text_room_no))
-				.setWidth(px);
-		((TextView) v.findViewById(R.id.tab_search_empty_room_text_room_subj))
-				.setWidth(px);
-		((TextView) v.findViewById(R.id.tab_search_empty_room_text_room_person))
-				.setWidth(px);
 	}
 
 	@Override
