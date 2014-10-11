@@ -1,3 +1,7 @@
 /proguard/
 /bin/
 /gen/
+/.codepro/
+/.settings/
+/.classpath
+/.project

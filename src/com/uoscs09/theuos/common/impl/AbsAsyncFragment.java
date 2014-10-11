@@ -11,6 +11,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 
 import com.javacan.asyncexcute.AsyncCallback;
@@ -175,7 +176,7 @@ public abstract class AbsAsyncFragment<T> extends BaseFragment implements
 	 *            작업이 실패하였을 때 - Exception 객체
 	 */
 	protected void notifyFinishWhenBackground(Context context, Object result) {
-		NotificationManager nm = (NotificationManager) context
+		final NotificationManager nm = (NotificationManager) context
 				.getSystemService(Context.NOTIFICATION_SERVICE);
 		Notification noti;
 		CharSequence resultMesage;
@@ -196,7 +197,17 @@ public abstract class AbsAsyncFragment<T> extends BaseFragment implements
 				.setContentTitle(title).setContentText(resultMesage)
 				.setSmallIcon(R.drawable.ic_launcher)
 				.setTicker(context.getText(R.string.progress_finish)).build();
-		nm.notify(AppUtil.titleResIdToOrder(titleRes), noti);
+		final int notiId = AppUtil.titleResIdToOrder(titleRes);
+		nm.notify(notiId, noti);
+		
+		new Handler().postDelayed(new Runnable() {
+			
+			@Override
+			public void run() {
+				nm.cancel(notiId);
+			}
+		}, 2000);
+		mContext = null;
 	}
 
 	@Override

@@ -5,13 +5,14 @@
 
     <ListView
         android:id="@+id/tab_library_listview_dismiss"
-        android:layout_width="wrap_content" 
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
     <TextView
         android:id="@android:id/empty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:padding="10dp"
         android:text="@string/tab_library_seat_dissmiss_info_not_exist_in_1hr"
         android:visibility="gone" />
 

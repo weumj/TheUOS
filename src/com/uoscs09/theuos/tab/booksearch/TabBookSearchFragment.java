@@ -194,13 +194,12 @@ public class TabBookSearchFragment extends
 		} else {
 			emptyView.setVisibility(View.VISIBLE);
 		}
-		
+
 		bookListAdapter = new BookItemListAdapter(getActivity(),
 				R.layout.list_layout_book, mBookList, mLongClickListener);
 		animAdapter = new AlphaInAnimationAdapter(bookListAdapter);
 		// 리스트 뷰
-		mListView = (ListView) rootView
-				.findViewById(R.id.tab_book_list_search);
+		mListView = (ListView) rootView.findViewById(R.id.tab_book_list_search);
 		mListView.addFooterView(getLoadingView());
 		// 스크롤 리스너 등록
 		mListView.setOnScrollListener(this);
@@ -284,6 +283,7 @@ public class TabBookSearchFragment extends
 			page = 1;
 			mBookList.clear();
 			queryTextview.setText(rawQuery);
+			animAdapter.setShouldAnimateFromPosition(0);
 			excute();
 		}
 		return true;

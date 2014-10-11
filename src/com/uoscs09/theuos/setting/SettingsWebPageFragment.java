@@ -37,6 +37,9 @@ public class SettingsWebPageFragment extends PreferenceFragment {
 			startActivity(AppUtil
 					.setWebPageIntent("http://m.cafe.daum.net/uosisthebest/"));
 			return true;
+		case R.string.web_page_uostable:
+			startActivity(AppUtil.setWebPageIntent("http://u5s.kr/t"));
+			return true;
 		case R.string.web_page_uostime:
 			startActivity(AppUtil.setWebPageIntent("http://uosti.me/"));
 			return true;

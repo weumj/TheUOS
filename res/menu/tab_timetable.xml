@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/action_wise"
-        android:icon="?menu_ic_content_import_export"
+        android:icon="?menu_ic_secure_login"
         android:orderInCategory="101"
         android:showAsAction="always"
         android:title="@string/tab_timetable_wise_login_title">

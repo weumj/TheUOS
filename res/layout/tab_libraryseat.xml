@@ -4,14 +4,19 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <ListView
+    <GridView
         android:id="@+id/tab_library_list_seat"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:choiceMode="singleChoice"
-        android:paddingLeft="5dp"
-        android:paddingRight="5dp"
-        android:scrollingCache="true" >
-    </ListView>
+        android:clipToPadding="false"
+        android:gravity="center"
+        android:numColumns="auto_fit"
+        android:padding="5dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:scrollbars="none"
+        android:stretchMode="columnWidth"
+        android:scrollingCache="true" />
 
 </LinearLayout>

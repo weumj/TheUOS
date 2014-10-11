@@ -70,6 +70,7 @@
         <item name="ic_navigation_refresh">@drawable/ic_action_navigation_refresh_dark</item>
         <item name="ic_book">@drawable/ic_book_text_dark</item>
         <item name="ic_chair">@drawable/ic_action_book_with_pen_dark</item>
+        <item name="ic_secure_login">@drawable/ic_action_secure_login_dark</item>
 
         <!-- for menu icon drawables -->
         <item name="menu_ic_action_about">@drawable/ic_action_action_about_dark</item>
@@ -101,7 +102,8 @@
         <item name="menu_ic_navigation_refresh">@drawable/ic_action_navigation_refresh_dark</item>
         <item name="menu_ic_book">@drawable/ic_book_text_dark</item>
         <item name="menu_ic_chair">@drawable/ic_action_book_with_pen_dark</item>
-        
+        <item name="menu_ic_secure_login">@drawable/ic_action_secure_login_dark</item>
+
         <!-- for color -->
         <item name="color_rosy_brown">@color/rosy_brown_dark</item>
         <item name="color_text">@android:color/white</item>

@@ -25,6 +25,10 @@
             android:title="@string/web_page_square" >
         </PreferenceScreen>
         <PreferenceScreen
+            android:summary="@string/web_page_uostable_desc"
+            android:title="@string/web_page_uostable" >
+        </PreferenceScreen>
+        <PreferenceScreen
             android:summary="@string/web_page_uostime_desc"
             android:title="@string/web_page_uostime" >
         </PreferenceScreen>

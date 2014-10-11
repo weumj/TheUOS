@@ -70,8 +70,9 @@
         <item name="ic_navigation_refresh">@drawable/ic_action_navigation_refresh</item>
         <item name="ic_book">@drawable/ic_book_text</item>
         <item name="ic_chair">@drawable/ic_action_book_with_pen</item>
+        <item name="ic_secure_login">@drawable/ic_action_secure_login</item>
         
-          <!-- for menu icon drawables -->
+        <!-- for menu icon drawables -->
         <item name="menu_ic_action_about">@drawable/ic_action_action_about</item>
         <item name="menu_ic_action_help">@drawable/ic_action_action_help</item>
         <item name="menu_ic_action_search">@drawable/ic_action_action_search</item>
@@ -101,6 +102,7 @@
         <item name="menu_ic_navigation_refresh">@drawable/ic_action_navigation_refresh</item>
         <item name="menu_ic_book">@drawable/ic_book_text</item>
         <item name="menu_ic_chair">@drawable/ic_action_book_with_pen</item>
+        <item name="menu_ic_secure_login">@drawable/ic_action_secure_login</item>
         
         <!-- for color -->
         <item name="color_rosy_brown">@color/rosy_brown</item>

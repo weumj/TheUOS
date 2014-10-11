@@ -7,8 +7,6 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.view.LayoutInflater;
@@ -17,12 +15,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.nhaarman.listviewanimations.swinginadapters.AnimationAdapter;
+import com.nhaarman.listviewanimations.swinginadapters.prepared.SwingBottomInAnimationAdapter;
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.impl.AbsDrawableProgressFragment;
 import com.uoscs09.theuos.common.impl.annotaion.AsyncData;
@@ -41,6 +42,7 @@ public class TabLibrarySeatFragment extends
 	/** 해지 될 좌석 정보 리스트 뷰의 adapter */
 	@ReleaseWhenDestroy
 	private ArrayAdapter<String> mInfoAdapter;
+	private AnimationAdapter mAnimAdapter;
 	/** 좌석 정보 리스트 */
 	@AsyncData
 	private ArrayList<SeatItem> mSeatList;
@@ -48,7 +50,7 @@ public class TabLibrarySeatFragment extends
 	private ArrayList<String> mDissmissInfoList;
 	/** 좌석 정보 리스트 뷰 */
 	@ReleaseWhenDestroy
-	private ListView mSeatListView;
+	private AbsListView mSeatListView;
 	/** 해지 될 좌석 정보 뷰, infoDialog에서 보여진다. */
 	@ReleaseWhenDestroy
 	private View mDismissDialogView;
@@ -90,7 +92,7 @@ public class TabLibrarySeatFragment extends
 			mDissmissInfoList = savedInstanceState
 					.getStringArrayList(INFO_LIST);
 		} else {
-			this.mSeatList = new ArrayList<SeatItem>();
+			mSeatList = new ArrayList<SeatItem>();
 			mDissmissInfoList = new ArrayList<String>();
 		}
 		Activity activity = getActivity();
@@ -111,12 +113,34 @@ public class TabLibrarySeatFragment extends
 		Activity activity = getActivity();
 		mSeatAdapter = new SeatListAdapter(activity, R.layout.list_layout_seat,
 				mSeatList);
-		viewInit(rootView);
+		mSeatListView = (AbsListView) rootView
+				.findViewById(R.id.tab_library_list_seat);
 
-		mSeatListView.setOnItemClickListener(itemClickListenerOfLanguageList);
+		mAnimAdapter = new SwingBottomInAnimationAdapter(mSeatAdapter);
+		mAnimAdapter.setAbsListView(mSeatListView);
+		mAnimAdapter.setAnimationDelayMillis(100);
+		mSeatListView.setAdapter(mAnimAdapter);
+
+		mSeatListView.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1,
+					int position, long arg3) {
+				if (!isMenuVisible())
+					return;
+				SeatItem item = (SeatItem) arg0.getItemAtPosition(position);
+				if (item == null)
+					return;
+				Activity activity = getActivity();
+				Intent intent = new Intent(activity, SubSeatWebActivity.class);
+				intent.putExtra(ITEM, (Parcelable) item);
+				startActivity(intent);
+				AppUtil.overridePendingTransition(activity, 1);
+			}
+		});
 
 		mDismissDialogView = View.inflate(activity,
 				R.layout.dialog_library_dismiss_info, null);
+
 		ListView mInfoListView = (ListView) mDismissDialogView
 				.findViewById(R.id.tab_library_listview_dismiss);
 		mInfoListView.setEmptyView(mDismissDialogView
@@ -140,8 +164,6 @@ public class TabLibrarySeatFragment extends
 			if (getExecutor() != null || !isRunning()) {
 				excute();
 			}
-		} else {
-			mSeatListView.removeFooterView(getLoadingView());
 		}
 		super.onResume();
 	}
@@ -160,10 +182,6 @@ public class TabLibrarySeatFragment extends
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_refresh:
-			if (getExecutor() != null && VERSION.SDK_INT < VERSION_CODES.KITKAT
-					&& !isRunning()) {
-				mSeatListView.addFooterView(getLoadingView());
-			}
 			excute();
 			return true;
 		case R.id.action_info:
@@ -184,41 +202,33 @@ public class TabLibrarySeatFragment extends
 		}
 	}
 
-	private void viewInit(View rootView) {
-		mSeatListView = (ListView) rootView
-				.findViewById(R.id.tab_library_list_seat);
-		if (VERSION.SDK_INT < VERSION_CODES.KITKAT) {
-			mSeatListView.addFooterView(getLoadingView());
-		}
-		mSeatListView.setAdapter(mSeatAdapter);
-	}
-
 	@Override
 	protected void excute() {
-		if (VERSION.SDK_INT > VERSION_CODES.JELLY_BEAN_MR2) {
-			if (getExecutor() == null) {
-				mSeatListView.addFooterView(getLoadingView());
-			} else if (!isRunning()) {
-				mSeatListView.addFooterView(getLoadingView());
-			}
-		}
-		mSeatList.clear();
 		mSeatAdapter.clear();
+		mSeatAdapter.notifyDataSetChanged();
+		mAnimAdapter.notifyDataSetChanged();
+		((ViewGroup) getView()).addView(getLoadingView(), 0);
+		getView().invalidate();
 		super.excute();
 	}
 
 	@Override
 	protected void onTransactPostExcute() {
+		((ViewGroup) getView()).removeView(getLoadingView());
+		getView().invalidate();
 		super.onTransactPostExcute();
-		mSeatListView.removeFooterView(getLoadingView());
 	}
 
 	@Override
 	public void onTransactResult(ArrayList<SeatItem> result) {
 		updateTimeView();
+
 		mSeatAdapter.clear();
 		mSeatAdapter.addAll(result);
+
 		mSeatAdapter.notifyDataSetChanged();
+		mAnimAdapter.setShouldAnimateFromPosition(0);
+		mAnimAdapter.notifyDataSetChanged();
 		mInfoAdapter.notifyDataSetChanged();
 	}
 
@@ -261,23 +271,6 @@ public class TabLibrarySeatFragment extends
 			}
 		}
 	}
-
-	private OnItemClickListener itemClickListenerOfLanguageList = new OnItemClickListener() {
-		@Override
-		public void onItemClick(AdapterView<?> arg0, View arg1, int position,
-				long arg3) {
-			if (!isMenuVisible())
-				return;
-			SeatItem item = (SeatItem) arg0.getItemAtPosition(position);
-			if (item == null)
-				return;
-			Activity activity = getActivity();
-			Intent intent = new Intent(activity, SubSeatWebActivity.class);
-			intent.putExtra(ITEM, (Parcelable) item);
-			startActivity(intent);
-			AppUtil.overridePendingTransition(activity, 1);
-		}
-	};
 
 	private void updateTimeView() {
 		// Fragment가 Attatch 되지 않은 경우

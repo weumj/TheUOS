@@ -32,6 +32,7 @@
         <attr name="ic_navigation_refresh" format="reference|color" />
         <attr name="ic_book" format="reference|color" />
         <attr name="ic_chair" format="reference|color" />
+        <attr name="ic_secure_login" format="reference|color" />
     </declare-styleable>
     <declare-styleable name="ThemeDrawable.Selector">
         <attr name="selector_list" format="reference|color" />
@@ -71,6 +72,7 @@
         <attr name="menu_ic_navigation_refresh" format="reference|color" />
         <attr name="menu_ic_book" format="reference|color" />
         <attr name="menu_ic_chair" format="reference|color" />
+        <attr name="menu_ic_secure_login" format="reference|color" />
     </declare-styleable>
     <declare-styleable name="ThemeDrawable.Color">
         <attr name="color_rosy_brown" format="reference|color"></attr>

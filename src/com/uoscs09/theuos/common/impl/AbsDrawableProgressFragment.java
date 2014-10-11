@@ -62,7 +62,7 @@ public abstract class AbsDrawableProgressFragment<T> extends
 
 	protected final void animationStop() {
 		if (mLoadingView != null) {
-			mLoadingView.setVisibility(View.INVISIBLE);
+			mLoadingView.setVisibility(View.GONE);
 		}
 		if (getActivity() != null)
 			getActivity().runOnUiThread(mStopAction);

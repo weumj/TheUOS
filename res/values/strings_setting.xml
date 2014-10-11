@@ -3,7 +3,7 @@
 
     <string name="setting_app_info">앱 정보</string>
     <string name="setting_app_version">버전</string>
-    <string name="setting_app_version_desc">2.30</string>
+    <string name="setting_app_version_desc">2.31</string>
     <string name="setting_app_version_update">최신버전 확인</string>
     <string name="setting_app_version_update_desc">어플리케이션의 최신 버전을 확인합니다.</string>
     <string name="setting_app_version_update_require">어플리케이션 업데이트 필요!</string>
@@ -82,5 +82,6 @@
     <string name="web_page_club_desc">에듀 클래스</string>
     <string name="web_page_uostime">UOSTIME</string>
     <string name="web_page_uostime_desc">시간표 짜기\nprogrammed by square^\nsupported by codingsroom</string>
-
+	<string name="web_page_uostable">UOSTABLE</string>
+	<string name="web_page_uostable_desc">시간표 짜기\nmade by Gnu Shim</string>
 </resources>

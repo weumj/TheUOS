@@ -83,6 +83,7 @@ public class PagerFragmentActivity extends BaseFragmentActivity implements
 		} else {
 			navigateItem(0, false);
 		}
+
 		AppUtil.startOrStopServiceAnounce(getApplicationContext());
 		mBackCloseHandler = new BackPressCloseHandler();
 		System.gc();
