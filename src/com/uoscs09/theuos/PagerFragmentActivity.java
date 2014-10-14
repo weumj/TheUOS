@@ -402,7 +402,7 @@ public class PagerFragmentActivity extends BaseFragmentActivity implements
 		}
 	}
 
-	public class PagerTransformer implements ViewPager.PageTransformer {
+	public static class PagerTransformer implements ViewPager.PageTransformer {
 		private int i;
 
 		public PagerTransformer(int i) {

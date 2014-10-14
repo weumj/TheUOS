@@ -31,18 +31,18 @@
     <string name="excute_delete">삭제되었습니다.</string>
     <string name="file_not_found">파일이 존재하지 않습니다.</string>
     <string name="anounce_keyword">공지사항 키워드</string>
-    <string name="setting_anounce_keyword_title_">공지사항 키워드</string>
+    <string name="setting_anounce_keyword_title_"></string>
     <string name="setting_anounce_keyword_desc">알림을 받을 공지사항의 키워드를 선택합니다.</string>
     <string name="setting_anounce_keyword_desc2">키워드는 여러개를 설정할 수 있습니다.\n(한 줄에 하나의 키워드를 입력합니다.)</string>
     <string name="apply_default">초기값을 불러왔습니다.</string>
     <string name="setting_noti_apply_not_commit">알림시간이 변경되지 않았습니다.</string>
     <string name="setting_plz_select_theme">테마를 선택해 주세요.</string>
-    <string name="setting_check_borrow">대출 불가능 도서 보지 않기</string>
-    <string name="setting_check_borrow_desc_enable">현재 대출 불가능한 책은 검색 결과에서 보이지 않습니다.</string>
-    <string name="setting_check_borrow_desc_disable">현재 모든 도서 검색 결과가 보여집니다.</string>
-    <string name="setting_check_seat">점유된 스터디룸 보지 않기</string>
-    <string name="setting_check_seat_desc_enable">현재 좌석 이용률이 50%이상인 스터디룸은 리스트에서 보이지 않습니다.</string>
-    <string name="setting_check_seat_desc_disable">현재 모든 열람실 검색 결과가 보여집니다.</string>
+    <string name="setting_check_borrow">대출 불가능 도서 표시</string>
+    <string name="setting_check_borrow_desc_enable">대출 불가능한 책은 검색 결과에서 표시되지 않습니다.</string>
+    <string name="setting_check_borrow_desc_disable">모든 도서 검색 결과가 표시됩니다.</string>
+    <string name="setting_check_seat">점유된 스터디룸 표시</string>
+    <string name="setting_check_seat_desc_enable">좌석 이용률이 50%이상인 스터디룸은 리스트에서 표시되지 않습니다.</string>
+    <string name="setting_check_seat_desc_disable">모든 열람실 검색 결과가 보여집니다.</string>
     <string name="setting_noti_time">알림 시간 설정</string>
     <string name="setting_noti_time_desc">알리미가 실행될 시간을 설정합니다.</string>
     <string name="setting_confirm">설정 되었습니다.</string>
@@ -57,16 +57,27 @@
     <string name="setting_timetable_limit">시간표 표시 제한</string>
     <string name="setting_timetable_limit_desc_check">가장 마지막 수업 이후로 공강인 시간대를 표시하지 않습니다.</string>
     <string name="setting_timetable_limit_desc">모든 시간대가 표시됩니다.</string>
+    <!-- 공지사항 알리미를 사용 할 것인지 여부, boolean -->
     <string name="pref_key_check_anounce_service">ACTIVE_SERVICE_ANOUNCE</string>
+    <!-- 캐쉬를 삭제하는 메뉴를 띄우는 용도 -->
     <string name="pref_key_delete_cache">DELETE_CACHE</string>
+    <!-- 순서 설정 화면으로 진입하는 용도 -->
     <string name="pref_key_order">ORDER</string>
+    <!-- 공지사항 알리미의 키워드, String -->
     <string name="pref_key_keyword_anounce">KEYWORD_ANOUNCE</string>
+    <!-- 대출 불가능한 도서 표시 여부, boolean -->
     <string name="pref_key_check_borrow">BORROW</string>
+    <!-- 점유된 스터디룸 표시 여부, boolean -->
     <string name="pref_key_check_seat">LIB_SEAT</string>
+    <!-- 공지사항 알리미의 알림 시간, String -->
     <string name="pref_key_noti_time">NOTI_TIME</string>
+    <!-- 어플리케이션의 테마, int -->
     <string name="pref_key_theme">APP_THEME</string>
+    <!-- 시간표 표시 제한 여부, boolean -->
     <string name="pref_key_timetable_limit">TIMETABLE_LIMIT_LAST_TIME</string>
+    <!-- 홈 화면을 보여줄 것인지 여부, boolean -->
     <string name="pref_key_home">SCREEN_HOME</string>
+    <!-- 이미지가 저장되는 경로, String -->
     <string name="pref_key_save_route">IMAGE_SAVE_ROUTE</string>
     <string name="setting_web_page">웹 사이트</string>
     <string name="setting_web_page_desc">유용한 사이트의 링크를 제공합니다.</string>
@@ -82,6 +93,7 @@
     <string name="web_page_club_desc">에듀 클래스</string>
     <string name="web_page_uostime">UOSTIME</string>
     <string name="web_page_uostime_desc">시간표 짜기\nprogrammed by square^\nsupported by codingsroom</string>
-	<string name="web_page_uostable">UOSTABLE</string>
-	<string name="web_page_uostable_desc">시간표 짜기\nmade by Gnu Shim</string>
+    <string name="web_page_uostable">UOSTABLE</string>
+    <string name="web_page_uostable_desc">시간표 짜기\nmade by Gnu Shim</string>
+
 </resources>

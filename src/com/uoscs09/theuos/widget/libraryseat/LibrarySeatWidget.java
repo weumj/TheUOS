@@ -26,22 +26,15 @@ public class LibrarySeatWidget extends
 		AbsAsyncWidgetProvider<ArrayList<SeatItem>> {
 	public static final String LIBRARY_SEAT_WIDGET_REFRASH = "com.uoscs09.theuos.widget.libraryseat.REFRESH";
 	public static final String LIBRARY_SEAT_WIDGET_DATA = "com.uoscs09.theuos.widget.libraryseat.DATA";
-	private final static int[] STURDY_ROOM_NUMBER_ARRAY = { 0, 1, 2, 3, 4, 5,
-			6, 7, 8, 9, 10, 11, 12, 23, 24, 25, 26, 27, 28 };
+	private final static int[] STUDY_ROOM_NUMBER_ARRAY = { 0, 1, 2, 3, 4, 5, 6,
+			7, 8, 9, 10, 11, 12, 23, 24, 25, 26, 27, 28 };
 
 	@Override
 	public void onUpdate(final Context context,
 			final AppWidgetManager appWidgetManager, final int[] appWidgetIds) {
 		super.onUpdate(context, appWidgetManager, appWidgetIds);
-		RemoteViews rv = new RemoteViews(context.getPackageName(),
-				R.layout.widget_library_seat);
-		for (int id : appWidgetIds) {
-			rv.setTextViewText(android.R.id.text1,
-					context.getText(R.string.progress_while_loading));
-			rv.setOnClickPendingIntent(android.R.id.selectedIcon, null);
-			rv.setEmptyView(android.R.id.list, android.R.id.empty);
-			appWidgetManager.updateAppWidget(id, rv);
-		}
+		setWidgetDefaultLayout(context, appWidgetManager, appWidgetIds,
+				R.string.progress_while_loading);
 	}
 
 	@Override
@@ -70,7 +63,7 @@ public class LibrarySeatWidget extends
 				ParseFactory.What.Seat, body, 0).parse();
 		ArrayList<SeatItem> newList = new ArrayList<SeatItem>();
 
-		for (int i : STURDY_ROOM_NUMBER_ARRAY) {
+		for (int i : STUDY_ROOM_NUMBER_ARRAY) {
 			SeatItem item = list.get(i);
 			// if (Double.parseDouble(item.utilizationRate) < 50d)
 			newList.add(item);
@@ -115,11 +108,17 @@ public class LibrarySeatWidget extends
 	protected void exceptionOccured(Context context,
 			AppWidgetManager appWidgetManager, int[] appWidgetIds, Exception e) {
 		super.exceptionOccured(context, appWidgetManager, appWidgetIds, e);
+		setWidgetDefaultLayout(context, appWidgetManager, appWidgetIds,
+				R.string.progress_fail);
+	}
+
+	/** 위젯의 화면을 기본 형태로 설정한다. */
+	private void setWidgetDefaultLayout(Context context,
+			AppWidgetManager appWidgetManager, int[] appWidgetIds, int textId) {
 		for (int id : appWidgetIds) {
 			RemoteViews rv = new RemoteViews(context.getPackageName(),
 					R.layout.widget_library_seat);
-			rv.setTextViewText(android.R.id.text1,
-					context.getText(R.string.progress_fail));
+			rv.setTextViewText(android.R.id.text1, context.getText(textId));
 			Intent clickIntent = new Intent(context, LibrarySeatWidget.class);
 			clickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id)
 					.setAction(LIBRARY_SEAT_WIDGET_REFRASH);

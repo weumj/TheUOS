@@ -3,35 +3,73 @@
 
     <declare-styleable name="ThemeDrawable"></declare-styleable>
     <declare-styleable name="ThemeDrawable.ActionIcon">
+        <!-- i 아이콘, Drawable -->
         <attr name="ic_action_about" format="reference|color|" />
+        <!-- ? 아이콘, Drawable -->
         <attr name="ic_action_help" format="reference|color" />
+        <!-- 검색 아이콘, Drawable -->
         <attr name="ic_action_search" format="reference|color" />
+        <!-- 설정 아이콘, Drawable -->
         <attr name="ic_action_settings" format="reference|color" />
+        <!-- 되돌리기 아이콘, Drawable -->
         <attr name="ic_av_replay" format="reference|color" />
+        <!-- 폴더 아이콘, Drawable -->
         <attr name="ic_collections_collection" format="reference|color" />
+        <!-- 리스트 아이콘, Drawable -->
         <attr name="ic_collections_view_as_list" format="reference|color" />
+        <!-- 복사 아이콘, Drawable -->
         <attr name="ic_content_copy" format="reference|color" />
+        <!-- 삭제 아이콘, Drawable -->
         <attr name="ic_content_discard" format="reference|color" />
+        <!-- 상하 왕복 아이콘, Drawable -->
         <attr name="ic_content_import_export" format="reference|color" />
+        <!-- 붙여넣기 아이콘, Drawable -->
         <attr name="ic_content_paste" format="reference|color" />
+        <!-- X 아이콘, Drawable -->
         <attr name="ic_content_remove" format="reference|color" />
+        <!-- 저장 아이콘, Drawable -->
         <attr name="ic_content_save" format="reference|color" />
+        <!-- 실행취소 아이콘, Drawable -->
         <attr name="ic_content_undo" format="reference|color" />
+        <!-- 시간표 아이콘, Drawable -->
+        <attr name="ic_content_timetable" format="reference|color" />
+        <!-- 그림 아이콘, Drawable -->
+        <attr name="ic_content_picture" format="reference|color" />
+        <!-- 붓 아이콘, Drawable -->
+        <attr name="ic_content_paint" format="reference|color" />
+        <!-- 알람 아이콘, Drawable -->
         <attr name="ic_device_access_alarms" format="reference|color" />
+        <!-- 전화 아이콘, Drawable -->
         <attr name="ic_device_access_call" format="reference|color" />
+        <!-- 저장소 아이콘, 하드가 세개 겹쳐진 모양, Drawable -->
         <attr name="ic_device_access_storage" format="reference|color" />
+        <!-- 전화기 아이콘, Drawable -->
+        <attr name="ic_device_phone" format="reference|color" />
+        <!-- 방향 표지판 아이콘, Drawable -->
         <attr name="ic_location_directions" format="reference|color" />
+        <!-- 위치 아이콘, Drawable -->
         <attr name="ic_location_place" format="reference|color" />
+        <!-- 웹 아이콘, Drawable -->
         <attr name="ic_location_web_site" format="reference|color" />
+        <!-- 확인 아이콘, Drawable -->
         <attr name="ic_navigation_accept" format="reference|color" />
+        <!-- 뒤로가기 화살표 아이콘, Drawable -->
         <attr name="ic_navigation_back" format="reference|color" />
+        <!-- 취소 아이콘, Drawable -->
         <attr name="ic_navigation_cancel" format="reference|color" />
+        <!-- 확장 취소 아이콘, Drawable -->
         <attr name="ic_navigation_collapse" format="reference|color" />
+        <!-- 확장 아이콘, Drawable -->
         <attr name="ic_navigation_expand" format="reference|color" />
+        <!-- 앞으로 가기 아이콘, Drawable -->
         <attr name="ic_navigation_forward" format="reference|color" />
+        <!-- 새로고침 아이콘, Drawable -->
         <attr name="ic_navigation_refresh" format="reference|color" />
+        <!-- 책 아이콘, Drawable -->
         <attr name="ic_book" format="reference|color" />
+        <!-- 도서관 아이콘, Drawable -->
         <attr name="ic_chair" format="reference|color" />
+        <!-- 로그인 아이콘, Drawable -->
         <attr name="ic_secure_login" format="reference|color" />
     </declare-styleable>
     <declare-styleable name="ThemeDrawable.Selector">
@@ -57,9 +95,13 @@
         <attr name="menu_ic_content_remove" format="reference|color" />
         <attr name="menu_ic_content_save" format="reference|color" />
         <attr name="menu_ic_content_undo" format="reference|color" />
+        <attr name="menu_ic_content_timetable" format="reference|color" />
+        <attr name="menu_ic_content_picture" format="reference|color" />
+        <attr name="menu_ic_content_paint" format="reference|color" />
         <attr name="menu_ic_device_access_alarms" format="reference|color" />
         <attr name="menu_ic_device_access_call" format="reference|color" />
         <attr name="menu_ic_device_access_storage" format="reference|color" />
+        <attr name="menu_ic_device_phone" format="reference|color" />
         <attr name="menu_ic_location_directions" format="reference|color" />
         <attr name="menu_ic_location_place" format="reference|color" />
         <attr name="menu_ic_location_web_site" format="reference|color" />

@@ -28,26 +28,7 @@ public class RestWidget extends AbsAsyncWidgetProvider<ArrayList<RestItem>> {
 	public void onUpdate(final Context context,
 			final AppWidgetManager appWidgetManager, final int[] appWidgetIds) {
 		super.onUpdate(context, appWidgetManager, appWidgetIds);
-		RemoteViews rv = new RemoteViews(context.getPackageName(),
-				R.layout.widget_rest);
-		for (int id : appWidgetIds) {
-			rv.setTextViewText(R.id.widget_rest_main_title,
-					context.getText(R.string.progress_while_loading));
-			rv.setOnClickPendingIntent(R.id.widget_rest_btn_next, null);
-			rv.setOnClickPendingIntent(R.id.widget_rest_btn_prev, null);
-			appWidgetManager.updateAppWidget(id, rv);
-		}
-	}
-
-	private PendingIntent getMoveIntent(Context context, int id, String action,
-			int position) {
-		final Intent i = new Intent(context, RestWidget.class);
-		i.setAction(action);
-		i.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id);
-		i.putExtra(REST_WIDGET_POSITION, position);
-		PendingIntent pi = PendingIntent.getBroadcast(context, 0, i,
-				PendingIntent.FLAG_UPDATE_CURRENT);
-		return pi;
+		setWidgetDefaultLayout(context, appWidgetManager, appWidgetIds);
 	}
 
 	@Override
@@ -101,9 +82,12 @@ public class RestWidget extends AbsAsyncWidgetProvider<ArrayList<RestItem>> {
 		RemoteViews rv = new RemoteViews(context.getPackageName(),
 				R.layout.widget_rest);
 		RestItem item;
+		 
 		int position = PrefUtil.getInstance(context).get(REST_WIDGET_POSITION,
 				0);
 		for (int id : appWidgetIds) {
+			// position은 이미 onReceive()에서 값이 변경되어 기록된다.
+			// 여기서는 값의 범위를 검사한다 (유효성 검사)
 			if (position >= result.size()) {
 				position = 0;
 			} else if (position < 0) {
@@ -111,6 +95,7 @@ public class RestWidget extends AbsAsyncWidgetProvider<ArrayList<RestItem>> {
 			}
 			PrefUtil.getInstance(context).put(REST_WIDGET_POSITION, position);
 			item = result.get(position);
+
 			Bundle bundle = new Bundle();
 			bundle.putParcelableArrayList(REST_WIDGET_ITEM, result);
 			Intent intent = new Intent(context, RestListService.class)
@@ -118,8 +103,10 @@ public class RestWidget extends AbsAsyncWidgetProvider<ArrayList<RestItem>> {
 					.putExtra(REST_WIDGET_POSITION, position)
 					.putExtra(REST_WIDGET_ITEM, bundle);
 			intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
+
 			rv.setRemoteAdapter(R.id.widget_rest_listview, intent);
 			rv.setTextViewText(R.id.widget_rest_main_title, item.title);
+
 			rv.setOnClickPendingIntent(
 					R.id.widget_rest_btn_next,
 					getMoveIntent(context, id, REST_WIDGET_NEXT_ACTION,
@@ -134,10 +121,28 @@ public class RestWidget extends AbsAsyncWidgetProvider<ArrayList<RestItem>> {
 		}
 	}
 
+	/** 다음 메뉴로 움직일 버튼의 눌렸을 때 사용 될 PendingIntent를 설정한다. */
+	private PendingIntent getMoveIntent(Context context, int id,
+			final String action, int position) {
+		final Intent i = new Intent(context, RestWidget.class);
+		i.setAction(action);
+		i.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id);
+		i.putExtra(REST_WIDGET_POSITION, position);
+		PendingIntent pi = PendingIntent.getBroadcast(context, 0, i,
+				PendingIntent.FLAG_UPDATE_CURRENT);
+		return pi;
+	}
+
 	@Override
 	protected void exceptionOccured(Context context,
 			AppWidgetManager appWidgetManager, int[] appWidgetIds, Exception e) {
 		super.exceptionOccured(context, appWidgetManager, appWidgetIds, e);
+		setWidgetDefaultLayout(context, appWidgetManager, appWidgetIds);
+	}
+
+	/** 식단표 위젯의 화면을 기본 형태로 설정한다. */
+	private void setWidgetDefaultLayout(Context context,
+			AppWidgetManager appWidgetManager, int[] appWidgetIds) {
 		RemoteViews rv = new RemoteViews(context.getPackageName(),
 				R.layout.widget_rest);
 		int position = PrefUtil.getInstance(context).get(REST_WIDGET_POSITION,

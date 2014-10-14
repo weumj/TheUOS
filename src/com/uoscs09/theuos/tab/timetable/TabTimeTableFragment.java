@@ -244,7 +244,7 @@ public class TabTimeTableFragment extends
 			return;
 		}
 		StringBuilder sb = new StringBuilder();
-		sb.append(PrefUtil.getSaveRoute(getActivity())).append("timetable_")
+		sb.append(PrefUtil.getPictureSavedPath(getActivity())).append("timetable_")
 				.append(OApiUtil.getYear()).append('_').append(term)
 				.append('_').append(String.valueOf(System.currentTimeMillis()))
 				.append(".png");

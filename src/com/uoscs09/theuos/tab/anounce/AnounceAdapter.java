@@ -1,6 +1,7 @@
 package com.uoscs09.theuos.tab.anounce;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 import android.content.Context;
 import android.text.Html;
@@ -20,16 +21,28 @@ public class AnounceAdapter extends AbsArrayAdapter<AnounceItem> {
 		super(context, layout, list);
 	}
 
+	/** <내용> 형식의 공지사항을 제대로 표시하기 위해 설정한 패턴 */
+	private static final Pattern HTML_PATTERN = Pattern
+			.compile(".*<[[a-z][A-Z][0-9]]+>.*");
+
 	@Override
 	public View setView(int position, View v, ViewHolder holder) {
-		AnounceItem item = getItem(position);
+		String[] array = getItem(position).toStringArray();
 		Holder h = (Holder) holder;
-		Spanned span = Html.fromHtml(item.type);
-		h.textArray[0].setText(span != null ? span : item.type);
-		span = Html.fromHtml(item.title);
-		h.textArray[1].setText(span != null ? span : item.title);
-		span = Html.fromHtml(item.date);
-		h.textArray[2].setText(span != null ? span : item.date);
+		int i = 0;
+		for (TextView tv : h.textArray) {
+			Spanned span = null;
+			String content = array[i++];
+
+			// HTML로 표현되어야 할 문자열을 HTML로 표현한다.
+			// <>이 포함된 문자열이지만 HTML이 아닌것은 Patten으로 거른다.
+			if (HTML_PATTERN.matcher(content).find()) {
+				span = Html.fromHtml(content);
+				tv.setText(span != null ? span : content);
+			} else {
+				tv.setText(content);
+			}
+		}
 		return v;
 	}
 
@@ -43,10 +56,12 @@ public class AnounceAdapter extends AbsArrayAdapter<AnounceItem> {
 
 		public Holder(View v) {
 			textArray = new TextView[3];
-			textArray[0] = (TextView) v.findViewById(R.id.tab_anounce_list_text_type);
+			textArray[0] = (TextView) v
+					.findViewById(R.id.tab_anounce_list_text_type);
 			textArray[1] = (TextView) v
 					.findViewById(R.id.tab_anounce_list_text_title);
-			textArray[2] = (TextView) v.findViewById(R.id.tab_anounce_list_text_date);
+			textArray[2] = (TextView) v
+					.findViewById(R.id.tab_anounce_list_text_date);
 		}
 	}
 }

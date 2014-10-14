@@ -107,8 +107,7 @@ public class SettingsFragment extends PreferenceFragment implements
 		final ProgressDialog progress = AppUtil.getProgressDialog(context,
 				false, getText(R.string.progress_while_updating), null);
 		progress.show();
-		AsyncExecutor<String> executor = new AsyncExecutor<String>();
-		executor.setCallable(new Callable<String>() {
+		new AsyncExecutor<String>().setCallable(new Callable<String>() {
 
 			@Override
 			public String call() throws Exception {
@@ -133,16 +132,19 @@ public class SettingsFragment extends PreferenceFragment implements
 							context);
 					TextView tv = new TextView(context);
 					tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
-					tv.setPadding(10, 10, 10, 10);
+					tv.setPadding(20, 20, 20, 20);
+
 					Formatter f = new Formatter();
 					f.format(
 							getString(R.string.setting_app_version_update_this_old),
 							thisVersion);
 					tv.setText(f.toString() + " " + result);
 					f.close();
+					
 					builder.setTitle(
 							R.string.setting_app_version_update_require)
 							.setView(tv)
+							.setIconAttribute(R.attr.ic_action_about)
 							.setPositiveButton(R.string.update,
 									new DialogInterface.OnClickListener() {
 										@Override
@@ -179,13 +181,15 @@ public class SettingsFragment extends PreferenceFragment implements
 			for (AppTheme at : values) {
 				items[i++] = at.toString();
 			}
+			
 			themeSelectorDialog = new AlertDialog.Builder(getActivity())
-					.setTitle(R.string.setting_plz_select_theme)
+					.setIconAttribute(R.attr.ic_content_paint).setTitle(R.string.setting_plz_select_theme)
 					.setItems(items, new DialogInterface.OnClickListener() {
 
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 							PrefUtil pref = PrefUtil.getInstance(getActivity());
+							int originalValue = pref.get(PrefUtil.KEY_THEME, 0);
 							switch (which) {
 							case 1:
 							case 2:
@@ -195,10 +199,14 @@ public class SettingsFragment extends PreferenceFragment implements
 								pref.put(PrefUtil.KEY_THEME, 0);
 								break;
 							}
-							onSharedPreferenceChanged(getPreferenceScreen()
-									.getSharedPreferences(), PrefUtil.KEY_THEME);
+							if (originalValue != which) {
+								onSharedPreferenceChanged(getPreferenceScreen()
+										.getSharedPreferences(),
+										PrefUtil.KEY_THEME);
+								getActivity().setResult(
+										AppUtil.RELAUNCH_ACTIVITY);
+							}
 							themeSelectorDialog.dismiss();
-							getActivity().setResult(AppUtil.RELAUNCH_ACTIVITY);
 						}
 					}).create();
 		}
@@ -267,12 +275,12 @@ public class SettingsFragment extends PreferenceFragment implements
 		SharedPreferences pref = getPreferenceScreen().getSharedPreferences();
 		pref.registerOnSharedPreferenceChangeListener(this);
 		String[] keys = { PrefUtil.KEY_CHECK_BORROW, PrefUtil.KEY_CHECK_SEAT,
-				PrefUtil.KEY_SAVE_ROUTE, PrefUtil.KEY_THEME };
+				PrefUtil.KEY_IMAGE_SAVE_PATH, PrefUtil.KEY_THEME };
 		for (String key : keys) {
 			onSharedPreferenceChanged(pref, key);
 		}
 	}
-	
+
 	@Override
 	public void onDetach() {
 		getFragmentManager().addOnBackStackChangedListener(null);
@@ -290,9 +298,9 @@ public class SettingsFragment extends PreferenceFragment implements
 			setPrefScreenSummary(sharedPreferences, key,
 					R.string.setting_check_seat_desc_enable,
 					R.string.setting_check_seat_desc_disable);
-		} else if (key.equals(PrefUtil.KEY_SAVE_ROUTE)) {
-			findPreference(key)
-					.setSummary(PrefUtil.getSaveRoute(getActivity()));
+		} else if (key.equals(PrefUtil.KEY_IMAGE_SAVE_PATH)) {
+			findPreference(key).setSummary(
+					PrefUtil.getPictureSavedPath(getActivity()));
 		} else if (key.equals(PrefUtil.KEY_THEME)) {
 			Preference connectionPref = findPreference(key);
 			Activity activity = getActivity();

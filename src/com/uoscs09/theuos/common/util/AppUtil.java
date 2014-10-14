@@ -10,10 +10,11 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
-import android.content.res.Configuration;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -230,7 +231,7 @@ public class AppUtil {
 		case R.string.title_section6_tel:
 			return R.drawable.ic_action_device_access_call;
 		case R.string.title_section7_time:
-			return R.drawable.ic_action_device_access_storage_1;
+			return R.drawable.ic_action_content_timetable;
 		case R.string.title_tab_search_empty_room:
 			return R.drawable.ic_action_action_search;
 		case R.string.title_tab_search_subject:
@@ -267,7 +268,7 @@ public class AppUtil {
 		case R.string.title_section6_tel:
 			return R.drawable.ic_action_device_access_call_dark;
 		case R.string.title_section7_time:
-			return R.drawable.ic_action_device_access_storage_1_dark;
+			return R.drawable.ic_action_content_timetable_dark;
 		case R.string.title_tab_search_empty_room:
 			return R.drawable.ic_action_action_search_dark;
 		case R.string.title_tab_search_subject:
@@ -285,6 +286,22 @@ public class AppUtil {
 		default:
 			return -1;
 		}
+	}
+
+	/**
+	 * 현재 테마에 정의된, {@link R.attr}에 선언된 값을 가져온다.
+	 * 
+	 * @param context
+	 * @param attrIds
+	 *            가져올 값의 Id
+	 * @return 현재 테마에서 정의한 해당 값의 id
+	 * @since 2.31
+	 */
+	public static int getStyledValue(Context context, int attrId) {
+		TypedValue out = new TypedValue();
+		context.getTheme().resolveAttribute(attrId, out, true);
+
+		return out.resourceId;
 	}
 
 	/** 메인 액티비티에 종료 인텐트를 보낸다. */

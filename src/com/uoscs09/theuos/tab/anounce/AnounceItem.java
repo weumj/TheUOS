@@ -30,6 +30,15 @@ public class AnounceItem implements Parcelable {
 		onClickString = source.readString();
 	}
 
+	/**
+	 * type, title, date, onClinkString 순으로 이루어진 StringArray를 반환한다.
+	 * 
+	 * @since 2.31
+	 */
+	public String[] toStringArray() {
+		return new String[] { type, title, date, onClickString };
+	}
+
 	@Override
 	public int describeContents() {
 		return 0;

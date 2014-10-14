@@ -124,7 +124,7 @@ public class SubjectInfoDialFrag extends DialogFragment implements
 	@Override
 	public void onClick(View v) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(PrefUtil.getSaveRoute(getActivity())).append(TITLE)
+		sb.append(PrefUtil.getPictureSavedPath(getActivity())).append(TITLE)
 				.append('_').append(item.infoArray[5]).append('_')
 				.append(item.infoArray[8]).append('_')
 				.append(item.infoArray[4]).append(".jpeg");

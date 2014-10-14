@@ -32,7 +32,7 @@ import com.uoscs09.theuos.common.util.PrefUtil;
  * <br>
  * 
  * 디렉토리 선택버튼을 눌렀을 시 디렉토리 경로가 preference에 <br>
- * {@code PrefUtil.KEY_SAVE_ROUTE}를 키값으로 해서 저장되어야 한다. <br>
+ * {@code PrefUtil.KEY_IMAGE_SAVE_PATH}를 키값으로 해서 저장되어야 한다. <br>
  * <br>
  * 
  * 취소한 경우 preference의 값은 바뀌지 않는다.
@@ -127,6 +127,7 @@ public class SettingsFileSelectDialogFragment extends DialogFragment {
 		return new AlertDialog.Builder(getActivity())
 				.setTitle(R.string.setting_save_route_sub_title)
 				.setView(createView())
+				.setIconAttribute(R.attr.ic_content_picture)
 				.setPositiveButton(android.R.string.ok,
 						new DialogInterface.OnClickListener() {
 							@Override
@@ -139,13 +140,13 @@ public class SettingsFileSelectDialogFragment extends DialogFragment {
 	}
 
 	protected void putPathToPref(Context context, String path) {
-		PrefUtil.getInstance(context).put(PrefUtil.KEY_SAVE_ROUTE, path);
+		PrefUtil.getInstance(context).put(PrefUtil.KEY_IMAGE_SAVE_PATH, path);
 	}
 
 	private String getPathFromPref(Context context) {
 		String defaultRoute = Environment.getExternalStoragePublicDirectory(
 				Environment.DIRECTORY_PICTURES).toString();
-		return PrefUtil.getInstance(context).get(PrefUtil.KEY_SAVE_ROUTE,
+		return PrefUtil.getInstance(context).get(PrefUtil.KEY_IMAGE_SAVE_PATH,
 				defaultRoute);
 	}
 }
