@@ -1,0 +1,37 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion '22.0.0'
+
+    defaultConfig {
+        applicationId "com.uoscs09.theuos"
+        minSdkVersion 14
+        targetSdkVersion 21
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
+        }
+    }
+}
+
+dependencies {
+    compile files('libs/asyncexcutor.jar')
+    compile files('libs/jericho-html-3.3.jar')
+    compile 'com.android.support:support-v13:+'
+    compile 'com.android.support:appcompat-v7:+'
+    compile 'com.android.support:recyclerview-v7:+'
+    compile 'com.android.support:cardview-v7:+'
+    compile 'com.google.android.gms:play-services:+'
+    compile 'com.mcxiaoke.volley:library:1.0.10@aar'
+    compile 'com.nineoldandroids:library:+'
+    compile 'com.nhaarman.listviewanimations:lib-core:3.1.0@aar'
+    compile 'com.nhaarman.listviewanimations:lib-manipulation:3.1.0@aar'
+    compile 'com.nhaarman.listviewanimations:lib-core-slh:3.1.0@aar'
+    compile 'com.afollestad:material-dialogs:0.6.4.5'
+    compile 'com.pnikosis:materialish-progress:1.4'
+    compile 'com.getbase:floatingactionbutton:1.9.0'
+}

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <PreferenceCategory android:title="@string/setting_announce_noti_frag_title1" >
+        <PreferenceScreen android:summary="@string/setting_announce_noti_frag_desc" >
+        </PreferenceScreen>
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/pref_key_check_anounce_service"
+            android:title="@string/setting_check_announce_service" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/setting_announce_noti_frag_title2" >
+        <PreferenceScreen 
+            android:title="@string/setting_announce_keyword_title_"
+            android:summary="@string/setting_announce_keyword_desc2" >
+        </PreferenceScreen>
+
+        <com.afollestad.materialdialogs.prefs.MaterialEditTextPreference
+            android:key="@string/pref_key_keyword_anounce"
+            android:summary="@string/setting_announce_keyword_desc"
+            android:dialogMessage="@string/setting_announce_dialog_message"
+            android:title="@string/announce_keyword" />
+
+        <PreferenceScreen
+            android:key="@string/pref_key_noti_time"
+            android:summary="@string/setting_noti_time_desc"
+            android:title="@string/setting_noti_time" >
+        </PreferenceScreen>
+    </PreferenceCategory>
+
+</PreferenceScreen>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:com.uoscs09.theuos="http://schemas.android.com/apk/res-auto" >
+
+    <item
+        android:id="@+id/action_search"
+        android:icon="?menu_ic_action_search"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_web_for_tab_map_find"
+        com.uoscs09.theuos:showAsAction="ifRoom">
+    </item>
+
+</menu>

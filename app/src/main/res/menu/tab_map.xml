@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:com.uoscs09.theuos="http://schemas.android.com/apk/res-auto" >
+
+    <item
+        android:id="@+id/action_refresh"
+        android:icon="?menu_ic_navigation_refresh"
+        android:orderInCategory="102"
+        android:showAsAction="always"
+        android:title="@string/action_refresh"
+        com.uoscs09.theuos:showAsAction="always">
+    </item>
+    <item
+        android:id="@+id/action_map"
+        android:icon="?menu_ic_location_place"
+        android:orderInCategory="101"
+        android:showAsAction="always"
+        android:title="@string/action_map"
+        com.uoscs09.theuos:showAsAction="always">
+    </item>
+    <item
+        android:id="@+id/action_forward"
+        android:icon="?menu_ic_navigation_forward"
+        android:orderInCategory="104"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_forward"
+        com.uoscs09.theuos:showAsAction="ifRoom">
+    </item>
+    <item
+        android:id="@+id/action_backward"
+        android:icon="?menu_ic_navigation_back"
+        android:orderInCategory="103"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_backward"
+        com.uoscs09.theuos:showAsAction="ifRoom">
+    </item>
+
+</menu>

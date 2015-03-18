@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:paddingLeft="5dp"
+    android:paddingRight="5dp"
+    android:paddingTop="5dp" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:weightSum="340" >
+
+        <TextView
+            android:id="@+id/tab_search_empty_room_text_building_name"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="90"
+            android:background="?selector_list_rec"
+            android:gravity="center"
+            android:padding="6dp"
+            android:text="@string/tab_empty_room_building"
+            android:textColor="?attr/colorAccent"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tab_search_empty_room_text_room_no"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="90"
+            android:background="?selector_list_rec"
+            android:gravity="center"
+            android:padding="6dp"
+            android:text="@string/tab_empty_room_room_no"
+            android:textColor="?attr/colorAccent"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tab_search_empty_room_text_room_subj"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="90"
+            android:background="?selector_list_rec"
+            android:gravity="center"
+            android:padding="6dp"
+            android:text="@string/tab_empty_room_room_type"
+            android:textColor="?attr/colorAccent"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tab_search_empty_room_text_room_person"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="70"
+            android:background="?selector_list_rec"
+            android:gravity="center"
+            android:padding="6dp"
+            android:text="@string/tab_empty_room_room_person"
+            android:textColor="?attr/colorAccent"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/etc_search_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:fastScrollEnabled="true"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:scrollbarStyle="outsideOverlay"
+        android:scrollingCache="true" >
+    </ListView>
+
+    <RelativeLayout
+        android:id="@+id/tab_search_subject_empty_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="100dp"
+        android:background="?selector_button"
+        android:visibility="gone" >
+
+        <TextView
+            android:id="@+id/empty1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:drawableLeft="?ic_action_search"
+            android:gravity="center_vertical"
+            android:padding="2dp"
+            android:text="@string/tab_subject_empty_view_hint" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/empty1"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:drawableLeft="?ic_content_import_export"
+            android:gravity="center_vertical"
+            android:padding="2dp"
+            android:text="@string/tab_subject_empty_view_sort" />
+    </RelativeLayout>
+
+</LinearLayout>

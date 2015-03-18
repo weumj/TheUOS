@@ -1,0 +1,495 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">The UOS</string>
+    <string name="univ">서울시립대학교</string>
+    <string name="apply">적용</string>
+    <string name="update">업데이트</string>
+    <string name="later">나중에</string>
+    <string name="confirm">확인</string>
+    <string name="caution">주의</string>
+    <string name="canceled">취소되었습니다.</string>
+    <string name="cancel">취소</string>
+    <string name="saved">에 저장되었습니다.</string>
+    <string name="error_occur">에러!</string>
+    <string name="error_internet">인터넷 또는 학교 서버 접속에 실패하였습니다.</string>
+
+    <string name="finish_update">업데이트 완료</string>
+    <string name="progress_finish">작업 완료</string>
+    <string name="progress_while_updating">로딩중…</string>
+    <string name="progress_while_loading">Loading…</string>
+    <string name="progress_ongoing">처리 중…</string>
+    <string name="progress_wait">잠시 후에 시도하세요.</string>
+    <string name="progress_fail">로딩 실패</string>
+    <string name="before_finish">\'뒤로\'버튼을 한번 더 누르시면 종료됩니다.</string>
+
+    <string name="title_section0_home">The UOS</string>
+    <string name="title_section1_announce">공지사항</string>
+    <string name="title_section2_rest">식당 메뉴</string>
+    <string name="title_section3_book">도서 검색</string>
+    <string name="title_section4_lib">열람실 정보</string>
+    <string name="title_section5_map">학교 지도</string>
+    <string name="title_section6_tel">교내 전화번호</string>
+    <string name="title_section7_time">시간표</string>
+    <string name="title_tab_search_subject">교과목 검색</string>
+    <string name="title_tab_search_empty_room">빈 강의실 조회</string>
+    <string name="title_tab_schedule">학사일정</string>
+    <string name="title_tab_score">수업평가 결과 조회</string>
+    <string name="title_tab_transport">교통 정보</string>
+    <string name="title_section_etc">기타</string>
+
+    <string name="search_hint">검색어를 입력하세요.</string>
+    <string name="search_result_empty">검색된 결과가 없습니다.</string>
+    <string name="search_found">개 검색되었습니다.</string>
+    <string name="search_input_empty">검색어를 입력해주세요</string>
+
+    <string name="action_exit">종료</string>
+    <string name="action_refresh">새로고침</string>
+    <string name="action_search">검색</string>
+    <string name="action_search_option">검색 옵션</string>
+    <string name="action_map">지도</string>
+    <string name="action_web">웹</string>
+    <string name="action_web_for_tab_map">모바일 UOS로 보기</string>
+    <string name="action_web_for_tab_map_find">복지시설 검색</string>
+    <string name="action_forward">앞으로</string>
+    <string name="action_backward">뒤로</string>
+    <string name="action_copy">복사</string>
+    <string name="action_save">저장</string>
+    <string name="action_delete">삭제</string>
+    <string name="action_dissmiss_info">좌석 해지 예상 시간표</string>
+    <string name="action_location_direction">경로 검색</string>
+
+    <string name="tab_anounce_empty_view_desc"> 공지사항을 선택해 주세요.</string>
+    <string name="tab_anounce_invaild_category">카테고리를 선택해 주세요.</string>
+    <string name="tab_anounce_plz_select_page">이동할 페이지를 선택해 주세요.</string>
+
+   <string name="tab_book_book_opt">도서 검색 옵션</string>
+    <string name="tab_book_book_opt_sub">분류와 정렬 방식을 선택해 주세요</string>
+    <string name="tab_book_not_found">검색된 페이지에 대여 가능 도서가 없습니다.</string>
+    <string name="tab_book_subject_opt">검색 옵션을 선택해주세요</string>
+    <string name="tab_book_empty_text1"> 버튼을 터치하여 도서 검색을 해 보세요.</string>
+    <string name="tab_book_empty_text2"> 버튼을 터치하여 도서 검색 옵션을 설정하세요.</string>
+    <string name="tab_book_empty_text3"> 리스트나 책 이미지를 터치하면 자세한 정보를 볼 수 있습니다.</string>
+
+    <string name="tab_library_seat_last_update">최근 조회 시간\n</string>
+    <string name="tab_library_seat_dissmiss_info_not_exist_in_1hr">1시간 내에 해지될 좌석이 없습니다.</string>
+    <string name="tab_library_seat_vacancy"> 잔여 좌석수 : </string>
+    <string name="tab_library_seat_occupy"> 사용 좌석수 : </string>
+
+    <string name="tab_map_submap_device_without_googlemap">이 기기는 구글 지도를 지원하지 않습니다.</string>
+    <string name="tab_map_submap_do_not_locate">현재 위치를 감지하지 못하였습니다. 잠시후에 시도하세요.</string>
+    <string name="tab_map_submap_select_dest">목적지 선택</string>
+    <string name="tab_map_submap_select_building">건물을 선택해 주세요.</string>
+
+    <string name="tab_rest_students_hall">학생회관</string>
+    <string name="tab_rest_anekan">양식당</string>
+    <string name="tab_rest_natural">자연과학관</string>
+    <string name="tab_rest_main_8th">본관 8층</string>
+    <string name="tab_rest_living">생활관</string>
+    <string name="tab_rest_breakfast">조식</string>
+    <string name="tab_rest_lunch">중식</string>
+    <string name="tab_rest_dinner">석식</string>
+    <string name="tab_rest_no_info">정보가 없습니다.\n</string>
+
+    <string name="tab_phone_call">전화</string>
+    <string name="tab_phone_search_hint">검색할 장소를 입력하세요.</string>
+    <string name="tab_phone_confirm_call">(으)로 전화를 겁니다.</string>
+    <string name="tab_phone_caution_update">전화번호 업데이트를 시행합니다.\n사용자의 네트워크 환경에 따라 다소 시간이 걸릴 수 있습니다.\n진행하시겠습니까?</string>
+
+    <string name="tab_timetable_wise_id">Wise ID</string>
+    <string name="tab_timetable_wise_passwd">Wise 비밀번호</string>
+    <string name="tab_timetable_wise_term">학기</string>
+    <string name="tab_timetable_wise_login_title">Wise 로그인</string>
+    <string name="tab_timetable_wise_login_warning_null">ID 또는 비밀번호를 입력하지 않으셨습니다.</string>
+    <string name="tab_timetable_wise_login_warning_fail">로그인에 실패했습니다.</string>
+    <string name="tab_timetable_mon">월</string>
+    <string name="tab_timetable_tue">화</string>
+    <string name="tab_timetable_wed">수</string>
+    <string name="tab_timetable_thr">목</string>
+    <string name="tab_timetable_fri">금</string>
+    <string name="tab_timetable_sat">토</string>
+    <string name="tab_timtable_period">시간</string>
+    <string name="tab_timetable_not_exist">시간표 데이터가 없습니다.</string>
+    <string name="tab_timatable_callback_show_location_in_map">지도에서 건물 위치 보기</string>
+    <string name="tab_timatable_callback_show_subject_plan">수업계획서 보기</string>
+    <string name="tab_timetable_noti">시간표 알리미</string>
+    <string name="tab_timatable_callback_noti">수업 시작 알림</string>
+    <string name="tab_timetable_empty_text1"> 버튼을 터치하여 시간표를 불러오세요.</string>
+    <string name="tab_timetable_empty_text2">교과목을 터치하면\n추가 정보를 얻을 수 있습니다.</string>
+
+    <string name="tab_empty_room_building">건물</string>
+    <string name="tab_empty_room_room_no">강의실\n번호</string>
+    <string name="tab_empty_room_room_type">강의실\n구분</string>
+    <string name="tab_empty_room_room_person">수용\n인원</string>
+    <string name="tab_empty_room_dialog_building">장소</string>
+    <string name="tab_empty_room_dialog_time">시간</string>
+    <string name="tab_empty_room_dialog_term">학기</string>
+
+    <string name="tab_search_subject_sub_dept1">학부\n(과)</string>
+    <string name="tab_search_subject_sub_div1">교과\n구분</string>
+    <string name="tab_search_subject_no1">교과\n번호</string>
+    <string name="tab_search_subject_class_div1">분반</string>
+    <string name="tab_search_subject_sub_nm1">교과목명</string>
+    <string name="tab_search_subject_yr1">학년</string>
+    <string name="tab_search_subject_credit1">학점</string>
+    <string name="tab_search_subject_prof_nm1">담당\n교수</string>
+    <string name="tab_search_subject_class_nm1">강의시간\n및 강의실</string>
+    <string name="tab_search_subject_tlsn_cnt1">인원</string>
+    <string name="tab_search_subject_tlsn_limit1">정원</string>
+
+    <string name="tab_subject_empty_view_hint">버튼을 터치하여 검색을 시작하세요.</string>
+    <string name="tab_subject_empty_view_sort">각 항목의 분류를 터치하면\n오름/내림차순으로 정렬할 수 있습니다.</string>
+    <string name="tab_subject_empty_view_hint_subj">교과목을 터치하면\n수업계획서를 볼 수 있습니다</string>
+    <string name="tab_subject_info_plz_select_div_no">분반을 선택해 주세요.</string>
+
+    <string name="tab_transport_empty">버튼을 눌러 정보를 불러오세요.</string>
+
+    <string name="tab_score_input_subject_name">과목명을 입력하세요</string>
+
+    <string name="emptyview_button_or_menu_to_search">버튼이나 메뉴버튼을 눌러 검색하세요</string>
+    <string name="emptyview_button_to_search">버튼을 눌러 검색하세요</string>
+
+    <string name="tab_etc_selection">이동할 메뉴를 선택해주세요.</string>
+    <string name="year">학년도</string>
+
+    <string-array name="buildings_univ">
+        <item>01 전농관</item>
+        <item>02 제1공학관</item>
+        <item>03 건설공학관</item>
+        <item>04 창공관</item>
+        <item>05 인문학관</item>
+        <item>06 배봉관</item>
+        <item>07 대학본부</item>
+        <item>08 자연과학관</item>
+        <item>09 음악관</item>
+        <item>10 경농관</item>
+        <item>11 제2공학관</item>
+        <item>12 학생회관</item>
+        <item>13 언무관</item>
+        <item>14 과학기술관</item>
+        <item>15 21세기관</item>
+        <item>16 조형관</item>
+        <item>17 체육관</item>
+        <item>18 자작마루</item>
+        <item>19 정보기술관</item>
+        <item>20 법학관</item>
+        <item>21 중앙도서관</item>
+        <item>22 생활관</item>
+        <item>23 건축구조실험동</item>
+        <item>24 토목구조실험동</item>
+        <item>25 미디어관</item>
+        <item>26 자동화온실</item>
+        <item>27 대강당</item>
+        <item>28 운동장</item>
+        <item>29 박물관</item>
+        <item>30 정문</item>
+        <item>31 후문</item>
+        <item>32 웰니스센터</item>
+        <item>33 미래관</item>
+        <item>34 국제학사</item>
+        <item>35 국제교육원</item>
+    </string-array>
+    <string-array name="tab_map_submap_buildings_welfare">
+        <item>현금지급기</item>
+        <item>우리은행</item>
+        <item>복사점</item>
+        <item>프린트</item>
+        <item>컴퓨터검색</item>
+        <item>휴게실</item>
+        <item>엘리베이터</item>
+        <item>보건소</item>
+        <item>우체국</item>
+        <item>구내식당</item>
+        <item>패스트푸드</item>
+        <item>매점</item>
+        <item>안경점</item>
+        <item>서점</item>
+        <item>문구점</item>
+        <item>기념품매장</item>
+        <item>헬스장</item>
+        <item>테니스장</item>
+    </string-array>
+    <string-array name="tab_anounce_action_spinner">
+        <item>(공지사항 선택)</item>
+        <item>일반공지</item>
+        <item>학사공지</item>
+        <item>장학/대출</item>
+    </string-array>
+    <string-array name="etc_search_building">
+        <item>00 전체</item>
+        <item>01 전농관</item>
+        <item>02 제1공학관</item>
+        <item>03 건설공학관</item>
+        <item>04 창공관</item>
+        <item>05 인문학관</item>
+        <item>06 배봉관</item>
+        <item>08 자연과학관</item>
+        <item>09 음악관</item>
+        <item>10 경농관</item>
+        <item>11 제2공학관</item>
+        <item>13 언무관</item>
+        <item>14 과학기술관</item>
+        <item>15 21세기관</item>
+        <item>16 조형관</item>
+        <item>17 체육관</item>
+        <item>18 자작마루</item>
+        <item>19 정보기술관</item>
+        <item>20 법학관</item>
+        <item>23 건축구조실험동</item>
+        <item>24 토목구조실험동</item>
+        <item>25 미디어관</item>
+        <item>33 미래관</item>
+    </string-array>
+    <string-array name="tab_timetalbe_timelist">
+        <item>1교시\n 09:00 ~ 09:50</item>
+        <item>2교시\n 10:00 ~ 10:50</item>
+        <item>3교시\n 11:00 ~ 11:50</item>
+        <item>4교시\n 12:00 ~ 12:50</item>
+        <item>5교시\n 13:00 ~ 13:50</item>
+        <item>6교시\n 14:00 ~ 14:50</item>
+        <item>7교시\n 15:00 ~ 15:50</item>
+        <item>8교시\n 16:00 ~ 16:50</item>
+        <item>9교시\n 17:00 ~ 17:50</item>
+        <item>10교시\n 18:00 ~ 18:50</item>
+        <item>11교시\n 18:45 ~ 19:30</item>
+        <item>12교시\n 19:35 ~ 20:20</item>
+        <item>13교시\n 20:20 ~ 21:05</item>
+        <item>14교시\n 21:10 ~ 21:55</item>
+        <item>15교시\n 21:55 ~ 22:40</item>
+    </string-array>
+    <string-array name="tab_book_opt_oi">
+        <item>항목선택</item>
+        <item>제목</item>
+        <item>저자</item>
+        <item>출판사</item>
+        <item>청구기호</item>
+        <item>출판년</item>
+    </string-array>
+    <string-array name="tab_book_opt_os">
+        <item>정렬</item>
+        <item>오름차순</item>
+        <item>내림차순</item>
+    </string-array>
+    <string-array name="subject_info_array">
+        <item>과목명</item>
+        <item>교과 번호</item>
+        <item>담당 교수</item>
+        <item>연락처</item>
+        <item>성적 평가</item>
+        <item>교재</item>
+        <item>주차</item>
+        <item>수업 내용</item>
+        <item>수업 방법</item>
+        <item>(주별) 교재</item>
+        <item>준비물, 과제, 기타</item>
+    </string-array>
+    <string-array name="search_subj_opt1">
+        <item>교양</item>
+        <item>전공</item>
+    </string-array>
+    <string-array name="search_cult_1">
+        <item>교양선택</item>
+        <item>교양필수</item>
+        <item>ROTC</item>
+        <item>교직</item>
+    </string-array>
+    <string-array name="search_cult_2">
+        <item>교과목명</item>
+    </string-array>
+    <string-array name="search_subj_major_1_0">
+        <item>대학</item>
+        <item>대학원</item>
+        <item>세무전문대학원</item>
+        <item>디자인전문대학원</item>
+        <item>법학전문대학원</item>
+        <item>도시과학대학원</item>
+        <item>경영대학원</item>
+        <item>과학기술대학원</item>
+        <item>교육대학원</item>
+        <item>국제도시과학대학원</item>
+    </string-array>
+    <string-array name="search_subj_major_2_0_0">
+        <item>정경대학</item>
+        <item>경영대학</item>
+        <item>공과대학</item>
+        <item>인문대학</item>
+        <item>자연과학대학</item>
+        <item>도시과학대학</item>
+        <item>예술체육대학</item>
+        <item>국제교육원</item>
+    </string-array>
+    <string-array name="search_subj_major_2_0_1">
+        <item>대학원</item>
+    </string-array>
+    <string-array name="search_subj_major_2_0_2">
+        <item>세무전문대학원</item>
+    </string-array>
+    <string-array name="search_subj_major_2_0_3">
+        <item>디자인전문대학원</item>
+    </string-array>
+    <string-array name="search_subj_major_2_0_4">
+        <item>법학전문대학원</item>
+    </string-array>
+    <string-array name="search_subj_major_2_0_5">
+        <item>도시과학대학원</item>
+    </string-array>
+    <string-array name="search_subj_major_2_0_6">
+        <item>경영대학원</item>
+    </string-array>
+    <string-array name="search_subj_major_2_0_7">
+        <item>과학기술대학원</item>
+    </string-array>
+    <string-array name="search_subj_major_2_0_8">
+        <item>교육대학원</item>
+    </string-array>
+    <string-array name="search_subj_major_2_0_9">
+        <item>국제도시과학대학원</item>
+    </string-array>
+    <string-array name="search_subj_major_3_0_0_0">
+        <item>행정학과</item>
+        <item>국제관계학과</item>
+        <item>경제학부</item>
+        <item>사회복지학과</item>
+        <item>세무학과</item>
+        <item>법학부</item>
+    </string-array>
+    <string-array name="search_subj_major_3_0_0_1">
+        <item>경영학부</item>
+    </string-array>
+    <string-array name="search_subj_major_3_0_0_2">
+        <item>전자전기컴퓨터공학부</item>
+        <item>화학공학과</item>
+        <item>기계정보공학과</item>
+        <item>신소재공학과</item>
+        <item>토목공학과</item>
+        <item>컴퓨터과학부</item>
+    </string-array>
+    <string-array name="search_subj_major_3_0_0_3">
+        <item>영어영문학과</item>
+        <item>국어국문학과</item>
+        <item>국사학과</item>
+        <item>철학과</item>
+        <item>중국어문화학과</item>
+    </string-array>
+    <string-array name="search_subj_major_3_0_0_4">
+        <item>수학과</item>
+        <item>통계학과</item>
+        <item>물리학과</item>
+        <item>생명과학과</item>
+        <item>환경원예학과</item>
+    </string-array>
+    <string-array name="search_subj_major_3_0_0_5">
+        <item>도시행정학과</item>
+        <item>도시사회학과</item>
+        <item>건축학전공</item>
+        <item>건축공학전공</item>
+        <item>도시공학과</item>
+        <item>교통공학과</item>
+        <item>조경학과</item>
+        <item>환경공학부</item>
+        <item>공간정보공학과</item>
+        <item>소방방재학과</item>
+    </string-array>
+    <string-array name="search_subj_major_3_0_0_6">
+        <item>공업디자인전공</item>
+        <item>시각디자인전공</item>
+        <item>환경조각학과</item>
+        <item>음악학과</item>
+        <item>스포츠과학과</item>
+    </string-array>
+    <string-array name="search_subj_major_3_0_0_7">
+        <item>국제교육원(학사-과)</item>
+    </string-array>
+    <string-array name="search_subj_major_3_0_1_0">
+        <item>도시행정학과</item>
+        <item>행정학과</item>
+        <item>사회복지학과</item>
+        <item>도시사회학과</item>
+        <item>법학과</item>
+        <item>국제관계학과</item>
+        <item>경영학과</item>
+        <item>경제학과</item>
+        <item>국어국문학과</item>
+        <item>영어영문학과</item>
+        <item>국사학과</item>
+        <item>철학과</item>
+        <item>조경학과</item>
+        <item>환경원예학과</item>
+        <item>컴퓨터과학과</item>
+        <item>물리학과</item>
+        <item>생명과학과</item>
+        <item>토목공학과</item>
+        <item>건축공학과</item>
+        <item>건축학과</item>
+        <item>환경공학과</item>
+        <item>화학공학과</item>
+        <item>도시공학과</item>
+        <item>교통공학과</item>
+        <item>신소재공학과</item>
+        <item>기계정보공학과</item>
+        <item>공간정보공학과</item>
+        <item>환경조각학과</item>
+        <item>전자전기컴퓨터공학과</item>
+        <item>음악학과</item>
+        <item>스포츠과학과</item>
+    </string-array>
+    <string-array name="search_subj_major_3_0_2_0">
+        <item>세무학과</item>
+    </string-array>
+    <string-array name="search_subj_major_3_0_3_0">
+        <item>산업디자인학과</item>
+    </string-array>
+    <string-array name="search_subj_major_3_0_4_0">
+        <item>법학전문대학원</item>
+    </string-array>
+    <string-array name="search_subj_major_3_0_5_0">
+        <item>도시행정학과</item>
+        <item>방재공학과</item>
+        <item>사회복지학과</item>
+        <item>교통관리학과</item>
+        <item>건축공학과</item>
+        <item>조경학과</item>
+        <item>환경공학과</item>
+        <item>부동산학과</item>
+        <item>관광문화학과</item>
+    </string-array>
+    <string-array name="search_subj_major_3_0_6_0">
+        <item>경영학과</item>
+    </string-array>
+    <string-array name="search_subj_major_3_0_7_0">
+        <item>화학공학과</item>
+        <item>신소재공학과</item>
+        <item>기계공학과</item>
+        <item>환경원예학과</item>
+        <item>토목공학과</item>
+        <item>전자전기공학과</item>
+    </string-array>
+    <string-array name="search_subj_major_3_0_8_0">
+        <item>국어교육전공</item>
+        <item>영어교육전공</item>
+        <item>수학교육전공</item>
+        <item>역사교육전공</item>
+        <item>교수학습/상담전공</item>
+    </string-array>
+    <string-array name="search_subj_major_3_0_9_0">
+        <item>글로벌건설경영학과</item>
+        <item>첨단녹색도시개발학과</item>
+        <item>국제도시개발프로그램</item>
+    </string-array>
+    <string-array name="tab_timetable_alarm_time_array">
+        <item>알림 없음</item>
+        <item>10분 전</item>
+        <item>15분 전</item>
+        <item>20분 전</item>
+        <item>30분 전</item>
+        <item>45분 전</item>
+        <item>60분 전</item>
+    </string-array>
+    <string-array name="terms">
+        <item>1학기</item>
+        <item>2학기</item>
+        <item>여름계절학기</item>
+        <item>겨울계절학기</item>
+    </string-array>
+
+</resources>

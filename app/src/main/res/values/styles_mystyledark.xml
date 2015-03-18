@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="Mystyle.Black" parent="@style/Theme.Mystyle.Dark">
+        <item name="windowActionBar">false</item>
+        <item name="actionBarStyle">@style/Mystyle.Black.ActionBarStyle</item>
+        <item name="cardBackgroundColor">@color/button_material_dark</item>
+        <item name="colorAccent">@android:color/white</item>
+        <item name="colorPrimary">@color/primary_material_dark</item>
+        <item name="colorPrimaryDark">@color/primary_dark_material_dark</item>
+        <item name="searchViewStyle">@style/Widget.AppCompat.SearchView</item>
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="toolbar_actionbar_title">@style/Mystyle.Black.ActionBar.TitleTextStyle</item>
+        <item name="toolbar_actionbar_subtitle">@style/Mystyle.Black.ActionBar.SubTitleTextStyle</item>
+        <item name="windowActionBarOverlay">true</item>
+        <item name="android:alertDialogTheme">@style/Mystyle.Black.AlertDialog</item>
+
+        <!-- for color -->
+        <item name="color_rosy_brown">@color/rosy_brown_dark</item>
+        <item name="color_actionbar_title">@android:color/white</item>
+    </style>
+
+    <!-- ActionBar -->
+    <style name="Mystyle.Black.ActionBarStyle" parent="@style/Widget.AppCompat.ActionBar">
+        <item name="titleTextStyle">@style/Mystyle.Black.ActionBar.TitleTextStyle</item>
+        <item name="subtitleTextStyle">@style/Mystyle.Black.ActionBar.SubTitleTextStyle</item>
+    </style>
+
+    <style name="Mystyle.Black.ActionBar.TitleTextStyle" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="Mystyle.Black.ActionBar.SubTitleTextStyle" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <!-- AlertDialog -->
+    <style name="Mystyle.Black.AlertDialog" parent="Theme.Mystyle.Dark.AlertDialog">
+        <item name="android:windowTitleStyle">@style/Mystyle.Black.AlertDialogStyle</item>
+    </style>
+
+    <style name="Mystyle.Black.AlertDialogStyle" parent="Theme.Mystyle.Light.AlertDialogSytle">
+        <item name="android:textAppearance">@style/Mystyle.Black.AlertDialogStyle.TextAppearance</item>
+    </style>
+
+    <style name="Mystyle.Black.AlertDialogStyle.TextAppearance" parent="Theme.Mystyle.Light.AlertDialogSytle.TextAppearance">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+</resources>

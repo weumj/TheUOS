@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <PreferenceCategory android:title="@string/setting_web_page" >
+        <PreferenceScreen
+            android:summary="@string/web_page_uos_desc"
+            android:title="@string/web_page_uos" >
+        </PreferenceScreen>
+        <PreferenceScreen
+            android:summary="@string/web_page_portal_desc"
+            android:title="@string/web_page_portal" >
+        </PreferenceScreen>
+        <PreferenceScreen
+            android:summary="@string/web_page_club_desc"
+            android:title="@string/web_page_club" >
+        </PreferenceScreen>
+        <PreferenceScreen
+            android:summary="@string/web_page_library_desc"
+            android:title="@string/web_page_library" >
+        </PreferenceScreen>
+        <PreferenceScreen
+            android:summary="@string/web_page_square_desc"
+            android:title="@string/web_page_square" >
+        </PreferenceScreen>
+        <PreferenceScreen
+            android:summary="@string/web_page_uostable_desc"
+            android:title="@string/web_page_uostable" >
+        </PreferenceScreen>
+        <PreferenceScreen
+            android:summary="@string/web_page_uostime_desc"
+            android:title="@string/web_page_uostime" >
+        </PreferenceScreen>
+    </PreferenceCategory>
+
+</PreferenceScreen>

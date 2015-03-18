@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp" >
+
+    <TextView
+        android:id="@+id/etc_empty_text_building"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/etc_empty_text_time"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="16dp"
+        android:text="@string/tab_empty_room_dialog_building" />
+
+    <Spinner
+        android:id="@+id/etc_empty_spinner_building"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/etc_empty_text_building"
+        android:entries="@array/etc_search_building" />
+
+    <TextView
+        android:id="@+id/etc_empty_text_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/etc_empty_spinner_building"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="18dp"
+        android:text="@string/tab_empty_room_dialog_time" />
+
+    <Spinner
+        android:id="@+id/etc_empty_spinner_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/etc_empty_text_time"
+        android:entries="@array/tab_timetalbe_timelist" />
+
+    <TextView
+        android:id="@+id/etc_empty_text_term"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/etc_empty_text_time"
+        android:layout_below="@+id/etc_empty_spinner_time"
+        android:layout_marginTop="18dp"
+        android:text="@string/tab_empty_room_dialog_term" />
+
+    <Spinner
+        android:id="@+id/etc_empty_spinner_term"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/etc_empty_text_term"
+        android:entries="@array/terms" />
+
+</RelativeLayout>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ListView
+        android:id="@+id/tab_book_list_search"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_centerInParent="true"
+        android:animateLayoutChanges="true"
+        android:clipToPadding="false"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="10dp"
+        android:fastScrollEnabled="true"
+        android:scrollbarStyle="outsideOverlay"
+        android:indicatorRight="5dp"
+        android:listSelector="@android:color/transparent"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="5dp"
+        android:scrollingCache="true" />
+
+    <RelativeLayout
+        android:id="@+id/tab_book_empty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" >
+
+        <TextView
+            android:id="@+id/tab_book_search_empty_info1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="20dp"
+            android:layout_marginRight="20dp"
+            android:background="?selector_button"
+            android:drawableLeft="?ic_action_search"
+            android:gravity="center_vertical"
+            android:padding="1dp"
+            android:text="@string/tab_book_empty_text1" />
+
+        <TextView
+            android:id="@+id/tab_book_search_empty_info2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/tab_book_search_empty_info1"
+            android:layout_below="@id/tab_book_search_empty_info1"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="20dp"
+            android:background="?selector_button"
+            android:drawableLeft="?ic_action_help"
+            android:gravity="center_vertical"
+            android:padding="1dp"
+            android:text="@string/tab_book_empty_text2" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/tab_book_search_empty_info1"
+            android:layout_below="@id/tab_book_search_empty_info2"
+            android:layout_centerHorizontal="true"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="20dp"
+            android:background="?selector_button"
+            android:drawableLeft="?ic_navigation_accept"
+            android:gravity="center_vertical"
+            android:padding="1dp"
+            android:text="@string/tab_book_empty_text3" />
+    </RelativeLayout>
+
+</RelativeLayout>

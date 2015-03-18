@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:divider="@null"
+    android:dividerPadding="2dp"
+    android:orientation="horizontal"
+    android:weightSum="360" >
+
+    <TextView
+        android:id="@+id/tab_timetable_list_text_peroid"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="48"
+        android:background="?attr/cardBackgroundColor"
+        android:gravity="center"
+        android:textColor="?attr/colorPrimaryDark" />
+
+    <TextView
+        android:id="@+id/tab_timetable_list_text_mon"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="52"
+        android:background="?attr/cardBackgroundColor"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/tab_timetable_list_text_tue"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="52"
+        android:background="?attr/cardBackgroundColor"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/tab_timetable_list_text_wed"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="52"
+        android:background="?attr/cardBackgroundColor"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/tab_timetable_list_text_thr"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="52"
+        android:background="?attr/cardBackgroundColor"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/tab_timetable_list_text_fri"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="52"
+        android:background="?attr/cardBackgroundColor"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/tab_timetable_list_text_sat"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="52"
+        android:background="?attr/cardBackgroundColor"
+        android:gravity="center" />
+
+</LinearLayout>

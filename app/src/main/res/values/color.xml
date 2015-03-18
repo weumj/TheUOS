@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="rosy_brown">#BC8F8F</color>
+    <color name="rosy_brown_dark">#694444</color>
+    <color name="dark_blue_gray">#353538</color>
+    <color name="light_gray">#a5a5a5</color>
+    <color name="bright_gray">#01121212</color>
+    <color name="gray">#6d6d6d</color>
+    <color name="gray_red">#d66161</color>
+    <color name="yellow">#f3e559</color>
+    <color name="green">#a2db8e</color>
+    <color name="light_blue">#6cafdb</color>
+    <color name="violet">#c578d8</color>
+    <color name="purple">#b685df</color>
+    <color name="gray_blue">#8789cc</color>
+    <color name="blue_green">#96d4c4</color>
+    <color name="yellow_green">#c0e770</color>
+    <color name="red_yellow">#fdcd7f</color>
+    <color name="widget_white_divider">#80cccccc</color>
+    <color name="material_red_400">#e84e40</color>
+    <color name="material_indigo_200">#9fa8da</color>
+    <color name="material_teal_200">#80cbc4</color>
+    <color name="material_light_blue_200">#81d4fa</color>
+    <color name="material_light_blue_400">#29b6f6</color>
+    <color name="material_light_blue_600">#039be5</color>
+    <color name="material_light_blue_800">#0277bd</color>
+    <color name="material_light_blue_a200">#40c4ff</color>
+    <color name="material_red_100">#f9bdbb</color>
+    <color name="material_red_200">#f69988</color>
+    <color name="material_red_300">#f36c60</color>
+    <color name="material_red_700">#d01716</color>
+    <color name="material_green_100">#a3e9a4</color>
+    <color name="material_green_200">#72d572</color>
+    <color name="material_green_300">#42bd41</color>
+    <color name="material_green_700">#0a7e07</color>
+	<color name="material_grey_400">#bdbdbd</color>
+	<color name="material_grey_600">#757575</color>
+	<color name="material_grey_800">#424242</color>
+	<color name="material_blue_grey_200">#b0bec5</color>
+	<color name="material_blue_grey_400">#78909c</color>
+	<color name="material_blue_grey_600">#546e7a</color>
+	<color name="material_blue_grey_800">#37474f</color>
+</resources>

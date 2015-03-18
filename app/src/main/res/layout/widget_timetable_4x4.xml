@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_marginBottom="1dip"
+    android:layout_marginLeft="1dip"
+    android:layout_marginRight="1dip"
+    android:layout_marginTop="1dip"
+    android:background="@drawable/rounded_box_widget"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <ImageButton
+            android:id="@+id/widget_time_refresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/selector_button"
+            android:contentDescription="@string/action_refresh"
+            android:src="@drawable/ic_action_navigation_refresh" />
+
+        <TextView
+            android:id="@+id/widget_time_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dip"
+            android:layout_toRightOf="@+id/widget_time_refresh"
+            android:gravity="center_vertical"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/dark_blue_gray" />
+
+          <TextView
+            android:id="@+id/widget_time_term"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginLeft="30dip"
+            android:layout_marginRight="10dip"
+            android:layout_alignBaseline="@+id/widget_time_date"
+            android:gravity="bottom"
+            android:textSize="10sp" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="2dip"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="288" >
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/widget_white_divider" />
+
+            <TextView
+                android:id="@+id/widget_time_peroid"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="41"
+                android:background="@color/rosy_brown"
+                android:gravity="center"
+                android:text="@string/tab_timtable_period"
+                android:textColor="@android:color/white"
+                android:textSize="12sp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/widget_white_divider" />
+
+            <TextView
+                android:id="@+id/widget_time_mon"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="48"
+                android:background="@color/rosy_brown"
+                android:gravity="center"
+                android:text="@string/tab_timetable_mon"
+                android:textColor="@android:color/white"
+                android:textSize="12sp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/widget_white_divider" />
+
+            <TextView
+                android:id="@+id/widget_time_tue"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="48"
+                android:background="@color/rosy_brown"
+                android:gravity="center"
+                android:text="@string/tab_timetable_tue"
+                android:textColor="@android:color/white"
+                android:textSize="12sp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/widget_white_divider" />
+
+            <TextView
+                android:id="@+id/widget_time_wed"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="48"
+                android:background="@color/rosy_brown"
+                android:gravity="center"
+                android:text="@string/tab_timetable_wed"
+                android:textColor="@android:color/white"
+                android:textSize="12sp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/widget_white_divider" />
+
+            <TextView
+                android:id="@+id/widget_time_thr"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="48"
+                android:background="@color/rosy_brown"
+                android:gravity="center"
+                android:text="@string/tab_timetable_thr"
+                android:textColor="@android:color/white"
+                android:textSize="12sp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/widget_white_divider" />
+
+            <TextView
+                android:id="@+id/widget_time_fri"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="48"
+                android:background="@color/rosy_brown"
+                android:gravity="center"
+                android:text="@string/tab_timetable_fri"
+                android:textColor="@android:color/white"
+                android:textSize="12sp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/widget_white_divider" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:layout_marginLeft="1dip"
+            android:layout_marginRight="1dip"
+            android:background="@android:color/darker_gray" />
+
+        <ListView
+            android:id="@+id/widget_timetable_listview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="@color/rosy_brown"
+            android:scrollbars="none" >
+        </ListView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:background="@android:color/darker_gray" />
+
+        <TextView
+            android:id="@+id/widget_timetable_empty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="30dip"
+            android:paddingTop="30dip"
+            android:text="@string/tab_timetable_not_exist"
+            android:visibility="gone" />
+    </LinearLayout>
+
+</LinearLayout>
