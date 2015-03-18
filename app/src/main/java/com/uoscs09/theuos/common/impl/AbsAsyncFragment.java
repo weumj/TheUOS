@@ -25,11 +25,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * 이 클래스를 상속 받는 클래스는 {@code Callable} 인터페이스를 반드시 구현해야한다.<br>
  * 구현한 {@code Callable} 은 백그라운드 작업이 실행되는 콜백이다.
  */
-public abstract class AbsAsyncFragment<T> extends BaseFragment implements
-		AsyncCallback<T>, Callable<T> {
+public abstract class AbsAsyncFragment<T> extends BaseFragment implements AsyncCallback<T>, Callable<T> {
 	private AsyncExecutor<T> executor;
 	private boolean mRunning = false;
-	private final static Map<String, Object> sAsyncDataStoreMap = new ConcurrentHashMap<String, Object>();
+	private final static Map<String, Object> sAsyncDataStoreMap = new ConcurrentHashMap<>();
 	private Context mContext;
 
 	/**
@@ -49,8 +48,7 @@ public abstract class AbsAsyncFragment<T> extends BaseFragment implements
 					f.setAccessible(true);
 					try {
 						f.set(this, data);
-					} catch (IllegalAccessException e) {
-					} catch (IllegalArgumentException e) {
+					} catch (IllegalAccessException | IllegalArgumentException e) {
 						e.printStackTrace();
 					}
 					f.setAccessible(false);
@@ -58,6 +56,7 @@ public abstract class AbsAsyncFragment<T> extends BaseFragment implements
 				}
 			}
 		}
+
 	}
 
 	/** 현재 백그라운드 작업이 실행 중 인지 여부를 반환한다. */
@@ -70,12 +69,12 @@ public abstract class AbsAsyncFragment<T> extends BaseFragment implements
 	 * 비동기 작업이 실행되기 전에 필요한 작업은 이 메소드를 호출하기 전에 <br>
 	 * 처리하거나, 이 메소드를 상속받아 적절히 구현한다.<br>
 	 */
-	protected void excute() {
+	protected void execute() {
 		if (executor != null && !executor.isCancelled()) {
 			executor.cancel(true);
 		}
 		mRunning = true;
-		setExcuter(true);
+		setExecutor(true);
 		executor.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		sAsyncDataStoreMap.remove(getClass().getName());
 	}
@@ -87,12 +86,11 @@ public abstract class AbsAsyncFragment<T> extends BaseFragment implements
 	 *            다른 작업이 실행중인것과 관계없이 강제로 설정하는지 여부
 	 * @return 설정 여부
 	 */
-	public final boolean setExcuter(boolean force) {
+	public final boolean setExecutor(boolean force) {
 		if (!force && executor.getStatus().equals(AsyncTask.Status.RUNNING))
 			return false;
 		else {
-			executor = new AsyncExecutor<T>().setCallable(this).setCallback(
-					this);
+			executor = new AsyncExecutor<T>().setCallable(this).setCallback(this);
 			return true;
 		}
 	}
@@ -126,12 +124,12 @@ public abstract class AbsAsyncFragment<T> extends BaseFragment implements
 	public final void onPostExcute() {
 		mRunning = false;
 		if (isVisible()) {
-			onTransactPostExcute();
+			onTransactPostExecute();
 		}
 	}
 
 	/** 현재 Fragment가 존재하는 상태에서 비동기 작업이 끝나고 UI Thread로 진입 할 때 호출된다. */
-	protected abstract void onTransactPostExcute();
+	protected abstract void onTransactPostExecute();
 
 	@Override
 	public final void onResult(T result) {
@@ -148,8 +146,7 @@ public abstract class AbsAsyncFragment<T> extends BaseFragment implements
 	public void exceptionOccured(Exception e) {
 		if (isVisible()) {
 			if (e instanceof IOException) {
-				AppUtil.showInternetConnectionErrorToast(getActivity(),
-						isMenuVisible());
+				AppUtil.showInternetConnectionErrorToast(getActivity(),isMenuVisible());
 			} else {
 				AppUtil.showErrorToast(getActivity(), e, isMenuVisible());
 			}
@@ -199,6 +196,7 @@ public abstract class AbsAsyncFragment<T> extends BaseFragment implements
 		final int notiId = AppUtil.titleResIdToOrder(titleRes);
 		nm.notify(notiId, noti);
 
+        //FIXME
 		new Handler().postDelayed(new Runnable() {
 
 			@Override
@@ -245,7 +243,7 @@ public abstract class AbsAsyncFragment<T> extends BaseFragment implements
 	 *            저장된 data를 가져올 key
 	 * @return 저장된 data, 저장된 data가 없다면 null을 반환한다.
 	 * */
-	protected final static Object getAsyncData(String key) {
+	protected static Object getAsyncData(String key) {
 		return sAsyncDataStoreMap.remove(key);
 	}
 }

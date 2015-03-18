@@ -53,6 +53,7 @@ public class TimeTableInfoCallback implements View.OnClickListener {
     protected WeakReference<Context> contextRef;
     protected String building, subjectName;
     protected View mTimeTableDialogView;
+    private TextView mTimeTableDialogTitle;
     /**
      * 선택된 수업의 날짜 (1-7 월-토)
      */
@@ -150,6 +151,7 @@ public class TimeTableInfoCallback implements View.OnClickListener {
                 mTimeTableDialogView = View.inflate(context, R.layout.dialog_timetable_subject, null);
                 mTimeTableDialogView.findViewById(R.id.dialog_timetable_button_map).setOnClickListener(this);
                 mTimeTableDialogView.findViewById(R.id.dialog_timetable_button_info).setOnClickListener(this);
+                mTimeTableDialogTitle = (TextView) mTimeTableDialogView.findViewById(R.id.dialog_timetable_title);
 
                 alarmButton = mTimeTableDialogView.findViewById(R.id.dialog_timetable_button_alarm);
                 spinner = (Spinner) mTimeTableDialogView.findViewById(R.id.timetable_callback_alarm_spinner);
@@ -186,14 +188,15 @@ public class TimeTableInfoCallback implements View.OnClickListener {
                         .customView(mTimeTableDialogView, true)
                         .build();
             }
-            TextView titleView = (TextView) infoDialog.getTitleFrame();
-            titleView.setText(subjectName);
+
+            mTimeTableDialogTitle.setText(subjectName);
+
             infoDialog.show();
         }
     }
 
     protected int getPrefNotiIndex(int pos, int day, Context context) {
-        return PrefUtil.getInstance(context).get( PrefUtil.KEY_TIMETABLE_NOTIFY_TIME + pos + "-" + day, 0);
+        return PrefUtil.getInstance(context).get(PrefUtil.KEY_TIMETABLE_NOTIFY_TIME + pos + "-" + day, 0);
     }
 
     protected int getPreNotiMinute(int pos, int day, Context context) {
@@ -239,7 +242,7 @@ public class TimeTableInfoCallback implements View.OnClickListener {
                 .putExtra(INTENT_CODE, code)
                 .putExtra(INTENT_TIME, spinnerSelection);
 
-        PendingIntent pi = PendingIntent.getBroadcast(context, code, intent,PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pi = PendingIntent.getBroadcast(context, code, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         IOUtil.saveToFileSuppressed(context, String.valueOf(code), Context.MODE_PRIVATE, when);
         if (isSet) {
@@ -256,7 +259,7 @@ public class TimeTableInfoCallback implements View.OnClickListener {
      * 현재 설정된 시간표 알림을 모두 취소한다.
      */
     public static void clearAllAlarm(Context context) {
-        AlarmManager am = (AlarmManager) context .getSystemService(Context.ALARM_SERVICE);
+        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
         String when = context.getResources().getStringArray(R.array.tab_timetable_alarm_time_array)[0];
 
@@ -404,7 +407,7 @@ public class TimeTableInfoCallback implements View.OnClickListener {
                 item.infoArray[4] = divList.get(0);
                 item.infoArray[3] = subjNO;
                 item.infoArray[5] = subjectNm;
-                showDialFrag( ((FragmentActivity) context).getSupportFragmentManager(),item);
+                showDialFrag(((FragmentActivity) context).getSupportFragmentManager(), item);
                 return;
             }
 
@@ -414,11 +417,11 @@ public class TimeTableInfoCallback implements View.OnClickListener {
                     .customView(dialogView, false)
                     .build();
 
-            ListView divListView = (ListView) dialogView .findViewById(R.id.dialog_timetable_callback_listview_div);
+            ListView divListView = (ListView) dialogView.findViewById(R.id.dialog_timetable_callback_listview_div);
             divListView.setAdapter(new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, divList));
             divListView.setOnItemClickListener(new OnItemClickListener() {
                 @Override
-                public void onItemClick(AdapterView<?> adapter, View arg1,  int pos, long arg3) {
+                public void onItemClick(AdapterView<?> adapter, View arg1, int pos, long arg3) {
                     SubjectItem item = new SubjectItem();
                     item.infoArray[4] = (String) adapter.getItemAtPosition(pos);
                     item.infoArray[3] = subjNO;
@@ -454,6 +457,6 @@ public class TimeTableInfoCallback implements View.OnClickListener {
     };
 
     protected void showDialFrag(FragmentManager fm, SubjectItem item) {
-        SubjectInfoDialFrag.showDialog(fm, item, contextRef.get(),  term.ordinal(), year);
+        SubjectInfoDialFrag.showDialog(fm, item, contextRef.get(), term.ordinal(), year);
     }
 }

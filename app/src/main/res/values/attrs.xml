@@ -77,7 +77,7 @@
         <!-- 식당 아이콘, Drawable -->
         <attr name="ic_restaurant" format="reference|color" />
 
-        <attr name="ic_loading" format="reference"/>
+        <attr name="ic_loading" format="reference" />
     </declare-styleable>
     <declare-styleable name="ThemeDrawable.Selector">
         <attr name="selector_list" format="reference|color" />
@@ -124,16 +124,33 @@
         <attr name="menu_ic_secure_login" format="reference|color" />
         <attr name="menu_ic_navigation_drawer" format="reference|color" />
         <attr name="menu_ic_restaurant" format="reference|color" />
-        <attr name="menu_ic_loading" format="reference"/>
+        <attr name="menu_ic_loading" format="reference" />
     </declare-styleable>
     <declare-styleable name="ThemeDrawable.Color">
-        <attr name="color_rosy_brown" format="reference|color"/>
-        <attr name="color_actionbar_title" format="reference|color"/>
-        <attr name="color_sidemenu_listview_text" format="reference|color"/>
+        <attr name="color_rosy_brown" format="reference|color" />
+        <attr name="color_actionbar_title" format="reference|color" />
+        <attr name="color_sidemenu_listview_text" format="reference|color" />
     </declare-styleable>
     <declare-styleable name="MyStyle">
-        <attr name="toolbar_actionbar_title" format="reference"/>
-        <attr name="toolbar_actionbar_subtitle" format="reference"/>
+        <attr name="toolbar_actionbar_title" format="reference" />
+        <attr name="toolbar_actionbar_subtitle" format="reference" />
     </declare-styleable>
+
+
+    <color name="black_semi_transparent">#B2000000</color>
+    <color name="background">#e5e5e5</color>
+    <color name="half_black">#808080</color>
+    <color name="white">#fafafa</color>
+    <color name="white_pressed">#f1f1f1</color>
+    <color name="pink">#e91e63</color>
+    <color name="pink_pressed">#ec407a</color>
+    <color name="blue_semi_transparent">#805677fc</color>
+    <color name="blue_semi_transparent_pressed">#80738ffe</color>
+
+    <style name="menu_labels_style">
+        <item name="android:background">@drawable/fab_label_background</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
 
 </resources>

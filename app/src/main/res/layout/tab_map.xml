@@ -1,28 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/tab_library_list_seat"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:padding="10dp"
-        android:scrollbarStyle="outsideOverlay"
-        android:scrollbars="vertical" />
+    <com.uoscs09.theuos.common.NonLeakingWebView
+        android:layout_width="fill_parent"
+        android:id="@+id/webview"
+        android:layout_height="fill_parent" />
 
     <com.getbase.floatingactionbutton.FloatingActionButton
         android:id="@+id/action_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:fab_colorNormal="?colorPrimary"
-        app:fab_icon="?menu_ic_navigation_refresh"
+        app:fab_icon="?menu_ic_location_place"
         app:fab_colorPressed="?colorPrimaryDark"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_margin="16dp"
-        app:fab_title="@string/action_refresh" />
-
+        app:fab_title="@string/action_map" />
 </RelativeLayout>

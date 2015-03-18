@@ -18,6 +18,8 @@
         <!-- for color -->
         <item name="color_rosy_brown">@color/rosy_brown_dark</item>
         <item name="color_actionbar_title">@android:color/white</item>
+
+        <item name="md_dark_theme">true</item>
     </style>
 
     <!-- ActionBar -->

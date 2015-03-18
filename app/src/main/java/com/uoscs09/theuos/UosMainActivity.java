@@ -15,7 +15,6 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
@@ -65,7 +64,7 @@ public class UosMainActivity extends BaseActivity implements PagerInterface,
 		// StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll()
 		// .penaltyLog().penaltyDeath().build());
 		/* 호출 순서를 바꾸지 말 것 */
-		requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
+		//requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
 		initValues();
 		super.onCreate(savedInstanceState);
 
@@ -93,6 +92,8 @@ public class UosMainActivity extends BaseActivity implements PagerInterface,
 		AppUtil.startOrStopServiceAnounce(getApplicationContext());
 		mBackCloseHandler = new BackPressCloseHandler();
 		System.gc();
+
+        //startActivity(new Intent(this, TestActivity.class));
 	}
 
 	protected void onSaveInstanceState(Bundle outState) {
@@ -144,35 +145,32 @@ public class UosMainActivity extends BaseActivity implements PagerInterface,
 		int width = Math.round(30 * density);
 		int height = Math.round(28 * density);
 
-		mDrawerListView.setAdapter(new SimpleTextViewAdapter.Builder(this,
-				R.layout.drawer_list_item, list)
+		mDrawerListView.setAdapter(new SimpleTextViewAdapter.Builder(this,R.layout.drawer_list_item, list)
 				.setDrawableTheme(null)
 				.setDrawableForMenu(true)
-				.setTextViewTextColor(
-						getResources().getColor(
-								AppUtil.getStyledValue(this,
-										R.attr.color_sidemenu_listview_text)))
-				.setDrawableBounds(new Rect(0, 0, width, height)).create());
-		mDrawerListView
-				.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-					@Override
-					public void onItemClick(AdapterView<?> arg0, View arg1,
-							int pos, long arg3) {
-						int size = mPagerAdapter.getCount();
-						if (pos < size)
-							navigateItem(pos, false);
-						else if (pos == size) {
-							startSettingActivity();
-							mDrawerLayout.closeDrawer(mDrawerListView);
-							// drawerLayout.closeDrawer(mDrawerListView);
-						} else if (pos == size + 1) {
-							AppUtil.exit(getApplicationContext());
-						}
-					}
-				});
+				.setTextViewTextColor(getResources().getColor(AppUtil.getStyledValue(this,R.attr.color_sidemenu_listview_text)))
+				.setDrawableBounds(new Rect(0, 0, width, height))
+                .create());
+		mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1,
+                                    int pos, long arg3) {
+                int size = mPagerAdapter.getCount();
+                if (pos < size)
+                    navigateItem(pos, false);
+
+                else if (pos == size) {
+                    startSettingActivity();
+                    mDrawerLayout.closeDrawer(mDrawerListView);
+                    // drawerLayout.closeDrawer(mDrawerListView);
+
+                } else if (pos == size + 1) {
+                    AppUtil.exit(getApplicationContext());
+                }
+            }
+        });
 		// AppUtil.getStyledValue(this,R.attr.menu_ic_navigation_drawer)
-		mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-				mToolbar, R.string.app_name, R.string.app_name) {
+		mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,mToolbar, R.string.app_name, R.string.app_name) {
 			@Override
 			public void onDrawerOpened(View drawerView) {
 				super.onDrawerOpened(drawerView);
@@ -194,14 +192,13 @@ public class UosMainActivity extends BaseActivity implements PagerInterface,
 				mPageOrderList, this);
 		mViewPager = (ViewPager) findViewById(R.id.activity_pager_viewpager);
 		mViewPager.setAdapter(mPagerAdapter);
-		mViewPager
-				.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-					@Override
-					public void onPageSelected(int position) {
-						navigateItem(position, true);
-					}
-				});
-		// mViewPager.setOffscreenPageLimit(2);
+		mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                navigateItem(position, true);
+            }
+        });
+		mViewPager.setOffscreenPageLimit(mPagerAdapter.getCount());
 		switch (AppUtil.theme) {
 		case BlackAndWhite:
 			mViewPager.setPageTransformer(true, new PagerTransformer(2));

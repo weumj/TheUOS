@@ -10,6 +10,7 @@
         android:title="@string/action_refresh"
         com.uoscs09.theuos:showAsAction="always">
     </item>
+    <!--
     <item
         android:id="@+id/action_map"
         android:icon="?menu_ic_location_place"
@@ -18,6 +19,7 @@
         android:title="@string/action_map"
         com.uoscs09.theuos:showAsAction="always">
     </item>
+    -->
     <item
         android:id="@+id/action_forward"
         android:icon="?menu_ic_navigation_forward"

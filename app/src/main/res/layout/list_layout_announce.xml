@@ -1,38 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?selector_list_rec"
-    android:padding="8dp">
+    android:layout_gravity="center"
+    app:cardBackgroundColor="?attr/cardBackgroundColor"
+    app:cardCornerRadius="4dp">
 
-    <TextView
-        android:id="@+id/tab_anounce_list_text_title"
+    <com.balysv.materialripple.MaterialRippleLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginTop="10dp"
-        android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline"
-        android:textSize="16sp" />
+        app:mrl_rippleInAdapter="true"
+        app:mrl_rippleColor="?colorPrimaryDark">
 
-    <TextView
-        android:id="@+id/tab_anounce_list_text_type"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/tab_anounce_list_text_title"
-        android:layout_below="@id/tab_anounce_list_text_title"
-        android:layout_marginTop="10dp"
-        android:textSize="12sp" />
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp">
 
-    <TextView
-        android:id="@+id/tab_anounce_list_text_date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/tab_anounce_list_text_title"
-        android:layout_below="@id/tab_anounce_list_text_title"
-        android:layout_marginBottom="10dp"
-        android:layout_marginTop="10dp"
-        android:textSize="12sp" />
+            <TextView
+                android:id="@+id/tab_anounce_list_text_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="10dp"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline"
+                android:textSize="16sp" />
 
-</RelativeLayout>
+            <TextView
+                android:id="@+id/tab_anounce_list_text_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/tab_anounce_list_text_title"
+                android:layout_below="@id/tab_anounce_list_text_title"
+                android:layout_marginTop="10dp"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tab_anounce_list_text_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignRight="@+id/tab_anounce_list_text_title"
+                android:layout_below="@id/tab_anounce_list_text_title"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:textSize="12sp" />
+
+        </RelativeLayout>
+    </com.balysv.materialripple.MaterialRippleLayout>
+</android.support.v7.widget.CardView>

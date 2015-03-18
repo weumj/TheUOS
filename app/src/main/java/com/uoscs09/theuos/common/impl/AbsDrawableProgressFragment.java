@@ -1,7 +1,6 @@
 package com.uoscs09.theuos.common.impl;
 
-import android.graphics.drawable.Animatable;
-import android.graphics.drawable.Drawable;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,7 +15,7 @@ import com.uoscs09.theuos.common.util.AppUtil;
 public abstract class AbsDrawableProgressFragment<T> extends
 		AbsAsyncFragment<T> {
 	@ReleaseWhenDestroy
-	Animatable mLoadingAnimation;
+    AnimationDrawable mLoadingAnimation;
 	@ReleaseWhenDestroy
 	View mLoadingView;
 	private boolean mIsMenuRefresh = true;
@@ -33,7 +32,7 @@ public abstract class AbsDrawableProgressFragment<T> extends
 					R.attr.ic_loading));
 		}
 		mLoadingView.setTag(R.id.view_loading_image, iv);
-		mLoadingAnimation = (Animatable) iv.getBackground();
+		mLoadingAnimation = (AnimationDrawable) iv.getBackground();
 		mLoadingView.setVisibility(View.INVISIBLE);
 	}
 
@@ -43,7 +42,7 @@ public abstract class AbsDrawableProgressFragment<T> extends
 	}
 
 	/** Loading View에 속한, Loading AnimationDrawable을 반환한다. */
-	public final Animatable getLoadingAnimDrawable() {
+	public final AnimationDrawable getLoadingAnimDrawable() {
 		return mLoadingAnimation;
 	}
 
@@ -57,7 +56,7 @@ public abstract class AbsDrawableProgressFragment<T> extends
 	}
 
 	@Override
-	protected void onTransactPostExcute() {
+	protected void onTransactPostExecute() {
 		if (getActivity() != null && mIsMenuRefresh)
 			getActivity().invalidateOptionsMenu();
 		animationStop();
@@ -101,7 +100,7 @@ public abstract class AbsDrawableProgressFragment<T> extends
 				iv.setBackgroundResource(AppUtil.getStyledValue(getActivity(),
 						mMenu ? R.attr.menu_ic_loading : R.attr.ic_loading));
 
-				mLoadingAnimation = (Animatable) iv.getBackground();
+				mLoadingAnimation = (AnimationDrawable) iv.getBackground();
 			}
 		}
 	};
@@ -117,11 +116,11 @@ public abstract class AbsDrawableProgressFragment<T> extends
 	}
 
 	@Override
-	protected void excute() {
+	protected void execute() {
 		if (getActivity() != null && mIsMenuRefresh)
 			getActivity().invalidateOptionsMenu();
 		animationStart();
-		super.excute();
+		super.execute();
 	}
 
 	@Override
@@ -130,7 +129,7 @@ public abstract class AbsDrawableProgressFragment<T> extends
 		if (refreshItem != null) {
 			if (isRunning()) {
 				if (mIsMenuRefresh)
-					refreshItem.setIcon((Drawable) mLoadingAnimation);
+					refreshItem.setIcon(mLoadingAnimation);
 				animationStart();
 			} else {
 				animationStop();
@@ -141,7 +140,7 @@ public abstract class AbsDrawableProgressFragment<T> extends
 	@Override
 	public void onDetach() {
 		if (mLoadingAnimation != null) {
-			((Drawable) mLoadingAnimation).setCallback(null);
+			mLoadingAnimation.setCallback(null);
 			mLoadingAnimation = null;
 		}
 		if (mLoadingView != null) {

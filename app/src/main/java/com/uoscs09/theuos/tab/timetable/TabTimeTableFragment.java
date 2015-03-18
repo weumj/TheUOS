@@ -14,10 +14,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.AsyncLoader;
 import com.uoscs09.theuos.common.AsyncLoader.OnTaskFinishedListener;
@@ -65,6 +67,11 @@ public class TabTimeTableFragment extends AbsDrawableProgressFragment<ArrayList<
     protected ListView listView;
     @ReleaseWhenDestroy
     private TimeTableInfoCallback cb;
+    private ViewGroup mToolBarParent;
+    @ReleaseWhenDestroy
+    private LinearLayout mTabParent;
+
+
     private boolean mIsOnLoad;
     private Map<String, Integer> colorTable;
     private String mTermText;
@@ -103,6 +110,9 @@ public class TabTimeTableFragment extends AbsDrawableProgressFragment<ArrayList<
         if (termValue != -1)
             setTermTextViewText(term, context);
         super.onCreate(savedInstanceState);
+
+        mToolBarParent = (ViewGroup) getActivity().findViewById(R.id.toolbar_parent);
+        mTabParent = (LinearLayout) LayoutInflater.from(getActivity()).inflate(R.layout.view_tab_timetable_titles, mToolBarParent, false);
     }
 
     private void initDialog() {
@@ -151,7 +161,7 @@ public class TabTimeTableFragment extends AbsDrawableProgressFragment<ArrayList<
                             AppUtil.showToast(context, R.string.tab_timetable_wise_login_warning_null, true);
                             clearText();
                         } else {
-                            excute();
+                            execute();
                         }
                     }
                 })
@@ -184,8 +194,7 @@ public class TabTimeTableFragment extends AbsDrawableProgressFragment<ArrayList<
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.tab_timetable, container, false);
         View emptyView = rootView.findViewById(R.id.tab_timetable_empty);
         emptyView.setOnClickListener(this);
@@ -193,6 +202,16 @@ public class TabTimeTableFragment extends AbsDrawableProgressFragment<ArrayList<
         listView.setEmptyView(emptyView);
         listView.setAdapter(adapter);
 
+        FloatingActionButton actionButton = (FloatingActionButton) rootView.findViewById(R.id.tab_timetable_action_btn);
+        actionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isRunning()) {
+                    AppUtil.showToast(getActivity(), R.string.progress_ongoing, true);
+                } else
+                    loginDialog.show();
+            }
+        });
         return rootView;
     }
 
@@ -200,7 +219,7 @@ public class TabTimeTableFragment extends AbsDrawableProgressFragment<ArrayList<
     public void onResume() {
         if (adapter.isEmpty()) {
             mIsOnLoad = true;
-            excute();
+            execute();
         }
         super.onResume();
     }
@@ -214,13 +233,13 @@ public class TabTimeTableFragment extends AbsDrawableProgressFragment<ArrayList<
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_wise:
+           /* case R.id.action_wise:
                 if (isRunning()) {
                     AppUtil.showToast(getActivity(), R.string.progress_ongoing, true);
                 } else
                     loginDialog.show();
                 return true;
-
+*/
             case R.id.action_delete:
                 if (deleteDialog == null) {
                     initDeleteDialog();
@@ -235,6 +254,24 @@ public class TabTimeTableFragment extends AbsDrawableProgressFragment<ArrayList<
 
             default:
                 return false;
+        }
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+
+        addOrRemoveTabMenu(isVisibleToUser);
+    }
+
+    private void addOrRemoveTabMenu(boolean visible){
+        if (mToolBarParent == null || mTabParent == null)
+            return;
+        if (visible) {
+            if(mTabParent.getParent() == null)
+                mToolBarParent.addView(mTabParent);
+        } else if(mToolBarParent.indexOfChild(mTabParent) > 0) {
+            mToolBarParent.removeView(mTabParent);
         }
     }
 
@@ -258,8 +295,7 @@ public class TabTimeTableFragment extends AbsDrawableProgressFragment<ArrayList<
                     titleBitmap = title.getDrawingCache(true);
                     if (titleBitmap == null)
                         titleBitmap = GraphicUtil.createBitmapFromView(title);
-                    capture = GraphicUtil
-                            .getWholeListViewItemsToBitmap(listView);
+                    capture = GraphicUtil.getWholeListViewItemsToBitmap(listView);
                     bitmap = GraphicUtil.merge(titleBitmap, capture);
 
                     return bitmap;
@@ -306,8 +342,8 @@ public class TabTimeTableFragment extends AbsDrawableProgressFragment<ArrayList<
     }
 
     @Override
-    protected void onTransactPostExcute() {
-        super.onTransactPostExcute();
+    protected void onTransactPostExecute() {
+        super.onTransactPostExecute();
         clearPassWd();
     }
 
@@ -319,7 +355,7 @@ public class TabTimeTableFragment extends AbsDrawableProgressFragment<ArrayList<
 
         // Fragment가 처음 Attach되었을 때, 파일에서 시간표을 읽어온다.
         if (mIsOnLoad) {
-            result = (ArrayList<TimeTableItem>) readTimetable(context);
+            result = readTimetable(context);
 
         } else {
         // 사용자가 WISE에 시간표 정보를 요청하였을 때
@@ -487,7 +523,7 @@ public class TabTimeTableFragment extends AbsDrawableProgressFragment<ArrayList<
 
     @Override
     protected MenuItem getLoadingMenuItem(Menu menu) {
-        return menu.findItem(R.id.action_wise);
+        return null;
     }
 
     @Override

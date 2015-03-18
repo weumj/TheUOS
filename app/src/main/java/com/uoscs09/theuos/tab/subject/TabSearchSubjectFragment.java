@@ -239,7 +239,7 @@ public class TabSearchSubjectFragment extends AbsDrawableProgressFragment<ArrayL
                                         Activity.INPUT_METHOD_SERVICE);
                         ipm.hideSoftInputFromWindow(
                                 et.getWindowToken(), 0);
-                        excute();
+                        execute();
                     }
                 })
                 .build();

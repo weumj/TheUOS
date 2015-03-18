@@ -57,19 +57,25 @@ public class AppUtil {
         /**
          * white textColortheme
          */
-        White,
+        White(R.style.Mystyle_White),
         /**
          * android default, 액션바는 검은색, 일반 배경은 하얀색
          */
-        BlackAndWhite,
+        BlackAndWhite(R.style.Mystyle_BlackAndWhite),
         /**
          * black textColortheme
          */
-        Black,
+        Black(R.style.Mystyle_Black),
         /**
          * Light Blue Theme
          */
-        LightBlue
+        LightBlue(R.style.Mystyle_Light_Blue)
+        ;
+
+        final int styleId;
+        AppTheme(int styleId){
+            this.styleId = styleId;
+        }
     }
 
     public static void initStaticValues(PrefUtil pref) {
@@ -81,7 +87,7 @@ public class AppUtil {
         }
         AppUtil.theme = vals[v];
         AppUtil.test = pref.get("test", false);
-        PAGE_SIZE = test ? 13 : 11;
+        PAGE_SIZE = test ? 13 : 10;
     }
 
     /**
@@ -633,7 +639,7 @@ public class AppUtil {
                             cancelButtonListener.onClick(dialog, DialogInterface.BUTTON_NEGATIVE);
                     }
                 })
-                .show();
+                .build();
     }
 
     /**
@@ -670,21 +676,8 @@ public class AppUtil {
             theme = AppTheme.values()[PrefUtil.getInstance(appContext).get(
                     PrefUtil.KEY_THEME, 0)];
         }
-        switch (theme) {
-            case BlackAndWhite:
-                appContext.setTheme(R.style.Mystyle_BlackAndWhite);
-                break;
-            case Black:
-                appContext.setTheme(R.style.Mystyle_Black);
-                break;
-            case LightBlue:
-                appContext.setTheme(R.style.Mystyle_Light_Blue);
-                break;
-            case White:
-            default:
-                appContext.setTheme(R.style.Mystyle_White);
-                break;
-        }
+
+        appContext.setTheme(theme.styleId);
     }
 
     /**

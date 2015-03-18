@@ -8,7 +8,6 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
-import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
@@ -46,12 +45,12 @@ public class SettingsAnounceNotiFragment extends PreferenceFragment implements
 			showTimePicker();
 			return true;
 		case R.string.announce_keyword:
-			if (!isNotiKeywordDialogSetting) {
-				EditTextPreference prefKeyword = (EditTextPreference) preference;
+			//if (!isNotiKeywordDialogSetting) {
+			//	EditTextPreference prefKeyword = (EditTextPreference) preference;
 
 				//AppUtil.setDialogMaterial(prefKeyword.getDialog(), getActivity());
-				isNotiKeywordDialogSetting = true;
-			}
+			//	isNotiKeywordDialogSetting = true;
+			//}
 			return false;
 		default:
 			return false;

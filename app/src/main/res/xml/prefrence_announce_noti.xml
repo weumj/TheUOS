@@ -21,7 +21,10 @@
         <com.afollestad.materialdialogs.prefs.MaterialEditTextPreference
             android:key="@string/pref_key_keyword_anounce"
             android:summary="@string/setting_announce_keyword_desc"
-            android:dialogMessage="@string/setting_announce_dialog_message"
+            android:dialogMessage=""
+            android:dialogTitle="@string/setting_announce_dialog_message"
+            android:persistent="true"
+            android:defaultValue=""
             android:title="@string/announce_keyword" />
 
         <PreferenceScreen

@@ -1,31 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="10dp" >
+    android:padding="10dp">
 
-    <Button
-        android:id="@+id/dialog_timetable_button_map"
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:id="@+id/dialog_timetable_title"
+        android:gravity="center_vertical"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:background="?selector_button"
-        android:drawableLeft="?ic_location_place"
-        android:padding="2dp"
-        android:text="@string/tab_timatable_callback_show_location_in_map" />
+        android:textStyle="bold"
+        android:layout_marginTop="10dp"
+        android:textSize="17sp" />
 
-    <Button
+    <com.balysv.materialripple.MaterialRippleLayout
+        android:layout_width="fill_parent"
+        android:id="@+id/dialog_timetable_button_map"
+        android:gravity="center"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="20dp"
+        android:layout_below="@id/dialog_timetable_title"
+        android:layout_height="wrap_content"
+        app:mrl_rippleInAdapter="false"
+        android:padding="4dp"
+        app:mrl_rippleColor="?colorPrimaryDark">
+
+        <TextView
+            android:id="@id/dialog_timetable_button_map"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:drawableLeft="?ic_location_place"
+            android:padding="2dp"
+            android:textSize="14sp"
+            android:text="@string/tab_timatable_callback_show_location_in_map" />
+
+    </com.balysv.materialripple.MaterialRippleLayout>
+
+    <com.balysv.materialripple.MaterialRippleLayout
+        android:layout_width="fill_parent"
+        android:gravity="center"
         android:id="@+id/dialog_timetable_button_info"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/dialog_timetable_button_map"
         android:layout_marginTop="16dp"
-        android:background="?selector_button"
-        android:drawableLeft="?ic_collections_view_as_list"
-        android:padding="2dp"
-        android:text="@string/tab_timatable_callback_show_subject_plan" />
+        android:padding="4dp"
+        app:mrl_rippleInAdapter="false"
+        app:mrl_rippleColor="?colorPrimaryDark">
+
+        <TextView
+            android:id="@id/dialog_timetable_button_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:textSize="14sp"
+            android:drawableLeft="?ic_collections_view_as_list"
+            android:text="@string/tab_timatable_callback_show_subject_plan" />
+    </com.balysv.materialripple.MaterialRippleLayout>
+
 
     <Button
         android:id="@+id/dialog_timetable_button_alarm"
@@ -34,7 +69,6 @@
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/dialog_timetable_button_info"
         android:layout_marginTop="16dp"
-        android:background="?selector_button"
         android:drawableLeft="?ic_device_access_alarms"
         android:padding="2dp"
         android:text="@string/tab_timatable_callback_noti"

@@ -48,12 +48,16 @@ public class ParseTimetable implements IParseHttp {
 						} else {
 							timeArray[i] = temp.replace(cr, StringUtil.NEW_LINE);
 							try {
-								String buildingNo = timeArray[i].split(StringUtil.NEW_LINE)[2].split("-")[0];
-								String building = OApiUtil.getBuildingName(buildingNo);
 
-								if (building != null) {
-									timeArray[i] = timeArray[i].replace(buildingNo + "-", building);
-								}
+                                String[] buildingSplitArray = timeArray[i].split(StringUtil.NEW_LINE);
+                                if(buildingSplitArray.length > 1) {
+                                    String buildingNo = timeArray[i].split(StringUtil.NEW_LINE)[2].split("-")[0];
+                                    String building = OApiUtil.getBuildingName(buildingNo);
+
+                                    if (building != null) {
+                                        timeArray[i] = timeArray[i].replace(buildingNo + "-", building);
+                                    }
+                                }
 
 							} catch (Exception e) {
                                 e.printStackTrace();

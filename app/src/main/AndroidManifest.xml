@@ -49,39 +49,41 @@
             android:label="@string/app_name"
             android:screenOrientation="user"
             android:uiOptions="splitActionBarWhenNarrow"
-            android:windowSoftInputMode="stateAlwaysHidden"/>
-        <activity android:name="com.uoscs09.theuos.tab.phonelist.PhoneListWebActivity"/>
-        <activity android:name="com.uoscs09.theuos.tab.map.SubMapActivity"/>
-        <activity android:name="com.uoscs09.theuos.tab.anounce.SubAnounceWebActivity"/>
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity android:name="com.uoscs09.theuos.tab.phonelist.PhoneListWebActivity" />
+        <activity android:name="com.uoscs09.theuos.tab.map.SubMapActivity" />
+        <activity android:name="com.uoscs09.theuos.tab.anounce.SubAnounceWebActivity" />
         <activity
             android:name="com.uoscs09.theuos.setting.SettingActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:uiOptions="splitActionBarWhenNarrow"/>
-        <activity android:name="com.uoscs09.theuos.tab.libraryseat.SubSeatWebActivity"/>
+            android:uiOptions="splitActionBarWhenNarrow" />
+        <activity android:name="com.uoscs09.theuos.tab.libraryseat.SubSeatWebActivity" />
+
+        <activity android:name=".TestActivity" />
 
         <service
             android:name="com.uoscs09.theuos.widget.timetable.Widget5x4ListService"
             android:exported="true"
             android:label="@string/widget_timetable"
-            android:permission="android.permission.BIND_REMOTEVIEWS"/>
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
         <service
             android:name="com.uoscs09.theuos.widget.timetable.Widget4x4ListService"
             android:exported="true"
             android:label="@string/widget_timetable"
-            android:permission="android.permission.BIND_REMOTEVIEWS"/>
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
         <service
             android:name="com.uoscs09.theuos.widget.restaurant.RestListService"
             android:exported="true"
             android:label="@string/widget_rest"
-            android:permission="android.permission.BIND_REMOTEVIEWS"/>
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
         <service
             android:name="com.uoscs09.theuos.widget.libraryseat.LibrarySeatListService"
             android:exported="true"
             android:label="@string/widget_library_seat"
-            android:permission="android.permission.BIND_REMOTEVIEWS"/>
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
         <service
             android:name="com.uoscs09.theuos.tab.anounce.ServiceForAnounce"
-            android:label="@string/setting_announce_noti"/>
+            android:label="@string/setting_announce_noti" />
 
         <receiver android:name="com.uoscs09.theuos.service.BReceiver">
             <intent-filter>
@@ -97,7 +99,7 @@
             android:name="com.uoscs09.theuos.tab.timetable.TimeTableNotiReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.uoscs09.theuos.tab.timetable.set_alarm"/>
+                <action android:name="com.uoscs09.theuos.tab.timetable.set_alarm" />
             </intent-filter>
         </receiver>
         <receiver

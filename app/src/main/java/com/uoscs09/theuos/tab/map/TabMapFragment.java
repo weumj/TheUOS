@@ -29,11 +29,11 @@ public class TabMapFragment extends BaseFragment implements OnTouchListener {
 
 	@SuppressLint("SetJavaScriptEnabled")
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
 		setHasOptionsMenu(true);
-		if (mWebView == null)
-			mWebView = new NonLeakingWebView(getActivity());
+
+        View root = inflater.inflate(R.layout.tab_map, container, false);
+        mWebView = (NonLeakingWebView) root.findViewById(R.id.webview);
 		mWebView.setWebViewClient(new CustomWebViewClient());
 		WebSettings settings = mWebView.getSettings();
 		settings.setJavaScriptEnabled(true);
@@ -44,7 +44,16 @@ public class TabMapFragment extends BaseFragment implements OnTouchListener {
 		settings.setUseWideViewPort(true);
 
 		mWebView.loadUrl(URL);
-		return mWebView;
+
+        root.findViewById(R.id.action_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Activity activity = getActivity();
+                startActivity(new Intent(activity, SubMapActivity.class));
+                AppUtil.overridePendingTransition(activity, 0);
+            }
+        });
+		return root;
 	}
 
 	@Override
@@ -88,11 +97,13 @@ public class TabMapFragment extends BaseFragment implements OnTouchListener {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+            /*
 		case R.id.action_map:
 			Activity activity = getActivity();
 			startActivity(new Intent(activity, SubMapActivity.class));
 			AppUtil.overridePendingTransition(activity, 0);
 			return true;
+			*/
 		case R.id.action_refresh:
 			mWebView.loadUrl(URL);
 			return true;

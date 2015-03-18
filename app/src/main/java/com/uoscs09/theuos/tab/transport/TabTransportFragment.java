@@ -46,7 +46,7 @@ public class TabTransportFragment extends
         empty.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                excute();
+                execute();
             }
         });
         listview.setEmptyView(empty);
@@ -63,7 +63,7 @@ public class TabTransportFragment extends
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_refresh:
-                excute();
+                execute();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

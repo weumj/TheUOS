@@ -67,7 +67,7 @@ public class TabScheduleFragment extends AbsDrawableProgressFragment<ScheduleIte
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_refresh:
-                excute();
+                execute();
                 return true;
             default:
                 return false;

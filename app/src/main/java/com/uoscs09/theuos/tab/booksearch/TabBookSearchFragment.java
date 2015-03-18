@@ -146,7 +146,7 @@ public class TabBookSearchFragment extends
                         if (!mBookList.isEmpty()) {
                             mBookList.clear();
                             mCurrentPage = 1;
-                            excute();
+                            execute();
                         }
                     }
 
@@ -254,9 +254,9 @@ public class TabBookSearchFragment extends
     }
 
     @Override
-    protected void excute() {
+    protected void execute() {
         mEmptyView.setVisibility(View.GONE);
-        super.excute();
+        super.execute();
     }
 
     @Override
@@ -296,7 +296,7 @@ public class TabBookSearchFragment extends
             mBookList.clear();
             setSubtitleWhenVisible(mRawQuery);
             mAnimAdapter.reset();
-            excute();
+            execute();
         }
 
         return true;
@@ -392,8 +392,8 @@ public class TabBookSearchFragment extends
     }
 
     @Override
-    protected void onTransactPostExcute() {
-        super.onTransactPostExcute();
+    protected void onTransactPostExecute() {
+        super.onTransactPostExecute();
         isResultEmpty = false;
     }
 
@@ -431,7 +431,7 @@ public class TabBookSearchFragment extends
             if (!isInvokeScroll && !isResultEmpty) {
                 isInvokeScroll = true;
                 mCurrentPage++;
-                excute();
+                execute();
             }
         } else {
             isInvokeScroll = false;

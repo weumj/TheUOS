@@ -66,19 +66,14 @@ public class TabSearchEmptyRoomFragment extends
     public void onCreate(Bundle savedInstanceState) {
         initTable();
         Context context = getActivity();
-        View dialogLayout = View.inflate(context,
-                R.layout.dialog_search_empty_room, null);
-        buildingSpinner = (Spinner) dialogLayout
-                .findViewById(R.id.etc_empty_spinner_building);
-        timeSpinner = (Spinner) dialogLayout
-                .findViewById(R.id.etc_empty_spinner_time);
-        termSpinner = (Spinner) dialogLayout
-                .findViewById(R.id.etc_empty_spinner_term);
+        View dialogLayout = View.inflate(context, R.layout.dialog_search_empty_room, null);
+        buildingSpinner = (Spinner) dialogLayout.findViewById(R.id.etc_empty_spinner_building);
+        timeSpinner = (Spinner) dialogLayout.findViewById(R.id.etc_empty_spinner_time);
+        termSpinner = (Spinner) dialogLayout.findViewById(R.id.etc_empty_spinner_term);
 
         initSearchDialog(dialogLayout);
         if (savedInstanceState != null) {
-            mClassRoomList = savedInstanceState
-                    .getParcelableArrayList(BUILDING);
+            mClassRoomList = savedInstanceState.getParcelableArrayList(BUILDING);
             mTermString = savedInstanceState.getString("time");
         } else {
             mClassRoomList = new ArrayList<>();
@@ -93,7 +88,7 @@ public class TabSearchEmptyRoomFragment extends
                 .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
-                        excute();
+                        execute();
                     }
                 })
                 .build();
@@ -102,15 +97,16 @@ public class TabSearchEmptyRoomFragment extends
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.tab_search_empty_room, container,
-                false);
-        adapter = new SearchEmptyRoomAdapter(getActivity(),
-                R.layout.list_layout_empty_room, mClassRoomList);
+        View root = inflater.inflate(R.layout.tab_search_empty_room, container, false);
+
+        adapter = new SearchEmptyRoomAdapter(getActivity(), R.layout.list_layout_empty_room, mClassRoomList);
         textViews = new TextView[4];
+
         int[] ids = {R.id.tab_search_empty_room_text_building_name,
                 R.id.tab_search_empty_room_text_room_no,
                 R.id.tab_search_empty_room_text_room_subj,
                 R.id.tab_search_empty_room_text_room_person};
+
         int i = 0;
         for (int id : ids) {
             textViews[i] = (TextView) root.findViewById(id);
@@ -142,16 +138,12 @@ public class TabSearchEmptyRoomFragment extends
     private void putParams() {
         Calendar c = Calendar.getInstance();
         int time = timeSpinner.getSelectedItemPosition() + 1;
-        String wdayTime = String.valueOf(c.get(Calendar.DAY_OF_WEEK))
-                + (time < 10 ? "0" : StringUtil.NULL) + String.valueOf(time);
-        String building = ((String) buildingSpinner.getSelectedItem())
-                .split(StringUtil.SPACE)[0];
+        String wdayTime = String.valueOf(c.get(Calendar.DAY_OF_WEEK)) + (time < 10 ? "0" : StringUtil.NULL) + String.valueOf(time);
+        String building = ((String) buildingSpinner.getSelectedItem()).split(StringUtil.SPACE)[0];
 
         params.put(BUILDING, building);
         params.put("wdayTime", wdayTime);
-        params.put(OApiUtil.TERM,
-                OApiUtil.getTermCode(Term.values()[termSpinner
-                        .getSelectedItemPosition()]));
+        params.put(OApiUtil.TERM, OApiUtil.getTermCode(Term.values()[termSpinner.getSelectedItemPosition()]));
     }
 
     @Override
@@ -176,18 +168,14 @@ public class TabSearchEmptyRoomFragment extends
         mClassRoomList.clear();
         mClassRoomList.addAll(result);
         adapter.notifyDataSetChanged();
-        AppUtil.showToast(getActivity(), String.valueOf(result.size())
-                + getString(R.string.search_found), true);
+        AppUtil.showToast(getActivity(), String.valueOf(result.size())  + getString(R.string.search_found), true);
 
-        mTermString = timeSpinner.getSelectedItem().toString()
-                .split(StringUtil.NEW_LINE)[1]
-                + StringUtil.NEW_LINE + termSpinner.getSelectedItem();
+        mTermString = timeSpinner.getSelectedItem().toString()  .split(StringUtil.NEW_LINE)[1] + StringUtil.NEW_LINE + termSpinner.getSelectedItem();
         setSubtitleWhenVisible(mTermString);
     }
 
     private void initTable() {
-        String date = new SimpleDateFormat("yyyyMMdd", Locale.KOREAN)
-                .format(new Date());
+        String date = new SimpleDateFormat("yyyyMMdd", Locale.KOREAN)  .format(new Date());
         params.put(OApiUtil.API_KEY, OApiUtil.UOS_API_KEY);
         params.put(OApiUtil.YEAR, OApiUtil.getYear());
         params.put(BUILDING, StringUtil.NULL);

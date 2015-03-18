@@ -3,10 +3,8 @@ package com.uoscs09.theuos.tab.restaurant;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -15,9 +13,10 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.common.impl.AbsDrawableProgressFragment;
+import com.uoscs09.theuos.common.impl.AbsAsyncFragment;
 import com.uoscs09.theuos.common.impl.annotaion.AsyncData;
 import com.uoscs09.theuos.common.impl.annotaion.ReleaseWhenDestroy;
+import com.uoscs09.theuos.common.util.AppUtil;
 import com.uoscs09.theuos.common.util.IOUtil;
 import com.uoscs09.theuos.common.util.OApiUtil;
 import com.uoscs09.theuos.common.util.PrefUtil;
@@ -28,7 +27,7 @@ import com.uoscs09.theuos.http.parse.ParseRest;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class TabRestaurantFragment extends AbsDrawableProgressFragment<ArrayList<RestItem>> {
+public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>> {
     @ReleaseWhenDestroy
     private ScrollView mScrollView;
     private ViewGroup mToolBarParent;
@@ -37,10 +36,13 @@ public class TabRestaurantFragment extends AbsDrawableProgressFragment<ArrayList
     @ReleaseWhenDestroy
     private TextView mSemesterTimeView, mVacationTimeView,
             mContentBreakfastView, mContentLunchView, mContentSupperView;
+    @ReleaseWhenDestroy
+    private SwipeRefreshLayout swipeRefreshLayout;
     private int mCurrentSelection;
     @AsyncData
     private ArrayList<RestItem> mRestList;
-    private String mCurrentRestName;
+
+    //private String mCurrentRestName;
     private ArrayList<Tab> mTabList = new ArrayList<>();
 
     private static final String BUTTON = "button";
@@ -83,7 +85,7 @@ public class TabRestaurantFragment extends AbsDrawableProgressFragment<ArrayList
         for (int stringId : REST_TAB_MENU_STRING_ID) {
             final Tab tab = new Tab(mTabParent);
             tab.setText(stringId);
-            tab.tabView.setOnClickListener(new View.OnClickListener() {
+            tab.ripple.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     mTabList.get(mCurrentSelection).setSelected(false);
@@ -94,51 +96,59 @@ public class TabRestaurantFragment extends AbsDrawableProgressFragment<ArrayList
             mTabParent.addView(tab.tabView);
             mTabList.add(tab);
         }
+
+    }
+
+    @Override
+    protected void onTransactPostExecute() {
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.tab_restaurant, container, false);
 
-        mScrollView = (ScrollView) rootView.findViewById(R.id.tab_rest_scroll);
+        swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.tab_rest_swipe_layout);
+        swipeRefreshLayout.setColorSchemeResources(
+                AppUtil.getStyledValue(getActivity(), R.attr.color_actionbar_title),
+                AppUtil.getStyledValue(getActivity(), R.attr.colorAccent),
+                AppUtil.getStyledValue(getActivity(), R.attr.colorPrimaryDark),
+                AppUtil.getStyledValue(getActivity(), R.attr.colorPrimary)
+                );
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                execute();
+            }
+        });
 
-        mSemesterTimeView = (TextView) rootView.findViewById(R.id.tab_rest_text_semester);
-        mVacationTimeView = (TextView) rootView.findViewById(R.id.tab_rest_text_vacation);
-        mContentBreakfastView = (TextView) rootView.findViewById(R.id.tab_rest_text_breakfast);
-        mContentLunchView = (TextView) rootView.findViewById(R.id.tab_rest_text_lunch);
-        mContentSupperView = (TextView) rootView.findViewById(R.id.tab_rest_text_supper);
+        mScrollView = (ScrollView) swipeRefreshLayout .findViewById(R.id.tab_rest_scroll);
+
+        mSemesterTimeView = (TextView) mScrollView.findViewById(R.id.tab_rest_text_semester);
+        mVacationTimeView = (TextView) mScrollView.findViewById(R.id.tab_rest_text_vacation);
+        mContentBreakfastView = (TextView) mScrollView.findViewById(R.id.tab_rest_text_breakfast);
+        mContentLunchView = (TextView) mScrollView.findViewById(R.id.tab_rest_text_lunch);
+        mContentSupperView = (TextView) mScrollView.findViewById(R.id.tab_rest_text_supper);
+
+        rootView.findViewById(R.id.action_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                execute();
+            }
+        });
 
         return rootView;
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        //addOrRemoveTabMenu(true);
-    }
-
-    @Override
     public void onResume() {
         if (mRestList.isEmpty())
-            excute();
+            execute();
         else
             performClick(mCurrentSelection);
 
         super.onResume();
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        //addOrRemoveTabMenu(false);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.tab_restaurant, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
@@ -158,17 +168,6 @@ public class TabRestaurantFragment extends AbsDrawableProgressFragment<ArrayList
         }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_refresh:
-                excute();
-                return true;
-            default:
-                return false;
-        }
-    }
-
     private void performClick(int position) {
         setSemesterAndVacationText(position);
         setBody(REST_TAB_MENU_STRING_KOR[position]);
@@ -184,8 +183,8 @@ public class TabRestaurantFragment extends AbsDrawableProgressFragment<ArrayList
     }
 
     public void setBody(final String name) {
-        mCurrentRestName = name;
-        setSubtitleWhenVisible(name);
+        //mCurrentRestName = name;
+        //setSubtitleWhenVisible(name);
         RestItem item = null;
         if (mRestList != null) {
             int size = mRestList.size();
@@ -242,13 +241,11 @@ public class TabRestaurantFragment extends AbsDrawableProgressFragment<ArrayList
         mRestList.clear();
         mRestList.addAll(result);
 
+        swipeRefreshLayout.setRefreshing(false);
+
         performClick(mCurrentSelection);
     }
 
-    @Override
-    protected MenuItem getLoadingMenuItem(Menu menu) {
-        return menu.findItem(R.id.action_refresh);
-    }
 
     /*
     @Override
@@ -259,11 +256,13 @@ public class TabRestaurantFragment extends AbsDrawableProgressFragment<ArrayList
     protected static class Tab {
         public FrameLayout tabView;
         public TextView mTextView;
+        public View ripple;
         private View mStrip;
         public int id;
 
         public Tab(LinearLayout parent) {
             tabView = (FrameLayout) LayoutInflater.from(parent.getContext()).inflate(R.layout.view_tab_rest_tab, parent, false);
+            ripple = tabView.findViewById(R.id.ripple);
             mTextView = (TextView) tabView.findViewById(R.id.tab_rest_tab_text);
             mStrip = tabView.findViewById(R.id.tab_rest_tab_strip);
         }

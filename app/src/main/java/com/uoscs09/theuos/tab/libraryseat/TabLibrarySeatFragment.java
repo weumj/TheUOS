@@ -114,35 +114,34 @@ public class TabLibrarySeatFragment extends
         Activity activity = getActivity();
         mInfoAdapter = new SeatDismissInfoListAdapter(activity, R.layout.list_layout_two_text_view, mDissmissInfoList);
         mSeatAdapter = new SeatListAdapter(getActivity(), mSeatList);
-        mLayoutManager = new StaggeredGridLayoutManager(2,
-                StaggeredGridLayoutManager.VERTICAL);
-        ((StaggeredGridLayoutManager) mLayoutManager)
-                .setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
+        mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        ((StaggeredGridLayoutManager) mLayoutManager).setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
 
         super.onCreate(savedInstanceState);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.tab_libraryseat, container,
-                false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.tab_libraryseat, container, false);
 
-        mSeatListView = (RecyclerView) rootView
-                .findViewById(R.id.tab_library_list_seat);
+        mSeatListView = (RecyclerView) rootView.findViewById(R.id.tab_library_list_seat);
 
         mSeatListView.setAdapter(mSeatAdapter);
         mSeatListView.setLayoutManager(mLayoutManager);
         mSeatListView.setItemAnimator(new DefaultItemAnimator());
 
-        mDismissDialogView = View.inflate(getActivity(),
-                R.layout.dialog_library_dismiss_info, null);
+        mDismissDialogView = View.inflate(getActivity(), R.layout.dialog_library_dismiss_info, null);
 
-        ListView mInfoListView = (ListView) mDismissDialogView
-                .findViewById(R.id.tab_library_listview_dismiss);
-        mInfoListView.setEmptyView(mDismissDialogView
-                .findViewById(android.R.id.empty));
+        ListView mInfoListView = (ListView) mDismissDialogView.findViewById(R.id.tab_library_listview_dismiss);
+        mInfoListView.setEmptyView(mDismissDialogView.findViewById(android.R.id.empty));
         mInfoListView.setAdapter(mInfoAdapter);
+
+        rootView.findViewById(R.id.action_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                execute();
+            }
+        });
 
         return rootView;
     }
@@ -159,7 +158,7 @@ public class TabLibrarySeatFragment extends
     public void onResume() {
         if (mSeatList.isEmpty()) {
             if (getExecutor() != null || !isRunning()) {
-                excute();
+                execute();
             }
         }
         super.onResume();
@@ -174,9 +173,11 @@ public class TabLibrarySeatFragment extends
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            /*
             case R.id.action_refresh:
-                excute();
+                execute();
                 return true;
+                */
             case R.id.action_info:
                 if (getExecutor() != null && isRunning()) {
                     AppUtil.showToast(getActivity(),
@@ -197,7 +198,7 @@ public class TabLibrarySeatFragment extends
     }
 
     @Override
-    protected void excute() {
+    protected void execute() {
         mSeatList.clear();
         mSeatAdapter.notifyDataSetChanged();
 
@@ -205,16 +206,16 @@ public class TabLibrarySeatFragment extends
             ((ViewGroup) getView()).addView(getLoadingView(), 0);
             getView().invalidate();
         }
-        super.excute();
+        super.execute();
     }
 
     @Override
-    protected void onTransactPostExcute() {
+    protected void onTransactPostExecute() {
         if (getLoadingView().getParent() != null) {
             ((ViewGroup) getView()).removeView(getLoadingView());
             getView().invalidate();
         }
-        super.onTransactPostExcute();
+        super.onTransactPostExecute();
     }
 
     @Override

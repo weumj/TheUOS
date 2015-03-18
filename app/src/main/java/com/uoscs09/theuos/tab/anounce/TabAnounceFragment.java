@@ -41,6 +41,10 @@ public class TabAnounceFragment extends
      */
     @ReleaseWhenDestroy
     private TextView pageView;
+    private ViewGroup mToolBarParent;
+    @ReleaseWhenDestroy
+    private ViewGroup mTabParent;
+
     /**
      * 상단 액션바에 추가될 위젯, 카테고리 선택
      */
@@ -105,19 +109,16 @@ public class TabAnounceFragment extends
         Context context = getActivity();
         initDialog();
 
-        adapter = new AnounceAdapter(context, R.layout.list_layout_announce,
-                mDataList);
+        adapter = new AnounceAdapter(context, R.layout.list_layout_announce, mDataList);
         super.onCreate(savedInstanceState);
-    }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.tab_anounce, container, false);
-        spinner = (Spinner) rootView.findViewById(R.id.tab_announce_action_spinner1);
+        mToolBarParent = (ViewGroup) getActivity().findViewById(R.id.toolbar_parent);
+        mTabParent = (ViewGroup) LayoutInflater.from(getActivity()).inflate(R.layout.view_tab_announce_toolbar_menu, mToolBarParent, false);
+
+        spinner = (Spinner) mTabParent.findViewById(R.id.tab_announce_action_spinner1);
         spinner.setOnItemSelectedListener(mSpinnerOnItemSelectedListener);
 
-        pageView = (TextView) rootView.findViewById(R.id.tab_anounce_action_textView_page);
+        pageView = (TextView)mTabParent.findViewById(R.id.tab_anounce_action_textView_page);
         pageView.setOnClickListener(new View.OnClickListener() {
             // 페이지를 나타내는 버튼을 선택했을 시, 페이지를 선택하는 메뉴를 띄운다.
             @Override
@@ -129,6 +130,11 @@ public class TabAnounceFragment extends
                 }
             }
         });
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,  Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.tab_anounce, container, false);
 
         ListView listView = (ListView) rootView.findViewById(R.id.tab_announce_list_announce);
         View emptyView = rootView.findViewById(R.id.tab_anounce_empty_view);
@@ -154,7 +160,7 @@ public class TabAnounceFragment extends
                 if (spinnerSelection == 0 || !isMenuVisible())
                     return true;
                 setPageValue(pageNum + 1);
-                excute();
+                execute();
                 return true;
             }
             case R.id.action_backward: {
@@ -162,7 +168,7 @@ public class TabAnounceFragment extends
                     return true;
                 if (pageNum != 1) {
                     setPageValue(pageNum - 1);
-                    excute();
+                    execute();
                 }
                 return true;
             }
@@ -198,6 +204,26 @@ public class TabAnounceFragment extends
         updatePageNumber();
         super.onCreateOptionsMenu(menu, inflater);
     }
+
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+
+        addOrRemoveTabMenu(isVisibleToUser);
+    }
+
+    private void addOrRemoveTabMenu(boolean visible){
+        if (mToolBarParent == null || mTabParent == null)
+            return;
+        if (visible) {
+            if(mTabParent.getParent() == null)
+                mToolBarParent.addView(mTabParent);
+        } else if(mToolBarParent.indexOfChild(mTabParent) > 0) {
+            mToolBarParent.removeView(mTabParent);
+        }
+    }
+
 
 	/* TODO Fragment Callback end */
 
@@ -238,7 +264,7 @@ public class TabAnounceFragment extends
                 return;
             setPageValue(1);
             mShouldChangeMaxValueOfPage = true;
-            excute();
+            execute();
         }
 
         @Override
@@ -271,7 +297,7 @@ public class TabAnounceFragment extends
                 setPageValue(1);
                 isSearching = true;
                 mShouldChangeMaxValueOfPage = true;
-                excute();
+                execute();
             }
             return true;
         }
@@ -387,7 +413,7 @@ public class TabAnounceFragment extends
                     @Override
                     public void onPositive(MaterialDialog dialog) {
                         setPageValue(mPageNumberPicker.getValue());
-                        excute();
+                        execute();
                     }
                 })
                 .build();

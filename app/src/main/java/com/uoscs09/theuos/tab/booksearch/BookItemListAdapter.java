@@ -8,6 +8,7 @@ import android.text.Spannable;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.text.style.URLSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -72,7 +73,7 @@ public class BookItemListAdapter extends AbsArrayAdapter<BookItem, GroupHolder> 
     public View setView(int position, final View convertView, final GroupHolder holder) {
         final BookItem item = getItem(position);
 
-        if(holder.imageContainer != null)
+        if (holder.imageContainer != null)
             holder.imageContainer.cancelRequest();
 
         holder.coverImg.setImageResource(R.drawable.noimg_en);
@@ -94,11 +95,13 @@ public class BookItemListAdapter extends AbsArrayAdapter<BookItem, GroupHolder> 
 
         if (item.bookStateInfoList != null)
             setBookStateLayout(holder.stateInfoLayout, item.bookStateInfoList);
+
         holder.stateInfoLayout.setVisibility(View.GONE);
-        convertView.setOnClickListener(new View.OnClickListener() {
+        View.OnClickListener listener =  new View.OnClickListener() {
 
             @Override
             public void onClick(final View v) {
+                Log.i("click", v.toString());
                 // 설정된 데이터가 없다면
                 // 해당 아이템을 처음 터치하는 것 이므로 데이터를 불러옴
                 if (item.bookStateInfoList == null) {
@@ -116,7 +119,7 @@ public class BookItemListAdapter extends AbsArrayAdapter<BookItem, GroupHolder> 
 
                         @SuppressWarnings("unchecked")
                         @Override
-                        public void onTaskFinished(boolean isExceptionOccurred,Object data) {
+                        public void onTaskFinished(boolean isExceptionOccurred, Object data) {
                             if (!isExceptionOccurred && data != null) {
                                 item.bookStateInfoList = (List<BookStateInfo>) data;
                                 setBookStateLayout(holder.stateInfoLayout, item.bookStateInfoList);
@@ -133,7 +136,11 @@ public class BookItemListAdapter extends AbsArrayAdapter<BookItem, GroupHolder> 
                     v.requestLayout();
                 }
             }
-        });
+        };
+
+        convertView.setOnClickListener(listener);
+        holder.ripple.setOnClickListener(listener);
+        holder.frame.setOnClickListener(listener);
         return convertView;
     }
 
@@ -187,23 +194,17 @@ public class BookItemListAdapter extends AbsArrayAdapter<BookItem, GroupHolder> 
             case 1:
                 if (title.startsWith("http")) {
                     styledText = new Spannable.Factory().newSpannable("URL");
-                    styledText.setSpan(new URLSpan(title), 0, 3,
-                            Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-                    styledText.setSpan(new StyleSpan(Typeface.ITALIC), 0, 3,
-                            Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                    styledText.setSpan(new URLSpan(title), 0, 3, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                    styledText.setSpan(new StyleSpan(Typeface.ITALIC), 0, 3, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
                 }
                 break;
             case 2:
                 if (title.contains("대출가능") || title.contains("온라인")) {
-                    styledText.setSpan(
-                            new ForegroundColorSpan(getContext().getResources()
-                                    .getColor(android.R.color.holo_green_light)),
+                    styledText.setSpan(new ForegroundColorSpan(getContext().getResources().getColor(R.color.material_green_200)),
                             0, last_length, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
                 } else {
-                    styledText.setSpan(new ForegroundColorSpan(getContext()
-                                    .getResources()
-                                    .getColor(android.R.color.holo_red_light)), 0,
-                            last_length, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                    styledText.setSpan(new ForegroundColorSpan(getContext().getResources().getColor(R.color.material_red_200)),
+                            0, last_length, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
                 }
             default:
                 break;
@@ -258,28 +259,40 @@ class ParseBookInfo extends JerichoParse<BookStateInfo> {
 }
 
 class GroupHolder implements AbsArrayAdapter.ViewHolder, ImageLoader.ImageListener {
+    public View infoParentLayout;
     public TextView title;
     public TextView writer;
     public TextView publish_year;
     public TextView location;
     public TextView bookState;
     public ImageView coverImg;
+    public View ripple;
+    public View frame;
     public LinearLayout stateInfoLayout;
+
     ImageLoader.ImageContainer imageContainer;
 
     public GroupHolder(View v) {
-        bookState = (TextView) v.findViewById(R.id.tab_booksearch_list_text_book_state);
         coverImg = (ImageView) v.findViewById(R.id.tab_booksearch_list_image_book_image);
-        location = (TextView) v.findViewById(R.id.tab_booksearch_list_text_book_site);
-        title = (TextView) v.findViewById(R.id.tab_booksearch_list_text_book_title);
-        publish_year = (TextView) v.findViewById(R.id.tab_booksearch_list_text_book_publish_and_year);
-        writer = (TextView) v.findViewById(R.id.tab_booksearch_list_text_book_writer);
-        stateInfoLayout = (LinearLayout) v.findViewById(R.id.tab_booksearch_layout_book_state);
+
+        infoParentLayout = v.findViewById(R.id.tab_booksearch_list_info_layout);
+
+        bookState = (TextView)  infoParentLayout.findViewById(R.id.tab_booksearch_list_text_book_state);
+        location = (TextView)  infoParentLayout.findViewById(R.id.tab_booksearch_list_text_book_site);
+        title = (TextView)  infoParentLayout.findViewById(R.id.tab_booksearch_list_text_book_title);
+        publish_year = (TextView)  infoParentLayout.findViewById(R.id.tab_booksearch_list_text_book_publish_and_year);
+        writer = (TextView)  infoParentLayout.findViewById(R.id.tab_booksearch_list_text_book_writer);
+
+        stateInfoLayout = (LinearLayout)  infoParentLayout.findViewById(R.id.tab_booksearch_layout_book_state);
+
+        ripple = v.findViewById(R.id.ripple);
+        frame = v.findViewById(R.id.frame);
+
     }
 
     @Override
     public void onResponse(ImageLoader.ImageContainer imageContainer, boolean b) {
-        if(imageContainer.getBitmap() != null){
+        if (imageContainer.getBitmap() != null) {
             coverImg.setImageBitmap(imageContainer.getBitmap());
         }
     }

@@ -10,7 +10,6 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
-import android.support.v7.internal.widget.TintSpinner;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -74,8 +73,8 @@ public class SubMapActivity extends BaseActivity implements LocationListener {
         actionBar.setTitle(R.string.action_map);
         actionBar.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP | ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE);
 
-        mLocationSelectSpinner = new TintSpinner(this);
-        mLocationSelectSpinner.setAdapter(ArrayAdapter.createFromResource(this, R.array.buildings_univ, android.R.layout.simple_dropdown_item_1line));
+        View spinnerLayout = View.inflate(this, R.layout.view_tab_map_sub_spinner_layout, null);
+        mLocationSelectSpinner = (Spinner) spinnerLayout.findViewById(R.id.spinner);
         mLocationSelectSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -92,9 +91,7 @@ public class SubMapActivity extends BaseActivity implements LocationListener {
 
             }
         });
-        toolbarParent.addView(mLocationSelectSpinner);
-        mLocationSelectSpinner.getLayoutParams().width = LinearLayout.LayoutParams.WRAP_CONTENT;
-        toolbarParent.requestLayout();
+        toolbarParent.addView(spinnerLayout);
 
         ListView listView = new ListView(this);
         listView.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, getResources().getStringArray(R.array.buildings_univ)));

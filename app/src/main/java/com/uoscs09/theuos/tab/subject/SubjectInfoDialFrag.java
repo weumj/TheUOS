@@ -132,7 +132,9 @@ public class SubjectInfoDialFrag extends DialogFragment implements AsyncCallback
 
 	@Override
 	public Dialog getDialog() {
-        return new MaterialDialog.Builder(getActivity()).build();
+        return new MaterialDialog.Builder(getActivity())
+                .title(TITLE)
+                .build();
 	}
 
 	@Override

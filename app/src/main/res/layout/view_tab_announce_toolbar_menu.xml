@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="?attr/colorPrimary"
+    android:layout_height="42dp">
+
+    <Spinner
+        android:id="@+id/tab_announce_action_spinner1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="48dp"
+        android:entries="@array/tab_anounce_action_spinner" />
+
+    <TextView
+        android:id="@+id/tab_anounce_action_textView_page"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="24dp"
+        android:background="?selector_button"
+        android:gravity="center"
+        android:textColor="?attr/colorAccent" />
+</RelativeLayout>

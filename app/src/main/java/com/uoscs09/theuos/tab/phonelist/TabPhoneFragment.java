@@ -144,7 +144,7 @@ public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>> {
         super.onResume();
         if (mPhoneList.isEmpty()) {
             mIsInit = true;
-            excute();
+            execute();
         }
     }
 
@@ -221,15 +221,15 @@ public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>> {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
                         mProgressDialog.show();
-                        excute();
+                        execute();
                     }
                 })
                 .build();
     }
 
     @Override
-    protected void onTransactPostExcute() {
-        // super.onTransactPostExcute();
+    protected void onTransactPostExecute() {
+        // super.onTransactPostExecute();
         if (mProgressDialog != null)
             mProgressDialog.dismiss();
     }

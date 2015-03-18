@@ -67,7 +67,7 @@ public class ScoreFragment extends AbsAsyncFragment<ArrayList<ScoreItem>> {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
                         super.onPositive(dialog);
-                        excute();
+                        execute();
                     }
                 }).build();
 
@@ -164,14 +164,14 @@ public class ScoreFragment extends AbsAsyncFragment<ArrayList<ScoreItem>> {
 	}
 
 	@Override
-	protected void excute() {
+	protected void execute() {
 		mProgressDialog.show();
-		super.excute();
+		super.execute();
 	}
 
 	@Override
-	protected void onTransactPostExcute() {
-		// super.onTransactPostExcute();
+	protected void onTransactPostExecute() {
+		// super.onTransactPostExecute();
 		mProgressDialog.dismiss();
 	}
 }
