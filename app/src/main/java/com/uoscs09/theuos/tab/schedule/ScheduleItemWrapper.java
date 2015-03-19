@@ -10,8 +10,8 @@ public class ScheduleItemWrapper implements Parcelable {
 	public ArrayList<BoardItem> boardList;
 
 	public ScheduleItemWrapper() {
-		scheduleList = new ArrayList<ScheduleItem>();
-		boardList = new ArrayList<BoardItem>();
+		scheduleList = new ArrayList<>();
+		boardList = new ArrayList<>();
 	}
 
 	public ScheduleItemWrapper(ArrayList<ScheduleItem> scheduleList,

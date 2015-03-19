@@ -3,26 +3,24 @@ package com.uoscs09.theuos.widget.timetable;
 import android.content.Context;
 import android.content.Intent;
 
-public class Widget5x4ListService extends WidgetTimetableListService {
+public class Widget5x4ListService extends WidgetTimeTableListService2 {
 
-	@Override
-	protected ListRemoteViewsFactory getListRemoteViewsFactory(Context context,
-			Intent intent) {
-		return new BigSizeListRemoteViewsFactory(context, intent);
-	}
+    @Override
+    protected WidgetTimeTableListService2.ListRemoteViewsFactory getListRemoteViewsFactory(Context context, Intent intent) {
+        return new BigSizeListRemoteViewsFactory(context, intent);
+    }
 
-	protected class BigSizeListRemoteViewsFactory extends
-			ListRemoteViewsFactory {
+    protected class BigSizeListRemoteViewsFactory extends
+            WidgetTimeTableListService2.ListRemoteViewsFactory {
 
-		public BigSizeListRemoteViewsFactory(Context applicationContext,
-				Intent intent) {
-			super(applicationContext, intent);
-		}
+        public BigSizeListRemoteViewsFactory(Context applicationContext, Intent intent) {
+            super(applicationContext, intent);
+        }
 
-		@Override
-		protected boolean isBigSize() {
-			return true;
-		}
+        @Override
+        protected boolean isBigSize() {
+            return true;
+        }
 
-	}
+    }
 }

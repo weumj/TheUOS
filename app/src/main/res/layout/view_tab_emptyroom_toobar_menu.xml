@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingLeft="10dp"
+        android:baselineAligned="false"
+        android:paddingRight="10dp"
+        android:weightSum="340">
+
+        <com.balysv.materialripple.MaterialRippleLayout
+            android:id="@+id/tab_search_empty_room_text_building_name"
+            android:layout_width="0dp"
+            app:mrl_rippleColor="?colorAccent"
+            android:layout_weight="90"
+            android:duplicateParentState="true"
+            app:mrl_rippleDelayClick="false"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@android:id/title"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:gravity="center"
+                android:padding="6dp"
+                android:text="@string/tab_empty_room_building"
+                android:textColor="?color_actionbar_title"
+                android:textStyle="bold" />
+        </com.balysv.materialripple.MaterialRippleLayout>
+
+        <com.balysv.materialripple.MaterialRippleLayout
+            android:id="@+id/tab_search_empty_room_text_room_no"
+            android:layout_width="0dp"
+            app:mrl_rippleColor="?colorAccent"
+            android:layout_weight="90"
+            android:duplicateParentState="true"
+            app:mrl_rippleDelayClick="false"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@android:id/title"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:gravity="center"
+                android:padding="6dp"
+                android:text="@string/tab_empty_room_room_no"
+                android:textColor="?color_actionbar_title"
+                android:textStyle="bold" />
+        </com.balysv.materialripple.MaterialRippleLayout>
+
+        <com.balysv.materialripple.MaterialRippleLayout
+            android:id="@+id/tab_search_empty_room_text_room_subj"
+            android:layout_width="0dp"
+            app:mrl_rippleColor="?colorAccent"
+            android:duplicateParentState="true"
+            android:layout_weight="90"
+            app:mrl_rippleDelayClick="false"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@android:id/title"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:gravity="center"
+                android:padding="6dp"
+                android:text="@string/tab_empty_room_room_type"
+                android:textColor="?color_actionbar_title"
+                android:textStyle="bold" />
+        </com.balysv.materialripple.MaterialRippleLayout>
+
+        <com.balysv.materialripple.MaterialRippleLayout
+            android:id="@+id/tab_search_empty_room_text_room_person"
+            android:layout_width="0dp"
+            app:mrl_rippleColor="?colorAccent"
+            android:layout_weight="70"
+            android:duplicateParentState="true"
+            app:mrl_rippleDelayClick="false"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@android:id/title"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:gravity="center"
+                android:padding="6dp"
+                android:text="@string/tab_empty_room_room_person"
+                android:textColor="?color_actionbar_title"
+                android:textStyle="bold" />
+        </com.balysv.materialripple.MaterialRippleLayout>
+    </LinearLayout>
+</LinearLayout>

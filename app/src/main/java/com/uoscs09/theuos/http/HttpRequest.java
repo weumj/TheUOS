@@ -2,7 +2,7 @@ package com.uoscs09.theuos.http;
 
 import android.util.Log;
 
-import com.uoscs09.theuos.common.util.StringUtil;
+import com.uoscs09.theuos.util.StringUtil;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -54,31 +54,50 @@ public class HttpRequest {
         return encodeString(b, params, StringUtil.ENCODE_UTF_8);
     }
 
+    public static HttpURLConnection getConnection(String url, Map<? extends CharSequence, ? extends CharSequence> params) throws IOException {
+        return getConnection(url, StringUtil.ENCODE_UTF_8, params);
+    }
+
+    public static HttpURLConnection getConnection(String url, String paramEncoding, Map<? extends CharSequence, ? extends CharSequence> params) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        sb.append(url).append('?');
+        encodeString(sb, params, paramEncoding);
+        return getConnection(sb.toString());
+    }
+
+    public static HttpURLConnection getConnection(String url) throws IOException {
+        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+
+        if (connection == null) {
+            throw new IOException("HttpURLConnection returns null.");
+        }
+
+        connection.setConnectTimeout(5000);
+
+        checkResponseAndThrowException(connection);
+
+        return connection;
+
+    }
+
     public static String getBody(String url) throws IOException {
         return getBody(url, StringUtil.ENCODE_UTF_8);
     }
 
     public static String getBody(String url, String encoding) throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) new URL(url)
-                .openConnection();
+        HttpURLConnection connection = null;
         try {
-            if (connection == null) {
-                throw new IOException("HttpURLConnection returns null.");
-            }
-
-            connection.setConnectTimeout(5000);
-
-            checkResponseAndThrowException(connection);
-
+            connection = getConnection(url);
             return readContentFromStream(connection.getInputStream(), encoding);
         } finally {
-            connection.disconnect();
+            if (connection != null) {
+                connection.disconnect();
+            }
         }
     }
 
     public static String getBodyByPost(String url, String params, String encoding) throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) new URL(url)
-                .openConnection();
+        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
         try {
             if (connection == null) {
                 throw new IOException("HttpURLConnection returns null.");
@@ -91,8 +110,7 @@ public class HttpRequest {
             connection.setRequestMethod("POST");
             connection.setRequestProperty("content-type", "application/x-www-form-urlencoded");
 
-            PrintWriter pw = new PrintWriter(new OutputStreamWriter(
-                    connection.getOutputStream()));
+            PrintWriter pw = new PrintWriter(new OutputStreamWriter(connection.getOutputStream()));
             pw.write(params);
             pw.flush();
 

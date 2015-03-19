@@ -5,9 +5,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
@@ -15,14 +12,14 @@ import android.view.ViewGroup;
 import android.webkit.WebSettings;
 
 import com.uoscs09.theuos.R;
+import com.uoscs09.theuos.annotaion.ReleaseWhenDestroy;
+import com.uoscs09.theuos.base.BaseFragment;
 import com.uoscs09.theuos.common.CustomWebViewClient;
 import com.uoscs09.theuos.common.NonLeakingWebView;
-import com.uoscs09.theuos.common.impl.BaseFragment;
-import com.uoscs09.theuos.common.impl.annotaion.ReleaseWhenDestroy;
-import com.uoscs09.theuos.common.util.AppUtil;
+import com.uoscs09.theuos.util.AppUtil;
 
 @SuppressLint("ClickableViewAccessibility")
-public class TabMapFragment extends BaseFragment implements OnTouchListener {
+public class TabMapFragment extends BaseFragment implements OnTouchListener, View.OnClickListener {
 	@ReleaseWhenDestroy
 	private NonLeakingWebView mWebView;
 	private final static String URL = "http://m.uos.ac.kr/mkor/html/01_auos/05_location/location.do";
@@ -45,18 +42,37 @@ public class TabMapFragment extends BaseFragment implements OnTouchListener {
 
 		mWebView.loadUrl(URL);
 
-        root.findViewById(R.id.action_btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Activity activity = getActivity();
-                startActivity(new Intent(activity, SubMapActivity.class));
-                AppUtil.overridePendingTransition(activity, 0);
-            }
-        });
+        root.findViewById(R.id.action_btn).setOnClickListener(this);
+        root.findViewById(R.id.action_refresh).setOnClickListener(this);
+        root.findViewById(R.id.action_backward).setOnClickListener(this);
+        root.findViewById(R.id.action_forward).setOnClickListener(this);
 		return root;
 	}
 
-	@Override
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.action_btn:
+                Activity activity = getActivity();
+                startActivity(new Intent(activity, SubMapActivity.class));
+                AppUtil.overridePendingTransition(activity, 0);
+                break;
+
+            case R.id.action_refresh:
+                mWebView.loadUrl(URL);
+                break;
+
+            case R.id.action_backward:
+                mWebView.goBack();
+                break;
+
+            case R.id.action_forward:
+                mWebView.goForward();
+                break;
+        }
+    }
+
+    @Override
 	public void setUserVisibleHint(boolean isVisibleToUser) {
 		if (mWebView != null) {
 			if (isVisibleToUser) {
@@ -88,6 +104,7 @@ public class TabMapFragment extends BaseFragment implements OnTouchListener {
 		super.onDestroyView();
 	}
 
+    /*
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		inflater.inflate(R.menu.tab_map, menu);
@@ -97,13 +114,13 @@ public class TabMapFragment extends BaseFragment implements OnTouchListener {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-            /*
+
 		case R.id.action_map:
 			Activity activity = getActivity();
 			startActivity(new Intent(activity, SubMapActivity.class));
 			AppUtil.overridePendingTransition(activity, 0);
 			return true;
-			*/
+
 		case R.id.action_refresh:
 			mWebView.loadUrl(URL);
 			return true;
@@ -117,4 +134,5 @@ public class TabMapFragment extends BaseFragment implements OnTouchListener {
 			return false;
 		}
 	}
+            */
 }

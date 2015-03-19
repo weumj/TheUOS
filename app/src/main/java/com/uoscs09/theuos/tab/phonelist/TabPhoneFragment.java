@@ -22,13 +22,13 @@ import android.widget.ListView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.common.impl.AbsAsyncFragment;
-import com.uoscs09.theuos.common.impl.annotaion.AsyncData;
-import com.uoscs09.theuos.common.impl.annotaion.ReleaseWhenDestroy;
-import com.uoscs09.theuos.common.util.AppUtil;
-import com.uoscs09.theuos.common.util.StringUtil;
+import com.uoscs09.theuos.annotaion.AsyncData;
+import com.uoscs09.theuos.annotaion.ReleaseWhenDestroy;
+import com.uoscs09.theuos.base.AbsAsyncFragment;
 import com.uoscs09.theuos.http.HttpRequest;
-import com.uoscs09.theuos.http.parse.ParsePhone;
+import com.uoscs09.theuos.http.parse.ParserPhone;
+import com.uoscs09.theuos.util.AppUtil;
+import com.uoscs09.theuos.util.StringUtil;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -44,6 +44,9 @@ public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>> {
     protected static final String PHONE_LIST = "phone_list";
     @AsyncData
     private List<PhoneItem> mPhoneList;
+
+    private final ParserPhone mParser = new ParserPhone();
+
     private boolean mIsInit;
 
     @Override
@@ -170,17 +173,17 @@ public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>> {
                 try {
                     body = HttpRequest.getBody(urlList.get(i));
                     if (i < 7) {
-                        howTo = ParsePhone.SUBJECT;
+                        howTo = ParserPhone.SUBJECT;
                     } else if (i < 8) {
-                        howTo = ParsePhone.CULTURE;
+                        howTo = ParserPhone.CULTURE;
                     } else if (i < 12) {
-                        howTo = ParsePhone.BOTTOM;
+                        howTo = ParserPhone.BOTTOM;
                     } else {
-                        howTo = ParsePhone.BODY;
+                        howTo = ParserPhone.BODY;
                     }
 
-
-                    phoneNumberList.addAll(new ParsePhone(body, howTo).parse());
+                    mParser.setHowTo(howTo);
+                    phoneNumberList.addAll(mParser.parse(body));
 
                 } catch (UnknownHostException e) {
                     throw e;
@@ -299,7 +302,7 @@ public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>> {
         return urlList;
     }
 
-    private View.OnClickListener mOnClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
 
         @Override
         public void onClick(View v) {

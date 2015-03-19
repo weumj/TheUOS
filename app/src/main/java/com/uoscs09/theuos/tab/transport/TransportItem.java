@@ -3,7 +3,7 @@ package com.uoscs09.theuos.tab.transport;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.uoscs09.theuos.common.util.StringUtil;
+import com.uoscs09.theuos.util.StringUtil;
 
 public class TransportItem implements Parcelable {
 	public String stationCode;

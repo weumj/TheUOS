@@ -18,8 +18,8 @@ import com.nhaarman.listviewanimations.itemmanipulation.DynamicListView;
 import com.nhaarman.listviewanimations.util.Swappable;
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.SimpleTextViewAdapter;
-import com.uoscs09.theuos.common.util.AppUtil;
-import com.uoscs09.theuos.common.util.AppUtil.AppTheme;
+import com.uoscs09.theuos.util.AppUtil;
+import com.uoscs09.theuos.util.AppUtil.AppTheme;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -14,42 +14,41 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 
-public class ParseSchedule extends JerichoParse<ScheduleItemWrapper> {
+public class ParseSchedule implements IParser<String, ScheduleItemWrapper> {
     // private static final String SCH_LIST = "schList";
     // private static final String BOARD_LIST = "boardList";
 
-    public ParseSchedule(String htmlBody) {
-        super(htmlBody);
-    }
-
     @Override
-    protected ArrayList<ScheduleItemWrapper> parseHttpBody(Source source)
-            throws IOException {
+    public ScheduleItemWrapper parse(String body) throws Exception {
         // schList와 boardList Element들을 가져옴.
-        final List<Element> elements = source.getChildElements().get(1)
-                .getChildElements();
+        Source source = new Source(body);
+        final List<Element> elements = source.getChildElements().get(1).getChildElements();
 
         FutureTask<ArrayList<ScheduleItem>> scheduleParseTask = new FutureTask<>(
                 new Callable<ArrayList<ScheduleItem>>() {
+                    private final ParserScheduleInner parser = new ParserScheduleInner();
+
                     @Override
                     public ArrayList<ScheduleItem> call() throws Exception {
                         String body = elements.get(0).toString();
-                        return new ParseScheduleInner(body).parse();
+                        return parser.parse(body);
                     }
                 });
         AsyncLoader.excute(scheduleParseTask);
 
         FutureTask<ArrayList<BoardItem>> boardParseTask = new FutureTask<>(
+
                 new Callable<ArrayList<BoardItem>>() {
+                    private final ParserBoard parser = new ParserBoard();
+
                     @Override
                     public ArrayList<BoardItem> call() throws Exception {
                         String body = elements.get(1).toString();
-                        return new ParseBoard(body).parse();
+                        return parser.parse(body);
                     }
                 });
         AsyncLoader.excute(boardParseTask);
 
-        ArrayList<ScheduleItemWrapper> list = new ArrayList<>();
         ArrayList<ScheduleItem> scheduleList;
         ArrayList<BoardItem> boardList;
 
@@ -67,20 +66,14 @@ public class ParseSchedule extends JerichoParse<ScheduleItemWrapper> {
             boardList = new ArrayList<>();
         }
 
-        // FIXME 인터페이스를 잘못 설계했기때문에 결과값을 이렇게 반환해야함.
-        list.add(new ScheduleItemWrapper(scheduleList, boardList));
-        return list;
+        return new ScheduleItemWrapper(scheduleList, boardList);
     }
 
-    private static class ParseScheduleInner extends OApiParse<ScheduleItem, ScheduleItem> {
+    private static class ParserScheduleInner extends OApiParser<ScheduleItem, ScheduleItem> {
         private static final String[] PATTERN_ARRAY = {"content", "sch_date", "year", "month"};
 
-        protected ParseScheduleInner(String body) {
-            super(body);
-        }
-
         @Override
-        public ArrayList<ScheduleItem> parse() throws IOException {
+        public ArrayList<ScheduleItem> parse(String body) throws IOException {
             return parseToArrayList(body.split(LIST), PATTERN_ARRAY);
         }
 
@@ -91,15 +84,11 @@ public class ParseSchedule extends JerichoParse<ScheduleItemWrapper> {
 
     }
 
-    private static class ParseBoard extends OApiParse<BoardItem, BoardItem> {
+    private static class ParserBoard extends OApiParser<BoardItem, BoardItem> {
         private static final String[] PATTERN_ARRAY = {"seq", "notice_dt", "title", "content"};
 
-        protected ParseBoard(String body) {
-            super(body);
-        }
-
         @Override
-        public ArrayList<BoardItem> parse() throws IOException {
+        public ArrayList<BoardItem> parse(String body) throws IOException {
             return parseToArrayList(body.split(LIST), PATTERN_ARRAY);
         }
 

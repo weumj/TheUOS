@@ -16,14 +16,14 @@ import android.widget.NumberPicker;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.common.impl.AbsAsyncFragment;
-import com.uoscs09.theuos.common.impl.annotaion.ReleaseWhenDestroy;
-import com.uoscs09.theuos.common.util.AppUtil;
-import com.uoscs09.theuos.common.util.OApiUtil;
-import com.uoscs09.theuos.common.util.StringUtil;
+import com.uoscs09.theuos.annotaion.ReleaseWhenDestroy;
+import com.uoscs09.theuos.base.AbsAsyncFragment;
 import com.uoscs09.theuos.http.HttpRequest;
-import com.uoscs09.theuos.http.parse.ParseSubjectList;
-import com.uoscs09.theuos.http.parse.ParseSubjectScore;
+import com.uoscs09.theuos.http.parse.ParserSubjectList;
+import com.uoscs09.theuos.http.parse.ParserSubjectScore;
+import com.uoscs09.theuos.util.AppUtil;
+import com.uoscs09.theuos.util.OApiUtil;
+import com.uoscs09.theuos.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -42,6 +42,9 @@ public class ScoreFragment extends AbsAsyncFragment<ArrayList<ScoreItem>> {
 	private ScoreAdapter adapter;
 	@ReleaseWhenDestroy
 	private ExpandableListView listView;
+
+    private final ParserSubjectList mSubjectListParser = new ParserSubjectList();
+    private final ParserSubjectScore mParser = new ParserSubjectScore();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -143,7 +146,7 @@ public class ScoreFragment extends AbsAsyncFragment<ArrayList<ScoreItem>> {
 		table.put(OApiUtil.TERM, termPicker.getValue() == 1 ? "A10" : "A20");
 
 		String str = HttpRequest.getBody("http://wise.uos.ac.kr/uosdoc/api.ApiApiSubjectList.oapi",StringUtil.ENCODE_EUC_KR, table, StringUtil.ENCODE_EUC_KR);
-		ArrayList<ArrayList<String>> numList = new ParseSubjectList(str).parse();
+		ArrayList<ArrayList<String>> numList = mSubjectListParser.parse(str);
 
 		ArrayList<String> item;
 		String body;
@@ -155,7 +158,7 @@ public class ScoreFragment extends AbsAsyncFragment<ArrayList<ScoreItem>> {
 			table.put(OApiUtil.SUBJECT_NAME, item.get(1));
 			body = HttpRequest.getBody("http://wise.uos.ac.kr/uosdoc/api.ApiUcsLecturerEstimateResultInq.oapi",  StringUtil.ENCODE_EUC_KR, table,StringUtil.ENCODE_EUC_KR);
 
-			list.addAll(new ParseSubjectScore(body).parse());
+			list.addAll(mParser.parse(body));
 		}
 
 		table.remove(OApiUtil.SUBJECT_NO);

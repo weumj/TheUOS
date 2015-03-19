@@ -10,12 +10,13 @@ import android.support.annotation.NonNull;
 import android.widget.RemoteViews;
 
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.common.impl.AbsAsyncWidgetProvider;
-import com.uoscs09.theuos.common.util.IOUtil;
-import com.uoscs09.theuos.common.util.OApiUtil;
-import com.uoscs09.theuos.common.util.PrefUtil;
+import com.uoscs09.theuos.base.AbsAsyncWidgetProvider;
+import com.uoscs09.theuos.http.parse.ParserRest;
 import com.uoscs09.theuos.tab.restaurant.RestItem;
 import com.uoscs09.theuos.tab.restaurant.TabRestaurantFragment;
+import com.uoscs09.theuos.util.IOUtil;
+import com.uoscs09.theuos.util.OApiUtil;
+import com.uoscs09.theuos.util.PrefUtil;
 
 import java.util.ArrayList;
 
@@ -84,16 +85,14 @@ public class RestWidget extends AbsAsyncWidgetProvider<ArrayList<RestItem>> {
 	protected ArrayList<RestItem> doInBackGround(Context context,
 			AppWidgetManager appWidgetManager, int[] appWidgetIds)
 			throws Exception {
-		if (OApiUtil.getDateTime()
-				- PrefUtil.getInstance(context).get(
+		if (OApiUtil.getDateTime()	- PrefUtil.getInstance(context).get(
 						PrefUtil.KEY_REST_DATE_TIME, 0) < 3) {
-			ArrayList<RestItem> list = IOUtil.readFromFileSuppressed(context,
-					IOUtil.FILE_REST);
+			ArrayList<RestItem> list = IOUtil.readFromFileSuppressed(context,	IOUtil.FILE_REST);
 			if (list == null)
-				list = TabRestaurantFragment.getRestListFromWeb(context);
+				list = TabRestaurantFragment.getRestListFromWeb(context, new ParserRest());
 			return list;
 		} else {
-			return TabRestaurantFragment.getRestListFromWeb(context);
+			return TabRestaurantFragment.getRestListFromWeb(context, new ParserRest());
 		}
 	}
 

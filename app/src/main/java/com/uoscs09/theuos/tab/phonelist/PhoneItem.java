@@ -3,7 +3,7 @@ package com.uoscs09.theuos.tab.phonelist;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.uoscs09.theuos.common.util.StringUtil;
+import com.uoscs09.theuos.util.StringUtil;
 
 public class PhoneItem implements Parcelable {
 	public String siteName;

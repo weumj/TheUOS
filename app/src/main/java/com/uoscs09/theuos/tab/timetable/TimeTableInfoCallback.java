@@ -21,17 +21,17 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.javacan.asyncexcute.AsyncCallback;
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.AsyncLoader;
-import com.uoscs09.theuos.common.util.AppUtil;
-import com.uoscs09.theuos.common.util.IOUtil;
-import com.uoscs09.theuos.common.util.OApiUtil;
-import com.uoscs09.theuos.common.util.OApiUtil.Term;
-import com.uoscs09.theuos.common.util.PrefUtil;
-import com.uoscs09.theuos.common.util.StringUtil;
 import com.uoscs09.theuos.http.HttpRequest;
-import com.uoscs09.theuos.http.parse.ParseSubjectList;
+import com.uoscs09.theuos.http.parse.ParserSubjectList;
 import com.uoscs09.theuos.tab.map.SubMapActivity;
 import com.uoscs09.theuos.tab.subject.SubjectInfoDialFrag;
 import com.uoscs09.theuos.tab.subject.SubjectItem;
+import com.uoscs09.theuos.util.AppUtil;
+import com.uoscs09.theuos.util.IOUtil;
+import com.uoscs09.theuos.util.OApiUtil;
+import com.uoscs09.theuos.util.OApiUtil.Semester;
+import com.uoscs09.theuos.util.PrefUtil;
+import com.uoscs09.theuos.util.StringUtil;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -48,12 +48,14 @@ import java.util.concurrent.Callable;
  * 과목 선택시 AlertDialog를 띄우고, AlertDialog에서 제공하는 메뉴를 처리한다.
  */
 // FIXME
+    @Deprecated
 public class TimeTableInfoCallback implements View.OnClickListener {
-    protected Hashtable<String, String> params;
-    protected WeakReference<Context> contextRef;
+    protected final Hashtable<String, String> params;
+    protected final WeakReference<Context> contextRef;
     protected String building, subjectName;
     protected View mTimeTableDialogView;
     private TextView mTimeTableDialogTitle;
+    private final ParserSubjectList mParser = new ParserSubjectList();
     /**
      * 선택된 수업의 날짜 (1-7 월-토)
      */
@@ -63,12 +65,12 @@ public class TimeTableInfoCallback implements View.OnClickListener {
      */
     protected int pos;
     protected MaterialDialog infoDialog;
-    protected Dialog mProgress;
+    protected final Dialog mProgress;
     /**
      * 시간표를 불러와야 값이 설정된다.
      */
     // FIXME
-    Term term;
+    Semester semester;
     /**
      * 시간표를 불러와야 값이 설정된다.
      */
@@ -355,14 +357,10 @@ public class TimeTableInfoCallback implements View.OnClickListener {
             @SuppressWarnings("unchecked")
             @Override
             public ArrayList<ArrayList<String>> call() throws Exception {
-                params.put(OApiUtil.YEAR, OApiUtil.getSemesterYear(term));
-                params.put(OApiUtil.TERM, OApiUtil.getTermCode(term));
+                params.put(OApiUtil.YEAR, OApiUtil.getSemesterYear(semester));
+                params.put(OApiUtil.TERM, semester.code);
 
-                return new ParseSubjectList(HttpRequest.getBody(
-                        "http://wise.uos.ac.kr/uosdoc/api.ApiApiSubjectList.oapi",
-                        StringUtil.ENCODE_EUC_KR,
-                        params,
-                        StringUtil.ENCODE_EUC_KR)).parse();
+                return mParser.parse(HttpRequest.getBody("http://wise.uos.ac.kr/uosdoc/api.ApiApiSubjectList.oapi", StringUtil.ENCODE_EUC_KR, params, StringUtil.ENCODE_EUC_KR));
 
             }
         }, infoCallback);
@@ -457,6 +455,6 @@ public class TimeTableInfoCallback implements View.OnClickListener {
     };
 
     protected void showDialFrag(FragmentManager fm, SubjectItem item) {
-        SubjectInfoDialFrag.showDialog(fm, item, contextRef.get(), term.ordinal(), year);
+        SubjectInfoDialFrag.showDialog(fm, item, contextRef.get(), semester.ordinal(), year);
     }
 }

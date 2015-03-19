@@ -6,9 +6,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.common.impl.AbsExpendableAdapter;
-import com.uoscs09.theuos.common.util.SeoulOApiUtil;
-import com.uoscs09.theuos.common.util.StringUtil;
+import com.uoscs09.theuos.base.AbsExpendableAdapter;
+import com.uoscs09.theuos.util.SeoulOApiUtil;
+import com.uoscs09.theuos.util.StringUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -51,7 +51,7 @@ public class TransportAdapter extends
 	}
 
 	private static class ChildHolder implements ViewHolder {
-		public TextView[] tvs;
+		public final TextView[] tvs;
 
 		public ChildHolder(View v) {
 			tvs = new TextView[] {
@@ -61,7 +61,7 @@ public class TransportAdapter extends
 	}
 
 	private static class GroupHolder implements ViewHolder {
-		public TextView title;
+		public final TextView title;
 
 		public GroupHolder(View v) {
 			title = (TextView) v.findViewById(android.R.id.text1);

@@ -5,7 +5,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.common.impl.AbsArrayAdapter;
+import com.uoscs09.theuos.base.AbsArrayAdapter;
 
 import java.util.List;
 
@@ -38,7 +38,7 @@ public class SearchEmptyRoomAdapter extends AbsArrayAdapter<ClassRoomItem, Holde
 }
 
 class Holder implements AbsArrayAdapter.ViewHolder {
-    public TextView[] array = new TextView[4];
+    public final TextView[] array = new TextView[4];
 
     public Holder(View convertView) {
         array[0] = (TextView) convertView

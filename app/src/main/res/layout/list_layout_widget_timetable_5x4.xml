@@ -3,25 +3,20 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:layout_alignParentLeft="true"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:orientation="horizontal"
-        android:weightSum="360" >
+        android:weightSum="360">
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@color/widget_white_divider" />
 
         <TextView
             android:id="@+id/widget_time_table_list_peroid"
             android:layout_width="0dp"
             android:layout_height="fill_parent"
-            android:layout_weight="53"
+            android:layout_weight="55"
             android:gravity="center"
             android:textColor="@color/dark_blue_gray"
             android:textSize="10sp" />
@@ -35,9 +30,10 @@
         <LinearLayout
             android:id="@+id/widget_time_table_list_mon_frame"
             android:layout_width="0dp"
+            android:padding="4dp"
             android:layout_height="fill_parent"
             android:layout_weight="60"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/widget_time_table_list_mon"
@@ -65,9 +61,10 @@
         <LinearLayout
             android:id="@+id/widget_time_table_list_tue_frame"
             android:layout_width="0dp"
+            android:padding="4dp"
             android:layout_height="fill_parent"
             android:layout_weight="60"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/widget_time_table_list_tue"
@@ -95,9 +92,10 @@
         <LinearLayout
             android:id="@+id/widget_time_table_list_wed_frame"
             android:layout_width="0dp"
+            android:padding="4dp"
             android:layout_height="fill_parent"
             android:layout_weight="60"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/widget_time_table_list_wed"
@@ -125,9 +123,10 @@
         <LinearLayout
             android:id="@+id/widget_time_table_list_thr_frame"
             android:layout_width="0dp"
+            android:padding="4dp"
             android:layout_height="fill_parent"
             android:layout_weight="60"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/widget_time_table_list_thr"
@@ -157,7 +156,8 @@
             android:layout_width="0dp"
             android:layout_height="fill_parent"
             android:layout_weight="60"
-            android:orientation="vertical" >
+            android:padding="4dp"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/widget_time_table_list_fri"
@@ -176,11 +176,6 @@
                 android:textSize="10sp" />
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@color/widget_white_divider" />
     </LinearLayout>
 
     <LinearLayout

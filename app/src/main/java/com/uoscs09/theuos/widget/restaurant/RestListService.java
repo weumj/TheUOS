@@ -6,9 +6,9 @@ import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.common.impl.AbsListRemoteViewsFactory;
-import com.uoscs09.theuos.common.util.IOUtil;
+import com.uoscs09.theuos.base.AbsListRemoteViewsFactory;
 import com.uoscs09.theuos.tab.restaurant.RestItem;
+import com.uoscs09.theuos.util.IOUtil;
 
 import java.util.ArrayList;
 
@@ -25,8 +25,7 @@ public class RestListService extends RemoteViewsService {
         public ListRemoteViewsFactory(Context context, Intent intent) {
             super(context);
             clear();
-            ArrayList<RestItem> list = intent.getBundleExtra(RestWidget.REST_WIDGET_ITEM)
-                    .getParcelableArrayList(RestWidget.REST_WIDGET_ITEM);
+            ArrayList<RestItem> list = intent.getBundleExtra(RestWidget.REST_WIDGET_ITEM).getParcelableArrayList(RestWidget.REST_WIDGET_ITEM);
 
             addAll(0, list);
             this.position = intent.getIntExtra(RestWidget.REST_WIDGET_POSITION, 0);

@@ -4,10 +4,11 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
+import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBarActivity;
 
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.common.util.AppUtil;
+import com.uoscs09.theuos.util.AppUtil;
 
 public class SettingsWebPageFragment extends PreferenceFragment {
 	@Override
@@ -25,7 +26,7 @@ public class SettingsWebPageFragment extends PreferenceFragment {
 
 	@Override
 	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen,
-			Preference preference) {
+			@NonNull Preference preference) {
 		switch (preference.getTitleRes()) {
 		case R.string.web_page_uos:
 			startActivity(AppUtil.setWebPageIntent("http://m.uos.ac.kr/"));

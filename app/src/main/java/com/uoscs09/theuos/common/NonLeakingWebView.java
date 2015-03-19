@@ -54,10 +54,10 @@ public class NonLeakingWebView extends WebView {
 	}
 
 	protected static class MyWebViewClient extends WebViewClient {
-		protected WeakReference<Activity> activityRef;
+		protected final WeakReference<Activity> activityRef;
 
 		public MyWebViewClient(Activity activity) {
-			this.activityRef = new WeakReference<Activity>(activity);
+			this.activityRef = new WeakReference<>(activity);
 		}
 
 		@Override

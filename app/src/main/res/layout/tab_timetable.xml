@@ -46,8 +46,8 @@
             android:id="@+id/tab_timetable_empty_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:drawableLeft="?menu_ic_secure_login"
+            android:drawableLeft="?ic_secure_login"
+            android:gravity="center_vertical"
             android:text="@string/tab_timetable_empty_text1" />
 
         <TextView
@@ -55,8 +55,14 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/tab_timetable_empty_text"
             android:layout_marginTop="30dp"
+            android:gravity="center_vertical"
             android:drawableLeft="?ic_navigation_accept"
             android:text="@string/tab_timetable_empty_text2" />
     </RelativeLayout>
 
+    <include
+        layout="@layout/view_loading_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" />
 </RelativeLayout>

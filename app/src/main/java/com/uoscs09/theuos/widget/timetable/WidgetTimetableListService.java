@@ -8,17 +8,18 @@ import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.common.util.AppUtil;
-import com.uoscs09.theuos.common.util.OApiUtil;
-import com.uoscs09.theuos.common.util.PrefUtil;
-import com.uoscs09.theuos.common.util.StringUtil;
 import com.uoscs09.theuos.tab.timetable.TabTimeTableFragment;
 import com.uoscs09.theuos.tab.timetable.TimeTableItem;
+import com.uoscs09.theuos.util.AppUtil;
+import com.uoscs09.theuos.util.OApiUtil;
+import com.uoscs09.theuos.util.PrefUtil;
+import com.uoscs09.theuos.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Hashtable;
 
+@Deprecated
 public abstract class WidgetTimetableListService extends RemoteViewsService {
 
     @Override
@@ -28,10 +29,10 @@ public abstract class WidgetTimetableListService extends RemoteViewsService {
 
     protected abstract ListRemoteViewsFactory getListRemoteViewsFactory(Context context, Intent intent);
 
-    protected abstract class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
+    protected static abstract class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         private ArrayList<TimeTableItem> mWidgetItems;
-        private Context mContext;
-        private int mAppWidgetId;
+        private final Context mContext;
+        private final int mAppWidgetId;
         private int maxTime;
         private Hashtable<String, Integer> colorTable;
         private final int[] viewIds = {
@@ -140,7 +141,7 @@ public abstract class WidgetTimetableListService extends RemoteViewsService {
                 }
 
                 idx = colorTable.get(OApiUtil.getSubjectName(arr[i]));
-                views.setInt(viewIds[i], "setBackgroundResource", idx != null ? AppUtil.getColor(idx) : 0);
+                views.setInt(viewIds[i], "setBackgroundResource", idx != null ? AppUtil.getTimetableColor(idx) : 0);
 
             }
 
@@ -186,7 +187,7 @@ public abstract class WidgetTimetableListService extends RemoteViewsService {
         }
 
         private void getData() {
-            mWidgetItems = TabTimeTableFragment.readTimetable(mContext);
+            //mWidgetItems = TabTimeTableFragment.readTimetable(mContext);
             colorTable = TabTimeTableFragment.getColorTable(mWidgetItems, mContext);
             calculateMaxTime();
         }

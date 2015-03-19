@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
     <ListView
         android:id="@+id/tab_announce_list_announce"
         android:layout_width="match_parent"
@@ -17,7 +16,7 @@
         android:paddingRight="8dp"
         android:paddingTop="5dp"
         android:scrollbars="none"
-        android:scrollingCache="true"/>
+        android:scrollingCache="true" />
 
     <TextView
         android:id="@+id/tab_anounce_empty_view"
@@ -28,6 +27,6 @@
         android:drawableLeft="?ic_navigation_accept"
         android:gravity="center_vertical"
         android:text="@string/tab_anounce_empty_view_desc"
-        android:visibility="invisible"/>
+        android:visibility="invisible" />
 
 </RelativeLayout>

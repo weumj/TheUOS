@@ -10,8 +10,8 @@ import android.widget.ListView;
 import com.javacan.asyncexcute.AsyncCallback;
 import com.javacan.asyncexcute.AsyncExecutor;
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.common.util.AppUtil;
-import com.uoscs09.theuos.common.util.GraphicUtil;
+import com.uoscs09.theuos.util.AppUtil;
+import com.uoscs09.theuos.util.GraphicUtil;
 
 import java.lang.ref.WeakReference;
 import java.util.concurrent.Callable;
@@ -19,10 +19,10 @@ import java.util.concurrent.Callable;
 /** 리스트뷰를 비트맵으로 변환해 파일로 저장하는 작업을 비동기적으로 처리하는 클래스 */
 public class ListViewBitmapWriteTask implements Callable<String>,
 		AsyncCallback<String>, DialogInterface.OnClickListener {
-	private WeakReference<Context> contextRef;
-	private Dialog progress;
-	private String fileName;
-	private WeakReference<ListView> listViewRef;
+	private final WeakReference<Context> contextRef;
+	private final Dialog progress;
+	private final String fileName;
+	private final WeakReference<ListView> listViewRef;
 	private AsyncExecutor<String> executor;
 
 	public ListViewBitmapWriteTask( String fileName,ListView listView) {
@@ -84,7 +84,7 @@ public class ListViewBitmapWriteTask implements Callable<String>,
 
 	public Bitmap getBitmap() {
 		ListView listView = listViewRef.get();
-		if (listViewRef == null)
+		if (listView == null)
 			return null;
         return GraphicUtil.getWholeListViewItemsToBitmap(listView);
 	}

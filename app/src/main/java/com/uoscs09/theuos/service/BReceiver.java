@@ -4,8 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.uoscs09.theuos.common.util.AppUtil;
 import com.uoscs09.theuos.tab.timetable.TimeTableInfoCallback;
+import com.uoscs09.theuos.util.AppUtil;
 
 /** 여러 intent를 받아 필요한 서비스를 실행하는 클래스 */
 public class BReceiver extends BroadcastReceiver {

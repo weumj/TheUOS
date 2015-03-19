@@ -49,7 +49,7 @@
 # material theme for dialog  
 -keep class android.app.Dialog
 
--keep class com.uoscs09.theuos.common.impl.annotaion.**
+-keep class com.uoscs09.theuos.annotaion.**
 
 # Library Jars
 -libraryjars libs/listviewanimations_lib-manipulation_3.1.0.jar

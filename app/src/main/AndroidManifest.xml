@@ -35,7 +35,7 @@
         <activity
             android:name="com.uoscs09.theuos.TitleActivity"
             android:label="@string/app_name"
-            android:screenOrientation="user"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.Titile">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -47,8 +47,7 @@
         <activity
             android:name="com.uoscs09.theuos.UosMainActivity"
             android:label="@string/app_name"
-            android:screenOrientation="user"
-            android:uiOptions="splitActionBarWhenNarrow"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity android:name="com.uoscs09.theuos.tab.phonelist.PhoneListWebActivity" />
         <activity android:name="com.uoscs09.theuos.tab.map.SubMapActivity" />
@@ -82,7 +81,7 @@
             android:label="@string/widget_library_seat"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
         <service
-            android:name="com.uoscs09.theuos.tab.anounce.ServiceForAnounce"
+            android:name=".tab.anounce.ServiceForAnnounce"
             android:label="@string/setting_announce_noti" />
 
         <receiver android:name="com.uoscs09.theuos.service.BReceiver">

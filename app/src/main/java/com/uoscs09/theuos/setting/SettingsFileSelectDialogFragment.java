@@ -13,8 +13,8 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.common.util.AppUtil;
-import com.uoscs09.theuos.common.util.PrefUtil;
+import com.uoscs09.theuos.util.AppUtil;
+import com.uoscs09.theuos.util.PrefUtil;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -114,7 +114,7 @@ public class SettingsFileSelectDialogFragment extends DialogFragment {
 		}
 	}
 
-	protected Comparator<File> caseIgnoreComparator = new Comparator<File>() {
+	protected final Comparator<File> caseIgnoreComparator = new Comparator<File>() {
 		@Override
 		public int compare(File lhs, File rhs) {
 			return lhs.getName().compareToIgnoreCase(rhs.getName());
@@ -125,7 +125,7 @@ public class SettingsFileSelectDialogFragment extends DialogFragment {
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
         return new MaterialDialog.Builder(getActivity())
                 .title(R.string.setting_save_route_sub_title)
-                .customView(createView(), true)
+                .customView(createView(), false)
                 .iconAttr(R.attr.ic_content_picture)
                 .positiveText(android.R.string.ok)
                 .negativeText(android.R.string.cancel)

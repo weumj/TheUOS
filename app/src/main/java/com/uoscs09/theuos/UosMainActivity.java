@@ -18,12 +18,12 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.uoscs09.theuos.base.BaseActivity;
 import com.uoscs09.theuos.common.BackPressCloseHandler;
 import com.uoscs09.theuos.common.SimpleTextViewAdapter;
-import com.uoscs09.theuos.common.impl.BaseActivity;
-import com.uoscs09.theuos.common.util.AppUtil;
-import com.uoscs09.theuos.common.util.PrefUtil;
 import com.uoscs09.theuos.setting.SettingActivity;
+import com.uoscs09.theuos.util.AppUtil;
+import com.uoscs09.theuos.util.PrefUtil;
 
 import java.util.ArrayList;
 
@@ -198,7 +198,7 @@ public class UosMainActivity extends BaseActivity implements PagerInterface,
                 navigateItem(position, true);
             }
         });
-		mViewPager.setOffscreenPageLimit(mPagerAdapter.getCount());
+		//mViewPager.setOffscreenPageLimit(mPagerAdapter.getCount());
 		switch (AppUtil.theme) {
 		case BlackAndWhite:
 			mViewPager.setPageTransformer(true, new PagerTransformer(2));
@@ -428,7 +428,7 @@ public class UosMainActivity extends BaseActivity implements PagerInterface,
 	}
 
 	public static class PagerTransformer implements ViewPager.PageTransformer {
-		private int i;
+		private final int i;
 
 		public PagerTransformer(int i) {
 			this.i = i;

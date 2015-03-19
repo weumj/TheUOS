@@ -37,7 +37,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/etc_empty_text_time"
-        android:entries="@array/tab_timetalbe_timelist" />
+        android:entries="@array/tab_timetable_timelist" />
 
     <TextView
         android:id="@+id/etc_empty_text_term"

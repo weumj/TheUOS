@@ -8,7 +8,7 @@ import android.webkit.WebSettings;
 
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.WebViewActivity;
-import com.uoscs09.theuos.common.util.AppUtil;
+import com.uoscs09.theuos.util.AppUtil;
 
 public class SubAnounceWebActivity extends WebViewActivity {
 	private String url;
@@ -16,7 +16,7 @@ public class SubAnounceWebActivity extends WebViewActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		getSupportActionBar().setTitle(R.string.title_section1_announce);
+		getSupportActionBar().setTitle(R.string.title_tab_announce);
 		Intent intent = getIntent();
 		String link = intent.getStringExtra(TabAnounceFragment.LIST_AN);
 		int selection = intent.getIntExtra(TabAnounceFragment.PAGE_NUM, 0);

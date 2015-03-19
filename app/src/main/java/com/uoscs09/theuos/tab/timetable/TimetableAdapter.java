@@ -7,19 +7,20 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.common.impl.AbsArrayAdapter;
-import com.uoscs09.theuos.common.util.AppUtil;
-import com.uoscs09.theuos.common.util.OApiUtil;
-import com.uoscs09.theuos.common.util.PrefUtil;
-import com.uoscs09.theuos.common.util.StringUtil;
+import com.uoscs09.theuos.base.AbsArrayAdapter;
+import com.uoscs09.theuos.util.AppUtil;
+import com.uoscs09.theuos.util.OApiUtil;
+import com.uoscs09.theuos.util.PrefUtil;
+import com.uoscs09.theuos.util.StringUtil;
 
 import java.util.List;
 import java.util.Map;
 
 //FIXME
+@Deprecated
 public class TimetableAdapter extends AbsArrayAdapter<TimeTableItem, ViewWrapper> {
-    private OnClickListener l;
-    private Map<String, Integer> colorTable;
+    private final OnClickListener l;
+    private final Map<String, Integer> colorTable;
     private int maxTime;
 
     public TimetableAdapter(Context context, int layout, List<TimeTableItem> list, Map<String, Integer> colorTable, View.OnClickListener l) {
@@ -109,7 +110,7 @@ public class TimetableAdapter extends AbsArrayAdapter<TimeTableItem, ViewWrapper
 
             idx = colorTable.get(OApiUtil.getSubjectName(strArray[i]));
             if (idx != null) {
-                color = AppUtil.getColor(idx);
+                color = AppUtil.getTimetableColor(idx);
                 if (color != -1) {
                     textViews[i].setBackgroundResource(color);
                     textViews[i].setOnClickListener(l);
@@ -130,7 +131,7 @@ public class TimetableAdapter extends AbsArrayAdapter<TimeTableItem, ViewWrapper
 }
 
 class ViewWrapper implements AbsArrayAdapter.ViewHolder {
-    public TextView[] textArray;
+    public final TextView[] textArray;
 
     public ViewWrapper(View convertView) {
         textArray = new TextView[7];

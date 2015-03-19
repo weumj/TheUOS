@@ -21,31 +21,33 @@ import android.widget.Spinner;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.uoscs09.theuos.R;
+import com.uoscs09.theuos.annotaion.AsyncData;
+import com.uoscs09.theuos.annotaion.ReleaseWhenDestroy;
+import com.uoscs09.theuos.base.AbsProgressFragment;
 import com.uoscs09.theuos.common.AsyncLoader;
 import com.uoscs09.theuos.common.AsyncLoader.OnTaskFinishedListener;
 import com.uoscs09.theuos.common.ListViewBitmapWriteTask;
-import com.uoscs09.theuos.common.impl.AbsDrawableProgressFragment;
-import com.uoscs09.theuos.common.impl.annotaion.AsyncData;
-import com.uoscs09.theuos.common.impl.annotaion.ReleaseWhenDestroy;
-import com.uoscs09.theuos.common.util.AppUtil;
-import com.uoscs09.theuos.common.util.GraphicUtil;
-import com.uoscs09.theuos.common.util.IOUtil;
-import com.uoscs09.theuos.common.util.OApiUtil;
-import com.uoscs09.theuos.common.util.OApiUtil.Term;
-import com.uoscs09.theuos.common.util.PrefUtil;
-import com.uoscs09.theuos.common.util.StringUtil;
 import com.uoscs09.theuos.http.TimeTableHttpRequest;
 import com.uoscs09.theuos.http.parse.ParseTimetable;
+import com.uoscs09.theuos.util.AppUtil;
+import com.uoscs09.theuos.util.GraphicUtil;
+import com.uoscs09.theuos.util.IOUtil;
+import com.uoscs09.theuos.util.OApiUtil;
+import com.uoscs09.theuos.util.OApiUtil.Semester;
+import com.uoscs09.theuos.util.PrefUtil;
+import com.uoscs09.theuos.util.StringUtil;
 
 import org.apache.http.client.ClientProtocolException;
 
 import java.io.Serializable;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-public class TabTimeTableFragment extends AbsDrawableProgressFragment<ArrayList<TimeTableItem>> implements View.OnClickListener {
+@Deprecated
+public class TabTimeTableFragment extends AbsProgressFragment<ArrayList<TimeTableItem>> implements View.OnClickListener {
     @ReleaseWhenDestroy
     private AlertDialog loginDialog;
     @AsyncData
@@ -62,7 +64,7 @@ public class TabTimeTableFragment extends AbsDrawableProgressFragment<ArrayList<
     private Spinner mWiseYearSpinner;
     @ReleaseWhenDestroy
     private AlertDialog deleteDialog;
-    protected Term term;
+    protected Semester semester;
     @ReleaseWhenDestroy
     protected ListView listView;
     @ReleaseWhenDestroy
@@ -71,11 +73,14 @@ public class TabTimeTableFragment extends AbsDrawableProgressFragment<ArrayList<
     @ReleaseWhenDestroy
     private LinearLayout mTabParent;
 
+    private final ParseTimetable mParser = new ParseTimetable();
 
     private boolean mIsOnLoad;
     private Map<String, Integer> colorTable;
     private String mTermText;
     private String mTimeTableYear;
+    @ReleaseWhenDestroy
+    private View emptyView;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -93,14 +98,14 @@ public class TabTimeTableFragment extends AbsDrawableProgressFragment<ArrayList<
         PrefUtil pref = PrefUtil.getInstance(context);
         int termValue = pref.get("timetable_term", -1);
         if (termValue != -1) {
-            term = Term.values()[termValue];
-            cb.term = term;
+            semester = Semester.values()[termValue];
+            cb.semester = semester;
         } else {
-            term = OApiUtil.getTerm();
-            cb.term = term;
+            semester = OApiUtil.getTerm();
+            cb.semester = semester;
         }
 
-        mTimeTableYear = pref.get("timetable_year", OApiUtil.getSemesterYear(term));
+        mTimeTableYear = pref.get("timetable_year", OApiUtil.getSemesterYear(semester));
         cb.year = mTimeTableYear;
 
         adapter = new TimetableAdapter(context, R.layout.list_layout_timetable, mTimetableList, colorTable, cb);
@@ -108,11 +113,11 @@ public class TabTimeTableFragment extends AbsDrawableProgressFragment<ArrayList<
         initDialog();
 
         if (termValue != -1)
-            setTermTextViewText(term, context);
+            setTermTextViewText(semester, context);
         super.onCreate(savedInstanceState);
 
         mToolBarParent = (ViewGroup) getActivity().findViewById(R.id.toolbar_parent);
-        mTabParent = (LinearLayout) LayoutInflater.from(getActivity()).inflate(R.layout.view_tab_timetable_titles, mToolBarParent, false);
+        mTabParent = (LinearLayout) LayoutInflater.from(getActivity()).inflate(R.layout.view_tab_timetable_toolbar_menu, mToolBarParent, false);
     }
 
     private void initDialog() {
@@ -130,6 +135,7 @@ public class TabTimeTableFragment extends AbsDrawableProgressFragment<ArrayList<
                 .title(R.string.tab_timetable_wise_login_title)
                 .customView(wiseDialogLayout, true)
                 .positiveText(R.string.confirm)
+                .positiveColorAttr(R.attr.colorPrimaryDark)
                 .negativeText(R.string.cancel)
                 .callback(new MaterialDialog.ButtonCallback() {
                     @Override
@@ -196,7 +202,7 @@ public class TabTimeTableFragment extends AbsDrawableProgressFragment<ArrayList<
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.tab_timetable, container, false);
-        View emptyView = rootView.findViewById(R.id.tab_timetable_empty);
+        emptyView = rootView.findViewById(R.id.tab_timetable_empty);
         emptyView.setOnClickListener(this);
         listView = (ListView) rootView.findViewById(R.id.time_table_listView1);
         listView.setEmptyView(emptyView);
@@ -212,6 +218,8 @@ public class TabTimeTableFragment extends AbsDrawableProgressFragment<ArrayList<
                     loginDialog.show();
             }
         });
+
+        registerProgressView(rootView.findViewById(R.id.progress_layout));
         return rootView;
     }
 
@@ -249,7 +257,7 @@ public class TabTimeTableFragment extends AbsDrawableProgressFragment<ArrayList<
                 return true;
 
             case R.id.action_save:
-                saveTimetable();
+                saveTimetableImage();
                 return true;
 
             default:
@@ -264,53 +272,26 @@ public class TabTimeTableFragment extends AbsDrawableProgressFragment<ArrayList<
         addOrRemoveTabMenu(isVisibleToUser);
     }
 
-    private void addOrRemoveTabMenu(boolean visible){
+    private void addOrRemoveTabMenu(boolean visible) {
         if (mToolBarParent == null || mTabParent == null)
             return;
         if (visible) {
-            if(mTabParent.getParent() == null)
+            if (mTabParent.getParent() == null)
                 mToolBarParent.addView(mTabParent);
-        } else if(mToolBarParent.indexOfChild(mTabParent) > 0) {
+        } else if (mToolBarParent.indexOfChild(mTabParent) > 0) {
             mToolBarParent.removeView(mTabParent);
         }
     }
 
-    private void saveTimetable() {
+    private void saveTimetableImage() {
         if (adapter.isEmpty()) {
             AppUtil.showToast(getActivity(), "시간표 정보가 없습니다.", true);
             return;
         }
-        String dir = PrefUtil.getPictureSavedPath(getActivity()) + "timetable_" + mTimeTableYear + '_' + term + '_' + String.valueOf(System.currentTimeMillis()) + ".png";
 
-        ListViewBitmapWriteTask task = new ListViewBitmapWriteTask(dir, listView) {
-            @Override
-            public Bitmap getBitmap() {
-                Bitmap capture = null, titleBitmap = null, bitmap;
-                View title = null;
-                try {
-                    bitmap = super.getBitmap();
-                    title = rootView.findViewById(R.id.tab_timetable_title);
-                    title.setDrawingCacheEnabled(true);
-                    title.buildDrawingCache(true);
-                    titleBitmap = title.getDrawingCache(true);
-                    if (titleBitmap == null)
-                        titleBitmap = GraphicUtil.createBitmapFromView(title);
-                    capture = GraphicUtil.getWholeListViewItemsToBitmap(listView);
-                    bitmap = GraphicUtil.merge(titleBitmap, capture);
+        String dir = PrefUtil.getPictureSavedPath(getActivity()) + "timetable_" + mTimeTableYear + '_' + semester + '_' + String.valueOf(System.currentTimeMillis()) + ".png";
 
-                    return bitmap;
-                } finally {
-                    if (capture != null)
-                        capture.recycle();
-                    if (titleBitmap != null)
-                        titleBitmap.recycle();
-                    if (title != null) {
-                        title.destroyDrawingCache();
-                        title.setDrawingCacheEnabled(false);
-                    }
-                }
-            }
-        };
+       TimeTableImageSaveTask task = new TimeTableImageSaveTask(dir, listView, mTabParent );
         task.execute();
     }
 
@@ -320,7 +301,10 @@ public class TabTimeTableFragment extends AbsDrawableProgressFragment<ArrayList<
         if (result.isEmpty()) {
             if (!mIsOnLoad) {
                 AppUtil.showToast(context, R.string.tab_timetable_wise_login_warning_fail, isMenuVisible());
+            } else {
+                emptyView.setVisibility(View.VISIBLE);
             }
+
             mIsOnLoad = false;
             return;
         }
@@ -330,15 +314,22 @@ public class TabTimeTableFragment extends AbsDrawableProgressFragment<ArrayList<
         if (adapter != null)
             adapter.notifyDataSetChanged();
 
-        setTermTextViewText(term, context);
+        setTermTextViewText(semester, context);
     }
 
-    private void setTermTextViewText(Term term, Context context) {
+    private void setTermTextViewText(Semester term, Context context) {
         mTermText = mTimeTableYear
                 + " / "
                 + context.getResources().getStringArray(R.array.terms)[term
                 .ordinal()];
         setSubtitleWhenVisible(mTermText);
+    }
+
+    @Override
+    protected void execute() {
+        emptyView.setVisibility(View.INVISIBLE);
+
+        super.execute();
     }
 
     @Override
@@ -358,18 +349,18 @@ public class TabTimeTableFragment extends AbsDrawableProgressFragment<ArrayList<
             result = readTimetable(context);
 
         } else {
-        // 사용자가 WISE에 시간표 정보를 요청하였을 때
-            term = Term.values()[mWiseTermSpinner.getSelectedItemPosition()];
+            // 사용자가 WISE에 시간표 정보를 요청하였을 때
+            semester = Semester.values()[mWiseTermSpinner.getSelectedItemPosition()];
             mTimeTableYear = mWiseYearSpinner.getSelectedItem().toString();
-            String body = TimeTableHttpRequest.getHttpBodyPost(
-                    mWiseIdView.getText(), mWisePasswdView.getText(), term,
-                    mTimeTableYear);
-            cb.term = term;
+
+            String body = TimeTableHttpRequest.getHttpBodyPost(mWiseIdView.getText(), mWisePasswdView.getText(), semester, mTimeTableYear);
+            cb.semester = semester;
             cb.year = mTimeTableYear;
-            result = new ParseTimetable(body).parse();
+
+            result = mParser.parse(body);
 
             PrefUtil pref = PrefUtil.getInstance(context);
-            pref.put("timetable_term", term.ordinal());
+            pref.put("timetable_term", semester.ordinal());
             pref.put("timetable_year", mTimeTableYear);
             TimeTableInfoCallback.clearAllAlarm(context);
             saveColorTable(context, makeColorTable(result));
@@ -387,7 +378,7 @@ public class TabTimeTableFragment extends AbsDrawableProgressFragment<ArrayList<
     @Override
     public void exceptionOccured(Exception e) {
         if (e instanceof ClientProtocolException || e instanceof NullPointerException) {
-            AppUtil.showToast(getActivity(), R.string.tab_timetable_wise_login_warning_fail,  isMenuVisible());
+            AppUtil.showToast(getActivity(), R.string.tab_timetable_wise_login_warning_fail, isMenuVisible());
         } else {
             super.exceptionOccured(e);
         }
@@ -436,7 +427,7 @@ public class TabTimeTableFragment extends AbsDrawableProgressFragment<ArrayList<
             array = new String[]{item.mon, item.tue, item.wed, item.thr, item.fri, item.sat};
             for (h = 0; h < array.length; h++) {
                 name = OApiUtil.getSubjectName(array[h]);
-                if (!name.equals(StringUtil.NULL) && !name.equals(array[h])  && !table.containsKey(name)) {
+                if (!name.equals(StringUtil.NULL) && !name.equals(array[h]) && !table.containsKey(name)) {
                     table.put(name, j++);
                 }
             }
@@ -466,13 +457,13 @@ public class TabTimeTableFragment extends AbsDrawableProgressFragment<ArrayList<
      * @param colorTable color map
      */
     public static void saveColorTable(Context context, Hashtable<String, Integer> colorTable) {
-        IOUtil.saveToFileAsync(context, IOUtil.FILE_COLOR_TABLE,Activity.MODE_PRIVATE, colorTable, null);
+        IOUtil.saveToFileAsync(context, IOUtil.FILE_COLOR_TABLE, Activity.MODE_PRIVATE, colorTable, null);
     }
 
     /**
      * color map을 파일로 부터 읽어온다.
      */
-    public static Hashtable<String, Integer> readColorTableFromFile( Context context) {
+    public static Hashtable<String, Integer> readColorTableFromFile(Context context) {
         return IOUtil.readFromFileSuppressed(context, IOUtil.FILE_COLOR_TABLE);
     }
 
@@ -522,12 +513,43 @@ public class TabTimeTableFragment extends AbsDrawableProgressFragment<ArrayList<
     }
 
     @Override
-    protected MenuItem getLoadingMenuItem(Menu menu) {
-        return null;
-    }
-
-    @Override
     protected CharSequence getSubtitle() {
         return mTermText;
+    }
+
+    private static class TimeTableImageSaveTask extends ListViewBitmapWriteTask{
+        private WeakReference<View> titleViewRef;
+        public TimeTableImageSaveTask(String fileName, ListView listView, View titleView) {
+            super(fileName, listView);
+            titleViewRef = new WeakReference<>(titleView);
+        }
+
+        @Override
+        public Bitmap getBitmap() {
+            Bitmap capture = null, titleBitmap = null, bitmap;
+            View title = null;
+            try {
+                capture = super.getBitmap();
+                title = titleViewRef.get();
+
+                title.setDrawingCacheEnabled(true);
+                title.buildDrawingCache(true);
+                titleBitmap = title.getDrawingCache(true);
+                if (titleBitmap == null)
+                    titleBitmap = GraphicUtil.createBitmapFromView(title);
+                bitmap = GraphicUtil.merge(titleBitmap, capture);
+
+                return bitmap;
+            } finally {
+                if (capture != null)
+                    capture.recycle();
+                if (titleBitmap != null)
+                    titleBitmap.recycle();
+                if (title != null) {
+                    title.destroyDrawingCache();
+                    title.setDrawingCacheEnabled(false);
+                }
+            }
+        }
     }
 }

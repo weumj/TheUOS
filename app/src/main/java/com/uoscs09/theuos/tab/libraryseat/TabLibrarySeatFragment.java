@@ -3,6 +3,7 @@ package com.uoscs09.theuos.tab.libraryseat;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -17,15 +18,15 @@ import android.widget.ListView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.common.impl.AbsDrawableProgressFragment;
-import com.uoscs09.theuos.common.impl.annotaion.AsyncData;
-import com.uoscs09.theuos.common.impl.annotaion.ReleaseWhenDestroy;
-import com.uoscs09.theuos.common.util.AppUtil;
-import com.uoscs09.theuos.common.util.PrefUtil;
-import com.uoscs09.theuos.common.util.StringUtil;
-import com.uoscs09.theuos.common.util.TimeUtil;
+import com.uoscs09.theuos.annotaion.AsyncData;
+import com.uoscs09.theuos.annotaion.ReleaseWhenDestroy;
+import com.uoscs09.theuos.base.AbsAsyncFragment;
 import com.uoscs09.theuos.http.HttpRequest;
-import com.uoscs09.theuos.http.parse.ParseSeat;
+import com.uoscs09.theuos.http.parse.ParserSeat;
+import com.uoscs09.theuos.util.AppUtil;
+import com.uoscs09.theuos.util.PrefUtil;
+import com.uoscs09.theuos.util.StringUtil;
+import com.uoscs09.theuos.util.TimeUtil;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -33,14 +34,13 @@ import java.util.Date;
 /**
  * 도서관 좌석 정보 현황을 보여주는 페이지
  */
-public class TabLibrarySeatFragment extends
-        AbsDrawableProgressFragment<ArrayList<SeatItem>> {
+public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>> {
     /**
      * 좌석 현황 리스트 뷰의 adapter
      */
     @ReleaseWhenDestroy
     private RecyclerView.Adapter<SeatListAdapter.ViewHolder> mSeatAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
+    private StaggeredGridLayoutManager mLayoutManager;
     /**
      * 해지 될 좌석 정보 리스트 뷰의 adapter
      */
@@ -77,6 +77,12 @@ public class TabLibrarySeatFragment extends
      */
     @ReleaseWhenDestroy
     private AlertDialog mInfoDialog;
+
+    @ReleaseWhenDestroy
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+
+    private final ParserSeat mParser = new ParserSeat();
+
     /**
      * 중앙 도서관 좌석 정보 확인 페이지
      */
@@ -100,22 +106,22 @@ public class TabLibrarySeatFragment extends
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        setMenuRefresh(false);
-        setDrawableForMenu(false);
+
         if (savedInstanceState != null) {
             mSearchTime = savedInstanceState.getString(COMMIT_TIME);
             mSeatList = savedInstanceState.getParcelableArrayList(BUNDLE_LIST);
-            mDissmissInfoList = savedInstanceState
-                    .getStringArrayList(INFO_LIST);
+            mDissmissInfoList = savedInstanceState.getStringArrayList(INFO_LIST);
+
         } else {
             mSeatList = new ArrayList<>();
             mDissmissInfoList = new ArrayList<>();
         }
+
         Activity activity = getActivity();
         mInfoAdapter = new SeatDismissInfoListAdapter(activity, R.layout.list_layout_two_text_view, mDissmissInfoList);
         mSeatAdapter = new SeatListAdapter(getActivity(), mSeatList);
         mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-        ((StaggeredGridLayoutManager) mLayoutManager).setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
+        mLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
 
         super.onCreate(savedInstanceState);
     }
@@ -124,8 +130,21 @@ public class TabLibrarySeatFragment extends
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.tab_libraryseat, container, false);
 
-        mSeatListView = (RecyclerView) rootView.findViewById(R.id.tab_library_list_seat);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_layout);
+        mSwipeRefreshLayout.setColorSchemeResources(
+                AppUtil.getStyledValue(getActivity(), R.attr.color_actionbar_title),
+                AppUtil.getStyledValue(getActivity(), R.attr.colorAccent),
+                AppUtil.getStyledValue(getActivity(), R.attr.colorPrimaryDark)
+        );
+        mSwipeRefreshLayout.setProgressBackgroundColorSchemeResource(AppUtil.getStyledValue(getActivity(), R.attr.colorPrimary));
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                execute();
+            }
+        });
 
+        mSeatListView = (RecyclerView) rootView.findViewById(R.id.tab_library_list_seat);
         mSeatListView.setAdapter(mSeatAdapter);
         mSeatListView.setLayoutManager(mLayoutManager);
         mSeatListView.setItemAnimator(new DefaultItemAnimator());
@@ -139,6 +158,7 @@ public class TabLibrarySeatFragment extends
         rootView.findViewById(R.id.action_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mSwipeRefreshLayout.setRefreshing(true);
                 execute();
             }
         });
@@ -180,10 +200,10 @@ public class TabLibrarySeatFragment extends
                 */
             case R.id.action_info:
                 if (getExecutor() != null && isRunning()) {
-                    AppUtil.showToast(getActivity(),
-                            R.string.progress_while_loading, true);
+                    AppUtil.showToast(getActivity(), R.string.progress_while_loading, true);
                     return true;
                 }
+
                 if (mInfoDialog == null) {
                     mInfoDialog = new MaterialDialog.Builder(getActivity())
                             .title(R.string.action_dissmiss_info)
@@ -191,7 +211,9 @@ public class TabLibrarySeatFragment extends
                             .build();
                 }
                 mInfoDialog.show();
+
                 return true;
+
             default:
                 return false;
         }
@@ -202,20 +224,13 @@ public class TabLibrarySeatFragment extends
         mSeatList.clear();
         mSeatAdapter.notifyDataSetChanged();
 
-        if (getLoadingView().getParent() == null) {
-            ((ViewGroup) getView()).addView(getLoadingView(), 0);
-            getView().invalidate();
-        }
         super.execute();
     }
 
     @Override
     protected void onTransactPostExecute() {
-        if (getLoadingView().getParent() != null) {
-            ((ViewGroup) getView()).removeView(getLoadingView());
-            getView().invalidate();
-        }
-        super.onTransactPostExecute();
+        if (mSwipeRefreshLayout != null)
+            mSwipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
@@ -229,46 +244,47 @@ public class TabLibrarySeatFragment extends
         mInfoAdapter.notifyDataSetChanged();
     }
 
-    @SuppressWarnings("unchecked")
-    public static ArrayList<SeatItem> getLibaraySeatList() throws Exception {
+    public static ArrayList<SeatItem> getLibrarySeatList(ParserSeat parser) throws Exception {
         String body = HttpRequest.getBody(URL, StringUtil.ENCODE_EUC_KR);
-        return (ArrayList<SeatItem>) new ParseSeat(body).parse();
+        return parser.parse(body);
     }
 
     @Override
     public ArrayList<SeatItem> call() throws Exception {
-        ArrayList<SeatItem> callSeatList = getLibaraySeatList();
+        ArrayList<SeatItem> callSeatList = getLibrarySeatList(mParser);
 
         // '해지될 좌석 정보' 정보를 리스트에 추가
-        SeatItem dissmisInfo = callSeatList.remove(callSeatList.size() - 1);
+        SeatItem dismissInfo = callSeatList.remove(callSeatList.size() - 1);
         if (mDissmissInfoList != null)
             mDissmissInfoList.clear();
+
         if (mInfoAdapter != null)
             mInfoAdapter.clear();
-        String[] array = dissmisInfo.occupySeat.split(StringUtil.NEW_LINE);
+
+        String[] array = dismissInfo.occupySeat.split(StringUtil.NEW_LINE);
         for (int i = 0; i < array.length - 1; i += 2) {
             mDissmissInfoList.add(array[i] + "+" + array[i + 1]);
         }
 
         // 이용률이 50%가 넘는 스터디룸은 보여주지 않음
-        if (PrefUtil.getInstance(getActivity()).get(PrefUtil.KEY_CHECK_SEAT,
-                false)) {
-            getFilteredList(callSeatList);
+        if (PrefUtil.getInstance(getActivity()).get(PrefUtil.KEY_CHECK_SEAT, false)) {
+            filterSeatList(callSeatList);
         }
         return callSeatList;
     }
 
-    private void getFilteredList(ArrayList<SeatItem> originalList) {
+    private void filterSeatList(ArrayList<SeatItem> originalList) {
         SeatItem item;
+
         // 스터디룸 인덱스
-        final int[] filterArr = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 23,
-                24, 25, 26, 27, 28};
+        final int[] filterArr = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 23, 24, 25, 26, 27, 28};
         final int size = filterArr.length;
         for (int i = size - 1; i > -1; i--) {
             item = originalList.get(filterArr[i]);
-            if (Double.valueOf(item.utilizationRate) >= 50) {
+
+            if (Double.valueOf(item.utilizationRate) >= 50)
                 originalList.remove(item);
-            }
+
         }
     }
 
@@ -278,11 +294,6 @@ public class TabLibrarySeatFragment extends
             return;
         mSearchTime = TimeUtil.sFormat_am_hms.format(new Date());
         setSubtitleWhenVisible(mSearchTime);
-    }
-
-    @Override
-    protected MenuItem getLoadingMenuItem(Menu menu) {
-        return menu.findItem(R.id.action_refresh);
     }
 
     @Override

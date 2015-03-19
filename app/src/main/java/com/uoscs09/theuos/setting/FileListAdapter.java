@@ -4,7 +4,7 @@ import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 
-import com.uoscs09.theuos.common.impl.AbsArrayAdapter;
+import com.uoscs09.theuos.base.AbsArrayAdapter;
 
 import java.io.File;
 import java.util.List;
@@ -60,7 +60,7 @@ public class FileListAdapter extends AbsArrayAdapter<File, Holder> {
 
 
 class Holder implements AbsArrayAdapter.ViewHolder {
-    public TextView tv;
+    public final TextView tv;
 
     public Holder(View v) {
         tv = (TextView) v.findViewById(android.R.id.text1);

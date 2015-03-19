@@ -24,13 +24,13 @@
     <string name="before_finish">\'뒤로\'버튼을 한번 더 누르시면 종료됩니다.</string>
 
     <string name="title_section0_home">The UOS</string>
-    <string name="title_section1_announce">공지사항</string>
-    <string name="title_section2_rest">식당 메뉴</string>
-    <string name="title_section3_book">도서 검색</string>
-    <string name="title_section4_lib">열람실 정보</string>
-    <string name="title_section5_map">학교 지도</string>
-    <string name="title_section6_tel">교내 전화번호</string>
-    <string name="title_section7_time">시간표</string>
+    <string name="title_tab_announce">공지사항</string>
+    <string name="title_tab_restaurant">식당 메뉴</string>
+    <string name="title_tab_book_search">도서 검색</string>
+    <string name="title_tab_library_seat">열람실 정보</string>
+    <string name="title_tab_map">학교 지도</string>
+    <string name="title_tab_phone">교내 전화번호</string>
+    <string name="title_tab_timetable">시간표</string>
     <string name="title_tab_search_subject">교과목 검색</string>
     <string name="title_tab_search_empty_room">빈 강의실 조회</string>
     <string name="title_tab_schedule">학사일정</string>
@@ -110,12 +110,17 @@
     <string name="tab_timetable_sat">토</string>
     <string name="tab_timtable_period">시간</string>
     <string name="tab_timetable_not_exist">시간표 데이터가 없습니다.</string>
+
     <string name="tab_timatable_callback_show_location_in_map">지도에서 건물 위치 보기</string>
     <string name="tab_timatable_callback_show_subject_plan">수업계획서 보기</string>
+    <string name="tab_timatable_callback_show_color_selector">배경색 선택</string>
     <string name="tab_timetable_noti">시간표 알리미</string>
     <string name="tab_timatable_callback_noti">수업 시작 알림</string>
     <string name="tab_timetable_empty_text1"> 버튼을 터치하여 시간표를 불러오세요.</string>
     <string name="tab_timetable_empty_text2">교과목을 터치하면\n추가 정보를 얻을 수 있습니다.</string>
+    <string name="tab_timetable_no_subject">과목 정보가 없습니다.</string>
+    <string name="tab_timetable_no_timetable">시간표 정보가 없습니다.</string>
+    <string name="tab_timetable_error_on_search_subject">교과목을 처리하는데 에러가 발생하였습니다.</string>
 
     <string name="tab_empty_room_building">건물</string>
     <string name="tab_empty_room_room_no">강의실\n번호</string>
@@ -151,7 +156,43 @@
 
     <string name="tab_etc_selection">이동할 메뉴를 선택해주세요.</string>
     <string name="year">학년도</string>
-
+    <string-array name="building_names_univ">
+        <item>전농관</item>
+        <item>제1공학관</item>
+        <item>건설공학관</item>
+        <item>창공관</item>
+        <item>인문학관</item>
+        <item>배봉관</item>
+        <item>대학본부</item>
+        <item>자연과학관</item>
+        <item>음악관</item>
+        <item>경농관</item>
+        <item>제2공학관</item>
+        <item>학생회관</item>
+        <item>언무관</item>
+        <item>과학기술관</item>
+        <item>21세기관</item>
+        <item>조형관</item>
+        <item>체육관</item>
+        <item>자작마루</item>
+        <item>정보기술관</item>
+        <item>법학관</item>
+        <item>중앙도서관</item>
+        <item>생활관</item>
+        <item>건축구조실험동</item>
+        <item>토목구조실험동</item>
+        <item>미디어관</item>
+        <item>자동화온실</item>
+        <item>대강당</item>
+        <item>운동장</item>
+        <item>박물관</item>
+        <item>정문</item>
+        <item>후문</item>
+        <item>웰니스센터</item>
+        <item>미래관</item>
+        <item>국제학사</item>
+        <item>국제교육원</item>
+    </string-array>
     <string-array name="buildings_univ">
         <item>01 전농관</item>
         <item>02 제1공학관</item>
@@ -240,7 +281,24 @@
         <item>25 미디어관</item>
         <item>33 미래관</item>
     </string-array>
-    <string-array name="tab_timetalbe_timelist">
+    <string-array name="tab_timetable_timelist_only_time">
+        <item>09:00\n~\n09:50</item>
+        <item>10:00\n~\n10:50</item>
+        <item>11:00\n~\n11:50</item>
+        <item>12:00\n~\n12:50</item>
+        <item>13:00\n~\n13:50</item>
+        <item>14:00\n~\n14:50</item>
+        <item>15:00\n~\n15:50</item>
+        <item>16:00\n~\n16:50</item>
+        <item>17:00\n~\n17:50</item>
+        <item>18:00\n~\n18:50</item>
+        <item>18:45\n~\n19:30</item>
+        <item>19:35\n~\n20:20</item>
+        <item>20:20\n~\n21:05</item>
+        <item>21:10\n~\n21:55</item>
+        <item>21:55\n~\n22:40</item>
+    </string-array>
+    <string-array name="tab_timetable_timelist">
         <item>1교시\n 09:00 ~ 09:50</item>
         <item>2교시\n 10:00 ~ 10:50</item>
         <item>3교시\n 11:00 ~ 11:50</item>

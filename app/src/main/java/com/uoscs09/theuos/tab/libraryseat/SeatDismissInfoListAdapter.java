@@ -5,7 +5,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.common.impl.AbsArrayAdapter;
+import com.uoscs09.theuos.base.AbsArrayAdapter;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ public class SeatDismissInfoListAdapter extends AbsArrayAdapter<String, Holder> 
 }
 
 class Holder implements AbsArrayAdapter.ViewHolder {
-    public TextView[] texts;
+    public final TextView[] texts;
 
     public Holder(View v) {
         texts = new TextView[2];

@@ -28,10 +28,10 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.common.impl.BaseActivity;
-import com.uoscs09.theuos.common.impl.annotaion.ReleaseWhenDestroy;
-import com.uoscs09.theuos.common.util.AppUtil;
-import com.uoscs09.theuos.common.util.StringUtil;
+import com.uoscs09.theuos.annotaion.ReleaseWhenDestroy;
+import com.uoscs09.theuos.base.BaseActivity;
+import com.uoscs09.theuos.util.AppUtil;
+import com.uoscs09.theuos.util.StringUtil;
 
 public class SubMapActivity extends BaseActivity implements LocationListener {
     @ReleaseWhenDestroy
@@ -280,7 +280,8 @@ public class SubMapActivity extends BaseActivity implements LocationListener {
 
     @Override
     protected void onDestroy() {
-        googleMap.clear();
+        if (googleMap != null)
+            googleMap.clear();
         super.onDestroy();
     }
 

@@ -15,37 +15,33 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.common.impl.AbsDrawableProgressFragment;
-import com.uoscs09.theuos.common.util.OApiUtil;
-import com.uoscs09.theuos.common.util.StringUtil;
+import com.uoscs09.theuos.base.AbsProgressFragment;
 import com.uoscs09.theuos.http.HttpRequest;
 import com.uoscs09.theuos.http.parse.ParseSchedule;
+import com.uoscs09.theuos.util.OApiUtil;
+import com.uoscs09.theuos.util.StringUtil;
 
-public class TabScheduleFragment extends AbsDrawableProgressFragment<ScheduleItemWrapper> {
-    TextView mTextView;
-
-    private static final String URL = OApiUtil.URL_API_MAIN_DB + '?'
-            + OApiUtil.API_KEY + '=' + OApiUtil.UOS_API_KEY;
+public class TabScheduleFragment extends AbsProgressFragment<ScheduleItemWrapper> {
+    private TextView mTextView;
+    private final ParseSchedule mParser = new ParseSchedule();
+    private static final String URL = OApiUtil.URL_API_MAIN_DB + '?' + OApiUtil.API_KEY + '=' + OApiUtil.UOS_API_KEY;
 
     @Override
     public ScheduleItemWrapper call() throws Exception {
-        return new ParseSchedule(HttpRequest.getBody(URL, StringUtil.ENCODE_EUC_KR)).parse().get(0);
+        return mParser.parse(HttpRequest.getBody(URL, StringUtil.ENCODE_EUC_KR));
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        setMenuRefresh(true);
         setHasOptionsMenu(true);
         super.onCreate(savedInstanceState);
     }
 
     @SuppressLint("NewApi")
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,   Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.tab_schedule, container, false);
-        CalendarView calendarView = (CalendarView) v
-                .findViewById(R.id.tab_schedule_calendarView);
+        CalendarView calendarView = (CalendarView) v.findViewById(R.id.tab_schedule_calendarView);
         calendarView.setShowWeekNumber(false);
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
             calendarView.setWeekSeparatorLineColor(Color.TRANSPARENT);
@@ -55,6 +51,9 @@ public class TabScheduleFragment extends AbsDrawableProgressFragment<ScheduleIte
         mTextView = new TextView(getActivity());
         ScrollView s = (ScrollView) v.findViewById(R.id.tab_schedule_scroll);
         s.addView(mTextView);
+
+        registerProgressView(v.findViewById(R.id.progress_layout));
+
         return v;
     }
 
@@ -72,11 +71,6 @@ public class TabScheduleFragment extends AbsDrawableProgressFragment<ScheduleIte
             default:
                 return false;
         }
-    }
-
-    @Override
-    protected MenuItem getLoadingMenuItem(Menu menu) {
-        return menu.findItem(R.id.action_refresh);
     }
 
     @Override

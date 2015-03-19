@@ -1,188 +1,198 @@
 <?xml version="1.0" encoding="utf-8"?>
-<HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_alignParentLeft="true"
-    android:layout_alignParentTop="true"
-    android:paddingTop="5dp" >
+    android:layout_height="match_parent">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:orientation="vertical" >
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:paddingTop="5dp">
 
         <LinearLayout
-            android:id="@+id/tab_search_subject_head_layout"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:divider="?attr/colorPrimaryDark"
-            android:dividerPadding="1dp"
-            android:orientation="horizontal"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:weightSum="660" >
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tab_search_subject_sub_dept1"
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
-                android:layout_weight="60"
-                android:background="?selector_list_rec"
-                android:gravity="center"
-                android:padding="4dp"
-                android:text="@string/tab_search_subject_sub_dept1" />
+            <LinearLayout
+                android:id="@+id/tab_search_subject_head_layout"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:divider="?attr/colorPrimaryDark"
+                android:dividerPadding="1dp"
+                android:orientation="horizontal"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:weightSum="660">
 
-            <TextView
-                android:id="@+id/tab_search_subject_sub_div1"
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
-                android:layout_weight="80"
-                android:background="?selector_list_rec"
-                android:gravity="center"
-                android:padding="4dp"
-                android:text="@string/tab_search_subject_sub_div1" />
+                <TextView
+                    android:id="@+id/tab_search_subject_sub_dept1"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="60"
+                    android:background="?selector_list_rec"
+                    android:gravity="center"
+                    android:padding="4dp"
+                    android:text="@string/tab_search_subject_sub_dept1" />
 
-            <TextView
-                android:id="@+id/tab_search_subject_no1"
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
-                android:layout_weight="60"
-                android:background="?selector_list_rec"
-                android:gravity="center"
-                android:padding="4dp"
-                android:text="@string/tab_search_subject_no1" />
+                <TextView
+                    android:id="@+id/tab_search_subject_sub_div1"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="80"
+                    android:background="?selector_list_rec"
+                    android:gravity="center"
+                    android:padding="4dp"
+                    android:text="@string/tab_search_subject_sub_div1" />
 
-            <TextView
-                android:id="@+id/tab_search_subject_class_div1"
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
-                android:layout_weight="40"
-                android:background="?selector_list_rec"
-                android:gravity="center"
-                android:padding="4dp"
-                android:text="@string/tab_search_subject_class_div1" />
+                <TextView
+                    android:id="@+id/tab_search_subject_no1"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="60"
+                    android:background="?selector_list_rec"
+                    android:gravity="center"
+                    android:padding="4dp"
+                    android:text="@string/tab_search_subject_no1" />
 
-            <TextView
-                android:id="@+id/tab_search_subject_sub_nm1"
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
-                android:layout_weight="80"
-                android:background="?selector_list_rec"
-                android:gravity="center"
-                android:padding="4dp"
-                android:text="@string/tab_search_subject_sub_nm1" />
+                <TextView
+                    android:id="@+id/tab_search_subject_class_div1"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="40"
+                    android:background="?selector_list_rec"
+                    android:gravity="center"
+                    android:padding="4dp"
+                    android:text="@string/tab_search_subject_class_div1" />
 
-            <TextView
-                android:id="@+id/tab_search_subject_yr1"
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
-                android:layout_weight="40"
-                android:background="?selector_list_rec"
-                android:gravity="center"
-                android:padding="4dp"
-                android:text="@string/tab_search_subject_yr1" />
+                <TextView
+                    android:id="@+id/tab_search_subject_sub_nm1"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="80"
+                    android:background="?selector_list_rec"
+                    android:gravity="center"
+                    android:padding="4dp"
+                    android:text="@string/tab_search_subject_sub_nm1" />
 
-            <TextView
-                android:id="@+id/tab_search_subject_credit1"
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
-                android:layout_weight="40"
-                android:background="?selector_list_rec"
-                android:gravity="center"
-                android:padding="4dp"
-                android:text="@string/tab_search_subject_credit1" />
+                <TextView
+                    android:id="@+id/tab_search_subject_yr1"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="40"
+                    android:background="?selector_list_rec"
+                    android:gravity="center"
+                    android:padding="4dp"
+                    android:text="@string/tab_search_subject_yr1" />
 
-            <TextView
-                android:id="@+id/tab_search_subject_prof_nm1"
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
-                android:layout_weight="80"
-                android:background="?selector_list_rec"
-                android:gravity="center"
-                android:padding="4dp"
-                android:text="@string/tab_search_subject_prof_nm1" />
+                <TextView
+                    android:id="@+id/tab_search_subject_credit1"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="40"
+                    android:background="?selector_list_rec"
+                    android:gravity="center"
+                    android:padding="4dp"
+                    android:text="@string/tab_search_subject_credit1" />
 
-            <TextView
-                android:id="@+id/tab_search_subject_class_nm1"
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
-                android:layout_weight="100"
-                android:background="?selector_list_rec"
-                android:gravity="center"
-                android:padding="4dp"
-                android:text="@string/tab_search_subject_class_nm1" />
+                <TextView
+                    android:id="@+id/tab_search_subject_prof_nm1"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="80"
+                    android:background="?selector_list_rec"
+                    android:gravity="center"
+                    android:padding="4dp"
+                    android:text="@string/tab_search_subject_prof_nm1" />
 
-            <TextView
-                android:id="@+id/tab_search_subject_tlsn_cnt1"
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
-                android:layout_weight="40"
-                android:background="?selector_list_rec"
-                android:gravity="center"
-                android:padding="4dp"
-                android:text="@string/tab_search_subject_tlsn_cnt1" />
+                <TextView
+                    android:id="@+id/tab_search_subject_class_nm1"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="100"
+                    android:background="?selector_list_rec"
+                    android:gravity="center"
+                    android:padding="4dp"
+                    android:text="@string/tab_search_subject_class_nm1" />
 
-            <TextView
-                android:id="@+id/tab_search_subject_tlsn_limit1"
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
-                android:layout_weight="40"
-                android:background="?selector_list_rec"
-                android:gravity="center"
-                android:padding="4dp"
-                android:text="@string/tab_search_subject_tlsn_limit1" />
+                <TextView
+                    android:id="@+id/tab_search_subject_tlsn_cnt1"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="40"
+                    android:background="?selector_list_rec"
+                    android:gravity="center"
+                    android:padding="4dp"
+                    android:text="@string/tab_search_subject_tlsn_cnt1" />
+
+                <TextView
+                    android:id="@+id/tab_search_subject_tlsn_limit1"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="40"
+                    android:background="?selector_list_rec"
+                    android:gravity="center"
+                    android:padding="4dp"
+                    android:text="@string/tab_search_subject_tlsn_limit1" />
+            </LinearLayout>
+
+            <ListView
+                android:id="@+id/tab_search_subject_list_view"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tab_search_subject_head_layout"
+                android:clipToPadding="false"
+                android:fastScrollEnabled="true"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="2dp"
+                android:scrollbarStyle="outsideOverlay"
+                android:scrollingCache="true"/>
+
+            <RelativeLayout
+                android:id="@+id/tab_search_subject_empty_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="100dp"
+                android:background="?selector_button"
+                android:padding="2dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/empty1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="?ic_action_search"
+                    android:gravity="center_vertical"
+                    android:text="@string/tab_subject_empty_view_hint" />
+
+                <TextView
+                    android:id="@+id/empty2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/empty1"
+                    android:layout_marginTop="20dp"
+                    android:drawableLeft="?ic_content_import_export"
+                    android:gravity="center_vertical"
+                    android:text="@string/tab_subject_empty_view_sort" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/empty2"
+                    android:layout_marginTop="30dp"
+                    android:drawableLeft="?ic_navigation_accept"
+                    android:text="@string/tab_subject_empty_view_hint_subj" />
+            </RelativeLayout>
         </LinearLayout>
 
-        <ListView
-            android:id="@+id/tab_search_subject_list_view"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/tab_search_subject_head_layout"
-            android:clipToPadding="false"
-            android:fastScrollEnabled="true"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:paddingTop="2dp"
-            android:scrollbarStyle="outsideOverlay"
-            android:scrollingCache="true" >
-        </ListView>
+    </HorizontalScrollView>
 
-        <RelativeLayout
-            android:id="@+id/tab_search_subject_empty_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="50dp"
-            android:layout_marginTop="100dp"
-            android:background="?selector_button"
-            android:padding="2dp"
-            android:visibility="gone" >
-
-            <TextView
-                android:id="@+id/empty1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:drawableLeft="?ic_action_search"
-                android:gravity="center_vertical"
-                android:text="@string/tab_subject_empty_view_hint" />
-
-            <TextView
-                android:id="@+id/empty2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/empty1"
-                android:layout_marginTop="20dp"
-                android:drawableLeft="?ic_content_import_export"
-                android:gravity="center_vertical"
-                android:text="@string/tab_subject_empty_view_sort" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/empty2"
-                android:layout_marginTop="30dp"
-                android:drawableLeft="?ic_navigation_accept"
-                android:text="@string/tab_subject_empty_view_hint_subj" />
-        </RelativeLayout>
-    </LinearLayout>
-
-</HorizontalScrollView>
+    <include
+        layout="@layout/view_loading_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" />
+</RelativeLayout>

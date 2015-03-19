@@ -6,10 +6,10 @@ import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.common.impl.AbsListRemoteViewsFactory;
-import com.uoscs09.theuos.common.util.IOUtil;
-import com.uoscs09.theuos.common.util.StringUtil;
+import com.uoscs09.theuos.base.AbsListRemoteViewsFactory;
 import com.uoscs09.theuos.tab.libraryseat.SeatItem;
+import com.uoscs09.theuos.util.IOUtil;
+import com.uoscs09.theuos.util.StringUtil;
 
 import java.util.Collection;
 import java.util.List;

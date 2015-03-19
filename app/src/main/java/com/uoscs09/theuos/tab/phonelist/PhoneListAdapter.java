@@ -8,15 +8,15 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.common.impl.AbsArrayAdapter;
-import com.uoscs09.theuos.common.util.StringUtil;
+import com.uoscs09.theuos.base.AbsArrayAdapter;
+import com.uoscs09.theuos.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class PhoneListAdapter extends AbsArrayAdapter<PhoneItem, Holder> {
     protected Filter filter;
-    private View.OnClickListener l;
+    private final View.OnClickListener l;
 
     public PhoneListAdapter(Context context, int layout,List<PhoneItem> telList, View.OnClickListener l) {
         super(context, layout, telList);
@@ -87,9 +87,9 @@ public class PhoneListAdapter extends AbsArrayAdapter<PhoneItem, Holder> {
 }
 
 class Holder implements AbsArrayAdapter.ViewHolder {
-    public TextView siteView;
-    public TextView phoneView;
-    public ImageButton imgButton;
+    public final TextView siteView;
+    public final TextView phoneView;
+    public final ImageButton imgButton;
 
     public Holder(View convertView) {
         phoneView = (TextView) convertView.findViewById(R.id.tab_phone_list_text_site_tel_number);

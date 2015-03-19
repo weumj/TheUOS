@@ -8,173 +8,161 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.widget.RemoteViews;
 
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.common.util.AppUtil;
-import com.uoscs09.theuos.common.util.OApiUtil;
-import com.uoscs09.theuos.common.util.OApiUtil.Term;
-import com.uoscs09.theuos.common.util.PrefUtil;
+import com.uoscs09.theuos.tab.timetable.TabTimeTableFragment2;
+import com.uoscs09.theuos.tab.timetable.TimeTable;
+import com.uoscs09.theuos.util.AppUtil;
+import com.uoscs09.theuos.util.OApiUtil.Semester;
+import com.uoscs09.theuos.util.PrefUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
 public abstract class TimeTableWidget extends AppWidgetProvider {
-	public final static String WIDGET_TIMETABLE_REFRESH = "com.uoscs09.theuos.widget.timetable.refresh";
-	public final static String WIDGET_TIMETABLE_DAY = "WIDGET_TIMETABLE_DAY";
+    public final static String WIDGET_TIMETABLE_REFRESH = "com.uoscs09.theuos.widget.timetable.refresh";
+    public final static String WIDGET_TIMETABLE_DAY = "WIDGET_TIMETABLE_DAY";
 
-	@Override
-	public void onEnabled(Context context) {
-		super.onEnabled(context);
-		AppWidgetManager appWidgetManager = AppWidgetManager
-				.getInstance(context);
-		int[] appWidgetIds = appWidgetManager
-				.getAppWidgetIds(getComponentName(context));
-		appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds,
-				R.id.widget_timetable_listview);
-		new Handler().post(new UpdateThread(context, appWidgetManager,
-				appWidgetIds));
-	}
+    private static final Handler HANDLER = new Handler();
 
-	@Override
-	public void onUpdate(Context context, AppWidgetManager appWidgetManager,
-			int[] appWidgetIds) {
-		super.onUpdate(context, appWidgetManager, appWidgetIds);
-		appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds,
-				R.id.widget_timetable_listview);
-		new Handler().post(new UpdateThread(context, appWidgetManager,
-				appWidgetIds));
-	}
+    @Override
+    public void onEnabled(Context context) {
+        super.onEnabled(context);
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(getComponentName(context));
 
-	@Override
-	public void onDisabled(Context context) {
-		super.onDisabled(context);
-		context.stopService(new Intent(context, getListServiceClass()));
-	}
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_timetable_listview);
 
-	protected class UpdateThread implements Runnable {
-		private Context context;
-		private AppWidgetManager appWidgetManager;
-		private int[] appWidgetIds;
+        HANDLER.post(new UpdateThread(context, appWidgetManager, appWidgetIds));
+    }
 
-		public UpdateThread(Context context, AppWidgetManager appWidgetManager,
-				int[] appWidgetIds) {
-			this.context = context;
-			this.appWidgetManager = appWidgetManager;
-			this.appWidgetIds = appWidgetIds;
-		}
+    @Override
+    public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+        super.onUpdate(context, appWidgetManager, appWidgetIds);
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_timetable_listview);
 
-		@Override
-		public void run() {
-			RemoteViews views = getRemoteViews(context);
+        HANDLER.post(new UpdateThread(context, appWidgetManager, appWidgetIds));
+    }
 
-			for (int appWidgetId : appWidgetIds) {
-				// adapter
-				Intent adapterIntent = new Intent(context,
-						getListServiceClass());
-				adapterIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
-						appWidgetId);
-				adapterIntent.setData(Uri.parse(adapterIntent
-						.toUri(Intent.URI_INTENT_SCHEME)));
-				views.setRemoteAdapter(R.id.widget_timetable_listview,
-						adapterIntent);
-				views.setEmptyView(R.id.widget_timetable_listview,
-						R.id.widget_timetable_empty);
+    @Override
+    public void onDisabled(Context context) {
+        super.onDisabled(context);
+        context.stopService(new Intent(context, getListServiceClass()));
+    }
 
-				// refresh button
-				Intent refreshIntent = getIntent(context,
-						WIDGET_TIMETABLE_REFRESH);
-				refreshIntent.setAction(WIDGET_TIMETABLE_REFRESH);
-				refreshIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
-						appWidgetId);
-				PendingIntent p = PendingIntent.getBroadcast(context, 0,
-						refreshIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-				views.setOnClickPendingIntent(R.id.widget_time_refresh, p);
+    protected class UpdateThread implements Runnable {
+        private final Context context;
+        private final AppWidgetManager appWidgetManager;
+        private final int[] appWidgetIds;
 
-				// title
-				SimpleDateFormat date = new SimpleDateFormat("yyyy MMM dd E",
-						Locale.getDefault());
-				views.setTextViewText(R.id.widget_time_date,
-						date.format(new Date()));
-				Term term;
-				int termValue = PrefUtil.getInstance(context).get(
-						"timetable_term", -1);
-				if (termValue != -1) {
-					term = Term.values()[termValue];
-				} else {
-					term = OApiUtil.getTerm();
-				}
-				views.setTextViewText(
-						R.id.widget_time_term,
-						OApiUtil.getSemesterYear(term)
-								+ "/"
-								+ context.getResources().getStringArray(
-										R.array.terms)[term.ordinal()]);
+        public UpdateThread(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+            this.context = context;
+            this.appWidgetManager = appWidgetManager;
+            this.appWidgetIds = appWidgetIds;
+        }
 
-				// Intent serviceIntent = new Intent(context,
-				// getListServiceClass());
-				// serviceIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
-				// appWidgetId);
-				// context.startService(serviceIntent);
+        @Override
+        public void run() {
+            RemoteViews views = getRemoteViews(context);
 
-				appWidgetManager.updateAppWidget(appWidgetId, views);
-				appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId,
-						R.id.widget_timetable_listview);
-			}
-			return;
-		}
-	}
+            for (int appWidgetId : appWidgetIds) {
+                // adapter
+                Intent adapterIntent = new Intent(context, getListServiceClass());
+                adapterIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+                adapterIntent.setData(Uri.parse(adapterIntent.toUri(Intent.URI_INTENT_SCHEME)));
 
-	protected abstract RemoteViews getRemoteViews(Context context);
+                views.setRemoteAdapter(R.id.widget_timetable_listview, adapterIntent);
+                views.setEmptyView(R.id.widget_timetable_listview, R.id.widget_timetable_empty);
 
-	protected abstract Class<? extends WidgetTimetableListService> getListServiceClass();
+                // refresh button
+                Intent refreshIntent = getIntent(context, WIDGET_TIMETABLE_REFRESH);
+                refreshIntent.setAction(WIDGET_TIMETABLE_REFRESH);
+                refreshIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
 
-	protected abstract Class<? extends TimeTableWidget> getWidgetClass();
+                PendingIntent p = PendingIntent.getBroadcast(context, 0, refreshIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                views.setOnClickPendingIntent(R.id.widget_time_refresh, p);
 
-	protected Intent getIntent(Context context, String action) {
-		Intent intent = new Intent(context, getWidgetClass());
-		intent.setComponent(getComponentName(context));
-		intent.setAction(action);
-		return intent;
-	}
+                // title
+                SimpleDateFormat date = new SimpleDateFormat("yyyy MMM dd E", Locale.getDefault());
+                views.setTextViewText(R.id.widget_time_date, date.format(new Date()));
 
-	private ComponentName getComponentName(Context context) {
-		return new ComponentName(context, getWidgetClass());
-	}
+                TimeTable timeTable = TabTimeTableFragment2.readTimetable(context);
+                if (timeTable != null) {
+                    Semester semester = timeTable.semesterCode;
+                    views.setTextViewText(R.id.widget_time_term, timeTable.year + "/" + context.getResources().getStringArray(R.array.terms)[semester.ordinal()]);
 
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		super.onReceive(context, intent);
-		String action = intent.getAction();
-		AppWidgetManager m = AppWidgetManager.getInstance(context);
-		if (WIDGET_TIMETABLE_REFRESH.equals(action)) {
-			long z = 0;
-			long waitTime = PrefUtil.getInstance(context).get(
-					"widget_timetable_refresh", z);
-			long wait = System.currentTimeMillis();
-			long diff = wait - waitTime;
-			if (diff < 0 || diff > 5000) {
-				PrefUtil.getInstance(context).put("widget_timetable_refresh",
-						wait);
-			} else {
-				AppUtil.showToast(context, R.string.progress_wait, true);
-				return;
-			}
-			context.sendBroadcast(new Intent(
-					AppWidgetManager.ACTION_APPWIDGET_UPDATE));
-			int[] ids = new int[] { intent.getIntExtra(
-					AppWidgetManager.EXTRA_APPWIDGET_ID,
-					AppWidgetManager.INVALID_APPWIDGET_ID) };
-			onUpdate(context, m, ids);
-			// AppUtil.showToast(context, "새로고침...", true);
-			AppWidgetManager.getInstance(context)
-					.notifyAppWidgetViewDataChanged(ids,
-							R.id.widget_timetable_listview);
-			return;
-		} else if (Intent.ACTION_BOOT_COMPLETED.equals(action)) {
-			context.sendBroadcast(new Intent(
-					AppWidgetManager.ACTION_APPWIDGET_UPDATE));
-		}
-	}
+                } else {
+                    views.setTextViewText(R.id.widget_time_term, "");
+                }
+
+                // Intent serviceIntent = new Intent(context,
+                // getListServiceClass());
+                // serviceIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
+                // appWidgetId);
+                // context.startService(serviceIntent);
+
+                appWidgetManager.updateAppWidget(appWidgetId, views);
+                appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_timetable_listview);
+            }
+        }
+    }
+
+    protected abstract RemoteViews getRemoteViews(Context context);
+
+    protected abstract Class<? extends WidgetTimeTableListService2> getListServiceClass();
+
+    protected abstract Class<? extends TimeTableWidget> getWidgetClass();
+
+    protected Intent getIntent(Context context, String action) {
+        Intent intent = new Intent(context, getWidgetClass());
+        intent.setComponent(getComponentName(context));
+        intent.setAction(action);
+        return intent;
+    }
+
+    private ComponentName getComponentName(Context context) {
+        return new ComponentName(context, getWidgetClass());
+    }
+
+    @Override
+    public void onReceive(@NonNull Context context, @NonNull Intent intent) {
+        super.onReceive(context, intent);
+
+        switch (intent.getAction()) {
+            case WIDGET_TIMETABLE_REFRESH:
+                long z = 0;
+                long waitTime = PrefUtil.getInstance(context).get("widget_timetable_refresh", z);
+                long wait = System.currentTimeMillis();
+                long diff = wait - waitTime;
+
+                if (diff < 0 || diff > 5000) {
+                    PrefUtil.getInstance(context).put("widget_timetable_refresh", wait);
+
+                } else {
+                    AppUtil.showToast(context, R.string.progress_wait, true);
+                    return;
+
+                }
+
+                context.sendBroadcast(new Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE));
+
+                int[] ids = new int[]{intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)};
+
+                AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+
+                onUpdate(context, appWidgetManager, ids);
+                // AppUtil.showToast(context, "새로고침...", true);
+                appWidgetManager.notifyAppWidgetViewDataChanged(ids, R.id.widget_timetable_listview);
+
+                break;
+
+            case Intent.ACTION_BOOT_COMPLETED:
+                context.sendBroadcast(new Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE));
+                break;
+        }
+
+    }
 }

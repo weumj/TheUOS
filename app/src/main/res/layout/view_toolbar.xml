@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:com.uoscs09.theuos="http://schemas.android.com/apk/res-auto"
     android:id="@+id/toolbar_parent"
+    android:background="?attr/colorPrimary"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -10,7 +11,6 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
         android:minHeight="?attr/actionBarSize"
         com.uoscs09.theuos:subtitleTextAppearance="?attr/toolbar_actionbar_subtitle"
         com.uoscs09.theuos:theme="@style/ThemeOverlay.AppCompat.ActionBar"

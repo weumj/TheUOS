@@ -5,12 +5,12 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.common.impl.AbsArrayAdapter;
+import com.uoscs09.theuos.base.AbsArrayAdapter;
 
 import java.util.List;
 
 public class SubjectInfoAdapter extends AbsArrayAdapter<String, SubjectInfoHolder> {
-    private String[] array;
+    private final String[] array;
 
     public SubjectInfoAdapter(Context context, int layout, List<String> list) {
         super(context, layout, list);
@@ -43,7 +43,8 @@ public class SubjectInfoAdapter extends AbsArrayAdapter<String, SubjectInfoHolde
 }
 
 class SubjectInfoHolder implements AbsArrayAdapter.ViewHolder {
-    public TextView title, content;
+    public final TextView title;
+    public final TextView content;
 
     public SubjectInfoHolder(View v) {
         title = (TextView) v.findViewById(R.id.list_subject_info_text_title);

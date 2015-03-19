@@ -8,9 +8,9 @@ import android.webkit.WebSettings;
 import android.widget.LinearLayout;
 
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.common.impl.BaseActivity;
-import com.uoscs09.theuos.common.impl.annotaion.ReleaseWhenDestroy;
-import com.uoscs09.theuos.common.util.AppUtil;
+import com.uoscs09.theuos.annotaion.ReleaseWhenDestroy;
+import com.uoscs09.theuos.base.BaseActivity;
+import com.uoscs09.theuos.util.AppUtil;
 
 /**
  * WebView가 포함된 액티비티, 액티비티 종료시(onDestroy) webView를 destory함
@@ -27,7 +27,7 @@ public abstract class WebViewActivity extends BaseActivity {
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
 
-        View toolbarLayout =  View.inflate(this, R.layout.view_toolbar, null);
+        View toolbarLayout = View.inflate(this, R.layout.view_toolbar, null);
         mToolbar = (Toolbar) toolbarLayout.findViewById(R.id.toolbar);
         mWebView = new NonLeakingWebView(this);
 
@@ -40,12 +40,6 @@ public abstract class WebViewActivity extends BaseActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
-    }
-
-    @Override
-    protected void onPause() {
-        overridePendingTransition(R.anim.zoom_enter, R.anim.zoom_exit);
-        super.onPause();
     }
 
     @Override

@@ -5,7 +5,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.common.impl.AbsArrayAdapter;
+import com.uoscs09.theuos.base.AbsArrayAdapter;
 
 import java.util.List;
 
@@ -37,7 +37,7 @@ public class SubjectAdapter extends AbsArrayAdapter<SubjectItem, Holder> {
 }
 
 class Holder implements AbsArrayAdapter.ViewHolder {
-    public TextView[] tvArray;
+    public final TextView[] tvArray;
 
     // public TextView sub_dept;
     // public TextView subject_div;

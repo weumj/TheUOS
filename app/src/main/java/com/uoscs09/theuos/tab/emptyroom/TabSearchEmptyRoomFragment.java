@@ -18,15 +18,15 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.common.impl.AbsDrawableProgressFragment;
-import com.uoscs09.theuos.common.impl.annotaion.AsyncData;
-import com.uoscs09.theuos.common.impl.annotaion.ReleaseWhenDestroy;
-import com.uoscs09.theuos.common.util.AppUtil;
-import com.uoscs09.theuos.common.util.OApiUtil;
-import com.uoscs09.theuos.common.util.OApiUtil.Term;
-import com.uoscs09.theuos.common.util.StringUtil;
+import com.uoscs09.theuos.annotaion.AsyncData;
+import com.uoscs09.theuos.annotaion.ReleaseWhenDestroy;
+import com.uoscs09.theuos.base.AbsProgressFragment;
 import com.uoscs09.theuos.http.HttpRequest;
-import com.uoscs09.theuos.http.parse.ParseEmptyRoom;
+import com.uoscs09.theuos.http.parse.ParserEmptyRoom;
+import com.uoscs09.theuos.util.AppUtil;
+import com.uoscs09.theuos.util.OApiUtil;
+import com.uoscs09.theuos.util.OApiUtil.Semester;
+import com.uoscs09.theuos.util.StringUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,16 +38,14 @@ import java.util.Locale;
 /**
  * 빈 강의실을 조회하는 fragment
  */
-public class TabSearchEmptyRoomFragment extends
-        AbsDrawableProgressFragment<ArrayList<ClassRoomItem>> implements
-        DialogInterface.OnClickListener, View.OnClickListener {
+public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<ClassRoomItem>> implements   DialogInterface.OnClickListener, View.OnClickListener {
     @ReleaseWhenDestroy
-    private ArrayAdapter<ClassRoomItem> adapter;
+    private ArrayAdapter<ClassRoomItem> mAdapter;
     @AsyncData
     private ArrayList<ClassRoomItem> mClassRoomList;
     @ReleaseWhenDestroy
     protected AlertDialog dialog;
-    private Hashtable<String, String> params = new Hashtable<>();
+    private final Hashtable<String, String> params = new Hashtable<>();
     @ReleaseWhenDestroy
     private Spinner buildingSpinner;
     @ReleaseWhenDestroy
@@ -56,11 +54,19 @@ public class TabSearchEmptyRoomFragment extends
     private Spinner termSpinner;
     @ReleaseWhenDestroy
     private TextView[] textViews;
+    private ViewGroup mToolBarParent;
+    @ReleaseWhenDestroy
+    private ViewGroup mTabParent;
+
+    private final ParserEmptyRoom mParser = new ParserEmptyRoom();
+
     private String mTermString;
     private int sortFocus;
     private boolean isReverse = false;
     private static final String BUILDING = "building";
     private static final String URL = "http://wise.uos.ac.kr/uosdoc/api.ApiUcsFromToEmptyRoom.oapi";
+    @ReleaseWhenDestroy
+    private View empty;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -78,6 +84,23 @@ public class TabSearchEmptyRoomFragment extends
         } else {
             mClassRoomList = new ArrayList<>();
         }
+
+        mToolBarParent = (ViewGroup) getActivity().findViewById(R.id.toolbar_parent);
+        mTabParent = (ViewGroup) LayoutInflater.from(getActivity()).inflate(R.layout.view_tab_emptyroom_toobar_menu, mToolBarParent, false);
+        textViews = new TextView[4];
+        int[] ids = {R.id.tab_search_empty_room_text_building_name,
+                R.id.tab_search_empty_room_text_room_no,
+                R.id.tab_search_empty_room_text_room_subj,
+                R.id.tab_search_empty_room_text_room_person};
+
+        int i = 0;
+        for (int id : ids) {
+            View ripple = mTabParent.findViewById(id);
+            ripple.setOnClickListener(this);
+            textViews[i] = (TextView) ripple.findViewById(android.R.id.title);
+            textViews[i++].setTag(id);
+        }
+
         super.onCreate(savedInstanceState);
     }
 
@@ -95,28 +118,15 @@ public class TabSearchEmptyRoomFragment extends
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.tab_search_empty_room, container, false);
 
-        adapter = new SearchEmptyRoomAdapter(getActivity(), R.layout.list_layout_empty_room, mClassRoomList);
-        textViews = new TextView[4];
-
-        int[] ids = {R.id.tab_search_empty_room_text_building_name,
-                R.id.tab_search_empty_room_text_room_no,
-                R.id.tab_search_empty_room_text_room_subj,
-                R.id.tab_search_empty_room_text_room_person};
-
-        int i = 0;
-        for (int id : ids) {
-            textViews[i] = (TextView) root.findViewById(id);
-            textViews[i++].setOnClickListener(this);
-        }
-
+        mAdapter = new SearchEmptyRoomAdapter(getActivity(), R.layout.list_layout_empty_room, mClassRoomList);
         ListView listView = (ListView) root.findViewById(R.id.etc_search_list);
 
-        listView.setAdapter(adapter);
-        View empty = root.findViewById(R.id.tab_search_subject_empty_view);
+        listView.setAdapter(mAdapter);
+
+        empty = root.findViewById(R.id.tab_search_subject_empty_view);
         empty.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -124,6 +134,9 @@ public class TabSearchEmptyRoomFragment extends
             }
         });
         listView.setEmptyView(empty);
+
+        registerProgressView(inflater.inflate(R.layout.view_loading_layout, container, false));
+
         return root;
     }
 
@@ -143,7 +156,7 @@ public class TabSearchEmptyRoomFragment extends
 
         params.put(BUILDING, building);
         params.put("wdayTime", wdayTime);
-        params.put(OApiUtil.TERM, OApiUtil.getTermCode(Term.values()[termSpinner.getSelectedItemPosition()]));
+        params.put(OApiUtil.TERM, Semester.values()[termSpinner.getSelectedItemPosition()].code);
     }
 
     @Override
@@ -167,15 +180,15 @@ public class TabSearchEmptyRoomFragment extends
     public void onTransactResult(ArrayList<ClassRoomItem> result) {
         mClassRoomList.clear();
         mClassRoomList.addAll(result);
-        adapter.notifyDataSetChanged();
-        AppUtil.showToast(getActivity(), String.valueOf(result.size())  + getString(R.string.search_found), true);
+        mAdapter.notifyDataSetChanged();
+        AppUtil.showToast(getActivity(), String.valueOf(result.size()) + getString(R.string.search_found), true);
 
-        mTermString = timeSpinner.getSelectedItem().toString()  .split(StringUtil.NEW_LINE)[1] + StringUtil.NEW_LINE + termSpinner.getSelectedItem();
+        mTermString = timeSpinner.getSelectedItem().toString().split(StringUtil.NEW_LINE)[1] + StringUtil.NEW_LINE + termSpinner.getSelectedItem();
         setSubtitleWhenVisible(mTermString);
     }
 
     private void initTable() {
-        String date = new SimpleDateFormat("yyyyMMdd", Locale.KOREAN)  .format(new Date());
+        String date = new SimpleDateFormat("yyyyMMdd", Locale.KOREAN).format(new Date());
         params.put(OApiUtil.API_KEY, OApiUtil.UOS_API_KEY);
         params.put(OApiUtil.YEAR, OApiUtil.getYear());
         params.put(BUILDING, StringUtil.NULL);
@@ -186,27 +199,63 @@ public class TabSearchEmptyRoomFragment extends
         params.put("aplyPosbYn", "Y");
     }
 
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+
+        addOrRemoveTabMenu(isVisibleToUser);
+    }
+
+    private void addOrRemoveTabMenu(boolean visible) {
+        if (mToolBarParent == null || mTabParent == null)
+            return;
+        if (visible) {
+            if (mTabParent.getParent() == null)
+                mToolBarParent.addView(mTabParent);
+        } else if (mToolBarParent.indexOfChild(mTabParent) > 0) {
+            mToolBarParent.removeView(mTabParent);
+        }
+    }
+
+    @Override
+    protected void execute() {
+        empty.setVisibility(View.INVISIBLE);
+        if (mToolBarParent != null)
+            mToolBarParent.addView(getProgressView());
+
+        super.execute();
+    }
+
+    @Override
+    protected void onTransactPostExecute() {
+        super.onTransactPostExecute();
+
+        if (mToolBarParent != null)
+            mToolBarParent.removeView(getProgressView());
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public ArrayList<ClassRoomItem> call() throws Exception {
         putParams();
 
         if (params.get(BUILDING).equals("00")) {
-            final String[] buildings = {"01", "02", "03", "04", "05", "06",
-                    "08", "09", "10", "11", "13", "14", "15", "16", "17", "18",
-                    "19", "20", "23", "24", "25", "33"};
+            final String[] buildings = {"01", "02", "03", "04", "05", "06",  "08", "09", "10", "11", "13", "14", "15", "16", "17", "18",  "19", "20", "23", "24", "25", "33"};
             ArrayList<ClassRoomItem> list = new ArrayList<>();
+
             String body;
             for (String bd : buildings) {
                 params.put(BUILDING, bd);
                 body = HttpRequest.getBody(URL, StringUtil.ENCODE_EUC_KR, params, StringUtil.ENCODE_EUC_KR);
 
-                list.addAll(new ParseEmptyRoom(body).parse());
+                list.addAll(mParser.parse(body));
             }
             return list;
+
         } else {
             String body = HttpRequest.getBody(URL, StringUtil.ENCODE_EUC_KR, params, StringUtil.ENCODE_EUC_KR);
-            return new ParseEmptyRoom(body).parse();
+            return mParser.parse(body);
         }
     }
 
@@ -221,12 +270,13 @@ public class TabSearchEmptyRoomFragment extends
             return;
         }
         int field;
-        int id = v.getId();
+        int id = (int) v.getTag();
         for (TextView tv : textViews) {
             tv.setCompoundDrawables(null, null, null, null);
         }
         isReverse = id == sortFocus && !isReverse;
         sortFocus = id;
+
         switch (id) {
             case R.id.tab_search_empty_room_text_building_name:
                 field = 0;
@@ -246,12 +296,7 @@ public class TabSearchEmptyRoomFragment extends
         Drawable d = getResources().getDrawable(AppUtil.getStyledValue(getActivity(), isReverse ? R.attr.ic_navigation_collapse : R.attr.ic_navigation_expand));
         textViews[field].setCompoundDrawablesWithIntrinsicBounds(d, null, null, null);
 
-        adapter.sort(ClassRoomItem.getComparator(field, isReverse));
-    }
-
-    @Override
-    protected MenuItem getLoadingMenuItem(Menu menu) {
-        return menu.findItem(R.id.action_search);
+        mAdapter.sort(ClassRoomItem.getComparator(field, isReverse));
     }
 
     @Override

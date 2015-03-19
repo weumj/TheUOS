@@ -12,22 +12,21 @@ import android.widget.TextView;
 
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.PieProgressDrawable;
-import com.uoscs09.theuos.common.util.AppUtil;
+import com.uoscs09.theuos.util.AppUtil;
 
 import java.util.List;
 
 public class SeatListAdapter extends RecyclerView.Adapter<SeatListAdapter.ViewHolder> {
-    int textColor;
-    List<SeatItem> mDataSet;
-    Context mContext;
-    LayoutInflater mInflater;
+    final int textColor;
+    final List<SeatItem> mDataSet;
+    final Context mContext;
+    final LayoutInflater mInflater;
 
     public SeatListAdapter(Context context, List<SeatItem> list) {
         this.mDataSet = list;
         this.mContext = context;
         this.mInflater = LayoutInflater.from(context);
-        textColor = context.getResources().getColor(
-                AppUtil.getStyledValue(mContext, R.attr.colorAccent));
+        textColor = context.getResources().getColor(AppUtil.getStyledValue(mContext, R.attr.colorAccent));
     }
 
     @Override
@@ -37,21 +36,16 @@ public class SeatListAdapter extends RecyclerView.Adapter<SeatListAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(ViewHolder h, int position) {
-        final SeatItem item = mDataSet.get(position);
+        SeatItem item = mDataSet.get(position);
+
+        h.item = item;
+
         h.roomName.setText(item.roomName);
         int progress = Math.round(Float.parseFloat(item.utilizationRate));
         h.drawable.setTextColor(textColor);
         h.drawable.setText(item.vacancySeat.trim() + " / " + (Integer.valueOf(item.occupySeat.trim()) + Integer.valueOf(item.vacancySeat.trim())));
         h.drawable.setLevel(progress);
-        h.ripple.setOnClickListener(new View.OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(mContext, SubSeatWebActivity.class);
-                intent.putExtra(TabLibrarySeatFragment.ITEM, (Parcelable) item);
-                mContext.startActivity(intent);
-            }
-        });
     }
 
     @Override
@@ -59,19 +53,24 @@ public class SeatListAdapter extends RecyclerView.Adapter<SeatListAdapter.ViewHo
         return new ViewHolder(mInflater.inflate(R.layout.list_layout_seat, parent, false));
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView roomName;
-        View ripple;
-        PieProgressDrawable drawable = new PieProgressDrawable();
-        TextView progressImg;
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        final TextView roomName;
+        final View ripple;
+        final PieProgressDrawable drawable = new PieProgressDrawable();
+        final TextView progressImg;
+        SeatItem item;
 
         @SuppressWarnings("deprecation")
         public ViewHolder(View convertView) {
             super(convertView);
-            Context context = convertView.getContext();
+
+
             ripple = convertView.findViewById(R.id.ripple);
+            ripple.setOnClickListener(this);
+
             roomName = (TextView) convertView.findViewById(R.id.tab_library_seat_list_text_room_name);
 
+            Context context = convertView.getContext();
             DisplayMetrics dm = context.getResources().getDisplayMetrics();
             drawable.setBorderWidth(2, dm);
 
@@ -80,6 +79,14 @@ public class SeatListAdapter extends RecyclerView.Adapter<SeatListAdapter.ViewHo
             drawable.setColor(context.getResources().getColor(R.color.gray_red));
             drawable.setCentorColor(context.getResources().getColor(AppUtil.getStyledValue(context, R.attr.cardBackgroundColor)));
             progressImg.setBackgroundDrawable(drawable);
+        }
+
+        @Override
+        public void onClick(View v) {
+            Context context = itemView.getContext();
+            Intent intent = new Intent(context, SubSeatWebActivity.class);
+            intent.putExtra(TabLibrarySeatFragment.ITEM, (Parcelable) item);
+            context.startActivity(intent);
         }
     }
 

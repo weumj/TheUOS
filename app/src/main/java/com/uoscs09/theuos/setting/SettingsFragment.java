@@ -27,10 +27,10 @@ import com.javacan.asyncexcute.AsyncCallback;
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.AsyncLoader;
 import com.uoscs09.theuos.common.PieProgressDrawable;
-import com.uoscs09.theuos.common.util.AppUtil;
-import com.uoscs09.theuos.common.util.AppUtil.AppTheme;
-import com.uoscs09.theuos.common.util.PrefUtil;
 import com.uoscs09.theuos.http.HttpRequest;
+import com.uoscs09.theuos.util.AppUtil;
+import com.uoscs09.theuos.util.AppUtil.AppTheme;
+import com.uoscs09.theuos.util.PrefUtil;
 
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.Source;
@@ -87,7 +87,7 @@ public class SettingsFragment extends PreferenceFragment implements
                 showThemeDialog();
                 return true;
             case R.string.setting_announce_noti:
-                changeFragment(SettingsAnounceNotiFragment.class);
+                changeFragment(SettingsAnnounceNotificationFragment.class);
                 return true;
             case R.string.setting_delete_cache:
                 deleteCache();

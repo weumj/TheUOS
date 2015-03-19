@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:minHeight="56dp"
+    android:divider="@null"
+    android:baselineAligned="false"
+    android:dividerPadding="2dp"
+    android:orientation="horizontal"
+    android:weightSum="360">
+
+    <LinearLayout
+        android:id="@+id/tab_timetable_list_period"
+        android:layout_width="0dp"
+        android:background="?attr/cardBackgroundColor"
+        android:layout_height="fill_parent"
+        android:layout_weight="48">
+
+        <com.balysv.materialripple.MaterialRippleLayout
+            android:id="@+id/tab_timetable_list_period_ripple"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            app:mrl_rippleDelayClick="false"
+            app:mrl_rippleColor="?colorPrimaryDark">
+
+            <TextView
+                android:id="@+id/tab_timetable_list_text_period"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:gravity="center"
+                android:textColor="?attr/colorPrimaryDark" />
+        </com.balysv.materialripple.MaterialRippleLayout>
+    </LinearLayout>
+
+    <include
+        layout="@layout/view_tab_timetable_subject"
+        android:id="@+id/tab_timetable_list_text_mon"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="52" />
+
+    <include
+        layout="@layout/view_tab_timetable_subject"
+        android:id="@+id/tab_timetable_list_text_tue"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="52" />
+
+    <include
+        layout="@layout/view_tab_timetable_subject"
+        android:id="@+id/tab_timetable_list_text_wed"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="52" />
+
+    <include
+        layout="@layout/view_tab_timetable_subject"
+        android:id="@+id/tab_timetable_list_text_thr"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="52" />
+
+    <include
+        layout="@layout/view_tab_timetable_subject"
+        android:id="@+id/tab_timetable_list_text_fri"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="52" />
+
+    <include
+        layout="@layout/view_tab_timetable_subject"
+        android:id="@+id/tab_timetable_list_text_sat"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="52" />
+
+</LinearLayout>

@@ -23,21 +23,21 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.common.impl.AbsDrawableProgressFragment;
-import com.uoscs09.theuos.common.impl.annotaion.AsyncData;
-import com.uoscs09.theuos.common.impl.annotaion.ReleaseWhenDestroy;
-import com.uoscs09.theuos.common.util.AppUtil;
-import com.uoscs09.theuos.common.util.OApiUtil;
-import com.uoscs09.theuos.common.util.OApiUtil.Term;
-import com.uoscs09.theuos.common.util.StringUtil;
+import com.uoscs09.theuos.annotaion.AsyncData;
+import com.uoscs09.theuos.annotaion.ReleaseWhenDestroy;
+import com.uoscs09.theuos.base.AbsProgressFragment;
 import com.uoscs09.theuos.http.HttpRequest;
-import com.uoscs09.theuos.http.parse.ParseSubject;
+import com.uoscs09.theuos.http.parse.ParserSubject;
+import com.uoscs09.theuos.util.AppUtil;
+import com.uoscs09.theuos.util.OApiUtil;
+import com.uoscs09.theuos.util.OApiUtil.Semester;
+import com.uoscs09.theuos.util.StringUtil;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-public class TabSearchSubjectFragment extends AbsDrawableProgressFragment<ArrayList<SubjectItem>> implements
+public class TabSearchSubjectFragment extends AbsProgressFragment<ArrayList<SubjectItem>> implements
         OnItemClickListener, OnItemSelectedListener, View.OnClickListener {
     @ReleaseWhenDestroy
     private SubjectAdapter adapter;
@@ -45,20 +45,25 @@ public class TabSearchSubjectFragment extends AbsDrawableProgressFragment<ArrayL
     protected ArrayList<SubjectItem> mSubjectList;
     protected Hashtable<String, String> params;
     @ReleaseWhenDestroy
-    protected AlertDialog ad;
+    protected AlertDialog mSearchDialog;
     @ReleaseWhenDestroy
-    protected EditText et;
+    protected EditText mSearchEditText;
     @ReleaseWhenDestroy
     private Spinner mDialogSpinner1, mDialogSpinner2, mDialogSpinner3,
             mDialogSpinner4, mDialogTermSpinner, mDialogYearSpinner;
-    private int[] selections = new int[4];
+    private final int[] selections = new int[4];
     @ReleaseWhenDestroy
     private View mTitleLayout;
     @ReleaseWhenDestroy
     private TextView[] textViews;
+
+    private final ParserSubject mParser = new ParserSubject();
+
     private String mSearchConditionString;
     private int sortFocusViewId;
     private boolean isInverse = false;
+    @ReleaseWhenDestroy
+    private View mEmptyView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -67,7 +72,7 @@ public class TabSearchSubjectFragment extends AbsDrawableProgressFragment<ArrayL
         View dialogView = View.inflate(context, R.layout.dialog_search_subject, null);
         initDialog(dialogView);
 
-        et = (EditText) dialogView.findViewById(R.id.search_subj_editText1);
+        mSearchEditText = (EditText) dialogView.findViewById(R.id.search_subj_editText1);
         mDialogSpinner1 = (Spinner) dialogView.findViewById(R.id.search_subj_spinner1);
         mDialogSpinner2 = (Spinner) dialogView.findViewById(R.id.search_subj_spinner2);
         mDialogSpinner3 = (Spinner) dialogView.findViewById(R.id.search_subj_spinner3);
@@ -87,18 +92,17 @@ public class TabSearchSubjectFragment extends AbsDrawableProgressFragment<ArrayL
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,   Bundle savedInstanceState) {
         Context context = getActivity();
 
         final View rootView = inflater.inflate(R.layout.tab_search_subj, container, false);
         mTitleLayout = rootView.findViewById(R.id.tab_search_subject_head_layout);
         mTitleLayout.setVisibility(View.INVISIBLE);
-        View empty = rootView.findViewById(R.id.tab_search_subject_empty_view);
-        empty.setOnClickListener(new View.OnClickListener() {
+        mEmptyView = rootView.findViewById(R.id.tab_search_subject_empty_view);
+        mEmptyView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ad.show();
+                mSearchDialog.show();
             }
         });
 
@@ -113,7 +117,7 @@ public class TabSearchSubjectFragment extends AbsDrawableProgressFragment<ArrayL
         adapter = new SubjectAdapter(context, R.layout.list_layout_subject, mSubjectList);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
-        listView.setEmptyView(empty);
+        listView.setEmptyView(mEmptyView);
 
         int[] ids = {R.id.tab_search_subject_sub_dept1,
                 R.id.tab_search_subject_sub_div1, R.id.tab_search_subject_no1,
@@ -130,6 +134,7 @@ public class TabSearchSubjectFragment extends AbsDrawableProgressFragment<ArrayL
             textViews[i] = (TextView) rootView.findViewById(id);
             textViews[i++].setOnClickListener(this);
         }
+        registerProgressView(rootView.findViewById(R.id.progress_layout));
         return rootView;
     }
 
@@ -195,8 +200,7 @@ public class TabSearchSubjectFragment extends AbsDrawableProgressFragment<ArrayL
                 return;
         }
 
-        Drawable d = getResources().getDrawable(
-                AppUtil.getStyledValue(getActivity(), isInverse ? R.attr.ic_navigation_collapse : R.attr.ic_navigation_expand));
+        Drawable d = getResources().getDrawable(AppUtil.getStyledValue(getActivity(), isInverse ? R.attr.ic_navigation_collapse : R.attr.ic_navigation_expand));
         textViews[field + bias].setCompoundDrawablesWithIntrinsicBounds(d, null, null, null);
 
         adapter.sort(SubjectItem.getComparator(field, isInverse));
@@ -225,7 +229,7 @@ public class TabSearchSubjectFragment extends AbsDrawableProgressFragment<ArrayL
     }
 
     private void initDialog(View v) {
-        ad = new MaterialDialog.Builder(getActivity())
+        mSearchDialog = new MaterialDialog.Builder(getActivity())
                 .customView(v, true)
                 .title(R.string.title_tab_search_subject)
                 .content(R.string.tab_book_subject_opt)
@@ -238,11 +242,17 @@ public class TabSearchSubjectFragment extends AbsDrawableProgressFragment<ArrayL
                                 .getSystemService(
                                         Activity.INPUT_METHOD_SERVICE);
                         ipm.hideSoftInputFromWindow(
-                                et.getWindowToken(), 0);
+                                mSearchEditText.getWindowToken(), 0);
                         execute();
                     }
                 })
                 .build();
+    }
+
+    @Override
+    protected void execute() {
+        mEmptyView.setVisibility(View.INVISIBLE);
+        super.execute();
     }
 
     @Override
@@ -271,38 +281,36 @@ public class TabSearchSubjectFragment extends AbsDrawableProgressFragment<ArrayL
         String query;
         params.clear();
         params.put(OApiUtil.API_KEY, OApiUtil.UOS_API_KEY);
-        params.put(OApiUtil.YEAR, mDialogYearSpinner.getSelectedItem()
-                .toString());
-        params.put(OApiUtil.TERM,
-                OApiUtil.getTermCode(Term.values()[mDialogTermSpinner
-                        .getSelectedItemPosition()]));
+        params.put(OApiUtil.YEAR, mDialogYearSpinner.getSelectedItem().toString());
+        params.put(OApiUtil.TERM, Semester.values()[mDialogTermSpinner.getSelectedItemPosition()].code);
+
         switch (mDialogSpinner1.getSelectedItemPosition()) {
+
             default:
             case 0:// 교양
                 query = "http://wise.uos.ac.kr/uosdoc/api.ApiUcrCultTimeInq.oapi";
-                params.put(
-                        "subjectDiv",
-                        getCultSubjectDiv(mDialogSpinner2.getSelectedItemPosition()));
+                params.put("subjectDiv", getCultSubjectDiv(mDialogSpinner2.getSelectedItemPosition()));
                 break;
+
             case 1:// 전공
                 query = "http://wise.uos.ac.kr/uosdoc/api.ApiUcrMjTimeInq.oapi";
                 switch (selections[1]) {
                     case R.array.search_subj_major_2_0_0:
-                        params.putAll(getMajorDeptDiv(
-                                mDialogSpinner3.getSelectedItemPosition(),
-                                mDialogSpinner4.getSelectedItemPosition()));
+                        params.putAll(getMajorDeptDiv(mDialogSpinner3.getSelectedItemPosition(), mDialogSpinner4.getSelectedItemPosition()));
                         break;
+
                     default:
-                        params.putAll(getMajorDeptDiv2(selections[1],
-                                mDialogSpinner4.getSelectedItemPosition()));
+                        params.putAll(getMajorDeptDiv2(selections[1], mDialogSpinner4.getSelectedItemPosition()));
                         break;
+
                 }
                 break;
         }
-        params.put("subjectNm", URLEncoder.encode(et.getText().toString(),
-                StringUtil.ENCODE_EUC_KR));
+
+        params.put("subjectNm", URLEncoder.encode(mSearchEditText.getText().toString(), StringUtil.ENCODE_EUC_KR));
+
         String body = HttpRequest.getBody(query, StringUtil.ENCODE_EUC_KR, params);
-        return new ParseSubject(body).parse();
+        return mParser.parse(body);
     }
 
     @Override
@@ -315,7 +323,7 @@ public class TabSearchSubjectFragment extends AbsDrawableProgressFragment<ArrayL
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_search:
-                ad.show();
+                mSearchDialog.show();
                 return true;
             default:
                 return false;
@@ -881,11 +889,6 @@ public class TabSearchSubjectFragment extends AbsDrawableProgressFragment<ArrayL
                 return null;
         }
         return table;
-    }
-
-    @Override
-    protected MenuItem getLoadingMenuItem(Menu menu) {
-        return menu.findItem(R.id.action_search);
     }
 
     @Override

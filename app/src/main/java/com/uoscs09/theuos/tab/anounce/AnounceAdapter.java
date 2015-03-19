@@ -7,14 +7,14 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.common.impl.AbsArrayAdapter;
+import com.uoscs09.theuos.base.AbsArrayAdapter;
 
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class AnounceAdapter extends AbsArrayAdapter<AnounceItem, Holder> {
+public class AnounceAdapter extends AbsArrayAdapter<AnnounceItem, Holder> {
 
-    public AnounceAdapter(Context context, int layout, List<AnounceItem> list) {
+    public AnounceAdapter(Context context, int layout, List<AnnounceItem> list) {
         super(context, layout, list);
     }
 
@@ -53,7 +53,7 @@ public class AnounceAdapter extends AbsArrayAdapter<AnounceItem, Holder> {
 }
 
 class Holder implements AbsArrayAdapter.ViewHolder {
-    public TextView[] textArray;
+    public final TextView[] textArray;
 
     public Holder(View v) {
         textArray = new TextView[3];

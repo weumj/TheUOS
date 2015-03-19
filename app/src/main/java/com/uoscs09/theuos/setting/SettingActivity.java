@@ -6,7 +6,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.common.impl.BaseActivity;
+import com.uoscs09.theuos.base.BaseActivity;
 
 /** 설정 activity, 주요 내용은 SettingsFragment에 구현되어 있다. */
 public class SettingActivity extends BaseActivity {

@@ -3,7 +3,7 @@ package com.uoscs09.theuos.tab.booksearch;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.uoscs09.theuos.common.util.StringUtil;
+import com.uoscs09.theuos.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +56,7 @@ public class BookItem implements Parcelable {
 		coverSrc = source.readString();
 		url = source.readString();
 		infoUrl = source.readString();
-		bookStateInfoList = new ArrayList<BookStateInfo>();
+		bookStateInfoList = new ArrayList<>();
 		source.readList(bookStateInfoList, BookStateInfo.class.getClassLoader());
 	}
 

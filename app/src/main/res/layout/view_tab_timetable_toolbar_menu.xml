@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tab_timetable_title"
+    android:layout_width="fill_parent"
+    android:layout_height="36dp"
+    android:layout_marginRight="8dp"
+    android:layout_marginLeft="8dp"
+    android:divider="@null"
+    android:background="?colorPrimary"
+    android:dividerPadding="1dp"
+    android:orientation="horizontal"
+    android:weightSum="360">
+
+    <TextView
+        android:id="@+id/tab_time_peroid"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="48"
+        android:gravity="center"
+        android:padding="2dp"
+        android:text="@string/tab_timtable_period"
+        android:textColor="?color_actionbar_title" />
+
+    <TextView
+        android:id="@+id/tab_time_mon"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="52"
+        android:gravity="center"
+        android:padding="2dp"
+        android:text="@string/tab_timetable_mon"
+        android:textColor="?color_actionbar_title" />
+
+    <TextView
+        android:id="@+id/tab_time_tue"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="52"
+        android:gravity="center"
+        android:padding="2dp"
+        android:text="@string/tab_timetable_tue"
+        android:textColor="?color_actionbar_title" />
+
+    <TextView
+        android:id="@+id/tab_time_wed"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="52"
+        android:gravity="center"
+        android:padding="2dp"
+        android:text="@string/tab_timetable_wed"
+        android:textColor="?color_actionbar_title" />
+
+    <TextView
+        android:id="@+id/tab_time_thur"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="52"
+        android:gravity="center"
+        android:padding="2dp"
+        android:text="@string/tab_timetable_thr"
+        android:textColor="?color_actionbar_title" />
+
+    <TextView
+        android:id="@+id/tab_time_fri"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="52"
+        android:gravity="center"
+        android:padding="2dp"
+        android:text="@string/tab_timetable_fri"
+        android:textColor="?color_actionbar_title" />
+
+    <TextView
+        android:id="@+id/tab_time_sat"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="52"
+        android:gravity="center"
+        android:padding="2dp"
+        android:text="@string/tab_timetable_sat"
+        android:textColor="?color_actionbar_title" />
+</LinearLayout>

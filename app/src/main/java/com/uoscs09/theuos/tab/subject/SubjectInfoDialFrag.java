@@ -22,13 +22,13 @@ import com.nhaarman.listviewanimations.appearance.AnimationAdapter;
 import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.ListViewBitmapWriteTask;
-import com.uoscs09.theuos.common.util.AppUtil;
-import com.uoscs09.theuos.common.util.OApiUtil;
-import com.uoscs09.theuos.common.util.OApiUtil.Term;
-import com.uoscs09.theuos.common.util.PrefUtil;
-import com.uoscs09.theuos.common.util.StringUtil;
 import com.uoscs09.theuos.http.HttpRequest;
-import com.uoscs09.theuos.http.parse.ParseSubjectInfo;
+import com.uoscs09.theuos.http.parse.ParserSubjectInfo;
+import com.uoscs09.theuos.util.AppUtil;
+import com.uoscs09.theuos.util.OApiUtil;
+import com.uoscs09.theuos.util.OApiUtil.Semester;
+import com.uoscs09.theuos.util.PrefUtil;
+import com.uoscs09.theuos.util.StringUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -56,6 +56,8 @@ public class SubjectInfoDialFrag extends DialogFragment implements AsyncCallback
 	private ArrayAdapter<String> adapter;
 	private AnimationAdapter aAdapter;
 
+    private final ParserSubjectInfo mParser = new ParserSubjectInfo();
+
 	private final static String URL = "http://wise.uos.ac.kr/uosdoc/api.ApiApiCoursePlanView.oapi";
 	private final static String INFO = "info";
 	private final static String TITLE = "수업계획서";
@@ -79,13 +81,13 @@ public class SubjectInfoDialFrag extends DialogFragment implements AsyncCallback
 		super.onAttach(activity);
 		Bundle b = getArguments();
 		item = b.getParcelable(OApiUtil.SUBJECT_NAME);
-		Term term = Term.values()[b.getInt(OApiUtil.TERM)];
+		Semester semester = Semester.values()[b.getInt(OApiUtil.TERM)];
 		if (item == null)
 			this.dismiss();
 
 		params = new Hashtable<>(5);
 		params.put(OApiUtil.API_KEY, OApiUtil.UOS_API_KEY);
-		params.put(OApiUtil.TERM, OApiUtil.getTermCode(term));
+		params.put(OApiUtil.TERM, semester.code);
 		params.put(OApiUtil.SUBJECT_NO, item.infoArray[3]);
 		params.put(OApiUtil.CLASS_DIV, item.infoArray[4]);
 		params.put(OApiUtil.YEAR, b.getString(OApiUtil.YEAR));
@@ -160,7 +162,7 @@ public class SubjectInfoDialFrag extends DialogFragment implements AsyncCallback
 	@Override
 	public ArrayList<String> call() throws Exception {
 		String body = HttpRequest.getBody(URL, StringUtil.ENCODE_EUC_KR, params, StringUtil.ENCODE_EUC_KR);
-		return new ParseSubjectInfo(body).parse();
+		return mParser.parse(body);
 	}
 
 	@Override

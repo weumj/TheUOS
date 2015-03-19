@@ -8,8 +8,8 @@ import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.common.util.IOUtil;
-import com.uoscs09.theuos.common.util.OApiUtil;
+import com.uoscs09.theuos.util.IOUtil;
+import com.uoscs09.theuos.util.OApiUtil;
 
 /** 시간표 알림 이벤트를 받아 알림을 띄우는 BroadcastReceiver */
 public class TimeTableNotiReceiver extends BroadcastReceiver {

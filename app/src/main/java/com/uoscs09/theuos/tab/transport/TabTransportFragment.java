@@ -11,28 +11,30 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
 
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.common.impl.AbsDrawableProgressFragment;
-import com.uoscs09.theuos.common.impl.annotaion.AsyncData;
-import com.uoscs09.theuos.common.impl.annotaion.ReleaseWhenDestroy;
-import com.uoscs09.theuos.common.util.AppUtil;
-import com.uoscs09.theuos.common.util.SeoulOApiUtil;
+import com.uoscs09.theuos.annotaion.AsyncData;
+import com.uoscs09.theuos.annotaion.ReleaseWhenDestroy;
+import com.uoscs09.theuos.base.AbsProgressFragment;
 import com.uoscs09.theuos.http.HttpRequest;
-import com.uoscs09.theuos.http.parse.ParseTransport;
+import com.uoscs09.theuos.http.parse.ParserTransport;
+import com.uoscs09.theuos.util.AppUtil;
+import com.uoscs09.theuos.util.SeoulOApiUtil;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
 
-public class TabTransportFragment extends
-        AbsDrawableProgressFragment<Map<String, ArrayList<TransportItem>>> {
+public class TabTransportFragment extends AbsProgressFragment<Map<String, ArrayList<TransportItem>>> {
     @ReleaseWhenDestroy
     private BaseExpandableListAdapter adapter;
     @AsyncData
     private Map<String, ArrayList<TransportItem>> data;
 
+    private final ParserTransport mParser = new ParserTransport();
+    @ReleaseWhenDestroy
+    private View empty;
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.tab_transport, container, false);
         ExpandableListView listview = (ExpandableListView) v.findViewById(R.id.tab_transport_listview);
 
@@ -42,7 +44,7 @@ public class TabTransportFragment extends
 
         adapter = new TransportAdapter(getActivity(), android.R.layout.simple_expandable_list_item_1, R.layout.list_layout_transport, data);
         listview.setAdapter(adapter);
-        View empty = v.findViewById(R.id.empty_view);
+        empty = v.findViewById(R.id.empty_view);
         empty.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -50,6 +52,9 @@ public class TabTransportFragment extends
             }
         });
         listview.setEmptyView(empty);
+
+        registerProgressView(v.findViewById(R.id.progress_layout));
+
         return v;
     }
 
@@ -68,6 +73,13 @@ public class TabTransportFragment extends
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    protected void execute() {
+        empty.setVisibility(View.INVISIBLE);
+
+        super.execute();
     }
 
     @Override
@@ -95,7 +107,7 @@ public class TabTransportFragment extends
         Map<String, ArrayList<TransportItem>> map = new Hashtable<>();
         for (String s : SeoulOApiUtil.Metro.getValues()) {
             ArrayList<TransportItem> up = new ArrayList<>();
-            up.addAll(new ParseTransport(HttpRequest.getBody(getMetroUrl(s, 1)), 0).parse());
+            up.addAll(mParser.parse(HttpRequest.getBody(getMetroUrl(s, 1))));
 
             for (int i = 0; i < up.size(); i++) {
                 TransportItem item = up.get(i);
@@ -103,26 +115,15 @@ public class TabTransportFragment extends
                 up.set(i, item);
             }
 
-            up.addAll(new ParseTransport(HttpRequest.getBody(getMetroUrl(s, 2)), 0).parse());
+            up.addAll(mParser.parse(HttpRequest.getBody(getMetroUrl(s, 2))));
             map.put(s, up);
         }
         return map;
     }
 
     private String getMetroUrl(String where, int inOut) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(SeoulOApiUtil.HOST)
-                .append(/* SeoulOApiUtil.OAPI_KEY */"sample" + "/")
-                .append(SeoulOApiUtil.TYPE_XML + "/")
-                .append(SeoulOApiUtil.METRO_ARRIVAL + "/").append("1" + "/")
-                .append("3" + "/").append(where + "/").append(inOut + "/")
-                .append(SeoulOApiUtil.getWeekTag() + "/");
-        return sb.toString();
+        return SeoulOApiUtil.HOST + "sample" + "/" + SeoulOApiUtil.TYPE_XML + "/" + SeoulOApiUtil.METRO_ARRIVAL + "/" + "1" + "/" + "3" + "/" + where + "/" + inOut + "/" + SeoulOApiUtil.getWeekTag() + "/";
     }
 
-    @Override
-    protected MenuItem getLoadingMenuItem(Menu menu) {
-        return menu.findItem(R.id.action_refresh);
-    }
 
 }

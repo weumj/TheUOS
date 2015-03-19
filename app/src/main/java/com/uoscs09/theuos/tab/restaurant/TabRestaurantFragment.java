@@ -13,18 +13,17 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.common.impl.AbsAsyncFragment;
-import com.uoscs09.theuos.common.impl.annotaion.AsyncData;
-import com.uoscs09.theuos.common.impl.annotaion.ReleaseWhenDestroy;
-import com.uoscs09.theuos.common.util.AppUtil;
-import com.uoscs09.theuos.common.util.IOUtil;
-import com.uoscs09.theuos.common.util.OApiUtil;
-import com.uoscs09.theuos.common.util.PrefUtil;
-import com.uoscs09.theuos.common.util.StringUtil;
+import com.uoscs09.theuos.annotaion.AsyncData;
+import com.uoscs09.theuos.annotaion.ReleaseWhenDestroy;
+import com.uoscs09.theuos.base.AbsAsyncFragment;
 import com.uoscs09.theuos.http.HttpRequest;
-import com.uoscs09.theuos.http.parse.ParseRest;
+import com.uoscs09.theuos.http.parse.ParserRest;
+import com.uoscs09.theuos.util.AppUtil;
+import com.uoscs09.theuos.util.IOUtil;
+import com.uoscs09.theuos.util.OApiUtil;
+import com.uoscs09.theuos.util.PrefUtil;
+import com.uoscs09.theuos.util.StringUtil;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>> {
@@ -42,8 +41,10 @@ public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>>
     @AsyncData
     private ArrayList<RestItem> mRestList;
 
+    private final ParserRest mParser = new ParserRest();
+
     //private String mCurrentRestName;
-    private ArrayList<Tab> mTabList = new ArrayList<>();
+    private final ArrayList<Tab> mTabList = new ArrayList<>();
 
     private static final String BUTTON = "button";
     private static final String REST = "rest_list";
@@ -80,7 +81,7 @@ public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>>
         super.onCreate(savedInstanceState);
 
         mToolBarParent = (ViewGroup) getActivity().findViewById(R.id.toolbar_parent);
-        mTabParent = (LinearLayout) LayoutInflater.from(getActivity()).inflate(R.layout.view_rest_tab_menu, mToolBarParent, false);
+        mTabParent = (LinearLayout) LayoutInflater.from(getActivity()).inflate(R.layout.view_tab_rest_toolbar_menu, mToolBarParent, false);
 
         for (int stringId : REST_TAB_MENU_STRING_ID) {
             final Tab tab = new Tab(mTabParent);
@@ -111,9 +112,9 @@ public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>>
         swipeRefreshLayout.setColorSchemeResources(
                 AppUtil.getStyledValue(getActivity(), R.attr.color_actionbar_title),
                 AppUtil.getStyledValue(getActivity(), R.attr.colorAccent),
-                AppUtil.getStyledValue(getActivity(), R.attr.colorPrimaryDark),
-                AppUtil.getStyledValue(getActivity(), R.attr.colorPrimary)
+                AppUtil.getStyledValue(getActivity(), R.attr.colorPrimaryDark)
                 );
+        swipeRefreshLayout.setProgressBackgroundColorSchemeResource( AppUtil.getStyledValue(getActivity(), R.attr.colorPrimary));
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -132,6 +133,7 @@ public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>>
         rootView.findViewById(R.id.action_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                swipeRefreshLayout.setRefreshing(true);
                 execute();
             }
         });
@@ -220,16 +222,15 @@ public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>>
         }
         // web에서 읽어온지 오래되었거나, 파일이 존재하지 않은경우
         // wer에서 읽어옴
-        return getRestListFromWeb(context);
+        return getRestListFromWeb(context, mParser);
     }
 
     /**
      * web에서 식단표을 읽어온다.
      */
-    @SuppressWarnings("unchecked")
-    public static ArrayList<RestItem> getRestListFromWeb(Context context) throws IOException {
+    public static ArrayList<RestItem> getRestListFromWeb(Context context, ParserRest parser) throws Exception {
         String body = HttpRequest.getBody("http://m.uos.ac.kr/mkor/food/list.do");
-        ArrayList<RestItem> list = new ParseRest(body).parse();
+        ArrayList<RestItem> list = parser.parse(body);
 
         IOUtil.saveToFile(context, IOUtil.FILE_REST, Activity.MODE_PRIVATE, list);
         PrefUtil.getInstance(context).put(PrefUtil.KEY_REST_DATE_TIME, OApiUtil.getDate());
@@ -254,10 +255,10 @@ public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>>
     }
 */
     protected static class Tab {
-        public FrameLayout tabView;
-        public TextView mTextView;
-        public View ripple;
-        private View mStrip;
+        public final FrameLayout tabView;
+        public final TextView mTextView;
+        public final View ripple;
+        private final View mStrip;
         public int id;
 
         public Tab(LinearLayout parent) {

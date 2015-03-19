@@ -10,7 +10,7 @@ public class PhoneListWebActivity extends WebViewActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		getSupportActionBar().setTitle(R.string.title_section6_tel);
+		getSupportActionBar().setTitle(R.string.title_tab_phone);
 
 		mWebView.loadUrl("http://m.uos.ac.kr/mkor/html/01_auos/04_tel/tel.do");
 		mWebView.setWebViewClient(new CustomWebViewClient());

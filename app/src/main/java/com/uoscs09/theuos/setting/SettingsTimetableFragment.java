@@ -7,10 +7,11 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
+import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBarActivity;
 
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.common.util.PrefUtil;
+import com.uoscs09.theuos.util.PrefUtil;
 
 public class SettingsTimetableFragment extends PreferenceFragment implements
 		OnSharedPreferenceChangeListener {
@@ -31,7 +32,7 @@ public class SettingsTimetableFragment extends PreferenceFragment implements
 
 	@Override
 	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen,
-			Preference preference) {
+			@NonNull Preference preference) {
 		switch (preference.getTitleRes()) {
 		default:
 			return false;

@@ -23,20 +23,20 @@
             android:summary="@string/setting_home_desc"
             android:title="@string/setting_home" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/title_section1_announce" >
+    <PreferenceCategory android:title="@string/title_tab_announce" >
         <PreferenceScreen
             android:icon="?attr/ic_collections_view_as_list"
             android:summary="@string/setting_announce_noti_desc"
             android:title="@string/setting_announce_noti" >
         </PreferenceScreen>
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/title_section3_book" >
+    <PreferenceCategory android:title="@string/title_tab_book_search" >
         <CheckBoxPreference
             android:icon="?attr/ic_book"
             android:key="@string/pref_key_check_borrow"
             android:title="@string/setting_check_borrow" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/title_section4_lib" >
+    <PreferenceCategory android:title="@string/title_tab_library_seat" >
         <CheckBoxPreference
             android:icon="?attr/ic_chair"
             android:key="@string/pref_key_check_seat"
@@ -46,7 +46,7 @@
             android:key="@string/pref_key_widget_seat_show_all"
             android:title="@string/setting_widget_seat_show_all" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/title_section7_time" >
+    <PreferenceCategory android:title="@string/title_tab_timetable" >
         <PreferenceScreen
             android:icon="?attr/ic_content_timetable"
             android:summary="@string/setting_timetable_desc"

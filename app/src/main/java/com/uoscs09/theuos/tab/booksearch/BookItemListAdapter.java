@@ -18,25 +18,25 @@ import android.widget.TextView;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.uoscs09.theuos.R;
+import com.uoscs09.theuos.base.AbsArrayAdapter;
 import com.uoscs09.theuos.common.AsyncLoader;
 import com.uoscs09.theuos.common.UOSApplication;
-import com.uoscs09.theuos.common.impl.AbsArrayAdapter;
-import com.uoscs09.theuos.common.util.AppUtil;
-import com.uoscs09.theuos.common.util.StringUtil;
 import com.uoscs09.theuos.http.HttpRequest;
-import com.uoscs09.theuos.http.parse.JerichoParse;
+import com.uoscs09.theuos.http.parse.JerichoParser;
+import com.uoscs09.theuos.util.AppUtil;
+import com.uoscs09.theuos.util.StringUtil;
 
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.Source;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
 public class BookItemListAdapter extends AbsArrayAdapter<BookItem, GroupHolder> {
-    private View.OnLongClickListener ll;
-    private ImageLoader imageLoader;
+    private final View.OnLongClickListener ll;
+    private final ImageLoader imageLoader;
+    private final ParserBookInfo mParser = new ParserBookInfo();
 
     public BookItemListAdapter(Context context, int layout, List<BookItem> list, View.OnLongClickListener ll) {
         super(context, layout, list);
@@ -45,7 +45,7 @@ public class BookItemListAdapter extends AbsArrayAdapter<BookItem, GroupHolder> 
         this.ll = ll;
     }
 
-    private View.OnClickListener l = new View.OnClickListener() {
+    private final View.OnClickListener l = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             BookItem item;
@@ -97,7 +97,7 @@ public class BookItemListAdapter extends AbsArrayAdapter<BookItem, GroupHolder> 
             setBookStateLayout(holder.stateInfoLayout, item.bookStateInfoList);
 
         holder.stateInfoLayout.setVisibility(View.GONE);
-        View.OnClickListener listener =  new View.OnClickListener() {
+        View.OnClickListener listener = new View.OnClickListener() {
 
             @Override
             public void onClick(final View v) {
@@ -109,11 +109,8 @@ public class BookItemListAdapter extends AbsArrayAdapter<BookItem, GroupHolder> 
 
                         @Override
                         public List<BookStateInfo> call() throws Exception {
-                            if (item.infoUrl.equals(StringUtil.NULL)) {
-                                return null;
-                            } else {
-                                return new ParseBookInfo(HttpRequest.getBody(item.infoUrl)).parse();
-                            }
+                            return item.infoUrl.equals(StringUtil.NULL) ? null : mParser.parse(HttpRequest.getBody(item.infoUrl));
+
                         }
                     }, new AsyncLoader.OnTaskFinishedListener() {
 
@@ -213,16 +210,11 @@ public class BookItemListAdapter extends AbsArrayAdapter<BookItem, GroupHolder> 
     }
 }
 
-class ParseBookInfo extends JerichoParse<BookStateInfo> {
+class ParserBookInfo extends JerichoParser<BookStateInfo> {
     private static final String[] BOOK_STATE_XML_TAGS = {"call_no", "place_name", "book_state"};
 
-    protected ParseBookInfo(String htmlBody) {
-        super(htmlBody);
-    }
-
     @Override
-    protected ArrayList<BookStateInfo> parseHttpBody(Source source)
-            throws IOException {
+    protected ArrayList<BookStateInfo> parseHttpBody(Source source) throws Exception {
         ArrayList<BookStateInfo> bookStateInfoList = new ArrayList<>();
         List<Element> itemList = source.getAllElements("item");
         final int size = itemList.size();
@@ -259,16 +251,16 @@ class ParseBookInfo extends JerichoParse<BookStateInfo> {
 }
 
 class GroupHolder implements AbsArrayAdapter.ViewHolder, ImageLoader.ImageListener {
-    public View infoParentLayout;
-    public TextView title;
-    public TextView writer;
-    public TextView publish_year;
-    public TextView location;
-    public TextView bookState;
-    public ImageView coverImg;
-    public View ripple;
-    public View frame;
-    public LinearLayout stateInfoLayout;
+    public final View infoParentLayout;
+    public final TextView title;
+    public final TextView writer;
+    public final TextView publish_year;
+    public final TextView location;
+    public final TextView bookState;
+    public final ImageView coverImg;
+    public final View ripple;
+    public final View frame;
+    public final LinearLayout stateInfoLayout;
 
     ImageLoader.ImageContainer imageContainer;
 
@@ -277,13 +269,13 @@ class GroupHolder implements AbsArrayAdapter.ViewHolder, ImageLoader.ImageListen
 
         infoParentLayout = v.findViewById(R.id.tab_booksearch_list_info_layout);
 
-        bookState = (TextView)  infoParentLayout.findViewById(R.id.tab_booksearch_list_text_book_state);
-        location = (TextView)  infoParentLayout.findViewById(R.id.tab_booksearch_list_text_book_site);
-        title = (TextView)  infoParentLayout.findViewById(R.id.tab_booksearch_list_text_book_title);
-        publish_year = (TextView)  infoParentLayout.findViewById(R.id.tab_booksearch_list_text_book_publish_and_year);
-        writer = (TextView)  infoParentLayout.findViewById(R.id.tab_booksearch_list_text_book_writer);
+        bookState = (TextView) infoParentLayout.findViewById(R.id.tab_booksearch_list_text_book_state);
+        location = (TextView) infoParentLayout.findViewById(R.id.tab_booksearch_list_text_book_site);
+        title = (TextView) infoParentLayout.findViewById(R.id.tab_booksearch_list_text_book_title);
+        publish_year = (TextView) infoParentLayout.findViewById(R.id.tab_booksearch_list_text_book_publish_and_year);
+        writer = (TextView) infoParentLayout.findViewById(R.id.tab_booksearch_list_text_book_writer);
 
-        stateInfoLayout = (LinearLayout)  infoParentLayout.findViewById(R.id.tab_booksearch_layout_book_state);
+        stateInfoLayout = (LinearLayout) infoParentLayout.findViewById(R.id.tab_booksearch_layout_book_state);
 
         ripple = v.findViewById(R.id.ripple);
         frame = v.findViewById(R.id.frame);
@@ -304,9 +296,9 @@ class GroupHolder implements AbsArrayAdapter.ViewHolder, ImageLoader.ImageListen
 }
 
 class ChildHolder {
-    public TextView location;
-    public TextView code;
-    public TextView state;
+    public final TextView location;
+    public final TextView code;
+    public final TextView state;
 
     public ChildHolder(View v) {
         location = (TextView) v.findViewById(R.id.tab_booksearch_bookstate_location);

@@ -13,7 +13,7 @@ public class TimeTableWidget5x4 extends TimeTableWidget {
 	}
 
 	@Override
-	protected Class<? extends WidgetTimetableListService> getListServiceClass() {
+	protected Class<? extends WidgetTimeTableListService2> getListServiceClass() {
 		return Widget5x4ListService.class;
 	}
 

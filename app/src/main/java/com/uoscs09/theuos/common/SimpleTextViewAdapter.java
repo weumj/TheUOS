@@ -7,9 +7,9 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.uoscs09.theuos.common.impl.AbsArrayAdapter;
-import com.uoscs09.theuos.common.util.AppUtil;
-import com.uoscs09.theuos.common.util.AppUtil.AppTheme;
+import com.uoscs09.theuos.base.AbsArrayAdapter;
+import com.uoscs09.theuos.util.AppUtil;
+import com.uoscs09.theuos.util.AppUtil.AppTheme;
 
 import java.util.List;
 
@@ -99,7 +99,7 @@ public class SimpleTextViewAdapter extends AbsArrayAdapter<Integer, Holder> {
 
 	/** SimpleTextviewAdater의 Builder class */
 	public static class Builder {
-		private SimpleTextViewAdapter product;
+		private final SimpleTextViewAdapter product;
 
 		public Builder(Context context, int layout, List<Integer> list) {
 			this.product = new SimpleTextViewAdapter(context, layout, list);
@@ -149,7 +149,7 @@ public class SimpleTextViewAdapter extends AbsArrayAdapter<Integer, Holder> {
 	}
 }
 class Holder implements AbsArrayAdapter.ViewHolder {
-    public TextView tv;
+    public final TextView tv;
 
     public Holder(View v, int textViewId) {
         tv = (TextView) v.findViewById(textViewId);
