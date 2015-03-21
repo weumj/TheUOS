@@ -16,61 +16,60 @@ import java.lang.reflect.Field;
  * memory leak이 WebView보다 덜하다.
  */
 public class NonLeakingWebView extends WebView {
-	private static Field sConfigCallback;
-	static {
-		try {
-			sConfigCallback = Class.forName("android.webkit.BrowserFrame")
-					.getDeclaredField("sConfigCallback");
-			sConfigCallback.setAccessible(true);
-		} catch (Exception e) {
-			// ignored
-		}
-	}
+    private static Field sConfigCallback;
 
-	public NonLeakingWebView(Context context) {
-		super(context.getApplicationContext());
-		setWebViewClient(new MyWebViewClient((Activity) context));
-	}
+    static {
+        try {
+            sConfigCallback = Class.forName("android.webkit.BrowserFrame").getDeclaredField("sConfigCallback");
+            sConfigCallback.setAccessible(true);
+        } catch (Exception e) {
+            // ignored
+        }
+    }
 
-	public NonLeakingWebView(Context context, AttributeSet attrs) {
-		super(context.getApplicationContext(), attrs);
-		setWebViewClient(new MyWebViewClient((Activity) context));
-	}
+    public NonLeakingWebView(Context context) {
+        super(context.getApplicationContext());
+        setWebViewClient(new MyWebViewClient((Activity) context));
+    }
 
-	public NonLeakingWebView(Context context, AttributeSet attrs, int defStyle) {
-		super(context.getApplicationContext(), attrs, defStyle);
-		setWebViewClient(new MyWebViewClient((Activity) context));
-	}
+    public NonLeakingWebView(Context context, AttributeSet attrs) {
+        super(context.getApplicationContext(), attrs);
+        setWebViewClient(new MyWebViewClient((Activity) context));
+    }
 
-	@Override
-	public void destroy() {
-		super.destroy();
-		try {
-			if (sConfigCallback != null)
-				sConfigCallback.set(null, null);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+    public NonLeakingWebView(Context context, AttributeSet attrs, int defStyle) {
+        super(context.getApplicationContext(), attrs, defStyle);
+        setWebViewClient(new MyWebViewClient((Activity) context));
+    }
 
-	protected static class MyWebViewClient extends WebViewClient {
-		protected final WeakReference<Activity> activityRef;
+    @Override
+    public void destroy() {
+        super.destroy();
+        try {
+            if (sConfigCallback != null)
+                sConfigCallback.set(null, null);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-		public MyWebViewClient(Activity activity) {
-			this.activityRef = new WeakReference<>(activity);
-		}
+    protected static class MyWebViewClient extends WebViewClient {
+        protected final WeakReference<Activity> activityRef;
 
-		@Override
-		public boolean shouldOverrideUrlLoading(WebView view, String url) {
-			try {
-				final Activity activity = activityRef.get();
-				if (activity != null)
-					activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri
-							.parse(url)));
-			} catch (RuntimeException ignored) {
-				// ignore any url parsing exceptions
-			}
-			return true;
-		}
-	}
+        public MyWebViewClient(Activity activity) {
+            this.activityRef = new WeakReference<>(activity);
+        }
+
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            try {
+                final Activity activity = activityRef.get();
+                if (activity != null)
+                    activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+            } catch (RuntimeException ignored) {
+                // ignore any url parsing exceptions
+            }
+            return true;
+        }
+    }
 }

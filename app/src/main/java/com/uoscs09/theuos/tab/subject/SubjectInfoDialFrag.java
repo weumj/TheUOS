@@ -23,7 +23,7 @@ import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.ListViewBitmapWriteTask;
 import com.uoscs09.theuos.http.HttpRequest;
-import com.uoscs09.theuos.http.parse.ParserSubjectInfo;
+import com.uoscs09.theuos.parse.ParserSubjectInfo;
 import com.uoscs09.theuos.util.AppUtil;
 import com.uoscs09.theuos.util.OApiUtil;
 import com.uoscs09.theuos.util.OApiUtil.Semester;
@@ -40,6 +40,7 @@ import java.util.concurrent.Callable;
  * {@code Fragment.setArgument()}와 {@code Bundle.putPacelable()}<br>
  * 을 통해 수업계획서를 보여줄 SubjectItem과 학기 정보를 전달해야 한다
  */
+@Deprecated
 public class SubjectInfoDialFrag extends DialogFragment implements AsyncCallback<ArrayList<String>>, Callable<ArrayList<String>>,OnClickListener {
 	/** 교과목 객체 */
 	private SubjectItem item;

@@ -16,11 +16,10 @@ public class SeatDismissInfoListAdapter extends AbsArrayAdapter<String, Holder> 
     }
 
     @Override
-    public View setView(int position, View v, Holder holder) {
+    public void onBindViewHolder(int position, Holder holder) {
         String[] strs = getItem(position).split("\\+");
         holder.texts[0].setText(strs[0]);
         holder.texts[1].setText(strs[1]);
-        return v;
     }
 
     @Override
@@ -31,7 +30,7 @@ public class SeatDismissInfoListAdapter extends AbsArrayAdapter<String, Holder> 
 
 }
 
-class Holder implements AbsArrayAdapter.ViewHolder {
+class Holder implements AbsArrayAdapter.ViewHolderable {
     public final TextView[] texts;
 
     public Holder(View v) {

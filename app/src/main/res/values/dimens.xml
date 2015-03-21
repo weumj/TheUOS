@@ -7,4 +7,5 @@
     <dimen name="tab_home_gridview_horizontal_margin">0dp</dimen>
     <dimen name="activity_left_drawer">200dp</dimen>
 
+    <dimen name="timetable_color_icon_size">20dp</dimen>
 </resources>

@@ -19,19 +19,17 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.TabHomeFragment;
 import com.uoscs09.theuos.UosMainActivity;
-import com.uoscs09.theuos.annotaion.ReleaseWhenDestroy;
-import com.uoscs09.theuos.tab.anounce.ServiceForAnnounce;
+import com.uoscs09.theuos.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos.tab.anounce.TabAnounceFragment;
 import com.uoscs09.theuos.tab.booksearch.TabBookSearchFragment;
 import com.uoscs09.theuos.tab.emptyroom.TabSearchEmptyRoomFragment;
 import com.uoscs09.theuos.tab.libraryseat.TabLibrarySeatFragment;
 import com.uoscs09.theuos.tab.map.TabMapFragment;
-import com.uoscs09.theuos.tab.phonelist.PhoneNumberDB;
 import com.uoscs09.theuos.tab.phonelist.TabPhoneFragment;
 import com.uoscs09.theuos.tab.restaurant.TabRestaurantFragment;
 import com.uoscs09.theuos.tab.schedule.TabScheduleFragment;
 import com.uoscs09.theuos.tab.score.ScoreFragment;
-import com.uoscs09.theuos.tab.subject.TabSearchSubjectFragment;
+import com.uoscs09.theuos.tab.subject.TabSearchSubjectFragment2;
 import com.uoscs09.theuos.tab.timetable.TabTimeTableFragment2;
 import com.uoscs09.theuos.tab.transport.TabTransportFragment;
 
@@ -90,9 +88,113 @@ public class AppUtil {
         PAGE_SIZE = test ? 13 : 9;
     }
 
+
+    public static class Page {
+        public int stringId;
+        public int order;
+        public boolean isEnable;
+
+        private static final String PAGE_ORDER_ = "page_order_";
+        private static final String PAGE_ENABLE_ = "page_enable_";
+
+        Page(){}
+        Page(int order){
+            this.order = order;
+            stringId = AppUtil.getTitleResId(order);
+            isEnable = true;
+        }
+
+        static Page read(PrefUtil pref, int order) {
+            Page page = new Page();
+            page.order = pref.get(PAGE_ORDER_ + order, order);
+            page.stringId = AppUtil.getTitleResId(page.order);
+            page.isEnable = pref.get(PAGE_ENABLE_ + order, true);
+
+            return page;
+        }
+
+        void write(PrefUtil pref, int order) {
+            pref.put(PAGE_ORDER_ + order, this.order);
+            pref.put(PAGE_ENABLE_ + order, isEnable);
+        }
+
+        static void clearAll(PrefUtil pref) {
+            String[] array = new String[PAGE_SIZE];
+            String[] array2 = new String[PAGE_SIZE];
+            for (int i = 1; i < array.length; i++) {
+                array[i - 1] = PAGE_ORDER_ + i;
+                array2[i - 1] = PAGE_ENABLE_ + i;
+            }
+            pref.remove(array);
+            pref.remove(array2);
+        }
+
+        public void swap(Page another){
+            int stringId = this.stringId;
+            int order = this.order;
+            boolean isEnable = this.isEnable;
+
+            this.stringId = another.stringId;
+            this.order = another.order;
+            this.isEnable = another.isEnable;
+
+            another.stringId = stringId;
+            another.order = order;
+            another.isEnable = isEnable;
+        }
+
+        @Override
+        public String toString() {
+            return "Page : " +order + " / " + isEnable + " : " + stringId;
+        }
+    }
+
+    public static ArrayList<Page> loadDefaultOrder2(Context context) {
+        ArrayList<Page> list = new ArrayList<>();
+        PrefUtil pref = PrefUtil.getInstance(context);
+        for (int i = 1; i < PAGE_SIZE; i++) {
+            list.add(new Page(i));
+        }
+
+        return list;
+    }
+
+    public static ArrayList<Page> loadPageOrder2(Context context) {
+        ArrayList<Page> list = new ArrayList<>();
+        PrefUtil pref = PrefUtil.getInstance(context);
+        for (int i = 1; i < PAGE_SIZE; i++) {
+            list.add(Page.read(pref, i));
+        }
+
+        return list;
+    }
+
+    public static ArrayList<Integer> loadEnabledPageOrder(Context context) {
+        PrefUtil pref = PrefUtil.getInstance(context);
+        ArrayList<Integer> tabList = new ArrayList<>();
+        for (int i = 1; i < PAGE_SIZE; i++) {
+            Page page = Page.read(pref, i);
+
+            if (page.isEnable)
+                tabList.add(page.stringId);
+        }
+
+        return tabList;
+    }
+
+    public static void savePageOrder2(ArrayList<Page> list, Context context) {
+        PrefUtil pref = PrefUtil.getInstance(context);
+        int size = list.size();
+        for (int i = 0; i < size; i++) {
+            list.get(i).write(pref, i + 1);
+        }
+
+    }
+
     /**
      * 저장된 탭 순서를 불러옴
      */
+    @Deprecated
     public static ArrayList<Integer> loadPageOrder(Context context) {
         PrefUtil pref = PrefUtil.getInstance(context);
         ArrayList<Integer> tabList = new ArrayList<>();
@@ -105,7 +207,6 @@ public class AppUtil {
         return tabList;
     }
 
-    // TODO page의 순서 뿐만 아니라 사용 여부도 결정할 수 있게 하는것을 구현
     private static int[] getPages() {
         return new int[]{
                 R.string.title_tab_announce, /* 공지사항 */
@@ -121,9 +222,11 @@ public class AppUtil {
                 R.string.title_tab_score /* 수업평가 */};
     }
 
+
     /**
      * 기본 탭 순서를 불러옴
      */
+    @Deprecated
     public static ArrayList<Integer> loadDefaultPageOrder() {
         ArrayList<Integer> list = new ArrayList<>();
         int[] pages = getPages();
@@ -216,6 +319,7 @@ public class AppUtil {
     /**
      * page 순서를 저장한다.
      */
+    @Deprecated
     public static void savePageOrder(List<Integer> list, Context context) {
         PrefUtil pref = PrefUtil.getInstance(context);
         String PAGE = "page";
@@ -309,7 +413,7 @@ public class AppUtil {
                 return -1;
         }
 
-        return getStyledValue(context, iconId);
+        return getAttrValue(context, iconId);
     }
 
     public static int getPageIconForMenu(Context context, int pageStringResId) {
@@ -366,7 +470,7 @@ public class AppUtil {
                 return -1;
         }
 
-        return getStyledValue(context, iconId);
+        return getAttrValue(context, iconId);
     }
 
     private static int getPageIconGray(int id) {
@@ -452,9 +556,8 @@ public class AppUtil {
      *
      * @param attrId 가져올 값의 Id
      * @return 현재 테마에서 정의한 해당 값의 id
-     * @since 2.31
      */
-    public static int getStyledValue(Context context, int attrId) {
+    public static int getAttrValue(Context context, int attrId) {
         TypedValue out = new TypedValue();
         context.getTheme().resolveAttribute(attrId, out, true);
 
@@ -511,7 +614,7 @@ public class AppUtil {
                 return TabSearchEmptyRoomFragment.class;
 
             case R.string.title_tab_search_subject:
-                return TabSearchSubjectFragment.class;
+                return TabSearchSubjectFragment2.class;
 
             case R.string.title_tab_schedule:
                 return TabScheduleFragment.class;
@@ -555,7 +658,7 @@ public class AppUtil {
         else if (fragmentClass.equals(TabSearchEmptyRoomFragment.class))
             return R.string.title_tab_search_empty_room;
 
-        else if (fragmentClass.equals(TabSearchSubjectFragment.class))
+        else if (fragmentClass.equals(TabSearchSubjectFragment2.class))
             return R.string.title_tab_search_subject;
 
         else if (fragmentClass.equals(TabScheduleFragment.class))
@@ -622,13 +725,14 @@ public class AppUtil {
      */
     public static boolean startOrStopServiceAnounce(Context context) {
         boolean isServiceEnable = PrefUtil.getInstance(context).get(context.getString(R.string.pref_key_check_anounce_service), true);
-        Intent service = new Intent(context, ServiceForAnnounce.class);
+        /*Intent service = new Intent(context, ServiceForAnnounce.class);
 
         if (isServiceEnable) {
             context.startService(service);
         } else {
             context.stopService(service);
         }
+        */
         return isServiceEnable;
     }
 
@@ -688,8 +792,10 @@ public class AppUtil {
      * 열려진 DB를 모두 닫는다.
      */
     public static void closeAllDatabase(Context context) {
+        /*
         if (PhoneNumberDB.isOpen())
             PhoneNumberDB.getInstance(context).close();
+            */
     }
 
     /**
@@ -826,16 +932,19 @@ public class AppUtil {
      */
     public static void unbindDrawables(View view) {
         view.destroyDrawingCache();
+
         if (view.getBackground() != null) {
             view.getBackground().setCallback(null);
         }
+
         if (view instanceof ViewGroup) {
             for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
                 unbindDrawables(((ViewGroup) view).getChildAt(i));
             }
-            if (view instanceof AdapterView
-                    || view instanceof AdapterViewCompat)
+
+            if (view instanceof AdapterView || view instanceof AdapterViewCompat)
                 return;
+
             ((ViewGroup) view).removeAllViews();
         }
     }
@@ -849,8 +958,8 @@ public class AppUtil {
      * {@code false} - 그 외
      */
     public static boolean isScreenSizeSmall(Context context) {
-        int sizeInfoMasked = context.getResources().getConfiguration().screenLayout
-                & Configuration.SCREENLAYOUT_SIZE_MASK;
+        int sizeInfoMasked = context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
+
         switch (sizeInfoMasked) {
             case Configuration.SCREENLAYOUT_SIZE_NORMAL:
             case Configuration.SCREENLAYOUT_SIZE_SMALL:

@@ -24,13 +24,12 @@ public class PhoneListAdapter extends AbsArrayAdapter<PhoneItem, Holder> {
     }
 
     @Override
-    public View setView(int position, View convertView, Holder holder) {
+    public void onBindViewHolder(int position, Holder holder) {
         PhoneItem item = getItem(position);
         holder.siteView.setText(item.siteName);
         holder.phoneView.setText(item.sitePhoneNumber);
         holder.imgButton.setOnClickListener(l);
         holder.imgButton.setTag(item);
-        return convertView;
     }
 
     @Override
@@ -86,7 +85,7 @@ public class PhoneListAdapter extends AbsArrayAdapter<PhoneItem, Holder> {
 
 }
 
-class Holder implements AbsArrayAdapter.ViewHolder {
+class Holder implements AbsArrayAdapter.ViewHolderable {
     public final TextView siteView;
     public final TextView phoneView;
     public final ImageButton imgButton;

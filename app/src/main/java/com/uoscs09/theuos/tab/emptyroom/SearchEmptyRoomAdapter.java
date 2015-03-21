@@ -9,25 +9,21 @@ import com.uoscs09.theuos.base.AbsArrayAdapter;
 
 import java.util.List;
 
-public class SearchEmptyRoomAdapter extends AbsArrayAdapter<ClassRoomItem, Holder> {
+public class SearchEmptyRoomAdapter extends AbsArrayAdapter<ClassRoomItem, SearchEmptyRoomAdapter.Holder> {
 
-    public SearchEmptyRoomAdapter(Context context, int layout, List<ClassRoomItem> list) {
-        super(context, layout, list);
+    public SearchEmptyRoomAdapter(Context context, List<ClassRoomItem> list) {
+        super(context, R.layout.list_layout_empty_room,  list);
     }
 
     @Override
-    public View setView(int position, View convertView, Holder holder) {
+    public void onBindViewHolder(int position, Holder holder) {
         ClassRoomItem item = getItem(position);
-        int px = (getContext().getResources().getDisplayMetrics().widthPixels) / 4;
 
-        int i = 0;
+        holder.building.setText(item.building);
+        holder.room_no.setText(item.room_no);
+        holder.room_div.setText(item.room_div);
+        holder.person_cnt.setText(Integer.toString(item.person_cnt));
 
-        for (TextView v : holder.array) {
-            v.setText(item.array[i++]);
-            v.setWidth(px);
-        }
-
-        return convertView;
     }
 
     @Override
@@ -35,19 +31,16 @@ public class SearchEmptyRoomAdapter extends AbsArrayAdapter<ClassRoomItem, Holde
         return new Holder(v);
     }
 
-}
+    static class Holder implements AbsArrayAdapter.ViewHolderable {
+        public final TextView building, room_no, room_div, person_cnt;
 
-class Holder implements AbsArrayAdapter.ViewHolder {
-    public final TextView[] array = new TextView[4];
-
-    public Holder(View convertView) {
-        array[0] = (TextView) convertView
-                .findViewById(R.id.etc_search_empty_room_list_text_name);
-        array[1] = (TextView) convertView
-                .findViewById(R.id.etc_search_empty_room_list_text_room_no);
-        array[2] = (TextView) convertView
-                .findViewById(R.id.etc_search_empty_room_list_text_subj);
-        array[3] = (TextView) convertView
-                .findViewById(R.id.etc_search_empty_room_list_text_person);
+        public Holder(View convertView) {
+            building = (TextView) convertView.findViewById(R.id.etc_search_empty_room_list_text_name);
+            room_no = (TextView) convertView.findViewById(R.id.etc_search_empty_room_list_text_room_no);
+            room_div = (TextView) convertView.findViewById(R.id.etc_search_empty_room_list_text_subj);
+            person_cnt = (TextView) convertView.findViewById(R.id.etc_search_empty_room_list_text_person);
+        }
     }
 }
+
+

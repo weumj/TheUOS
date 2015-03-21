@@ -17,7 +17,7 @@ import android.widget.TextView;
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.base.AbsProgressFragment;
 import com.uoscs09.theuos.http.HttpRequest;
-import com.uoscs09.theuos.http.parse.ParseSchedule;
+import com.uoscs09.theuos.parse.ParseSchedule;
 import com.uoscs09.theuos.util.OApiUtil;
 import com.uoscs09.theuos.util.StringUtil;
 

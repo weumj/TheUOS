@@ -91,7 +91,7 @@
         android:id="@+id/list_subject_text_tlsn_limit"
         android:layout_width="0dp"
         android:layout_height="fill_parent"
-        android:layout_weight="2"
+        android:layout_weight="20"
         android:gravity="center"
         android:padding="4dp" />
 

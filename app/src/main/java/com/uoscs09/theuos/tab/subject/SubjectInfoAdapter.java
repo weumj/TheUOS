@@ -9,7 +9,8 @@ import com.uoscs09.theuos.base.AbsArrayAdapter;
 
 import java.util.List;
 
-public class SubjectInfoAdapter extends AbsArrayAdapter<String, SubjectInfoHolder> {
+@Deprecated
+public class SubjectInfoAdapter extends AbsArrayAdapter<String, SubjectInfoAdapter.SubjectInfoHolder> {
     private final String[] array;
 
     public SubjectInfoAdapter(Context context, int layout, List<String> list) {
@@ -18,11 +19,10 @@ public class SubjectInfoAdapter extends AbsArrayAdapter<String, SubjectInfoHolde
     }
 
     @Override
-    public View setView(int position, View convertView, SubjectInfoHolder holder) {
+    public void onBindViewHolder(int position, SubjectInfoHolder holder) {
 
         holder.title.setText(getTitleByIndex(position));
         holder.content.setText(getItem(position));
-        return convertView;
     }
 
     @Override
@@ -40,14 +40,15 @@ public class SubjectInfoAdapter extends AbsArrayAdapter<String, SubjectInfoHolde
             return array[index];
         }
     }
-}
 
-class SubjectInfoHolder implements AbsArrayAdapter.ViewHolder {
-    public final TextView title;
-    public final TextView content;
+    public static class SubjectInfoHolder implements AbsArrayAdapter.ViewHolderable {
+        public final TextView title;
+        public final TextView content;
 
-    public SubjectInfoHolder(View v) {
-        title = (TextView) v.findViewById(R.id.list_subject_info_text_title);
-        content = (TextView) v.findViewById(R.id.list_subject_info_text_contents);
+        public SubjectInfoHolder(View v) {
+            title = (TextView) v.findViewById(R.id.list_subject_info_text_title);
+            content = (TextView) v.findViewById(R.id.list_subject_info_text_contents);
+        }
     }
 }
+

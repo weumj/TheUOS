@@ -19,7 +19,8 @@
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_marginRight="24dp"
-        android:background="?selector_button"
+        android:backgroundTintMode="add"
+        android:backgroundTint="?colorPrimary"
         android:gravity="center"
-        android:textColor="?attr/colorAccent" />
+        android:textColor="?color_actionbar_title" />
 </RelativeLayout>

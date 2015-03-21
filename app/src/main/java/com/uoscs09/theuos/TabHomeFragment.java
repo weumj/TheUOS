@@ -1,6 +1,5 @@
 package com.uoscs09.theuos;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -15,7 +14,7 @@ import android.widget.ListView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.nhaarman.listviewanimations.appearance.simple.SwingBottomInAnimationAdapter;
-import com.uoscs09.theuos.annotaion.ReleaseWhenDestroy;
+import com.uoscs09.theuos.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos.base.BaseFragment;
 import com.uoscs09.theuos.common.SimpleTextViewAdapter;
 import com.uoscs09.theuos.common.SimpleTextViewAdapter.DrawblePosition;
@@ -28,27 +27,17 @@ public class TabHomeFragment extends BaseFragment implements OnItemClickListener
     @ReleaseWhenDestroy
     private ArrayAdapter<Integer> adapter;
     @ReleaseWhenDestroy
-    protected PagerInterface pl;
-    @ReleaseWhenDestroy
     protected AlertDialog etcDialog;
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        if (activity instanceof PagerInterface) {
-            pl = (PagerInterface) activity;
-        } else {
-            pl = null;
-        }
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Context context = getActivity();
-        List<Integer> list = AppUtil.loadPageOrder(context);
-        if (AppUtil.isScreenSizeSmall(getActivity())) {
+        List<Integer> list = AppUtil.loadEnabledPageOrder(context);
+        if (AppUtil.isScreenSizeSmall(getActivity()) && list.size() > 8) {
             initDialog(context);
+
             list = list.subList(0, 7);
             list.add(R.string.title_section_etc);
         }
@@ -64,10 +53,9 @@ public class TabHomeFragment extends BaseFragment implements OnItemClickListener
     }
 
     private void initDialog(Context context) {
-        List<Integer> list = AppUtil.loadPageOrder(context);
+        List<Integer> list = AppUtil.loadEnabledPageOrder(context);
         list = list.subList(7, list.size());
-        AppTheme theme = AppUtil.theme == AppTheme.BlackAndWhite ? AppTheme.White
-                : AppUtil.theme;
+        AppTheme theme = AppUtil.theme == AppTheme.BlackAndWhite ? AppTheme.White : AppUtil.theme;
 
         View v = View.inflate(context, R.layout.dialog_home_etc, null);
         ListView listView = (ListView) v.findViewById(R.id.dialog_home_listview);
@@ -81,8 +69,7 @@ public class TabHomeFragment extends BaseFragment implements OnItemClickListener
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 etcDialog.dismiss();
-                int item = (Integer) parent.getItemAtPosition(position);
-                pl.sendCommand(PagerInterface.Type.PAGE, item);
+                ((UosMainActivity) getActivity()).navigateItem(position + 8, false);
             }
         });
 
@@ -102,22 +89,7 @@ public class TabHomeFragment extends BaseFragment implements OnItemClickListener
         SwingBottomInAnimationAdapter animatorAdapter = new SwingBottomInAnimationAdapter(adapter);
         animatorAdapter.setAbsListView(gridView);
 
-        if (AppUtil.isScreenSizeSmall(getActivity())) {
-            gridView.setOnItemClickListener(this);
-
-        } else {
-
-            gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    if (position == parent.getAdapter().getCount() - 1)
-                        pl.sendCommand(PagerInterface.Type.SETTING, null);
-                    else
-                        pl.sendCommand(PagerInterface.Type.PAGE, parent.getItemAtPosition(position));
-                }
-            });
-        }
-
+        gridView.setOnItemClickListener(this);
         gridView.setAdapter(animatorAdapter);
 
         return v;
@@ -125,20 +97,21 @@ public class TabHomeFragment extends BaseFragment implements OnItemClickListener
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View v, int pos, long id) {
-        if (pl != null) {
-            switch (pos) {
-                case 8:
-                    pl.sendCommand(PagerInterface.Type.SETTING, null);
-                    break;
+        int size = adapterView.getCount() - 1;
 
-                case 7:
-                    etcDialog.show();
-                    break;
+        if (pos == size) {
+            ((UosMainActivity) getActivity()).startSettingActivity();
 
-                default:
-                    pl.sendCommand(PagerInterface.Type.PAGE, adapterView.getItemAtPosition(pos));
-                    break;
-            }
+        } else if (pos == size - 1) {
+
+            if (etcDialog == null)
+                ((UosMainActivity) getActivity()).navigateItem(pos + 1, false);
+            else
+                etcDialog.show();
+
+        } else {
+            ((UosMainActivity) getActivity()).navigateItem(pos + 1, false);
         }
+
     }
 }

@@ -14,130 +14,127 @@ import android.util.DisplayMetrics;
  */
 public class PieProgressDrawable extends Drawable {
 
-	final Paint mPaint;
-	final Paint mCentorPaint;
-	RectF mBoundsF;
-	RectF mInnerBoundsF;
-	final float START_ANGLE = 0.f;
-	float mDrawTo;
+    final Paint mPaint;
+    final Paint mCentorPaint;
+    RectF mBoundsF;
+    RectF mInnerBoundsF;
+    final float START_ANGLE = 0.f;
+    float mDrawTo;
 
-	CharSequence mText;
-	final Paint mTextPaint;
+    CharSequence mText;
+    final Paint mTextPaint;
 
-	public PieProgressDrawable() {
-		super();
-		mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		mCentorPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		mCentorPaint.setStyle(Paint.Style.FILL);
-		mCentorPaint.setColor(Color.TRANSPARENT);
-		mTextPaint = new Paint(mPaint);
-		mTextPaint.setColor(Color.BLACK);
-	}
+    public PieProgressDrawable() {
+        super();
+        mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mCentorPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mCentorPaint.setStyle(Paint.Style.FILL);
+        mCentorPaint.setColor(Color.TRANSPARENT);
+        mTextPaint = new Paint(mPaint);
+        mTextPaint.setColor(Color.BLACK);
+    }
 
-	public void setText(CharSequence text) {
-		mText = text;
-	}
+    public void setText(CharSequence text) {
+        mText = text;
+    }
 
-	public CharSequence getText() {
-		return mText;
-	}
+    public CharSequence getText() {
+        return mText;
+    }
 
-	public void setTextSize(float size) {
-		mTextPaint.setTextSize(size);
-	}
+    public void setTextSize(float size) {
+        mTextPaint.setTextSize(size);
+    }
 
-	/**
-	 * Set the border width.
-	 * 
-	 * @param widthDp
-	 *            in dip for the pie border
-	 */
-	public void setBorderWidth(float widthDp, DisplayMetrics dm) {
-		float borderWidth = widthDp * dm.density;
-		mPaint.setStrokeWidth(borderWidth);
-	}
+    /**
+     * Set the border width.
+     *
+     * @param widthDp in dip for the pie border
+     */
+    public void setBorderWidth(float widthDp, DisplayMetrics dm) {
+        float borderWidth = widthDp * dm.density;
+        mPaint.setStrokeWidth(borderWidth);
+    }
 
-	/**
-	 * @param color
-	 *            you want the pie to be drawn in
-	 */
-	public void setColor(int color) {
-		mPaint.setColor(color);
-	}
+    /**
+     * @param color you want the pie to be drawn in
+     */
+    public void setColor(int color) {
+        mPaint.setColor(color);
+    }
 
-	public void setTextColor(int color) {
-		mTextPaint.setColor(color);
-	}
+    public void setTextColor(int color) {
+        mTextPaint.setColor(color);
+    }
 
-	@Override
-	public void draw(Canvas canvas) {
-		int level = getLevel();
+    @Override
+    public void draw(Canvas canvas) {
+        int level = getLevel();
 
-		canvas.rotate(-90f, getBounds().centerX(), getBounds().centerY());
-		if (level != 0) {
-			mPaint.setStyle(Paint.Style.STROKE);
-			canvas.drawArc(mBoundsF, START_ANGLE, mDrawTo, true, mPaint);
-			mPaint.setStyle(Paint.Style.FILL);
-			canvas.drawArc(mInnerBoundsF, START_ANGLE, mDrawTo, true, mPaint);
-		}
-		if (level != 100) {
-			int color = mPaint.getColor();
-			mPaint.setColor(Color.parseColor("#6cafdb"));
-			mPaint.setStyle(Paint.Style.STROKE);
-			canvas.drawArc(mBoundsF, mDrawTo, 360f - mDrawTo, true, mPaint);
-			mPaint.setStyle(Paint.Style.FILL);
-			canvas.drawArc(mInnerBoundsF, mDrawTo, 360f - mDrawTo, true, mPaint);
-			mPaint.setColor(color);
-		}
+        canvas.rotate(-90f, getBounds().centerX(), getBounds().centerY());
+        if (level != 0) {
+            mPaint.setStyle(Paint.Style.STROKE);
+            canvas.drawArc(mBoundsF, START_ANGLE, mDrawTo, true, mPaint);
+            mPaint.setStyle(Paint.Style.FILL);
+            canvas.drawArc(mInnerBoundsF, START_ANGLE, mDrawTo, true, mPaint);
+        }
 
-		canvas.drawCircle(mInnerBoundsF.centerX(), mInnerBoundsF.centerY(),
-				mInnerBoundsF.width() / 5 * 2, mCentorPaint);
+        if (level != 100) {
 
-		canvas.rotate(90f, getBounds().centerX(), getBounds().centerY());
+            int color = mPaint.getColor();
+            mPaint.setColor(Color.parseColor("#6cafdb"));
+            mPaint.setStyle(Paint.Style.STROKE);
+            canvas.drawArc(mBoundsF, mDrawTo, 360f - mDrawTo, true, mPaint);
 
-		if (mText != null && !mText.equals("")) {
-			Rect bounds = new Rect();
-			mTextPaint.getTextBounds(mText.toString(), 0, mText.length(),
-					bounds);
-			canvas.drawText(mText, 0, mText.length(), getBounds().centerX()
-					- bounds.centerX(),
-					getBounds().centerY() - bounds.centerY(), mTextPaint);
-		}
-	}
+            mPaint.setStyle(Paint.Style.FILL);
+            canvas.drawArc(mInnerBoundsF, mDrawTo, 360f - mDrawTo, true, mPaint);
+            mPaint.setColor(color);
+        }
 
-	@Override
-	protected void onBoundsChange(Rect bounds) {
-		super.onBoundsChange(bounds);
-		mBoundsF = mInnerBoundsF = new RectF(bounds);
-		final int halfBorder = (int) (mPaint.getStrokeWidth() / 2f + 0.5f);
-		mInnerBoundsF.inset(halfBorder, halfBorder);
-	}
+        canvas.drawCircle(mInnerBoundsF.centerX(), mInnerBoundsF.centerY(), mInnerBoundsF.width() / 5 * 2, mCentorPaint);
 
-	@Override
-	protected boolean onLevelChange(int level) {
-		final float drawTo = START_ANGLE + ((float) 360 * level) / 100f;
-		boolean update = drawTo != mDrawTo;
-		mDrawTo = drawTo;
-		return update;
-	}
+        canvas.rotate(90f, getBounds().centerX(), getBounds().centerY());
 
-	@Override
-	public void setAlpha(int alpha) {
-		mPaint.setAlpha(alpha);
-		mTextPaint.setAlpha(alpha);
-	}
+        if (mText != null && !mText.equals("")) {
+            Rect bounds = new Rect();
+            mTextPaint.getTextBounds(mText.toString(), 0, mText.length(), bounds);
+            canvas.drawText(mText, 0, mText.length(), getBounds().centerX() - bounds.centerX(), getBounds().centerY() - bounds.centerY(), mTextPaint);
+        }
+    }
 
-	@Override
-	public void setColorFilter(ColorFilter cf) {
-		mPaint.setColorFilter(cf);
-	}
+    @Override
+    protected void onBoundsChange(Rect bounds) {
+        super.onBoundsChange(bounds);
+        mBoundsF = mInnerBoundsF = new RectF(bounds);
+        final int halfBorder = (int) (mPaint.getStrokeWidth() / 2f + 0.5f);
+        mInnerBoundsF.inset(halfBorder, halfBorder);
+    }
 
-	@Override
-	public int getOpacity() {
-		return mPaint.getAlpha();
-	}
+    @Override
+    protected boolean onLevelChange(int level) {
+        final float drawTo = START_ANGLE + ((float) 360 * level) / 100f;
+        boolean update = drawTo != mDrawTo;
+        mDrawTo = drawTo;
+        return update;
+    }
 
-	public void setCentorColor(int color) {
-		mCentorPaint.setColor(color);
-	}
+    @Override
+    public void setAlpha(int alpha) {
+        mPaint.setAlpha(alpha);
+        mTextPaint.setAlpha(alpha);
+    }
+
+    @Override
+    public void setColorFilter(ColorFilter cf) {
+        mPaint.setColorFilter(cf);
+    }
+
+    @Override
+    public int getOpacity() {
+        return mPaint.getAlpha();
+    }
+
+    public void setCentorColor(int color) {
+        mCentorPaint.setColor(color);
+    }
 }

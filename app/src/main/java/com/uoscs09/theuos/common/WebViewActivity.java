@@ -8,7 +8,7 @@ import android.webkit.WebSettings;
 import android.widget.LinearLayout;
 
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.annotaion.ReleaseWhenDestroy;
+import com.uoscs09.theuos.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos.base.BaseActivity;
 import com.uoscs09.theuos.util.AppUtil;
 

@@ -18,11 +18,11 @@ import android.widget.ListView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.annotaion.AsyncData;
-import com.uoscs09.theuos.annotaion.ReleaseWhenDestroy;
+import com.uoscs09.theuos.annotation.AsyncData;
+import com.uoscs09.theuos.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos.base.AbsAsyncFragment;
 import com.uoscs09.theuos.http.HttpRequest;
-import com.uoscs09.theuos.http.parse.ParserSeat;
+import com.uoscs09.theuos.parse.ParserSeat;
 import com.uoscs09.theuos.util.AppUtil;
 import com.uoscs09.theuos.util.PrefUtil;
 import com.uoscs09.theuos.util.StringUtil;
@@ -132,11 +132,10 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_layout);
         mSwipeRefreshLayout.setColorSchemeResources(
-                AppUtil.getStyledValue(getActivity(), R.attr.color_actionbar_title),
-                AppUtil.getStyledValue(getActivity(), R.attr.colorAccent),
-                AppUtil.getStyledValue(getActivity(), R.attr.colorPrimaryDark)
+                AppUtil.getAttrValue(getActivity(), R.attr.color_actionbar_title),
+                AppUtil.getAttrValue(getActivity(), R.attr.colorAccent)
         );
-        mSwipeRefreshLayout.setProgressBackgroundColorSchemeResource(AppUtil.getStyledValue(getActivity(), R.attr.colorPrimary));
+        mSwipeRefreshLayout.setProgressBackgroundColorSchemeResource(AppUtil.getAttrValue(getActivity(), R.attr.colorPrimary));
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {

@@ -39,9 +39,11 @@ public class SettingsAnnounceNotificationFragment extends PreferenceFragment imp
             case R.string.setting_check_announce_service:
                 AppUtil.startOrStopServiceAnounce(getActivity());
                 return true;
+
             case R.string.setting_noti_time:
                 showTimePicker();
                 return true;
+
             case R.string.announce_keyword:
                 //if (!isNotiKeywordDialogSetting) {
                 //	EditTextPreference prefKeyword = (EditTextPreference) preference;
@@ -50,6 +52,7 @@ public class SettingsAnnounceNotificationFragment extends PreferenceFragment imp
                 //	isNotiKeywordDialogSetting = true;
                 //}
                 return false;
+
             default:
                 return false;
         }
@@ -72,6 +75,7 @@ public class SettingsAnnounceNotificationFragment extends PreferenceFragment imp
     private void bindPreferenceSummaryToValue() {
         SharedPreferences pref = getPreferenceScreen().getSharedPreferences();
         pref.registerOnSharedPreferenceChangeListener(this);
+
         String[] keys = {PrefUtil.KEY_KEYWORD_ANOUNCE, PrefUtil.KEY_CHECK_ANOUNCE_SERVICE, PrefUtil.KEY_NOTI_TIME};
         for (String key : keys) {
             onSharedPreferenceChanged(pref, key);
@@ -83,21 +87,24 @@ public class SettingsAnnounceNotificationFragment extends PreferenceFragment imp
         switch (key) {
             case PrefUtil.KEY_KEYWORD_ANOUNCE: {
                 Preference connectionPref = findPreference(key);
+
                 String desc = sharedPreferences.getString(key, StringUtil.NULL);
                 if (desc.trim().equals(StringUtil.NULL)) {
-                    connectionPref
-                            .setSummary(R.string.setting_announce_keyword_desc);
+                    connectionPref.setSummary(R.string.setting_announce_keyword_desc);
                 } else {
-                    connectionPref.setSummary(sharedPreferences.getString(key,
-                            StringUtil.NULL) + "\n가(이) 포함된 공지사항을 검색합니다.");
+                    connectionPref.setSummary(sharedPreferences.getString(key, StringUtil.NULL) + "\n가(이) 포함된 공지사항을 검색합니다.");
                 }
-                break;
+
             }
+            break;
+
 
             case PrefUtil.KEY_NOTI_TIME: {
                 Preference connectionPref = findPreference(key);
+                
                 int hour = sharedPreferences.getInt(StringUtil.STR_HOUR, -1);
                 int min = sharedPreferences.getInt(StringUtil.STR_MIN, -1);
+
                 if (hour == -1 && min == -1) {
                     connectionPref.setSummary(R.string.setting_noti_time_desc);
                 } else {
@@ -109,25 +116,24 @@ public class SettingsAnnounceNotificationFragment extends PreferenceFragment imp
                         if (hour != 12)
                             hour -= 12;
                     }
-                    String text = am_pm + String.valueOf(hour) + "시 "
-                            + String.valueOf(min) + "분에 알려줍니다.";
+                    String text = am_pm + String.valueOf(hour) + "시 " + String.valueOf(min) + "분에 알려줍니다.";
                     connectionPref.setSummary(text);
                     AppUtil.startOrStopServiceAnounce(getActivity());
                 }
-                break;
+
             }
+            break;
+
 
             case PrefUtil.KEY_CHECK_ANOUNCE_SERVICE: {
-                Preference connectionPref = findPreference(key);
-                if (sharedPreferences.getBoolean(key, false)) {
-                    connectionPref.setSummary(R.string.setting_check_announce_service_desc_enable);
-                } else {
-                    connectionPref.setSummary(R.string.setting_check_announce_service_desc_disable);
-                }
+
+                findPreference(key).setSummary(sharedPreferences.getBoolean(key, false) ? R.string.setting_check_announce_service_desc_enable : R.string.setting_check_announce_service_desc_disable);
 
                 AppUtil.startOrStopServiceAnounce(getActivity());
-                break;
+
             }
+            break;
+
 
         }
     }

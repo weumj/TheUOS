@@ -16,7 +16,7 @@ import android.util.Log;
 
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.http.HttpRequest;
-import com.uoscs09.theuos.http.parse.ParseAnnounce;
+import com.uoscs09.theuos.parse.ParseAnnounce;
 import com.uoscs09.theuos.util.AppUtil;
 import com.uoscs09.theuos.util.PrefUtil;
 import com.uoscs09.theuos.util.StringUtil;

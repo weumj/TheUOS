@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fragment_course_plan_title"
+    android:layout_width="fill_parent"
+    android:orientation="vertical"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/fragment_course_plan_subject_name"
+            android:layout_width="wrap_content"
+            android:textIsSelectable="true"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:gravity="center_vertical"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="10dp"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/fragment_course_plan_subject_code"
+            android:layout_width="wrap_content"
+            android:gravity="center_vertical"
+            android:textIsSelectable="true"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:minHeight="40dp"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="60dp"
+            android:gravity="center_vertical"
+            android:layout_gravity="center_vertical"
+            android:textSize="16sp"
+            android:layout_height="wrap_content"
+            android:text="@string/tab_course_plan_prof" />
+
+        <TextView
+            android:id="@+id/fragment_course_plan_prof_name"
+            android:layout_width="wrap_content"
+            android:paddingLeft="10dp"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical"
+            android:textIsSelectable="true"
+            android:layout_height="fill_parent" />
+
+        <TextView
+            android:id="@+id/fragment_course_plan_prof_tel"
+            android:layout_width="wrap_content"
+            android:paddingLeft="6dp"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical"
+            android:textIsSelectable="true"
+            android:layout_height="fill_parent" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:minHeight="40dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="60dp"
+            android:gravity="center_vertical"
+            android:textSize="16sp"
+            android:layout_gravity="center_vertical"
+            android:layout_height="fill_parent"
+            android:text="@string/tab_course_plan_eval" />
+
+        <TextView
+            android:id="@+id/fragment_course_plan_eval"
+            android:layout_width="wrap_content"
+            android:textIsSelectable="true"
+            android:paddingLeft="10dp"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical"
+            android:layout_height="fill_parent" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_marginTop="4dp"
+        android:minHeight="40dp"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="60dp"
+            android:gravity="center_vertical"
+            android:layout_gravity="center_vertical"
+            android:layout_height="fill_parent"
+            android:textSize="16sp"
+            android:text="@string/tab_course_plan_book" />
+
+        <TextView
+            android:id="@+id/fragment_course_plan_book"
+            android:layout_width="wrap_content"
+            android:textIsSelectable="true"
+            android:layout_gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:gravity="center_vertical"
+            android:layout_height="fill_parent" />
+    </LinearLayout>
+</LinearLayout>

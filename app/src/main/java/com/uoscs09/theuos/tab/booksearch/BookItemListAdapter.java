@@ -22,7 +22,7 @@ import com.uoscs09.theuos.base.AbsArrayAdapter;
 import com.uoscs09.theuos.common.AsyncLoader;
 import com.uoscs09.theuos.common.UOSApplication;
 import com.uoscs09.theuos.http.HttpRequest;
-import com.uoscs09.theuos.http.parse.JerichoParser;
+import com.uoscs09.theuos.parse.JerichoParser;
 import com.uoscs09.theuos.util.AppUtil;
 import com.uoscs09.theuos.util.StringUtil;
 
@@ -70,7 +70,7 @@ public class BookItemListAdapter extends AbsArrayAdapter<BookItem, GroupHolder> 
     };
 
     @Override
-    public View setView(int position, final View convertView, final GroupHolder holder) {
+    public void onBindViewHolder(int position, final GroupHolder holder) {
         final BookItem item = getItem(position);
 
         if (holder.imageContainer != null)
@@ -135,10 +135,9 @@ public class BookItemListAdapter extends AbsArrayAdapter<BookItem, GroupHolder> 
             }
         };
 
-        convertView.setOnClickListener(listener);
+        holder.itemView.setOnClickListener(listener);
         holder.ripple.setOnClickListener(listener);
         holder.frame.setOnClickListener(listener);
-        return convertView;
     }
 
     void setBookStateLayout(LinearLayout layout, List<BookStateInfo> list) {
@@ -250,7 +249,8 @@ class ParserBookInfo extends JerichoParser<BookStateInfo> {
     }
 }
 
-class GroupHolder implements AbsArrayAdapter.ViewHolder, ImageLoader.ImageListener {
+class GroupHolder extends AbsArrayAdapter.ViewHolder implements ImageLoader.ImageListener {
+
     public final View infoParentLayout;
     public final TextView title;
     public final TextView writer;
@@ -265,6 +265,7 @@ class GroupHolder implements AbsArrayAdapter.ViewHolder, ImageLoader.ImageListen
     ImageLoader.ImageContainer imageContainer;
 
     public GroupHolder(View v) {
+        super(v);
         coverImg = (ImageView) v.findViewById(R.id.tab_booksearch_list_image_book_image);
 
         infoParentLayout = v.findViewById(R.id.tab_booksearch_list_info_layout);

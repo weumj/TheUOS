@@ -1,7 +1,9 @@
 package com.uoscs09.theuos.tab.libraryseat;
 
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
@@ -26,7 +28,7 @@ public class SeatListAdapter extends RecyclerView.Adapter<SeatListAdapter.ViewHo
         this.mDataSet = list;
         this.mContext = context;
         this.mInflater = LayoutInflater.from(context);
-        textColor = context.getResources().getColor(AppUtil.getStyledValue(mContext, R.attr.colorAccent));
+        textColor = context.getResources().getColor(AppUtil.getAttrValue(mContext, R.attr.colorAccent));
     }
 
     @Override
@@ -77,7 +79,7 @@ public class SeatListAdapter extends RecyclerView.Adapter<SeatListAdapter.ViewHo
             progressImg = (TextView) convertView.findViewById(R.id.tab_libray_seat_list_progress_img);
             drawable.setTextSize(15 * dm.scaledDensity);
             drawable.setColor(context.getResources().getColor(R.color.gray_red));
-            drawable.setCentorColor(context.getResources().getColor(AppUtil.getStyledValue(context, R.attr.cardBackgroundColor)));
+            drawable.setCentorColor(context.getResources().getColor(AppUtil.getAttrValue(context, R.attr.cardBackgroundColor)));
             progressImg.setBackgroundDrawable(drawable);
         }
 
@@ -86,7 +88,12 @@ public class SeatListAdapter extends RecyclerView.Adapter<SeatListAdapter.ViewHo
             Context context = itemView.getContext();
             Intent intent = new Intent(context, SubSeatWebActivity.class);
             intent.putExtra(TabLibrarySeatFragment.ITEM, (Parcelable) item);
-            context.startActivity(intent);
+
+            if(Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
+                context.startActivity(intent, ActivityOptions.makeScaleUpAnimation(v, 0, 0, v.getWidth(), v.getHeight()).toBundle());
+            } else{
+                context.startActivity(intent);
+            }
         }
     }
 

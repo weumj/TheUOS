@@ -23,6 +23,7 @@
             android:summary="@string/setting_home_desc"
             android:title="@string/setting_home" />
     </PreferenceCategory>
+    <!--
     <PreferenceCategory android:title="@string/title_tab_announce" >
         <PreferenceScreen
             android:icon="?attr/ic_collections_view_as_list"
@@ -30,6 +31,7 @@
             android:title="@string/setting_announce_noti" >
         </PreferenceScreen>
     </PreferenceCategory>
+    -->
     <PreferenceCategory android:title="@string/title_tab_book_search" >
         <CheckBoxPreference
             android:icon="?attr/ic_book"
@@ -79,11 +81,13 @@
             android:summary="@string/setting_app_version_desc"
             android:title="@string/setting_app_version" >
         </PreferenceScreen>
+        <!--
         <PreferenceScreen
             android:icon="?attr/ic_action_search"
             android:summary="@string/setting_app_version_update_desc"
             android:title="@string/setting_app_version_update" >
         </PreferenceScreen>
+        -->
     </PreferenceCategory>
 
 </PreferenceScreen>

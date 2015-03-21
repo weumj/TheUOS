@@ -1,8 +1,9 @@
 package com.uoscs09.theuos.tab.timetable;
 
 
-import com.uoscs09.theuos.tab.subject.SubjectItem;
-
+import com.uoscs09.theuos.annotation.KeepName;
+import com.uoscs09.theuos.tab.subject.SubjectItem2;
+@KeepName
 public class SubjectInfoItem {
 
     public String subject_no;
@@ -13,16 +14,21 @@ public class SubjectInfoItem {
     public String dept;
     public String prof_nm;
 
-    public SubjectItem toSubjectItem() {
-        SubjectItem item = new SubjectItem();
-        item.infoArray[0] = dept;
-        item.infoArray[1] = subject_div;
-        item.infoArray[4] = class_div;
-        item.infoArray[3] = subject_no;
-        item.infoArray[5] = subject_nm;
-        item.infoArray[7] = Integer.toString(credit);
-        item.infoArray[8] = prof_nm;
+    public SubjectItem2 toSubjectItem(TimeTable timeTable) {
+        SubjectItem2 item = new SubjectItem2();
+        item.subject_no = subject_no;
+        item.subject_nm = subject_nm;
+        item.subject_div = subject_div;
+        item.class_div = class_div;
+        item.credit = credit;
+        item.sub_dept = dept;
+        item.prof_nm = prof_nm;
+        item.term = timeTable.semesterCode.code;
+        item.year = Integer.toString(timeTable.year);
+        item.setInfoArray();
 
         return item;
+
     }
+
 }

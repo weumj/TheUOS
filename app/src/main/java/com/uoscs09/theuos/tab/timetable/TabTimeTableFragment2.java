@@ -6,6 +6,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.method.TextKeyListener;
 import android.view.LayoutInflater;
@@ -24,16 +25,15 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.gc.materialdesign.widgets.ColorSelector;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.annotaion.AsyncData;
-import com.uoscs09.theuos.annotaion.ReleaseWhenDestroy;
+import com.uoscs09.theuos.annotation.AsyncData;
+import com.uoscs09.theuos.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos.base.AbsProgressFragment;
 import com.uoscs09.theuos.common.AsyncLoader;
 import com.uoscs09.theuos.common.AsyncLoader.OnTaskFinishedListener;
 import com.uoscs09.theuos.common.ListViewBitmapWriteTask;
 import com.uoscs09.theuos.http.TimeTableHttpRequest;
-import com.uoscs09.theuos.http.parse.ParseTimeTable2;
+import com.uoscs09.theuos.parse.ParseTimeTable2;
 import com.uoscs09.theuos.util.AppUtil;
-import com.uoscs09.theuos.util.GraphicUtil;
 import com.uoscs09.theuos.util.IOUtil;
 import com.uoscs09.theuos.util.OApiUtil;
 import com.uoscs09.theuos.util.OApiUtil.Semester;
@@ -42,10 +42,10 @@ import com.uoscs09.theuos.util.StringUtil;
 
 import org.apache.http.client.ClientProtocolException;
 
-import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implements View.OnClickListener, TimeTableAdapter2.OnItemClickListener, ColorSelector.OnColorSelectedListener {
@@ -72,9 +72,8 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
     private TimeTable mTimeTable;
     private TimeTableAdapter2 mTimeTableAdapter2;
 
-    String mTermText;
     private boolean mIsOnLoad;
-    private Hashtable<String, Integer> colorTable;
+    private Hashtable<String, Integer> colorTable = new Hashtable<>();
     @ReleaseWhenDestroy
     private View emptyView;
 
@@ -86,11 +85,11 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
     public void onCreate(Bundle savedInstanceState) {
         Context context = getActivity();
         if (savedInstanceState != null) {
-            colorTable = (Hashtable<String, Integer>) savedInstanceState.getSerializable("color");
+            colorTable.putAll((Map<String, Integer>) savedInstanceState.getSerializable("color"));
             mTimeTable = savedInstanceState.getParcelable(IOUtil.FILE_TIMETABLE);
 
         } else {
-            colorTable = new Hashtable<>();
+
             mTimeTable = new TimeTable();
 
         }
@@ -100,9 +99,11 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
 
         initDialog();
 
-        if (mTimeTable.semesterCode != null)
-            setTermTextViewText(context);
         super.onCreate(savedInstanceState);
+
+        if (mTimeTable.semesterCode != null)
+            setTermTextViewText(mTimeTable);
+
 
         mToolBarParent = (ViewGroup) getActivity().findViewById(R.id.toolbar_parent);
         mTabParent = (LinearLayout) LayoutInflater.from(getActivity()).inflate(R.layout.view_tab_timetable_toolbar_menu, mToolBarParent, false);
@@ -222,11 +223,15 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
             mIsOnLoad = true;
             execute();
         }
+
+        if(getUserVisibleHint()){
+            addOrRemoveTabMenu(true);
+        }
         super.onResume();
     }
 
     @Override
-    public void onItemClick(TimeTableAdapter2.ViewHolder vh, View v, Subject subject) {
+    public void onItemClick(TimeTableViewHolder vh, View v, Subject subject) {
         if (subject.isEqualsTo(Subject.EMPTY))
             return;
 
@@ -319,14 +324,11 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
         mTimeTable.copyFrom(result);
         mTimeTableAdapter2.notifyDataSetChanged();
 
-        setTermTextViewText(context);
+        setTermTextViewText(mTimeTable);
     }
 
-    private void setTermTextViewText(Context context) {
-        mTermText = mTimeTable.year
-                + " / "
-                + context.getResources().getStringArray(R.array.terms)[mTimeTable.semesterCode.ordinal()];
-        setSubtitleWhenVisible(mTermText);
+    private void setTermTextViewText(@NonNull TimeTable timeTable) {
+        setSubtitleWhenVisible(timeTable.getYearAndSemester());
     }
 
     @Override
@@ -510,7 +512,10 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
                             public void onTaskFinished(boolean isExceptionOccurred, Object data) {
                                 boolean result = (Boolean) data;
                                 if (!isExceptionOccurred && result) {
+
                                     mTimeTableAdapter2.clear();
+
+                                    mTimeTable.copyFrom(new TimeTable());
                                     mTimeTableAdapter2.notifyDataSetChanged();
 
                                     Context context = getActivity();
@@ -518,7 +523,7 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
 
                                     //TimeTableInfoCallback.clearAllAlarm(context);
 
-                                    mTermText = StringUtil.NULL;
+                                    setSubtitleWhenVisible(null);
 
                                 } else {
                                     AppUtil.showToast(getActivity(), R.string.file_not_found, isMenuVisible());
@@ -533,7 +538,10 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
 
     @Override
     protected CharSequence getSubtitle() {
-        return mTermText;
+        if (mTimeTable != null)
+            return mTimeTable.getYearAndSemester();
+        else
+            return null;
     }
 
     @Override
@@ -541,12 +549,10 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
         mTimeTableAdapter2.notifyDataSetChanged();
     }
 
-    private static class TimeTableImageSaveTask extends ListViewBitmapWriteTask {
-        private WeakReference<View> titleViewRef;
+    private static class TimeTableImageSaveTask extends ListViewBitmapWriteTask.TitleListViewBitmapWriteTask {
 
         public TimeTableImageSaveTask(String fileName, ListView listView, View titleView) {
-            super(fileName, listView);
-            titleViewRef = new WeakReference<>(titleView);
+            super(fileName, listView, titleView);
         }
 
         @Override
@@ -557,30 +563,8 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
                 e.printStackTrace();
             }
 
-            Bitmap capture = null, titleBitmap = null, bitmap;
-            View title = null;
-            try {
-                capture = super.getBitmap();
-                title = titleViewRef.get();
+            return super.getBitmap();
 
-                title.setDrawingCacheEnabled(true);
-                title.buildDrawingCache(true);
-                titleBitmap = title.getDrawingCache(true);
-                if (titleBitmap == null)
-                    titleBitmap = GraphicUtil.createBitmapFromView(title);
-                bitmap = GraphicUtil.merge(titleBitmap, capture);
-
-                return bitmap;
-            } finally {
-                if (capture != null)
-                    capture.recycle();
-                if (titleBitmap != null)
-                    titleBitmap.recycle();
-                if (title != null) {
-                    title.destroyDrawingCache();
-                    title.setDrawingCacheEnabled(false);
-                }
-            }
         }
     }
 }

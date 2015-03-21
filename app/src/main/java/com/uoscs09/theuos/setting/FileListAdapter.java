@@ -21,7 +21,7 @@ public class FileListAdapter extends AbsArrayAdapter<File, Holder> {
 	}
 
 	@Override
-	public View setView(int position, View convertView, Holder holder) {
+	public void onBindViewHolder(int position, Holder holder) {
 		File file = getItem(position);
 		holder.tv.setText(file.getName());
 		/*
@@ -48,7 +48,6 @@ public class FileListAdapter extends AbsArrayAdapter<File, Holder> {
 		drawable = context.getResources().getDrawable(res);
 		drawable.setBounds(0, 0, width, height);
 		h.tv.setCompoundDrawables(drawable, null, null, null);*/
-		return convertView;
 	}
 
 	@Override
@@ -59,7 +58,7 @@ public class FileListAdapter extends AbsArrayAdapter<File, Holder> {
 }
 
 
-class Holder implements AbsArrayAdapter.ViewHolder {
+class Holder implements AbsArrayAdapter.ViewHolderable {
     public final TextView tv;
 
     public Holder(View v) {

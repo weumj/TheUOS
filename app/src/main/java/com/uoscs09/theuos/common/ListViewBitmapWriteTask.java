@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.view.View;
 import android.widget.ListView;
 
 import com.javacan.asyncexcute.AsyncCallback;
@@ -95,4 +96,42 @@ public class ListViewBitmapWriteTask implements Callable<String>,
 		cancel();
 	}
 
+
+    public static class TitleListViewBitmapWriteTask extends ListViewBitmapWriteTask{
+        private final WeakReference<View> viewRef;
+        public TitleListViewBitmapWriteTask(String fileName, ListView listView, View title) {
+            super(fileName, listView);
+            viewRef = new WeakReference<>(title);
+        }
+
+        @Override
+        public Bitmap getBitmap() {
+            Bitmap capture = null, titleBitmap = null, bitmap;
+            View title = null;
+            try {
+                capture = super.getBitmap();
+                title = viewRef.get();
+
+                title.setDrawingCacheEnabled(true);
+                title.buildDrawingCache(true);
+                titleBitmap = title.getDrawingCache(true);
+                if (titleBitmap == null)
+                    titleBitmap = GraphicUtil.createBitmapFromView(title);
+                bitmap = GraphicUtil.merge(titleBitmap, capture);
+
+                return bitmap;
+            } finally {
+                if (capture != null)
+                    capture.recycle();
+                if (titleBitmap != null)
+                    titleBitmap.recycle();
+                if (title != null) {
+                    title.destroyDrawingCache();
+                    title.setDrawingCacheEnabled(false);
+                }
+            }
+        }
+
+
+    }
 }

@@ -56,19 +56,20 @@ public abstract class WidgetTimeTableListService2 extends RemoteViewsService {
                 R.id.widget_time_table_list_thr_sub,
                 R.id.widget_time_table_list_fri_sub};
 
-        private String[] periodTimeArray, buildingNames;
+        private String[] periodTimeArray;
 
         public ListRemoteViewsFactory(Context applicationContext, Intent intent) {
             super(applicationContext);
             this.mAppWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
             periodTimeArray = applicationContext.getResources().getStringArray(R.array.tab_timetable_timelist_only_time);
-            buildingNames = applicationContext.getResources().getStringArray(R.array.building_names_univ);
+
             getData();
         }
 
         @Override
         public int getCount() {
-            return PrefUtil.getInstance(getContext()).get(PrefUtil.KEY_TIMETABLE_LIMIT, false) ? mTimeTable.maxTime : super.getCount();
+            return PrefUtil.getInstance(getContext()).get(PrefUtil.KEY_TIMETABLE_LIMIT, false) ?
+                    mTimeTable != null? mTimeTable.maxTime : 0 : super.getCount();
         }
 
         @Override
@@ -120,9 +121,8 @@ public abstract class WidgetTimeTableListService2 extends RemoteViewsService {
                         views.setTextViewText(id, subject.subjectNameEng);
                     }
 
-                    int buildingCode = subject.buildingCode - 1;
-                    if (buildingCode > -1 && buildingNames.length > buildingCode)
-                        views.setTextViewText(subId, buildingNames[buildingCode] + StringUtil.NEW_LINE + subject.building);
+                    if (subject.univBuilding != null)
+                        views.setTextViewText(subId, subject.univBuilding.getLocaleName() + StringUtil.NEW_LINE + subject.building);
                     else
                         views.setTextViewText(subId, StringUtil.NULL);
                 }

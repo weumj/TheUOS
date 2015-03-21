@@ -1,9 +1,11 @@
 package com.uoscs09.theuos.tab.anounce;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
@@ -23,11 +25,11 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.annotaion.AsyncData;
-import com.uoscs09.theuos.annotaion.ReleaseWhenDestroy;
+import com.uoscs09.theuos.annotation.AsyncData;
+import com.uoscs09.theuos.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos.base.AbsProgressFragment;
 import com.uoscs09.theuos.http.HttpRequest;
-import com.uoscs09.theuos.http.parse.ParseAnnounce;
+import com.uoscs09.theuos.parse.ParseAnnounce;
 import com.uoscs09.theuos.util.AppUtil;
 import com.uoscs09.theuos.util.StringUtil;
 
@@ -157,7 +159,7 @@ public class TabAnounceFragment extends AbsProgressFragment<ArrayList<AnnounceIt
         mListView.setOnItemClickListener(mListViewOnItemClickListener);
         mListView.setAdapter(adapter);
 
-        registerProgressView(inflater.inflate(R.layout.view_loading_layout, container, false));
+        registerProgressView(rootView.findViewById(R.id.progress_layout));
 
         return rootView;
     }
@@ -214,6 +216,13 @@ public class TabAnounceFragment extends AbsProgressFragment<ArrayList<AnnounceIt
         super.onCreateOptionsMenu(menu, inflater);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (getUserVisibleHint()) {
+            addOrRemoveTabMenu(true);
+        }
+    }
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
@@ -242,16 +251,19 @@ public class TabAnounceFragment extends AbsProgressFragment<ArrayList<AnnounceIt
      */
     private final AdapterView.OnItemClickListener mListViewOnItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int pos,
-                                long itemId) {
+        public void onItemClick(AdapterView<?> adapterView, View view, int pos,  long itemId) {
             if (!isMenuVisible() || spinnerSelection == 0)
                 return;
             Activity activity = getActivity();
             Intent intent = new Intent(activity, SubAnounceWebActivity.class);
             intent.putExtra(LIST_AN, ((AnnounceItem) adapterView.getItemAtPosition(pos)).onClickString);
             intent.putExtra(PAGE_NUM, spinnerSelection);
-            startActivity(intent);
-            AppUtil.overridePendingTransition(activity, 1);
+
+            if(Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
+                getActivity().startActivity(intent, ActivityOptions.makeScaleUpAnimation(view, 0, 0, view.getWidth(), view.getHeight()).toBundle());
+            } else{
+                startActivity(intent);
+            }
         }
     };
 
@@ -317,8 +329,7 @@ public class TabAnounceFragment extends AbsProgressFragment<ArrayList<AnnounceIt
 
     @Override
     protected void execute() {
-        if (mToolBarParent != null)
-            mToolBarParent.addView(getProgressView());
+        mEmptyView.setVisibility(View.INVISIBLE);
 
         super.execute();
     }
@@ -359,13 +370,6 @@ public class TabAnounceFragment extends AbsProgressFragment<ArrayList<AnnounceIt
     }
 
     @Override
-    protected void onTransactPostExecute() {
-        super.onTransactPostExecute();
-        if (mToolBarParent != null)
-            mToolBarParent.removeView(getProgressView());
-    }
-
-    @Override
     public void onTransactResult(ArrayList<AnnounceItem> result) {
         if (result == null || result.size() == 0) {
             pageNum = prevPageNum;
@@ -380,8 +384,12 @@ public class TabAnounceFragment extends AbsProgressFragment<ArrayList<AnnounceIt
             if (mShouldChangeMaxValueOfPage) {
                 final int size = result.size();
                 for (int i = 0; i < size; i++) {
+                    AnnounceItem item = result.get(i);
+                    if(item.type.equals("공지"))
+                        continue;
+
                     try {
-                        int maxPageNumber = Integer.parseInt(result.get(i).type);
+                        int maxPageNumber = Integer.parseInt(item.type);
                         mPageNumberPicker.setMaxValue(maxPageNumber / 10 + 1);
                         break;
                     } catch (Exception e) {

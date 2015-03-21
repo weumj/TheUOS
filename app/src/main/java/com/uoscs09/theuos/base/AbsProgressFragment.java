@@ -4,13 +4,14 @@ import android.view.View;
 
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.annotaion.ReleaseWhenDestroy;
+import com.uoscs09.theuos.annotation.ReleaseWhenDestroy;
 
 public abstract class AbsProgressFragment<T> extends AbsAsyncFragment<T> {
     @ReleaseWhenDestroy
     private View mProgressLayout;
     @ReleaseWhenDestroy
     private ProgressWheel mProgressWheel;
+
 
     protected void registerProgressView(View progressView) {
         this.mProgressLayout = progressView;

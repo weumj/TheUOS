@@ -3,28 +3,36 @@ package com.uoscs09.theuos.tab.emptyroom;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.uoscs09.theuos.annotation.KeepName;
+
 import java.util.Comparator;
-import java.util.List;
 
+@KeepName
 public class ClassRoomItem implements Parcelable {
-    public String[] array = new String[4];
 
-    public ClassRoomItem(String building, String roomNo, String type, String availablePerson) {
-        array[0] = building;
-        array[1] = roomNo;
-        array[2] = type;
-        array[3] = availablePerson;
-    }
+    public int person_cnt;
 
-    public ClassRoomItem(List<String> list) {
-        int i = 0;
-        for (String s : list) {
-            array[i++] = s;
-        }
+    public String room_no = "";
+
+    public String room_div = "";
+
+    public String visual_yn = "";
+
+    public String building = "";
+
+    public int assign_time;
+
+
+    public ClassRoomItem() {
     }
 
     protected ClassRoomItem(Parcel p) {
-        p.readStringArray(array);
+        person_cnt = p.readInt();
+        room_no = p.readString();
+        room_div = p.readString();
+        visual_yn = p.readString();
+        building = p.readString();
+        assign_time = p.readInt();
     }
 
     @Override
@@ -34,7 +42,12 @@ public class ClassRoomItem implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeStringArray(array);
+        dest.writeInt(person_cnt);
+        dest.writeString(room_no);
+        dest.writeString(room_div);
+        dest.writeString(visual_yn);
+        dest.writeString(building);
+        dest.writeInt(assign_time);
     }
 
     public static final Parcelable.Creator<ClassRoomItem> CREATOR = new Parcelable.Creator<ClassRoomItem>() {
@@ -57,45 +70,55 @@ public class ClassRoomItem implements Parcelable {
      * @param field - 정렬 주체가 될 문자열 필드<br>
      */
     public static Comparator<ClassRoomItem> getComparator(final int field, final boolean isReverse) {
-        if (field > -1 && field < 3) {
-            return new Comparator<ClassRoomItem>() {
 
-                @Override
-                public int compare(ClassRoomItem lhs, ClassRoomItem rhs) {
-                    if (isReverse) {
-                        return -(lhs.array[field].compareTo(rhs.array[field]));
-                    } else {
-                        return lhs.array[field].compareTo(rhs.array[field]);
-                    }
-                }
-            };
-        } else if (field == 3) {
-            return new Comparator<ClassRoomItem>() {
+        switch (field) {
+            case 0:
+            case 1:
+            case 2:
 
-                @Override
-                public int compare(ClassRoomItem lhs, ClassRoomItem rhs) {
-                    int l;
-                    try {
-                        l = Integer.valueOf(lhs.array[field]);
-                    } catch (NumberFormatException e) {
-                        l = Integer.MAX_VALUE;
-                    }
-                    int r;
-                    try {
-                        r = Integer.valueOf(rhs.array[field]);
-                    } catch (NumberFormatException e) {
-                        r = Integer.MAX_VALUE;
-                    }
-                    if (isReverse) {
-                        return r - l;
-                    } else {
-                        return l - r;
-                    }
+                return new Comparator<ClassRoomItem>() {
 
-                }
-            };
-        } else {
-            return null;
+                    @Override
+                    public int compare(ClassRoomItem lhs, ClassRoomItem rhs) {
+                        String l, r;
+                        switch (field) {
+                            case 0:
+                                l = lhs.building;
+                                r = rhs.building;
+                                break;
+
+                            case 1:
+                                l = lhs.room_no;
+                                r = rhs.room_no;
+                                break;
+
+                            case 2:
+                                l = lhs.room_div;
+                                r = rhs.room_div;
+                                break;
+
+                            default:
+                                return 0;
+                        }
+
+                        return isReverse ? -(l.compareTo(r)) : l.compareTo(r);
+                    }
+                };
+
+            case 3:
+
+                return new Comparator<ClassRoomItem>() {
+                    @Override
+                    public int compare(ClassRoomItem lhs, ClassRoomItem rhs) {
+                        int result = lhs.person_cnt < rhs.person_cnt ? -1 : (lhs.person_cnt == rhs.person_cnt ? 0 : 1);
+                        return isReverse ? -result : result;
+                    }
+                };
+
+            default:
+                return null;
+
         }
+
     }
 }

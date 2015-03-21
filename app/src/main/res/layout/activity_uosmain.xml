@@ -1,38 +1,37 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <include layout="@layout/view_toolbar" />
-
-    <FrameLayout
+    <android.support.v4.widget.DrawerLayout
+        android:id="@+id/activity_uos_drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.v4.widget.DrawerLayout
-            android:id="@+id/activity_uos_drawer_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:fitsSystemWindows="true"
+            android:orientation="vertical">
 
-            <android.support.v4.view.ViewPager
-                android:id="@+id/activity_pager_viewpager"
+            <include layout="@layout/view_toolbar" />
+
+            <FrameLayout
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_weight="1" />
+                android:layout_height="wrap_content">
 
-            <ListView
-                android:id="@+id/activity_uos_left_drawer"
-                android:layout_width="240dp"
-                android:layout_height="match_parent"
-                android:layout_gravity="start"
-                android:background="?attr/colorPrimaryDark"
-                android:choiceMode="singleChoice"
-                android:divider="@null"
-                android:dividerHeight="0dp"
-                android:scrollbars="none" />
-        </android.support.v4.widget.DrawerLayout>
+                <android.support.v4.view.ViewPager
+                    android:id="@+id/activity_pager_viewpager"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent" />
 
-        <include layout="@layout/view_toolbar_shadow" />
-    </FrameLayout>
+                <include layout="@layout/view_toolbar_shadow" />
+            </FrameLayout>
+        </LinearLayout>
 
-</LinearLayout>
+        <include
+            layout="@layout/view_left_drawer"
+            android:layout_width="300dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="start" />
+
+    </android.support.v4.widget.DrawerLayout>
+
+</merge>

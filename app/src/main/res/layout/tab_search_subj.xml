@@ -18,6 +18,7 @@
             <LinearLayout
                 android:id="@+id/tab_search_subject_head_layout"
                 android:layout_width="fill_parent"
+                android:minWidth="1000dp"
                 android:layout_height="wrap_content"
                 android:divider="?attr/colorPrimaryDark"
                 android:dividerPadding="1dp"
@@ -140,6 +141,7 @@
             <ListView
                 android:id="@+id/tab_search_subject_list_view"
                 android:layout_width="fill_parent"
+                android:minWidth="1000dp"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tab_search_subject_head_layout"
                 android:clipToPadding="false"
@@ -148,7 +150,7 @@
                 android:paddingRight="10dp"
                 android:paddingTop="2dp"
                 android:scrollbarStyle="outsideOverlay"
-                android:scrollingCache="true"/>
+                android:scrollingCache="true" />
 
             <RelativeLayout
                 android:id="@+id/tab_search_subject_empty_view"

@@ -1,16 +1,17 @@
 package com.uoscs09.theuos.tab.timetable;
 
 
+import android.app.ActivityOptions;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -26,10 +27,10 @@ import com.uoscs09.theuos.base.AbsArrayAdapter;
 import com.uoscs09.theuos.common.AsyncLoader;
 import com.uoscs09.theuos.common.PieProgressDrawable;
 import com.uoscs09.theuos.http.HttpRequest;
-import com.uoscs09.theuos.http.parse.ParseSubjectList2;
+import com.uoscs09.theuos.parse.ParseSubjectList2;
 import com.uoscs09.theuos.tab.map.SubMapActivity;
-import com.uoscs09.theuos.tab.subject.SubjectInfoDialFrag;
-import com.uoscs09.theuos.tab.subject.SubjectItem;
+import com.uoscs09.theuos.tab.subject.CoursePlanDialogFragment;
+import com.uoscs09.theuos.tab.subject.SubjectItem2;
 import com.uoscs09.theuos.util.AppUtil;
 import com.uoscs09.theuos.util.OApiUtil;
 import com.uoscs09.theuos.util.StringUtil;
@@ -51,6 +52,8 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
     private Subject mSubject;
     private TimeTable mTimeTable;
 
+    private CoursePlanDialogFragment mCoursePlanDialogFragment = new CoursePlanDialogFragment();
+
     private PieProgressDrawable pieProgressDrawable = new PieProgressDrawable();
 
     @Nullable
@@ -60,7 +63,7 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
     public SubjectDetailDialogFragment() {
         params = new Hashtable<>();
         params.put(OApiUtil.API_KEY, OApiUtil.UOS_API_KEY);
-        pieProgressDrawable.setBounds(0, 0, 60, 60);
+
         pieProgressDrawable.setLevel(100);
     }
 
@@ -88,7 +91,7 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
         super.onResume();
 
         if (mSubject != null) {
-            int color = getActivity().getResources().getColor(AppUtil.getStyledValue(getActivity(), R.attr.colorPrimary));
+            int color = getActivity().getResources().getColor(AppUtil.getAttrValue(getActivity(), R.attr.colorPrimary));
             if (colorTable != null) {
                 Integer idx = colorTable.get(mSubject.subjectName);
                 if (idx != null)
@@ -105,7 +108,7 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return new MaterialDialog.Builder(getActivity())
-                .customView(createView(), false)
+                .customView(createView(), true)
                 .build();
     }
 
@@ -118,6 +121,9 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
         view.findViewById(R.id.dialog_timetable_button_info).setOnClickListener(this);
         view.findViewById(R.id.dialog_timetable_button_color).setOnClickListener(this);
 
+        int size = getResources().getDimensionPixelSize(R.dimen.timetable_color_icon_size);
+        pieProgressDrawable.setBounds(0, 0, size, size);
+
         mTimeTableDialogTitle = (TextView) view.findViewById(R.id.dialog_timetable_title);
         mTimeTableDialogTitle.setCompoundDrawables(pieProgressDrawable, null, null, null);
         mTimeTableDialogTitle.setCompoundDrawablePadding(40);
@@ -126,6 +132,7 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
         Spinner spinner = (Spinner) view.findViewById(R.id.timetable_callback_alarm_spinner);
 
         spinner.setOnItemSelectedListener(this);
+
 
         if (AppUtil.test) {
             spinner.setVisibility(View.VISIBLE);
@@ -143,7 +150,7 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
 
     @Override
     public void onColorSelected(int i) {
-       // AppUtil.showToast(getActivity(), "" + i);
+        // AppUtil.showToast(getActivity(), "" + i);
 
         if (mSubject != null && colorTable != null) {
             Integer idx = colorTable.get(mSubject.subjectName);
@@ -165,7 +172,7 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
                 break;
 
             case R.id.dialog_timetable_button_map:
-                showMap();
+                showMap(v);
                 break;
 
             case R.id.dialog_timetable_button_color:
@@ -188,12 +195,19 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
         colorSelector.show();
     }
 
-    private void showMap() {
+    private void showMap(View v) {
 
-        if (mSubject != null && mSubject.buildingCode > 0) {
+        if (mSubject != null && mSubject.univBuilding.code > 0) {
             Intent intent = new Intent(getActivity(), SubMapActivity.class);
-            intent.putExtra("building", mSubject.buildingCode);
-            startActivity(intent);
+            intent.putExtra("building", mSubject.univBuilding.code);
+            dismiss();
+
+            if(Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
+                getActivity().startActivity(intent, ActivityOptions.makeScaleUpAnimation(v, 0, 0, v.getWidth(), v.getHeight()).toBundle());
+            } else{
+                startActivity(intent);
+            }
+
 
         } else {
             AppUtil.showToast(getActivity(), R.string.tab_timetable_no_subject);
@@ -231,13 +245,18 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
         divListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapter, View arg1, int pos, long arg3) {
-                SubjectItem item = mClassDivSelectAdapter.getItem(pos).toSubjectItem();
-
-                showDialFrag(getFragmentManager(), item);
+                showCoursePlan(mClassDivSelectAdapter.getItem(pos).toSubjectItem(mTimeTable));
 
                 mClassDivSelectDialog.dismiss();
             }
         });
+    }
+
+    void showCoursePlan(SubjectItem2 subject) {
+        if (!mCoursePlanDialogFragment.isAdded()) {
+            mCoursePlanDialogFragment.setSubjectItem(subject);
+            mCoursePlanDialogFragment.show(getFragmentManager(), "course");
+        }
     }
 
     private final AsyncCallback<ArrayList<SubjectInfoItem>> CALLBACK = new AsyncCallback<ArrayList<SubjectInfoItem>>() {
@@ -249,7 +268,7 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
                 dismiss();
 
             } else if (size == 1) {
-                showDialFrag(getFragmentManager(), result.get(0).toSubjectItem());
+                showCoursePlan(result.get(0).toSubjectItem(mTimeTable));
                 dismiss();
 
             } else {
@@ -307,10 +326,6 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
 
     }
 
-    protected void showDialFrag(FragmentManager fm, SubjectItem item) {
-        SubjectInfoDialFrag.showDialog(fm, item, getActivity(), mTimeTable.semesterCode.ordinal(), Integer.toString(mTimeTable.year));
-    }
-
 
     private static class ClassDivAdapter extends AbsArrayAdapter<SubjectInfoItem, ViewHolder> {
 
@@ -319,9 +334,8 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
         }
 
         @Override
-        public View setView(int position, View convertView, SubjectDetailDialogFragment.ViewHolder holder) {
+        public void onBindViewHolder(int position, SubjectDetailDialogFragment.ViewHolder holder) {
             holder.textView.setText(getItem(position).class_div);
-            return convertView;
         }
 
         @Override
@@ -330,7 +344,7 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
         }
     }
 
-    private static class ViewHolder implements AbsArrayAdapter.ViewHolder {
+    private static class ViewHolder implements AbsArrayAdapter.ViewHolderable {
         public final TextView textView;
 
         public ViewHolder(View v) {

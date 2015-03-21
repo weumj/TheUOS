@@ -92,8 +92,7 @@ public class PrefUtil {
     }
 
     private PrefUtil(Context context) {
-        this.pref = PreferenceManager.getDefaultSharedPreferences(context
-                .getApplicationContext());
+        this.pref = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
     }
 
     @Override

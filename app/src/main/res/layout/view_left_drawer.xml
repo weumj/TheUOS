@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/left_drawer"
+    android:background="?cardBackgroundColor"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/drawer_top_image"
+        android:contentDescription="@null"
+        android:layout_width="fill_parent"
+        android:layout_height="160dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/univ_img_main_gate" />
+
+    <LinearLayout
+        android:id="@+id/drawer_bottom"
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:baselineAligned="false"
+        android:orientation="horizontal">
+
+        <com.balysv.materialripple.MaterialRippleLayout
+            android:id="@+id/drawer_setting_ripple"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:gravity="center"
+            android:layout_height="fill_parent"
+            android:paddingLeft="20dp"
+            app:mrl_rippleInAdapter="false"
+            app:mrl_rippleColor="?colorPrimaryDark">
+
+            <TextView
+                android:id="@+id/drawer_setting"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:gravity="center_vertical"
+                android:drawablePadding="10dp"
+                android:text="@string/setting"
+                android:drawableLeft="?ic_action_settings" />
+        </com.balysv.materialripple.MaterialRippleLayout>
+
+
+        <com.balysv.materialripple.MaterialRippleLayout
+            android:id="@+id/drawer_exit_ripple"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            app:mrl_rippleInAdapter="false"
+            app:mrl_rippleColor="?colorPrimaryDark">
+
+            <TextView
+                android:id="@+id/drawer_exit"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:drawablePadding="10dp"
+                android:gravity="center_vertical"
+                android:text="@string/action_exit"
+                android:visibility="gone"
+                android:drawableLeft="?ic_content_remove" />
+        </com.balysv.materialripple.MaterialRippleLayout>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_above="@id/drawer_bottom"
+        android:background="?colorAccent" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/drawer_listview"
+        android:layout_width="fill_parent"
+        android:layout_below="@id/drawer_top_image"
+        android:layout_above="@id/drawer_bottom"
+        android:layout_marginBottom="1dp"
+        android:layout_height="wrap_content" />
+
+</RelativeLayout>

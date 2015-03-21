@@ -46,20 +46,18 @@
 -keep class android.support.** { *; }
 -keep interface android.support.** { *; }
 
-# material theme for dialog  
--keep class android.app.Dialog
+-keep class com.uoscs09.theuos.annotation.**
 
--keep class com.uoscs09.theuos.annotaion.**
+-keepclassmembernames  @com.uoscs09.theuos.annotation.KeepName class * {
+     *;
+}
 
 # Library Jars
--libraryjars libs/listviewanimations_lib-manipulation_3.1.0.jar
--libraryjars libs/listviewanimations_lib-core_3.1.0.jar
--libraryjars libs/jericho-html-3.3.jar
--libraryjars libs/nineoldandroids-2.4.0.jar
--libraryjars libs/universal-image-loader-1.9.3.jar
--libraryjars libs/asyncexcutor.jar
+#-libraryjars libs/jericho-html-3.3.jar
+#-libraryjars libs/asyncexcutor.jar
 
 -keepattributes SourceFile,LineNumberTable
 
+-dontwarn com.haarman.listviewanimations.**
 -dontwarn net.htmlparser.jericho.**
 -dontwarn com.google.android.gms.**

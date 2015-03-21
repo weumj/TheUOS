@@ -9,12 +9,15 @@ import com.uoscs09.theuos.util.OApiUtil;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class TimeTable implements Parcelable, Serializable {
     private static final long serialVersionUID = 5134424815398243634L;
 
     public OApiUtil.Semester semesterCode;
     public StudentInfo studentInfoKor, studentInfoEng;
+    public static final int SUBJECT_AMOUNT_PER_WEEK = 6;
+
     /**
      * period - day
      */
@@ -28,7 +31,7 @@ public class TimeTable implements Parcelable, Serializable {
 
     public TimeTable(int size) {
         for (int i = 0; i < size; i++) {
-            subjects.add(new Subject[6]);
+            subjects.add(new Subject[SUBJECT_AMOUNT_PER_WEEK]);
         }
     }
 
@@ -43,7 +46,17 @@ public class TimeTable implements Parcelable, Serializable {
         return true;
     }
 
-    public void setMaxTime(){
+    public String getYearAndSemester() {
+        if (semesterCode == null)
+            return null;
+
+        if (Locale.getDefault().equals(Locale.KOREA))
+            return year + " / " + semesterCode.nameKor;
+        else
+            return semesterCode.nameEng + " / " + year;
+    }
+
+    public void setMaxTime() {
         maxTime = calculateLastExistPeriod();
     }
 
@@ -53,7 +66,7 @@ public class TimeTable implements Parcelable, Serializable {
             Subject[] subjectArray = subjects.get(i);
             for (Subject subject : subjectArray) {
                 if (subject != null && !subject.equals(Subject.EMPTY))
-                    return i;
+                    return i + 1;
 
             }
 
@@ -84,9 +97,21 @@ public class TimeTable implements Parcelable, Serializable {
         dest.writeParcelable(studentInfoKor, flags);
         dest.writeParcelable(studentInfoEng, flags);
         dest.writeInt(maxTime);
-        dest.writeInt(subjects.size());
-        for (int i = 0; i < subjects.size(); i++) {
-            dest.writeParcelableArray(subjects.get(i), flags);
+
+        int size = subjects.size();
+        dest.writeInt(size);
+
+        for (int i = 0; i < size; i++) {
+            Subject[] subjects1 = subjects.get(i);
+
+            if (subjects1 == null || subjects1.length == 0) {
+                dest.writeInt(0);
+
+            } else {
+                dest.writeInt(1);
+                dest.writeParcelableArray(subjects1, flags);
+            }
+
         }
     }
 
@@ -96,11 +121,31 @@ public class TimeTable implements Parcelable, Serializable {
         studentInfoKor = source.readParcelable(StudentInfo.class.getClassLoader());
         studentInfoEng = source.readParcelable(StudentInfo.class.getClassLoader());
         maxTime = source.readInt();
+
         int size = source.readInt();
         for (int i = 0; i < size; i++) {
-            subjects.add((Subject[]) source.readParcelableArray(Subject.class.getClassLoader()));
+            if (source.readInt() == 1) {
+
+                Parcelable[] parcelables = source.readParcelableArray(Subject.class.getClassLoader());
+                Subject[] array = readParcelables(parcelables);
+                subjects.add(array);
+
+            } else
+                subjects.add(new Subject[SUBJECT_AMOUNT_PER_WEEK]);
         }
 
+    }
+
+    private Subject[] readParcelables(Parcelable[] parcelables){
+        Subject[] subjects = new Subject[parcelables.length];
+
+        int i = 0;
+        for(Parcelable p : parcelables){
+            Subject subject = (Subject) p;
+            subjects[i++] = subject.isEqualsTo(Subject.EMPTY) ?  Subject.EMPTY : subject;
+        }
+
+        return subjects;
     }
 
     public static final Parcelable.Creator<TimeTable> CREATOR = new Parcelable.Creator<TimeTable>() {

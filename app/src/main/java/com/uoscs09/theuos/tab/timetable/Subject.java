@@ -3,6 +3,7 @@ package com.uoscs09.theuos.tab.timetable;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.uoscs09.theuos.util.OApiUtil;
 import com.uoscs09.theuos.util.StringUtil;
 
 import java.io.Serializable;
@@ -31,13 +32,8 @@ public class Subject implements Parcelable, Serializable {
      * 건물
      */
     public String building = StringUtil.NULL;
+    public OApiUtil.UnivBuilding univBuilding;
 
-    public String buildingName = StringUtil.NULL;
-    public String buildingNameEng = StringUtil.NULL;
-    /**
-     * 건물 (숫자)
-     */
-    public int buildingCode = 0;
     /**
      * 강의실
      */
@@ -92,9 +88,13 @@ public class Subject implements Parcelable, Serializable {
 
     public void setBuilding(String building) {
         this.building = building;
+
         String[] buildingSplitArray = building.split("-");
+
         if (buildingSplitArray.length > 1) {
-            buildingCode = Integer.valueOf(buildingSplitArray[0]);
+            int buildingCode = Integer.valueOf(buildingSplitArray[0]);
+            univBuilding = OApiUtil.UnivBuilding.fromNumber(buildingCode);
+
             room = buildingSplitArray[1].trim();
         }
     }
@@ -104,11 +104,11 @@ public class Subject implements Parcelable, Serializable {
         return in.length() > max ? in.substring(0, max) + "..." : in;
     }
 
-    public String getSubjectNameLocal(){
+    public String getSubjectNameLocal() {
         return Locale.getDefault().equals(Locale.KOREA) ? subjectName : subjectNameEng;
     }
 
-    public String getProfessorLocal(){
+    public String getProfessorLocal() {
         return Locale.getDefault().equals(Locale.KOREA) ? professor : professorEng;
     }
 
@@ -118,14 +118,17 @@ public class Subject implements Parcelable, Serializable {
         professor = in.readString();
         professorEng = in.readString();
         building = in.readString();
-        buildingCode = in.readInt();
         room = in.readString();
 
         day = in.readInt();
         period = in.readInt();
 
-        buildingName = in.readString();
-        buildingNameEng = in.readString();
+        int i = in.readInt();
+
+        if (i == -1)
+            univBuilding = null;
+        else
+            univBuilding = OApiUtil.UnivBuilding.fromNumber(i);
 
         isEqualToUpperPeriod = in.readInt() == 1;
     }
@@ -151,14 +154,12 @@ public class Subject implements Parcelable, Serializable {
         dest.writeString(professorEng);
 
         dest.writeString(building);
-        dest.writeInt(buildingCode);
         dest.writeString(room);
 
         dest.writeInt(day);
         dest.writeInt(period);
 
-        dest.writeString(buildingName);
-        dest.writeString(buildingNameEng);
+        dest.writeInt(univBuilding == null ? -1 : univBuilding.code);
 
         dest.writeInt(isEqualToUpperPeriod ? 1 : 0);
     }

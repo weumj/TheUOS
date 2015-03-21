@@ -12,7 +12,7 @@ import com.uoscs09.theuos.base.AbsArrayAdapter;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class AnounceAdapter extends AbsArrayAdapter<AnnounceItem, Holder> {
+public class AnounceAdapter extends AbsArrayAdapter<AnnounceItem, AnounceAdapter.Holder> {
 
     public AnounceAdapter(Context context, int layout, List<AnnounceItem> list) {
         super(context, layout, list);
@@ -25,7 +25,7 @@ public class AnounceAdapter extends AbsArrayAdapter<AnnounceItem, Holder> {
             .compile(".*<[[a-z][A-Z][0-9]]+>.*");
 
     @Override
-    public View setView(int position, View v, Holder holder) {
+    public void onBindViewHolder(int position, Holder holder) {
         String[] array = getItem(position).toStringArray();
 
         int i = 0;
@@ -42,7 +42,6 @@ public class AnounceAdapter extends AbsArrayAdapter<AnnounceItem, Holder> {
                 tv.setText(content);
             }
         }
-        return v;
     }
 
     @Override
@@ -50,18 +49,17 @@ public class AnounceAdapter extends AbsArrayAdapter<AnnounceItem, Holder> {
         return new Holder(v);
     }
 
-}
 
-class Holder implements AbsArrayAdapter.ViewHolder {
-    public final TextView[] textArray;
+    static class Holder implements AbsArrayAdapter.ViewHolderable {
+        public final TextView[] textArray;
 
-    public Holder(View v) {
-        textArray = new TextView[3];
-        textArray[0] = (TextView) v
-                .findViewById(R.id.tab_anounce_list_text_type);
-        textArray[1] = (TextView) v
-                .findViewById(R.id.tab_anounce_list_text_title);
-        textArray[2] = (TextView) v
-                .findViewById(R.id.tab_anounce_list_text_date);
+        public Holder(View v) {
+            textArray = new TextView[3];
+            textArray[0] = (TextView) v.findViewById(R.id.tab_anounce_list_text_type);
+            textArray[1] = (TextView) v.findViewById(R.id.tab_anounce_list_text_title);
+            textArray[2] = (TextView) v.findViewById(R.id.tab_anounce_list_text_date);
+        }
     }
+
 }
+

@@ -22,7 +22,7 @@ import com.javacan.asyncexcute.AsyncCallback;
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.common.AsyncLoader;
 import com.uoscs09.theuos.http.HttpRequest;
-import com.uoscs09.theuos.http.parse.ParserSubjectList;
+import com.uoscs09.theuos.parse.ParserSubjectList;
 import com.uoscs09.theuos.tab.map.SubMapActivity;
 import com.uoscs09.theuos.tab.subject.SubjectInfoDialFrag;
 import com.uoscs09.theuos.tab.subject.SubjectItem;

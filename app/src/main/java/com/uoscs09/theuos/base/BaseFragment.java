@@ -50,6 +50,7 @@ public class BaseFragment extends Fragment {
 		if (menuVisible) {
 			if (getActionBar() != null)
 				getActionBar().setSubtitle(getSubtitle());
+
 		} else {
 			if (getActionBar() != null)
 				getActionBar().setSubtitle(null);

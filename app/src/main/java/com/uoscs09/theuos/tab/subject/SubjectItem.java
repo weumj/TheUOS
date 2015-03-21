@@ -23,6 +23,7 @@ import java.util.List;
  * public String tlsn_count<br>
  * public String tlsn_limit_count<br>
  */
+@Deprecated
 public class SubjectItem implements Parcelable {
     // TODO 수업 시간을 String 이 아닌 날짜/시간 별 code로 변환
     public static final int SIZE = 13;

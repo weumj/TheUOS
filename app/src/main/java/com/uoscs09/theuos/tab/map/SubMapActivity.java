@@ -1,6 +1,7 @@
 package com.uoscs09.theuos.tab.map;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Criteria;
@@ -16,7 +17,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -28,9 +28,11 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.annotaion.ReleaseWhenDestroy;
+import com.uoscs09.theuos.annotation.ReleaseWhenDestroy;
+import com.uoscs09.theuos.base.AbsArrayAdapter;
 import com.uoscs09.theuos.base.BaseActivity;
 import com.uoscs09.theuos.util.AppUtil;
+import com.uoscs09.theuos.util.OApiUtil;
 import com.uoscs09.theuos.util.StringUtil;
 
 public class SubMapActivity extends BaseActivity implements LocationListener {
@@ -53,6 +55,19 @@ public class SubMapActivity extends BaseActivity implements LocationListener {
     private enum CASE_WELFARE {
         CASH, BANK, COPY, PRINT, SEARCH, REST, ELEVATOR, HEALTH_CENTER, POST, RESTAURANT, FASTFOOD, STAND, EYE, BOOK, WRITING, SOUVENIR, HEALTH, TENNIS
     }
+
+    private static class Adapter extends AbsArrayAdapter.SimpleAdapter<OApiUtil.UnivBuilding> {
+
+        public Adapter(Context context) {
+            super(context, android.R.layout.simple_list_item_1, OApiUtil.UnivBuilding.values());
+        }
+
+        @Override
+        public String getTextFromItem(OApiUtil.UnivBuilding item) {
+            return item.getLocaleName();
+        }
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,8 +97,12 @@ public class SubMapActivity extends BaseActivity implements LocationListener {
                     isInit = false;
                 }
                 googleMap.clear();
-                moveCameraPositionAt(position + 1);
-                setCameraMapMarkerAt(position + 1, getResources().getStringArray(R.array.buildings_univ)[position]);
+                OApiUtil.UnivBuilding univBuilding = OApiUtil.UnivBuilding.fromNumber(position + 1);
+                moveCamera(univBuilding);
+                setMapMarker(univBuilding);
+
+                //moveCameraPositionAt(position + 1);
+                //setCameraMapMarkerAt(position + 1, getResources().getStringArray(R.array.buildings_univ)[position]);
             }
 
             @Override
@@ -94,7 +113,8 @@ public class SubMapActivity extends BaseActivity implements LocationListener {
         toolbarParent.addView(spinnerLayout);
 
         ListView listView = new ListView(this);
-        listView.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, getResources().getStringArray(R.array.buildings_univ)));
+        final Adapter adapter = new Adapter(this);
+        listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
@@ -102,7 +122,8 @@ public class SubMapActivity extends BaseActivity implements LocationListener {
                 if (location == null) {
                     AppUtil.showToast(getBaseContext(), R.string.tab_map_submap_do_not_locate, true);
                 } else {
-                    showRoute(new LatLng(location.getLatitude(), location.getLongitude()), getLatLngByBuildingNumber(arg2 + 1));
+
+                    showRoute(new LatLng(location.getLatitude(), location.getLongitude()), adapter.getItem(arg2).latLng());
                     locationSelector.dismiss();
                 }
             }
@@ -121,13 +142,17 @@ public class SubMapActivity extends BaseActivity implements LocationListener {
                 if (buildingNo != -1) {
                     isInit = false;
 
-                    mLocationSelectSpinner.setSelection(buildingNo - 1, true);
-                    moveCameraPositionAt(buildingNo);
+                    //OApiUtil.UnivBuilding univBuilding = OApiUtil.UnivBuilding.fromNumber(buildingNo);
+                    mLocationSelectSpinner.setSelection(buildingNo - 1, false);
+                   // moveCamera(univBuilding);
+                    //moveCameraPositionAt(buildingNo);
                     buildingNo = -1;
 
                 } else {
-                    moveCameraPositionAt(0);
-                    setCameraMapMarkerAt(0, getString(R.string.univ));
+                    moveCamera(OApiUtil.UnivBuilding.Univ);
+                    setMapMarker(OApiUtil.UnivBuilding.Univ);
+                    // moveCameraPositionAt(0);
+                    //setCameraMapMarkerAt(0, getString(R.string.univ));
                 }
             }
         }, 500);
@@ -294,9 +319,8 @@ public class SubMapActivity extends BaseActivity implements LocationListener {
                         @Override
                         public void onSelection(MaterialDialog materialDialog, View view, int item, CharSequence charSequence) {
                             googleMap.clear();
-                            String locationName = getResources()
-                                    .getStringArray(
-                                            R.array.tab_map_submap_buildings_welfare)[item];
+                            String locationName = getResources().getStringArray(R.array.tab_map_submap_buildings_welfare)[item];
+
                             // TODO 리팩토링이 시급함 state
                             switch (CASE_WELFARE.values()[item]) {
                                 case BANK:
@@ -407,6 +431,8 @@ public class SubMapActivity extends BaseActivity implements LocationListener {
         dialog.show();
     }
 
+
+    @Deprecated
     private LatLng getLatLngByBuildingNumber(int item) {
         LatLng latLng;
         switch (item) {
@@ -523,16 +549,31 @@ public class SubMapActivity extends BaseActivity implements LocationListener {
         return latLng;
     }
 
+    @Deprecated
     private void moveCameraPositionAt(int itemPosition) {
         LatLng latLng = getLatLngByBuildingNumber(itemPosition);
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
     }
 
+    @Deprecated
     private void setCameraMapMarkerAt(int itemPosition, String locationName) {
         LatLng latLng = getLatLngByBuildingNumber(itemPosition);
         googleMap.animateCamera(CameraUpdateFactory.zoomTo(17));
         googleMap.addMarker(new MarkerOptions().position(latLng)
                 .title(locationName).visible(true));
+    }
+
+    private void moveCamera(OApiUtil.UnivBuilding building) {
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(building.latLng()));
+    }
+
+    private void setMapMarker(OApiUtil.UnivBuilding building) {
+        setMapMarker(building, building.getLocaleName());
+    }
+
+    private void setMapMarker(OApiUtil.UnivBuilding building, String markerName) {
+        googleMap.animateCamera(CameraUpdateFactory.zoomTo(17));
+        googleMap.addMarker(new MarkerOptions().position(building.latLng()).title(markerName).visible(true));
     }
 
 }

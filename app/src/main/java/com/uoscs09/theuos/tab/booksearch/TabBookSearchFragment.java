@@ -27,11 +27,11 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.nhaarman.listviewanimations.appearance.AnimationAdapter;
 import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.annotaion.AsyncData;
-import com.uoscs09.theuos.annotaion.ReleaseWhenDestroy;
+import com.uoscs09.theuos.annotation.AsyncData;
+import com.uoscs09.theuos.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos.base.AbsProgressFragment;
 import com.uoscs09.theuos.http.HttpRequest;
-import com.uoscs09.theuos.http.parse.ParserBook;
+import com.uoscs09.theuos.parse.ParserBook;
 import com.uoscs09.theuos.util.AppUtil;
 import com.uoscs09.theuos.util.PrefUtil;
 import com.uoscs09.theuos.util.StringUtil;
@@ -178,19 +178,20 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
             mEmptyView.setVisibility(View.VISIBLE);
         }
 
+        // 리스트 뷰
+        ListView mListView = (ListView) rootView.findViewById(R.id.tab_book_list_search);
+
         mBookListAdapter = new BookItemListAdapter(getActivity(), R.layout.list_layout_book, mBookList, mLongClickListener);
         mAnimAdapter = new AlphaInAnimationAdapter(mBookListAdapter);
 
-        // 리스트 뷰
-        ListView mListView = (ListView) rootView.findViewById(R.id.tab_book_list_search);
-        mListView.setOnScrollListener(this);
+        View progressLayout = inflater.inflate(R.layout.view_loading_layout, mListView, false);
+        registerProgressView(progressLayout);
+        mListView.addFooterView(progressLayout);
+
         mAnimAdapter.setAbsListView(mListView);
         mListView.setAdapter(mAnimAdapter);
+        mListView.setOnScrollListener(this);
 
-        View progressLayout = inflater.inflate(R.layout.view_loading_layout, container, false);
-        registerProgressView(progressLayout);
-
-        mListView.addFooterView(progressLayout);
         return rootView;
     }
 
@@ -213,8 +214,8 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
         inflater.inflate(R.menu.tab_book_search, menu);
         searchMenu = menu.findItem(R.id.action_search);
 
-        final SearchView searchView = (SearchView) MenuItemCompat
-                .getActionView(searchMenu);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchMenu);
+
         if (searchView != null) {
             searchView.setOnQueryTextListener(this);
             searchView.setSubmitButtonEnabled(true);
@@ -404,11 +405,11 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
     }
 
     @Override
-    public void onScroll(AbsListView view, int firstVisibleItem,    int visibleItemCount, int totalItemCount) {
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
         // 리스트의 마지막에 도달하였을 경우에
         // 이 이벤트가 처음 일어났고, 이전에 검색결과가 0이 아닌 경우에만
         // 새로운 검색을 시도한다.
-        if (totalItemCount > 1  && (firstVisibleItem + visibleItemCount) == totalItemCount - 1) {
+        if (totalItemCount > 1 && (firstVisibleItem + visibleItemCount) == totalItemCount - 1) {
             if (!isInvokeScroll && !isResultEmpty) {
                 isInvokeScroll = true;
                 mCurrentPage++;

@@ -11,7 +11,7 @@ import android.support.v4.app.NotificationCompat;
 import com.javacan.asyncexcute.AsyncCallback;
 import com.javacan.asyncexcute.AsyncExecutor;
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.annotaion.AsyncData;
+import com.uoscs09.theuos.annotation.AsyncData;
 import com.uoscs09.theuos.util.AppUtil;
 
 import java.io.IOException;

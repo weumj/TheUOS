@@ -29,4 +29,9 @@ public class SubSeatWebActivity extends WebViewActivity {
 
         mWebView.loadUrl("http://203.249.102.34:8080/seat/roomview5.asp?room_no=" + item.index);
     }
+
+    @Override
+    public void onBackPressed() {
+        supportFinishAfterTransition();
+    }
 }

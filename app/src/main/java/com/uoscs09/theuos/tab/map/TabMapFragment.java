@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.webkit.WebSettings;
 
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.annotaion.ReleaseWhenDestroy;
+import com.uoscs09.theuos.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos.base.BaseFragment;
 import com.uoscs09.theuos.common.CustomWebViewClient;
 import com.uoscs09.theuos.common.NonLeakingWebView;

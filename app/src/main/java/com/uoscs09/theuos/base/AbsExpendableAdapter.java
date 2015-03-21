@@ -15,8 +15,7 @@ public abstract class AbsExpendableAdapter<K, V> extends BaseExpandableListAdapt
 	private K[] mKeys;
 	private final Context mContext;
 
-	public AbsExpendableAdapter(Context context, int grouplayout,
-			int childLayout, Map<K, ? extends List<V>> data) {
+	public AbsExpendableAdapter(Context context, int grouplayout,			int childLayout, Map<K, ? extends List<V>> data) {
 		this.mChildLayout = childLayout;
 		this.mGroupData = data;
 		this.mGroupLayout = grouplayout;
@@ -68,8 +67,7 @@ public abstract class AbsExpendableAdapter<K, V> extends BaseExpandableListAdapt
 	}
 
 	@Override
-	public View getGroupView(int groupPosition, boolean isExpanded,
-			View convertView, ViewGroup parent) {
+	public View getGroupView(int groupPosition, boolean isExpanded,			View convertView, ViewGroup parent) {
 		ViewHolder h;
 		if (convertView == null) {
 			convertView = View.inflate(mContext, mGroupLayout, null);
@@ -78,6 +76,7 @@ public abstract class AbsExpendableAdapter<K, V> extends BaseExpandableListAdapt
 		} else {
 			h = (ViewHolder) convertView.getTag();
 		}
+
 		setGroupView(groupPosition, isExpanded, convertView, parent, h);
 		return convertView;
 	}

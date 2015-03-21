@@ -50,19 +50,19 @@ public class SettingsFragment extends PreferenceFragment implements
         super.onCreate(savedInstanceState);
 
         // Fragment가 재생성 되었을 때, 표시 화면을 정확히 복구하기 위한 설정
-        getFragmentManager().addOnBackStackChangedListener( new OnBackStackChangedListener() {
+        getFragmentManager().addOnBackStackChangedListener(new OnBackStackChangedListener() {
 
-                    @Override
-                    public void onBackStackChanged() {
-                        if (getFragmentManager() != null) {
-                            if (getFragmentManager().getBackStackEntryCount() < 1) {
-                                getFragmentManager().beginTransaction()
-                                        .show(SettingsFragment.this)
-                                        .commit();
-                            }
-                        }
+            @Override
+            public void onBackStackChanged() {
+                if (getFragmentManager() != null) {
+                    if (getFragmentManager().getBackStackEntryCount() < 1) {
+                        getFragmentManager().beginTransaction()
+                                .show(SettingsFragment.this)
+                                .commit();
                     }
-                });
+                }
+            }
+        });
 
         setHasOptionsMenu(true);
         addPreferencesFromResource(R.xml.prefrence);
@@ -83,28 +83,35 @@ public class SettingsFragment extends PreferenceFragment implements
             case R.string.setting_order:
                 changeFragment(SettingsOrderFragment.class);
                 return true;
+
             case R.string.setting_theme:
                 showThemeDialog();
                 return true;
+
             case R.string.setting_announce_noti:
                 changeFragment(SettingsAnnounceNotificationFragment.class);
                 return true;
+
             case R.string.setting_delete_cache:
                 deleteCache();
                 return true;
+
             case R.string.setting_timetable:
                 changeFragment(SettingsTimetableFragment.class);
                 return true;
+
             case R.string.setting_save_route_sub_title:
-                new SettingsFileSelectDialogFragment().show(getFragmentManager(),
-                        null);
+                new SettingsFileSelectDialogFragment().show(getFragmentManager(), null);
                 return true;
+
             case R.string.setting_web_page:
                 changeFragment(SettingsWebPageFragment.class);
                 return true;
+
             case R.string.setting_app_version_update:
                 showAppVersionDialog();
                 return true;
+
             default:
                 return false;
         }
@@ -114,25 +121,25 @@ public class SettingsFragment extends PreferenceFragment implements
         final String URL = "https://play.google.com/store/apps/details?id=com.uoscs09.theuos";
         final Dialog progress = AppUtil.getProgressDialog(getActivity(), false, getText(R.string.progress_while_updating), null);
         progress.show();
+
         AsyncLoader.excute(new Callable<String>() {
 
             @Override
             public String call() throws Exception {
                 String body = HttpRequest.getBody(URL);
                 Source s = new Source(body);
-                Element e = s.getAllElementsByClass("details-section metadata")
-                        .get(0)
-                        .getAllElementsByClass("details-section-contents")
-                        .get(0).getAllElementsByClass("meta-info").get(3)
+                Element e = s.getAllElementsByClass("details-section metadata").get(0)
+                        .getAllElementsByClass("details-section-contents").get(0).getAllElementsByClass("meta-info").get(3)
                         .getAllElementsByClass("content").get(0);
                 return e.getTextExtractor().toString().trim();
+
             }
         }, new AsyncCallback.Base<String>() {
             @Override
             public void onResult(String result) {
                 String thisVersion = getString(R.string.setting_app_version_desc);
                 if (thisVersion.equals(result)) {
-                    AppUtil.showToast(getActivity(),R.string.setting_app_version_update_this_new, true);
+                    AppUtil.showToast(getActivity(), R.string.setting_app_version_update_this_new, true);
                 } else {
 
                     TextView tv = new TextView(getActivity());
@@ -195,8 +202,8 @@ public class SettingsFragment extends PreferenceFragment implements
                     .title(R.string.setting_plz_select_theme)
                     .adapter(new ArrayAdapter<AppTheme>(getActivity(), android.R.layout.simple_list_item_1, AppTheme.values()) {
                                  @Override
-                                 public View getView(int position,View convertView, ViewGroup parent) {
-                                     View view = super.getView(position,convertView, parent);
+                                 public View getView(int position, View convertView, ViewGroup parent) {
+                                     View view = super.getView(position, convertView, parent);
                                      Resources res = getResources();
                                      int colorText = res.getColor(THEME_COLORS_RES[position][0]);
                                      int colorDrawableCentor = res.getColor(THEME_COLORS_RES[position][1]);
@@ -214,22 +221,23 @@ public class SettingsFragment extends PreferenceFragment implements
                                      tv.setCompoundDrawablePadding(50);
                                      tv.setCompoundDrawables(d, null, null, null);
                                      return view;
-                                 }},
-                                         new MaterialDialog.ListCallback() {
-                                             @Override
-                                             public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
-                                                 PrefUtil pref = PrefUtil.getInstance(getActivity());
-                                                 int originalValue = pref.get(PrefUtil.KEY_THEME, 0);
+                                 }
+                             },
+                            new MaterialDialog.ListCallback() {
+                                @Override
+                                public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
+                                    PrefUtil pref = PrefUtil.getInstance(getActivity());
+                                    int originalValue = pref.get(PrefUtil.KEY_THEME, 0);
 
-                                                 if (originalValue != i) {
-                                                     pref.put(PrefUtil.KEY_THEME, i);
-                                                     onSharedPreferenceChanged(getPreferenceScreen().getSharedPreferences(), PrefUtil.KEY_THEME);
-                                                     getActivity().setResult(AppUtil.RELAUNCH_ACTIVITY);
-                                                 }
+                                    if (originalValue != i) {
+                                        pref.put(PrefUtil.KEY_THEME, i);
+                                        onSharedPreferenceChanged(getPreferenceScreen().getSharedPreferences(), PrefUtil.KEY_THEME);
+                                        getActivity().setResult(AppUtil.RELAUNCH_ACTIVITY);
+                                    }
 
-                                                 mThemeSelectorDialog.dismiss();
-                                             }
-                                         })
+                                    mThemeSelectorDialog.dismiss();
+                                }
+                            })
                     .build();
         }
         mThemeSelectorDialog.show();
@@ -259,39 +267,35 @@ public class SettingsFragment extends PreferenceFragment implements
 
     @Override
     public void onResume() {
-        getPreferenceScreen().getSharedPreferences()
-                .registerOnSharedPreferenceChangeListener(this);
-        ActionBar actionBar = ((ActionBarActivity) getActivity())
-                .getSupportActionBar();
+        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+        ActionBar actionBar = ((ActionBarActivity) getActivity()).getSupportActionBar();
         actionBar.setTitle(R.string.setting);
-        actionBar.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP
-                | ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE);
+        actionBar.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP | ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE);
+
 
         if (getFragmentManager().findFragmentByTag("front") != null) {
             getFragmentManager().beginTransaction().hide(this).commit();
         }
+
         super.onResume();
     }
 
     @Override
     public void onHiddenChanged(boolean hidden) {
         if (isVisible()) {
-            getPreferenceScreen().getSharedPreferences()
-                    .registerOnSharedPreferenceChangeListener(this);
-            ActionBar actionBar = ((ActionBarActivity) getActivity())
-                    .getSupportActionBar();
+            getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+            ActionBar actionBar = ((ActionBarActivity) getActivity()).getSupportActionBar();
+
             actionBar.setTitle(R.string.setting);
-            actionBar.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP
-                    | ActionBar.DISPLAY_SHOW_HOME
-                    | ActionBar.DISPLAY_SHOW_TITLE);
+            actionBar.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP | ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE);
         }
+
         super.onHiddenChanged(hidden);
     }
 
     @Override
     public void onPause() {
-        getPreferenceScreen().getSharedPreferences()
-                .unregisterOnSharedPreferenceChangeListener(this);
+        getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
         super.onPause();
     }
 
@@ -301,9 +305,8 @@ public class SettingsFragment extends PreferenceFragment implements
     private void bindPreferenceSummaryToValue() {
         SharedPreferences pref = getPreferenceScreen().getSharedPreferences();
         pref.registerOnSharedPreferenceChangeListener(this);
-        String[] keys = {PrefUtil.KEY_CHECK_BORROW, PrefUtil.KEY_CHECK_SEAT,
-                PrefUtil.KEY_LIB_WIDGET_SEAT_SHOW_ALL,
-                PrefUtil.KEY_IMAGE_SAVE_PATH, PrefUtil.KEY_THEME};
+
+        String[] keys = {PrefUtil.KEY_CHECK_BORROW, PrefUtil.KEY_CHECK_SEAT, PrefUtil.KEY_LIB_WIDGET_SEAT_SHOW_ALL, PrefUtil.KEY_IMAGE_SAVE_PATH, PrefUtil.KEY_THEME};
         for (String key : keys) {
             onSharedPreferenceChanged(pref, key);
         }
@@ -316,49 +319,41 @@ public class SettingsFragment extends PreferenceFragment implements
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
-                                          String key) {
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         switch (key) {
             case PrefUtil.KEY_CHECK_BORROW:
-                setPrefScreenSummary(sharedPreferences, key,
-                        R.string.setting_check_borrow_desc_enable,
-                        R.string.setting_check_borrow_desc_disable);
+                setPrefScreenSummary(sharedPreferences, key, R.string.setting_check_borrow_desc_enable, R.string.setting_check_borrow_desc_disable);
                 break;
+
             case PrefUtil.KEY_CHECK_SEAT:
-                setPrefScreenSummary(sharedPreferences, key,
-                        R.string.setting_check_seat_desc_enable,
-                        R.string.setting_check_seat_desc_disable);
+                setPrefScreenSummary(sharedPreferences, key, R.string.setting_check_seat_desc_enable, R.string.setting_check_seat_desc_disable);
                 break;
+
             case PrefUtil.KEY_LIB_WIDGET_SEAT_SHOW_ALL:
-                setPrefScreenSummary(sharedPreferences, key,
-                        R.string.setting_widget_seat_show_all_enable,
-                        R.string.setting_widget_seat_show_all_disable);
+                setPrefScreenSummary(sharedPreferences, key, R.string.setting_widget_seat_show_all_enable, R.string.setting_widget_seat_show_all_disable);
                 break;
+
             case PrefUtil.KEY_IMAGE_SAVE_PATH:
-                findPreference(key).setSummary(
-                        PrefUtil.getPictureSavedPath(getActivity()));
+                findPreference(key).setSummary(PrefUtil.getPictureSavedPath(getActivity()));
                 break;
+
             case PrefUtil.KEY_THEME:
                 Preference connectionPref = findPreference(key);
                 Activity activity = getActivity();
                 AppUtil.theme = AppTheme.values()[sharedPreferences.getInt(key, 0)];
                 AppUtil.applyTheme(activity.getApplicationContext());
-                connectionPref.setSummary(getString(R.string.setting_theme_desc)
-                        + "\n현재 적용된 테마 : " + AppUtil.theme.toString());
+                connectionPref.setSummary(getString(R.string.setting_theme_desc) + "\n현재 적용된 테마 : " + AppUtil.theme.toString());
                 break;
+
             case PrefUtil.KEY_HOME:
                 getActivity().setResult(AppUtil.RELAUNCH_ACTIVITY);
                 break;
         }
     }
 
-    private void setPrefScreenSummary(SharedPreferences pref, String key,
-                                      int enableID, int disableID) {
-        Preference connectionPref = findPreference(key);
-        if (pref.getBoolean(key, false)) {
-            connectionPref.setSummary(enableID);
-        } else {
-            connectionPref.setSummary(disableID);
-        }
+    private void setPrefScreenSummary(SharedPreferences pref, String key, int enableID, int disableID) {
+
+        findPreference(key).setSummary(pref.getBoolean(key, false) ? enableID : disableID);
+
     }
 }

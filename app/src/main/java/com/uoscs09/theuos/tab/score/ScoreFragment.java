@@ -16,11 +16,11 @@ import android.widget.NumberPicker;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.annotaion.ReleaseWhenDestroy;
+import com.uoscs09.theuos.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos.base.AbsAsyncFragment;
 import com.uoscs09.theuos.http.HttpRequest;
-import com.uoscs09.theuos.http.parse.ParserSubjectList;
-import com.uoscs09.theuos.http.parse.ParserSubjectScore;
+import com.uoscs09.theuos.parse.ParserSubjectList;
+import com.uoscs09.theuos.parse.ParserSubjectScore;
 import com.uoscs09.theuos.util.AppUtil;
 import com.uoscs09.theuos.util.OApiUtil;
 import com.uoscs09.theuos.util.StringUtil;

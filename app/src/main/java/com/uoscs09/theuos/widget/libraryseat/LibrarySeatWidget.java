@@ -11,7 +11,7 @@ import android.widget.RemoteViews;
 
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.base.AbsAsyncWidgetProvider;
-import com.uoscs09.theuos.http.parse.ParserSeat;
+import com.uoscs09.theuos.parse.ParserSeat;
 import com.uoscs09.theuos.tab.libraryseat.SeatItem;
 import com.uoscs09.theuos.tab.libraryseat.TabLibrarySeatFragment;
 import com.uoscs09.theuos.util.IOUtil;

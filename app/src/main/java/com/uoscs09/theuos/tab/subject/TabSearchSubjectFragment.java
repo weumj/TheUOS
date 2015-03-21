@@ -23,11 +23,11 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.annotaion.AsyncData;
-import com.uoscs09.theuos.annotaion.ReleaseWhenDestroy;
+import com.uoscs09.theuos.annotation.AsyncData;
+import com.uoscs09.theuos.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos.base.AbsProgressFragment;
 import com.uoscs09.theuos.http.HttpRequest;
-import com.uoscs09.theuos.http.parse.ParserSubject;
+import com.uoscs09.theuos.parse.ParserSubject;
 import com.uoscs09.theuos.util.AppUtil;
 import com.uoscs09.theuos.util.OApiUtil;
 import com.uoscs09.theuos.util.OApiUtil.Semester;
@@ -37,6 +37,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
+@Deprecated
 public class TabSearchSubjectFragment extends AbsProgressFragment<ArrayList<SubjectItem>> implements
         OnItemClickListener, OnItemSelectedListener, View.OnClickListener {
     @ReleaseWhenDestroy
@@ -56,6 +57,7 @@ public class TabSearchSubjectFragment extends AbsProgressFragment<ArrayList<Subj
     private View mTitleLayout;
     @ReleaseWhenDestroy
     private TextView[] textViews;
+    private ViewGroup mToolBarParent;
 
     private final ParserSubject mParser = new ParserSubject();
 
@@ -88,16 +90,20 @@ public class TabSearchSubjectFragment extends AbsProgressFragment<ArrayList<Subj
         // current year
         mDialogYearSpinner.setSelection(2);
 
+        mToolBarParent = (ViewGroup) getActivity().findViewById(R.id.toolbar_parent);
+
         super.onCreate(savedInstanceState);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,   Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Context context = getActivity();
 
         final View rootView = inflater.inflate(R.layout.tab_search_subj, container, false);
+
         mTitleLayout = rootView.findViewById(R.id.tab_search_subject_head_layout);
         mTitleLayout.setVisibility(View.INVISIBLE);
+
         mEmptyView = rootView.findViewById(R.id.tab_search_subject_empty_view);
         mEmptyView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,7 +140,9 @@ public class TabSearchSubjectFragment extends AbsProgressFragment<ArrayList<Subj
             textViews[i] = (TextView) rootView.findViewById(id);
             textViews[i++].setOnClickListener(this);
         }
-        registerProgressView(rootView.findViewById(R.id.progress_layout));
+
+        registerProgressView(inflater.inflate(R.layout.view_loading_layout, container, false));
+
         return rootView;
     }
 
@@ -200,7 +208,7 @@ public class TabSearchSubjectFragment extends AbsProgressFragment<ArrayList<Subj
                 return;
         }
 
-        Drawable d = getResources().getDrawable(AppUtil.getStyledValue(getActivity(), isInverse ? R.attr.ic_navigation_collapse : R.attr.ic_navigation_expand));
+        Drawable d = getResources().getDrawable(AppUtil.getAttrValue(getActivity(), isInverse ? R.attr.ic_navigation_collapse : R.attr.ic_navigation_expand));
         textViews[field + bias].setCompoundDrawablesWithIntrinsicBounds(d, null, null, null);
 
         adapter.sort(SubjectItem.getComparator(field, isInverse));
@@ -222,8 +230,7 @@ public class TabSearchSubjectFragment extends AbsProgressFragment<ArrayList<Subj
 
     @Override
     public void onItemClick(AdapterView<?> ad, View v, int pos, long id) {
-        SubjectInfoDialFrag.showDialog(getFragmentManager(),
-                (SubjectItem) ad.getItemAtPosition(pos), getActivity(),
+        SubjectInfoDialFrag.showDialog(getFragmentManager(), (SubjectItem) ad.getItemAtPosition(pos), getActivity(),
                 mDialogTermSpinner.getSelectedItemPosition(),
                 mDialogYearSpinner.getSelectedItem().toString());
     }
@@ -238,11 +245,8 @@ public class TabSearchSubjectFragment extends AbsProgressFragment<ArrayList<Subj
                     @Override
                     public void onPositive(MaterialDialog dialog) {
                         super.onPositive(dialog);
-                        InputMethodManager ipm = (InputMethodManager) getActivity()
-                                .getSystemService(
-                                        Activity.INPUT_METHOD_SERVICE);
-                        ipm.hideSoftInputFromWindow(
-                                mSearchEditText.getWindowToken(), 0);
+                        InputMethodManager ipm = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+                        ipm.hideSoftInputFromWindow(mSearchEditText.getWindowToken(), 0);
                         execute();
                     }
                 })
@@ -252,7 +256,18 @@ public class TabSearchSubjectFragment extends AbsProgressFragment<ArrayList<Subj
     @Override
     protected void execute() {
         mEmptyView.setVisibility(View.INVISIBLE);
+        if (mToolBarParent != null)
+            mToolBarParent.addView(getProgressView());
+
         super.execute();
+    }
+
+    @Override
+    protected void onTransactPostExecute() {
+        super.onTransactPostExecute();
+
+        if (mToolBarParent != null)
+            mToolBarParent.removeView(getProgressView());
     }
 
     @Override

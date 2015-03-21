@@ -1,30 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/progress_layout"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:visibility="invisible">
 
-    <LinearLayout
+    <android.support.v7.widget.CardView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_centerInParent="true"
-        android:orientation="horizontal">
+        app:cardBackgroundColor="?colorPrimary"
+        app:contentPaddingRight="4dp"
+        android:layout_margin="4dp"
+        app:cardCornerRadius="10dp">
 
-        <com.pnikosis.materialishprogress.ProgressWheel xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/progress_wheel"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_gravity="center_vertical"
-            app:matProg_barColor="?color_actionbar_title"
-            app:matProg_progressIndeterminate="true" />
-
-        <TextView
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:gravity="center"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/progress_while_loading" />
-    </LinearLayout>
+            android:layout_centerInParent="true"
+            android:orientation="horizontal">
+
+            <com.pnikosis.materialishprogress.ProgressWheel
+                android:id="@+id/progress_wheel"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_gravity="center_vertical"
+                app:matProg_barColor="?color_actionbar_title"
+                app:matProg_progressIndeterminate="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="center"
+                android:paddingRight="6dp"
+                android:textColor="?color_actionbar_title"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/progress_while_loading" />
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
 </RelativeLayout>

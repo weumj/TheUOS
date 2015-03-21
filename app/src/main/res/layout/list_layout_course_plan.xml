@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:minWidth="400dp"
+    android:minHeight="60dp"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/course_plan_week"
+        android:gravity="center"
+        android:layout_width="30dp"
+        android:paddingLeft="2dp"
+        android:paddingRight="2dp"
+        android:layout_height="fill_parent" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/course_plan_content"
+            android:layout_weight="210"
+            android:layout_width="fill_parent"
+            android:gravity="center_vertical"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:layout_height="0dp" />
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="?colorPrimary" />
+
+        <TextView
+            android:id="@+id/course_plan_meth"
+            android:layout_weight="60"
+            android:layout_width="fill_parent"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:gravity="center_vertical"
+            android:layout_height="0dp" />
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="?colorPrimary" />
+
+        <TextView
+            android:id="@+id/course_plan_book"
+            android:layout_weight="90"
+            android:layout_width="fill_parent"
+            android:gravity="center_vertical"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:layout_height="0dp" />
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="?colorPrimary" />
+
+        <TextView
+            android:id="@+id/course_plan_etc"
+            android:layout_weight="70"
+            android:layout_width="fill_parent"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:gravity="center_vertical"
+            android:layout_height="0dp" />
+    </LinearLayout>
+
+</LinearLayout>

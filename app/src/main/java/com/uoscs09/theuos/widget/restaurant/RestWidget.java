@@ -11,7 +11,7 @@ import android.widget.RemoteViews;
 
 import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.base.AbsAsyncWidgetProvider;
-import com.uoscs09.theuos.http.parse.ParserRest;
+import com.uoscs09.theuos.parse.ParserRest;
 import com.uoscs09.theuos.tab.restaurant.RestItem;
 import com.uoscs09.theuos.tab.restaurant.TabRestaurantFragment;
 import com.uoscs09.theuos.util.IOUtil;

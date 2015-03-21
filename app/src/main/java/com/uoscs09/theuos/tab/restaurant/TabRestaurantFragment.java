@@ -13,11 +13,11 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.uoscs09.theuos.R;
-import com.uoscs09.theuos.annotaion.AsyncData;
-import com.uoscs09.theuos.annotaion.ReleaseWhenDestroy;
+import com.uoscs09.theuos.annotation.AsyncData;
+import com.uoscs09.theuos.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos.base.AbsAsyncFragment;
 import com.uoscs09.theuos.http.HttpRequest;
-import com.uoscs09.theuos.http.parse.ParserRest;
+import com.uoscs09.theuos.parse.ParserRest;
 import com.uoscs09.theuos.util.AppUtil;
 import com.uoscs09.theuos.util.IOUtil;
 import com.uoscs09.theuos.util.OApiUtil;
@@ -25,6 +25,7 @@ import com.uoscs09.theuos.util.PrefUtil;
 import com.uoscs09.theuos.util.StringUtil;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>> {
     @ReleaseWhenDestroy
@@ -74,7 +75,13 @@ public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>>
             mCurrentSelection = savedInstanceState.getInt(BUTTON);
             mRestList = savedInstanceState.getParcelableArrayList(REST);
         } else {
-            mCurrentSelection = 0;
+
+            int today = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+            if (today == Calendar.SUNDAY || today == Calendar.SATURDAY)
+                mCurrentSelection = 4;
+            else
+                mCurrentSelection = 0;
+
             mRestList = new ArrayList<>();
         }
 
@@ -110,11 +117,11 @@ public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>>
 
         swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.tab_rest_swipe_layout);
         swipeRefreshLayout.setColorSchemeResources(
-                AppUtil.getStyledValue(getActivity(), R.attr.color_actionbar_title),
-                AppUtil.getStyledValue(getActivity(), R.attr.colorAccent),
-                AppUtil.getStyledValue(getActivity(), R.attr.colorPrimaryDark)
-                );
-        swipeRefreshLayout.setProgressBackgroundColorSchemeResource( AppUtil.getStyledValue(getActivity(), R.attr.colorPrimary));
+                AppUtil.getAttrValue(getActivity(), R.attr.color_actionbar_title),
+                AppUtil.getAttrValue(getActivity(), R.attr.colorAccent),
+                AppUtil.getAttrValue(getActivity(), R.attr.colorPrimaryDark)
+        );
+        swipeRefreshLayout.setProgressBackgroundColorSchemeResource(AppUtil.getAttrValue(getActivity(), R.attr.colorPrimary));
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -122,7 +129,7 @@ public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>>
             }
         });
 
-        mScrollView = (ScrollView) swipeRefreshLayout .findViewById(R.id.tab_rest_scroll);
+        mScrollView = (ScrollView) swipeRefreshLayout.findViewById(R.id.tab_rest_scroll);
 
         mSemesterTimeView = (TextView) mScrollView.findViewById(R.id.tab_rest_text_semester);
         mVacationTimeView = (TextView) mScrollView.findViewById(R.id.tab_rest_text_vacation);
@@ -148,6 +155,10 @@ public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>>
         else
             performClick(mCurrentSelection);
 
+        if (getUserVisibleHint()) {
+            addOrRemoveTabMenu(true);
+        }
+
         super.onResume();
     }
 
@@ -159,13 +170,13 @@ public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>>
         addOrRemoveTabMenu(isVisibleToUser);
     }
 
-    private void addOrRemoveTabMenu(boolean visible){
+    private void addOrRemoveTabMenu(boolean visible) {
         if (mToolBarParent == null || mTabParent == null)
             return;
         if (visible) {
-            if(mTabParent.getParent() == null)
+            if (mTabParent.getParent() == null)
                 mToolBarParent.addView(mTabParent);
-        } else if(mToolBarParent.indexOfChild(mTabParent) > 0) {
+        } else if (mToolBarParent.indexOfChild(mTabParent) > 0) {
             mToolBarParent.removeView(mTabParent);
         }
     }

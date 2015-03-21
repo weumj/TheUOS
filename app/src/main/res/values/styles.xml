@@ -20,6 +20,7 @@
     </style>
 
     <style name="Theme.Mystyle.Light" parent="@style/Theme.AppCompat.Light">
+        <item name="android:windowTranslucentStatus">true</item>
         <item name="android:alertDialogTheme">@style/Theme.Mystyle.Light.AlertDialog</item>
 
         <!-- for selector -->
@@ -111,6 +112,7 @@
     </style>
 
     <style name="Theme.Mystyle.Light.DarkActionBar" parent="@style/Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:windowTranslucentStatus">true</item>
         <item name="android:alertDialogTheme">@style/Theme.Mystyle.Light.AlertDialog</item>
 
         <!-- for selector -->

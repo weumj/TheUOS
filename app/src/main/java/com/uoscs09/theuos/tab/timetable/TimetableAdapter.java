@@ -16,9 +16,8 @@ import com.uoscs09.theuos.util.StringUtil;
 import java.util.List;
 import java.util.Map;
 
-//FIXME
 @Deprecated
-public class TimetableAdapter extends AbsArrayAdapter<TimeTableItem, ViewWrapper> {
+public class TimetableAdapter extends AbsArrayAdapter<TimeTableItem, TimetableAdapter.ViewWrapper> {
     private final OnClickListener l;
     private final Map<String, Integer> colorTable;
     private int maxTime;
@@ -55,7 +54,7 @@ public class TimetableAdapter extends AbsArrayAdapter<TimeTableItem, ViewWrapper
     }
 
     @Override
-    public View setView(int position, View convertView, ViewWrapper holder) {
+    public void onBindViewHolder(int position, ViewWrapper holder) {
         TimeTableItem item = getItem(position);
 
         String[] strArray = {item.time, item.mon, item.tue, item.wed, item.thr, item.fri, item.sat};
@@ -117,10 +116,9 @@ public class TimetableAdapter extends AbsArrayAdapter<TimeTableItem, ViewWrapper
                 }
             } else {
                 textViews[i].setOnClickListener(null);
-                textViews[i].setBackgroundResource(AppUtil.getStyledValue(getContext(), R.attr.cardBackgroundColor));
+                textViews[i].setBackgroundResource(AppUtil.getAttrValue(getContext(), R.attr.cardBackgroundColor));
             }
         }
-        return convertView;
     }
 
     @Override
@@ -128,27 +126,20 @@ public class TimetableAdapter extends AbsArrayAdapter<TimeTableItem, ViewWrapper
         return new ViewWrapper(view);
     }
 
-}
+    static class ViewWrapper implements AbsArrayAdapter.ViewHolderable {
+        public final TextView[] textArray;
 
-class ViewWrapper implements AbsArrayAdapter.ViewHolder {
-    public final TextView[] textArray;
+        public ViewWrapper(View convertView) {
+            textArray = new TextView[7];
 
-    public ViewWrapper(View convertView) {
-        textArray = new TextView[7];
-
-        textArray[0] = (TextView) convertView
-                .findViewById(R.id.tab_timetable_list_text_peroid);
-        textArray[1] = (TextView) convertView
-                .findViewById(R.id.tab_timetable_list_text_mon);
-        textArray[2] = (TextView) convertView
-                .findViewById(R.id.tab_timetable_list_text_tue);
-        textArray[3] = (TextView) convertView
-                .findViewById(R.id.tab_timetable_list_text_wed);
-        textArray[4] = (TextView) convertView
-                .findViewById(R.id.tab_timetable_list_text_thr);
-        textArray[5] = (TextView) convertView
-                .findViewById(R.id.tab_timetable_list_text_fri);
-        textArray[6] = (TextView) convertView
-                .findViewById(R.id.tab_timetable_list_text_sat);
+            textArray[0] = (TextView) convertView.findViewById(R.id.tab_timetable_list_text_peroid);
+            textArray[1] = (TextView) convertView.findViewById(R.id.tab_timetable_list_text_mon);
+            textArray[2] = (TextView) convertView.findViewById(R.id.tab_timetable_list_text_tue);
+            textArray[3] = (TextView) convertView.findViewById(R.id.tab_timetable_list_text_wed);
+            textArray[4] = (TextView) convertView.findViewById(R.id.tab_timetable_list_text_thr);
+            textArray[5] = (TextView) convertView.findViewById(R.id.tab_timetable_list_text_fri);
+            textArray[6] = (TextView) convertView.findViewById(R.id.tab_timetable_list_text_sat);
+        }
     }
 }
+

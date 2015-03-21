@@ -7,13 +7,13 @@ import android.support.v4.app.FragmentManager;
 
 import com.uoscs09.theuos.util.AppUtil;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class IndexPagerAdapter extends FixedFragmentStatePagerAdapter {
     private final Context mContext;
-    private List<Integer> list;
+    private ArrayList<Integer> list;
 
-    public IndexPagerAdapter(FragmentManager fm, List<Integer> indexList, Context context) {
+    public IndexPagerAdapter(FragmentManager fm, ArrayList<Integer> indexList, Context context) {
         super(fm);
         this.list = indexList;
         this.mContext = context;
@@ -28,7 +28,7 @@ public class IndexPagerAdapter extends FixedFragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         Class<? extends Fragment> clz = AppUtil.getPageClass(list.get(position));
         if (clz == null) {
-            list = AppUtil.loadDefaultPageOrder();
+            list = AppUtil.loadEnabledPageOrder(mContext);
             clz = AppUtil.getPageClass(list.get(position));
         }
         return Fragment.instantiate(mContext, clz.getName());

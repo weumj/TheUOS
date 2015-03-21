@@ -17,7 +17,7 @@
     <string name="finish_update">업데이트 완료</string>
     <string name="progress_finish">작업 완료</string>
     <string name="progress_while_updating">로딩중…</string>
-    <string name="progress_while_loading">Loading…</string>
+    <string name="progress_while_loading" translatable="false">Loading…</string>
     <string name="progress_ongoing">처리 중…</string>
     <string name="progress_wait">잠시 후에 시도하세요.</string>
     <string name="progress_fail">로딩 실패</string>
@@ -147,6 +147,11 @@
     <string name="tab_subject_empty_view_hint_subj">교과목을 터치하면\n수업계획서를 볼 수 있습니다</string>
     <string name="tab_subject_info_plz_select_div_no">분반을 선택해 주세요.</string>
 
+    <string name="tab_course_plan_title">수업계획서</string>
+    <string name="tab_course_plan_prof">담당교수</string>
+    <string name="tab_course_plan_eval">평가방법</string>
+    <string name="tab_course_plan_book">교재</string>
+
     <string name="tab_transport_empty">버튼을 눌러 정보를 불러오세요.</string>
 
     <string name="tab_score_input_subject_name">과목명을 입력하세요</string>
@@ -156,43 +161,7 @@
 
     <string name="tab_etc_selection">이동할 메뉴를 선택해주세요.</string>
     <string name="year">학년도</string>
-    <string-array name="building_names_univ">
-        <item>전농관</item>
-        <item>제1공학관</item>
-        <item>건설공학관</item>
-        <item>창공관</item>
-        <item>인문학관</item>
-        <item>배봉관</item>
-        <item>대학본부</item>
-        <item>자연과학관</item>
-        <item>음악관</item>
-        <item>경농관</item>
-        <item>제2공학관</item>
-        <item>학생회관</item>
-        <item>언무관</item>
-        <item>과학기술관</item>
-        <item>21세기관</item>
-        <item>조형관</item>
-        <item>체육관</item>
-        <item>자작마루</item>
-        <item>정보기술관</item>
-        <item>법학관</item>
-        <item>중앙도서관</item>
-        <item>생활관</item>
-        <item>건축구조실험동</item>
-        <item>토목구조실험동</item>
-        <item>미디어관</item>
-        <item>자동화온실</item>
-        <item>대강당</item>
-        <item>운동장</item>
-        <item>박물관</item>
-        <item>정문</item>
-        <item>후문</item>
-        <item>웰니스센터</item>
-        <item>미래관</item>
-        <item>국제학사</item>
-        <item>국제교육원</item>
-    </string-array>
+
     <string-array name="buildings_univ">
         <item>01 전농관</item>
         <item>02 제1공학관</item>

@@ -15,7 +15,6 @@ import com.uoscs09.theuos.R;
 import com.uoscs09.theuos.tab.timetable.TabTimeTableFragment2;
 import com.uoscs09.theuos.tab.timetable.TimeTable;
 import com.uoscs09.theuos.util.AppUtil;
-import com.uoscs09.theuos.util.OApiUtil.Semester;
 import com.uoscs09.theuos.util.PrefUtil;
 
 import java.text.SimpleDateFormat;
@@ -91,8 +90,7 @@ public abstract class TimeTableWidget extends AppWidgetProvider {
 
                 TimeTable timeTable = TabTimeTableFragment2.readTimetable(context);
                 if (timeTable != null) {
-                    Semester semester = timeTable.semesterCode;
-                    views.setTextViewText(R.id.widget_time_term, timeTable.year + "/" + context.getResources().getStringArray(R.array.terms)[semester.ordinal()]);
+                    views.setTextViewText(R.id.widget_time_term, timeTable.getYearAndSemester());
 
                 } else {
                     views.setTextViewText(R.id.widget_time_term, "");

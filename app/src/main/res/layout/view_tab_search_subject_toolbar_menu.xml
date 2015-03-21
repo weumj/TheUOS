@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:scrollbars="none"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/tab_search_subject_head_layout"
+        android:layout_width="800dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingLeft="10dp"
+        android:baselineAligned="false"
+        android:paddingRight="10dp"
+        android:weightSum="660">
+
+        <TextView
+            android:id="@+id/tab_search_subject_sub_dept1"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="60"
+            android:gravity="center"
+            android:padding="4dp"
+            android:text="@string/tab_search_subject_sub_dept1" />
+
+        <TextView
+            android:id="@+id/tab_search_subject_sub_div1"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="80"
+            android:gravity="center"
+            android:padding="4dp"
+            android:text="@string/tab_search_subject_sub_div1" />
+
+        <TextView
+            android:id="@+id/tab_search_subject_no1"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="60"
+            android:gravity="center"
+            android:padding="4dp"
+            android:text="@string/tab_search_subject_no1" />
+
+        <TextView
+            android:id="@+id/tab_search_subject_class_div1"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="40"
+            android:gravity="center"
+            android:padding="4dp"
+            android:text="@string/tab_search_subject_class_div1" />
+
+        <TextView
+            android:id="@+id/tab_search_subject_sub_nm1"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="80"
+            android:gravity="center"
+            android:padding="4dp"
+            android:text="@string/tab_search_subject_sub_nm1" />
+
+        <TextView
+            android:id="@+id/tab_search_subject_yr1"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="40"
+            android:gravity="center"
+            android:padding="4dp"
+            android:text="@string/tab_search_subject_yr1" />
+
+        <TextView
+            android:id="@+id/tab_search_subject_credit1"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="40"
+            android:gravity="center"
+            android:padding="4dp"
+            android:text="@string/tab_search_subject_credit1" />
+
+        <TextView
+            android:id="@+id/tab_search_subject_prof_nm1"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="80"
+            android:gravity="center"
+            android:padding="4dp"
+            android:text="@string/tab_search_subject_prof_nm1" />
+
+        <TextView
+            android:id="@+id/tab_search_subject_class_nm1"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="100"
+            android:gravity="center"
+            android:padding="4dp"
+            android:text="@string/tab_search_subject_class_nm1" />
+
+        <TextView
+            android:id="@+id/tab_search_subject_tlsn_cnt1"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="40"
+            android:gravity="center"
+            android:padding="4dp"
+            android:text="@string/tab_search_subject_tlsn_cnt1" />
+
+        <TextView
+            android:id="@+id/tab_search_subject_tlsn_limit1"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="40"
+            android:gravity="center"
+            android:padding="4dp"
+            android:text="@string/tab_search_subject_tlsn_limit1" />
+    </LinearLayout>
+</HorizontalScrollView>

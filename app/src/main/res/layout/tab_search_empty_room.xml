@@ -48,4 +48,11 @@
             android:text="@string/tab_subject_empty_view_sort" />
     </RelativeLayout>
 
+
+    <include
+        layout="@layout/view_loading_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" />
+
 </RelativeLayout>

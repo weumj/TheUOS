@@ -3,7 +3,7 @@
 
     <string name="setting_app_info">앱 정보</string>
     <string name="setting_app_version">버전</string>
-    <string name="setting_app_version_desc">0.01</string>
+    <string name="setting_app_version_desc">beta-0.01</string>
     <string name="setting_app_version_update">최신버전 확인</string>
     <string name="setting_app_version_update_desc">어플리케이션의 최신 버전을 확인합니다.</string>
     <string name="setting_app_version_update_require">어플리케이션 업데이트 필요!</string>
@@ -73,29 +73,29 @@
     <string name="setting_timetable_limit_desc_check">가장 마지막 수업 이후로 공강인 시간대를 표시하지 않습니다.</string>
     <string name="setting_timetable_limit_desc">모든 시간대가 표시됩니다.</string>
     <!-- 공지사항 알리미를 사용 할 것인지 여부, boolean -->
-    <string name="pref_key_check_anounce_service">ACTIVE_SERVICE_ANOUNCE</string>
+    <string name="pref_key_check_anounce_service" translatable="false">ACTIVE_SERVICE_ANOUNCE</string>
     <!-- 캐쉬를 삭제하는 메뉴를 띄우는 용도 -->
-    <string name="pref_key_delete_cache">DELETE_CACHE</string>
+    <string name="pref_key_delete_cache" translatable="false">DELETE_CACHE</string>
     <!-- 순서 설정 화면으로 진입하는 용도 -->
-    <string name="pref_key_order">ORDER</string>
+    <string name="pref_key_order" translatable="false">ORDER</string>
     <!-- 공지사항 알리미의 키워드, String -->
-    <string name="pref_key_keyword_anounce">KEYWORD_ANOUNCE</string>
+    <string name="pref_key_keyword_anounce" translatable="false">KEYWORD_ANOUNCE</string>
     <!-- 대출 불가능한 도서 표시 여부, boolean -->
-    <string name="pref_key_check_borrow">BORROW</string>
+    <string name="pref_key_check_borrow" translatable="false">BORROW</string>
     <!-- 점유된 스터디룸 표시 여부, boolean -->
-    <string name="pref_key_check_seat">LIB_SEAT</string>
+    <string name="pref_key_check_seat" translatable="false">LIB_SEAT</string>
     <!-- 도서관 좌석 위젯 스터디룸만 표시 여부, boolean -->
-    <string name="pref_key_widget_seat_show_all">LIB_WIDGET_SEAT_SHOW_ALL</string>
+    <string name="pref_key_widget_seat_show_all" translatable="false">LIB_WIDGET_SEAT_SHOW_ALL</string>
     <!-- 공지사항 알리미의 알림 시간, String -->
-    <string name="pref_key_noti_time">NOTI_TIME</string>
+    <string name="pref_key_noti_time" translatable="false">NOTI_TIME</string>
     <!-- 어플리케이션의 테마, int -->
-    <string name="pref_key_theme">APP_THEME</string>
+    <string name="pref_key_theme" translatable="false">APP_THEME</string>
     <!-- 시간표 표시 제한 여부, boolean -->
-    <string name="pref_key_timetable_limit">TIMETABLE_LIMIT_LAST_TIME</string>
+    <string name="pref_key_timetable_limit" translatable="false">TIMETABLE_LIMIT_LAST_TIME</string>
     <!-- 홈 화면을 보여줄 것인지 여부, boolean -->
-    <string name="pref_key_home">SCREEN_HOME</string>
+    <string name="pref_key_home" translatable="false">SCREEN_HOME</string>
     <!-- 이미지가 저장되는 경로, String -->
-    <string name="pref_key_save_route">IMAGE_SAVE_ROUTE</string>
+    <string name="pref_key_save_route" translatable="false">IMAGE_SAVE_ROUTE</string>
     <string name="setting_web_page">웹 사이트</string>
     <string name="setting_web_page_desc">유용한 사이트의 링크를 제공합니다.</string>
     <string name="web_page_uos">서울시립대학교</string>
