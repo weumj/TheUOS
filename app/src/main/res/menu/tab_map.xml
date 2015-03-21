@@ -17,7 +17,7 @@
         android:orderInCategory="101"
         android:showAsAction="always"
         android:title="@string/action_map"
-        com.uoscs09.theuos:showAsAction="always">
+        theuos22:showAsAction="always">
     </item>
     -->
     <item

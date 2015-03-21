@@ -46,9 +46,9 @@
 -keep class android.support.** { *; }
 -keep interface android.support.** { *; }
 
--keep class com.uoscs09.theuos.annotation.**
+-keep class com.uoscs09.theuos2.annotation.**
 
--keepclassmembernames  @com.uoscs09.theuos.annotation.KeepName class * {
+-keepclassmembernames  @theuos2.annotation.KeepName class * {
      *;
 }
 

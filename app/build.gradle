@@ -1,11 +1,11 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 21
+    compileSdkVersion 22
     buildToolsVersion '22.0.0'
 
     defaultConfig {
-        applicationId "com.uoscs09.theuos"
+        applicationId "com.uoscs09.theuos2"
         minSdkVersion 14
         targetSdkVersion 22
     }

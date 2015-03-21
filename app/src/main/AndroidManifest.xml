@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.uoscs09.theuos"
+    package="com.uoscs09.theuos2"
     android:versionCode="1"
     android:versionName="@string/setting_app_version_desc">
 
@@ -20,7 +20,7 @@
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
-        android:name=".common.UOSApplication"
+        android:name="com.uoscs09.theuos2.common.UOSApplication"
         android:label="@string/app_name">
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
@@ -33,10 +33,10 @@
             android:value="true" />
 
         <activity
-            android:name="com.uoscs09.theuos.TitleActivity"
+            android:name="com.uoscs09.theuos2.TitleActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Titile">
+            android:theme="@style/Theme.Title">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -45,46 +45,46 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.uoscs09.theuos.UosMainActivity"
+            android:name="com.uoscs09.theuos2.UosMainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden" />
-        <activity android:name="com.uoscs09.theuos.tab.phonelist.PhoneListWebActivity" />
-        <activity android:name="com.uoscs09.theuos.tab.map.SubMapActivity" />
-        <activity android:name="com.uoscs09.theuos.tab.anounce.SubAnounceWebActivity" />
+        <activity android:name="com.uoscs09.theuos2.tab.phonelist.PhoneListWebActivity" />
+        <activity android:name="com.uoscs09.theuos2.tab.map.SubMapActivity" />
+        <activity android:name="com.uoscs09.theuos2.tab.anounce.SubAnounceWebActivity" />
         <activity
-            android:name="com.uoscs09.theuos.setting.SettingActivity"
+            android:name="com.uoscs09.theuos2.setting.SettingActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:uiOptions="splitActionBarWhenNarrow" />
-        <activity android:name="com.uoscs09.theuos.tab.libraryseat.SubSeatWebActivity" />
+        <activity android:name="com.uoscs09.theuos2.tab.libraryseat.SubSeatWebActivity" />
 
-        <activity android:name=".TestActivity" />
+        <activity android:name="com.uoscs09.theuos2.TestActivity" />
 
         <service
-            android:name="com.uoscs09.theuos.widget.timetable.Widget5x4ListService"
+            android:name="com.uoscs09.theuos2.widget.timetable.Widget5x4ListService"
             android:exported="true"
             android:label="@string/widget_timetable"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
         <service
-            android:name="com.uoscs09.theuos.widget.timetable.Widget4x4ListService"
+            android:name="com.uoscs09.theuos2.widget.timetable.Widget4x4ListService"
             android:exported="true"
             android:label="@string/widget_timetable"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
         <service
-            android:name="com.uoscs09.theuos.widget.restaurant.RestListService"
+            android:name="com.uoscs09.theuos2.widget.restaurant.RestListService"
             android:exported="true"
             android:label="@string/widget_rest"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
         <service
-            android:name="com.uoscs09.theuos.widget.libraryseat.LibrarySeatListService"
+            android:name="com.uoscs09.theuos2.widget.libraryseat.LibrarySeatListService"
             android:exported="true"
             android:label="@string/widget_library_seat"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
         <service
-            android:name=".tab.anounce.ServiceForAnnounce"
+            android:name="com.uoscs09.theuos2.tab.anounce.ServiceForAnnounce"
             android:label="@string/setting_announce_noti" />
 
-        <receiver android:name="com.uoscs09.theuos.service.BReceiver">
+        <receiver android:name="com.uoscs09.theuos2.service.BReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.PACKAGE_ADDED" />
@@ -95,14 +95,14 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:name="com.uoscs09.theuos.tab.timetable.TimeTableNotiReceiver"
+            android:name="com.uoscs09.theuos2.tab.timetable.TimeTableNotiReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.uoscs09.theuos.tab.timetable.set_alarm" />
+                <action android:name="com.uoscs09.theuos2.tab.timetable.set_alarm" />
             </intent-filter>
         </receiver>
         <receiver
-            android:name="com.uoscs09.theuos.widget.timetable.TimeTableWidget4x4"
+            android:name="com.uoscs09.theuos2.widget.timetable.TimeTableWidget4x4"
             android:label="@string/widget_timetable4x4">
             <meta-data
                 android:name="android.appwidget.provider"
@@ -110,13 +110,13 @@
 
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="com.uoscs09.theuos.widget.timetable.refresh" />
+                <action android:name="com.uoscs09.theuos2.widget.timetable.refresh" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.ACTION_EXTERNAL_APPLICATION_AVAILABLE" />
             </intent-filter>
         </receiver>
         <receiver
-            android:name="com.uoscs09.theuos.widget.timetable.TimeTableWidget5x4"
+            android:name="com.uoscs09.theuos2.widget.timetable.TimeTableWidget5x4"
             android:label="@string/widget_timetable5x4">
             <meta-data
                 android:name="android.appwidget.provider"
@@ -124,13 +124,13 @@
 
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="com.uoscs09.theuos.widget.timetable.refresh" />
+                <action android:name="com.uoscs09.theuos2.widget.timetable.refresh" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.ACTION_EXTERNAL_APPLICATION_AVAILABLE" />
             </intent-filter>
         </receiver>
         <receiver
-            android:name="com.uoscs09.theuos.widget.restaurant.RestWidget"
+            android:name="com.uoscs09.theuos2.widget.restaurant.RestWidget"
             android:label="@string/widget_rest_desc">
             <meta-data
                 android:name="android.appwidget.provider"
@@ -138,22 +138,22 @@
 
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="com.uoscs09.theuos.widget.restaurant.RestWidget.NEXT_ACTION" />
-                <action android:name="com.uoscs09.theuos.widget.restaurant.RestWidget.PREV_ACTION" />
+                <action android:name="com.uoscs09.theuos2.widget.restaurant.RestWidget.NEXT_ACTION" />
+                <action android:name="com.uoscs09.theuos2.widget.restaurant.RestWidget.PREV_ACTION" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.ACTION_EXTERNAL_APPLICATION_AVAILABLE" />
             </intent-filter>
         </receiver>
         <receiver
-            android:name="com.uoscs09.theuos.widget.libraryseat.LibrarySeatWidget"
+            android:name="com.uoscs09.theuos2.widget.libraryseat.LibrarySeatWidget"
             android:label="@string/widget_library_seat_desc">
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_conf_library_seat" />
 
             <intent-filter>
-                <action android:name="com.uoscs09.theuos.widget.libraryseat.REFRESH" />
-                <action android:name="com.uoscs09.theuos.widget.libraryseat.ACTIVITY" />
+                <action android:name="com.uoscs09.theuos2.widget.libraryseat.REFRESH" />
+                <action android:name="com.uoscs09.theuos2.widget.libraryseat.ACTIVITY" />
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
         </receiver>

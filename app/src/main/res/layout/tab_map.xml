@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.uoscs09.theuos.common.NonLeakingWebView
+    <com.uoscs09.theuos2.common.NonLeakingWebView
         android:layout_width="fill_parent"
         android:id="@+id/webview"
         android:layout_height="fill_parent" />
