@@ -246,7 +246,7 @@ public class TimeTableInfoCallback implements View.OnClickListener {
 
         PendingIntent pi = PendingIntent.getBroadcast(context, code, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        IOUtil.saveToFileSuppressed(context, String.valueOf(code), Context.MODE_PRIVATE, when);
+        IOUtil.saveToFileSuppressed(context, String.valueOf(code), when);
         if (isSet) {
             long notiTime = getNotificationTime(position, day);
             am.cancel(pi);
@@ -274,7 +274,7 @@ public class TimeTableInfoCallback implements View.OnClickListener {
             for (day = 1; day < 7; day++) {
                 int code = getAlarmCode(pos, day);
                 PendingIntent pi = PendingIntent.getBroadcast(context, code, intent.putExtra(INTENT_CODE, code), PendingIntent.FLAG_UPDATE_CURRENT);
-                IOUtil.saveToFileAsync(context, String.valueOf(code), Context.MODE_PRIVATE, when, null);
+                IOUtil.saveToFileAsync(context, String.valueOf(code), when, null);
                 am.cancel(pi);
             }
         }

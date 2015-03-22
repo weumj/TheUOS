@@ -27,7 +27,7 @@ import com.uoscs09.theuos2.tab.libraryseat.TabLibrarySeatFragment;
 import com.uoscs09.theuos2.tab.map.TabMapFragment;
 import com.uoscs09.theuos2.tab.phonelist.TabPhoneFragment;
 import com.uoscs09.theuos2.tab.restaurant.TabRestaurantFragment;
-import com.uoscs09.theuos2.tab.schedule.TabScheduleFragment;
+import com.uoscs09.theuos2.tab.schedule.UnivScheduleFragment;
 import com.uoscs09.theuos2.tab.score.ScoreFragment;
 import com.uoscs09.theuos2.tab.subject.TabSearchSubjectFragment2;
 import com.uoscs09.theuos2.tab.timetable.TabTimeTableFragment2;
@@ -151,7 +151,6 @@ public class AppUtil {
 
     public static ArrayList<Page> loadDefaultOrder2(Context context) {
         ArrayList<Page> list = new ArrayList<>();
-        PrefUtil pref = PrefUtil.getInstance(context);
         for (int i = 1; i < PAGE_SIZE; i++) {
             list.add(new Page(i));
         }
@@ -473,7 +472,7 @@ public class AppUtil {
         return getAttrValue(context, iconId);
     }
 
-    private static int getPageIconGray(int id) {
+    public static int getPageIconGray(int id) {
         switch (id) {
             case R.string.title_section0_home:
                 return R.drawable.ic_launcher;
@@ -512,7 +511,7 @@ public class AppUtil {
         }
     }
 
-    private static int getPageIconWhite(int id) {
+    public static int getPageIconWhite(int id) {
         switch (id) {
             case R.string.title_section0_home:
                 return R.drawable.ic_launcher;
@@ -617,7 +616,7 @@ public class AppUtil {
                 return TabSearchSubjectFragment2.class;
 
             case R.string.title_tab_schedule:
-                return TabScheduleFragment.class;
+                return UnivScheduleFragment.class;
 
             case R.string.title_tab_score:
                 return ScoreFragment.class;
@@ -661,7 +660,7 @@ public class AppUtil {
         else if (fragmentClass.equals(TabSearchSubjectFragment2.class))
             return R.string.title_tab_search_subject;
 
-        else if (fragmentClass.equals(TabScheduleFragment.class))
+        else if (fragmentClass.equals(UnivScheduleFragment.class))
             return R.string.title_tab_schedule;
 
         else if (fragmentClass.equals(ScoreFragment.class))
@@ -856,6 +855,52 @@ public class AppUtil {
                 return R.color.material_deep_teal_500;
             default:
                 return 0;
+        }
+    }
+
+    public static int getColor(int index){
+        switch (index % 20){
+            case 0:
+            default:
+                return R.color.red_yellow;
+            case 1:
+                return R.color.light_blue;
+            case 2:
+                return R.color.red_material_300;
+            case 3:
+                return R.color.purple;
+            case 4:
+                return R.color.green;
+            case 5:
+                return R.color.gray_blue;
+            case 6:
+                return R.color.material_blue_grey_400;
+            case 7:
+                return R.color.pink;
+            case 8:
+                return R.color.material_green_700;
+            case 9:
+                return R.color.material_deep_teal_500;
+            case 10:
+                return R.color.material_blue_grey_200;
+            case 11:
+                return R.color.material_blue_grey_900;
+            case 12:
+                return R.color.material_red_700;
+            case 13:
+                return R.color.material_deep_teal_200;
+            case 14:
+                return R.color.material_grey_600;
+            case 15:
+                return R.color.material_red_200;
+            case 16:
+                return R.color.material_light_blue_400;
+            case 17:
+                return R.color.material_indigo_200;
+            case 18:
+                return R.color.material_green_200;
+            case 19:
+                return R.color.material_green_300;
         }
     }
 

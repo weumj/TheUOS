@@ -18,7 +18,7 @@ public class PhoneItem implements Parcelable {
 		this.sitePhoneNumber = PhoneNumber;
 	}
 
-	protected PhoneItem(Parcel source) {
+	private PhoneItem(Parcel source) {
 		byte b = source.readByte();
 		if (b == 0) {
 			siteName = sitePhoneNumber = null;

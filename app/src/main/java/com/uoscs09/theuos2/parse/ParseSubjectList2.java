@@ -18,9 +18,4 @@ public class ParseSubjectList2 extends OApiParser2.ReflectionParser<SubjectInfoI
         return new SubjectInfoItem();
     }
 
-    @NonNull
-    @Override
-    protected Class<? extends SubjectInfoItem> getReflectionClass(SubjectInfoItem instance) {
-        return instance.getClass();
-    }
 }

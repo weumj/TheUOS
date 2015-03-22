@@ -46,18 +46,19 @@ import java.util.concurrent.Callable;
 
 
 public class SubjectDetailDialogFragment extends DialogFragment implements View.OnClickListener, AdapterView.OnItemSelectedListener, Callable<ArrayList<SubjectInfoItem>>, ColorSelector.OnColorSelectedListener {
-    protected final Hashtable<String, String> params;
-    final ParseSubjectList2 mParser = new ParseSubjectList2();
+    private final Hashtable<String, String> params;
+    private final ParseSubjectList2 mParser = new ParseSubjectList2();
 
     private TextView mTimeTableDialogTitle;
-    protected Dialog mProgress, mClassDivSelectDialog;
-    protected ArrayAdapter<SubjectInfoItem> mClassDivSelectAdapter;
+    private Dialog mProgress;
+    private Dialog mClassDivSelectDialog;
+    private ArrayAdapter<SubjectInfoItem> mClassDivSelectAdapter;
     private Subject mSubject;
     private TimeTable mTimeTable;
 
-    private CoursePlanDialogFragment mCoursePlanDialogFragment = new CoursePlanDialogFragment();
+    private final CoursePlanDialogFragment mCoursePlanDialogFragment = new CoursePlanDialogFragment();
 
-    private PieProgressDrawable pieProgressDrawable = new PieProgressDrawable();
+    private final PieProgressDrawable pieProgressDrawable = new PieProgressDrawable();
 
     @Nullable
     private ColorSelector.OnColorSelectedListener mColorSelectedListener;
@@ -233,7 +234,7 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
         }
     }
 
-    protected void initSelectDialog() {
+    void initSelectDialog() {
         View dialogView = View.inflate(getActivity(), R.layout.dialog_timecallback, null);
         mClassDivSelectDialog = new MaterialDialog.Builder(getActivity())
                 .title(mSubject.getSubjectNameLocal())
@@ -360,15 +361,15 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
         }
     }
 
-    protected Tracker getTracker(UOSApplication.TrackerName name) {
+    Tracker getTracker(UOSApplication.TrackerName name) {
         return ((UOSApplication) getActivity().getApplication()).getTracker(name);
     }
 
-    protected Tracker getTracker() {
+    Tracker getTracker() {
         return getTracker(UOSApplication.TrackerName.APP_TRACKER);
     }
 
-    protected void sendTrackerEvent(String action, String label) {
+    void sendTrackerEvent(String action, String label) {
         getTracker().send(new HitBuilders.EventBuilder()
                 .setCategory("SubjectDetailDialogFragment")
                 .setAction(action)
@@ -376,7 +377,7 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
                 .build());
     }
 
-    protected void sendTrackerEvent(String action, String label, long value) {
+    void sendTrackerEvent(String action, String label, long value) {
         getTracker().send(new HitBuilders.EventBuilder()
                 .setCategory("SubjectDetailDialogFragment")
                 .setAction(action)
@@ -385,7 +386,7 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
                 .build());
     }
 
-    protected void sendClickEvent(String label) {
+    void sendClickEvent(String label) {
         sendTrackerEvent("click", label);
     }
 

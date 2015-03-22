@@ -15,7 +15,7 @@ public class DetailScoreItem implements Parcelable {
 		this.ave = ave;
 	}
 
-	protected DetailScoreItem(Parcel p) {
+	DetailScoreItem(Parcel p) {
 		type = p.readString();
 		class_eval_item = p.readString();
 		raw_score = p.readString();

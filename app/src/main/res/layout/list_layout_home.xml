@@ -4,10 +4,11 @@
     android:layout_height="match_parent" >
 
     <TextView
-        android:id="@+id/tab_home_text_title"
+        android:id="@android:id/text1"
         android:layout_width="100dip"
         android:layout_height="100dip"
         android:background="@drawable/selector_list_circle"
+        android:textColor="@android:color/white"
         android:gravity="center"
         android:padding="10dip" />
 

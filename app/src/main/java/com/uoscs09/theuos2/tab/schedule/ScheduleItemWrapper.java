@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
-
+@Deprecated
 public class ScheduleItemWrapper implements Parcelable {
 	public ArrayList<ScheduleItem> scheduleList;
 	public ArrayList<BoardItem> boardList;
@@ -20,7 +20,7 @@ public class ScheduleItemWrapper implements Parcelable {
 		this.boardList = boardList;
 	}
 
-	protected ScheduleItemWrapper(Parcel in) {
+	private ScheduleItemWrapper(Parcel in) {
 		this();
 		in.readList(boardList, BoardItem.class.getClassLoader());
 		in.readList(scheduleList, ScheduleItem.class.getClassLoader());

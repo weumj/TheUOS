@@ -117,7 +117,7 @@ public class SubjectInfoDialFrag extends DialogFragment implements AsyncCallback
 					}
 				});
 
-		adapter = new SubjectInfoAdapter(context,R.layout.list_layout_subject_info, infoList);
+		adapter = new SubjectInfoAdapter(context, infoList);
 		aAdapter = new AlphaInAnimationAdapter(adapter);
 		aAdapter.setAbsListView(listView);
 		listView.setAdapter(aAdapter);

@@ -21,7 +21,7 @@ import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.parse.ParseSchedule;
 import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.StringUtil;
-
+@Deprecated
 public class TabScheduleFragment extends AbsProgressFragment<ScheduleItemWrapper> {
     private TextView mTextView;
     private final ParseSchedule mParser = new ParseSchedule();

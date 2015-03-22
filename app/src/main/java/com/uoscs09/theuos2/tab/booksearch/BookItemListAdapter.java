@@ -38,8 +38,8 @@ public class BookItemListAdapter extends AbsArrayAdapter<BookItem, GroupHolder> 
     private final ImageLoader imageLoader;
     private final ParserBookInfo mParser = new ParserBookInfo();
 
-    public BookItemListAdapter(Context context, int layout, List<BookItem> list, View.OnLongClickListener ll) {
-        super(context, layout, list);
+    public BookItemListAdapter(Context context, List<BookItem> list, View.OnLongClickListener ll) {
+        super(context, R.layout.list_layout_book, list);
         imageLoader = ((UOSApplication) ((Activity) context).getApplication()).getImageLoader();
 
         this.ll = ll;
@@ -105,20 +105,19 @@ public class BookItemListAdapter extends AbsArrayAdapter<BookItem, GroupHolder> 
                 // 설정된 데이터가 없다면
                 // 해당 아이템을 처음 터치하는 것 이므로 데이터를 불러옴
                 if (item.bookStateInfoList == null) {
-                    AsyncLoader.excute(new Callable<List<BookStateInfo>>() {
+                    AsyncLoader.excute(new Callable<ArrayList<BookStateInfo>>() {
 
                         @Override
-                        public List<BookStateInfo> call() throws Exception {
+                        public ArrayList<BookStateInfo> call() throws Exception {
                             return item.infoUrl.equals(StringUtil.NULL) ? null : mParser.parse(HttpRequest.getBody(item.infoUrl));
 
                         }
-                    }, new AsyncLoader.OnTaskFinishedListener() {
+                    }, new AsyncLoader.OnTaskFinishedListener<ArrayList<BookStateInfo>>() {
 
-                        @SuppressWarnings("unchecked")
                         @Override
-                        public void onTaskFinished(boolean isExceptionOccurred, Object data) {
+                        public void onTaskFinished(boolean isExceptionOccurred, ArrayList<BookStateInfo> data, Exception e) {
                             if (!isExceptionOccurred && data != null) {
-                                item.bookStateInfoList = (List<BookStateInfo>) data;
+                                item.bookStateInfoList = data;
                                 setBookStateLayout(holder.stateInfoLayout, item.bookStateInfoList);
                                 holder.stateInfoLayout.setVisibility(View.VISIBLE);
                                 v.requestLayout();
@@ -183,7 +182,7 @@ public class BookItemListAdapter extends AbsArrayAdapter<BookItem, GroupHolder> 
     }
 
 
-    protected Spannable setSpannableText(final String title, int which) {
+    Spannable setSpannableText(final String title, int which) {
         Spannable styledText = new Spannable.Factory().newSpannable(title);
         int last_length = styledText.length();
         switch (which) {
@@ -251,7 +250,7 @@ class ParserBookInfo extends JerichoParser<BookStateInfo> {
 
 class GroupHolder extends AbsArrayAdapter.ViewHolder implements ImageLoader.ImageListener {
 
-    public final View infoParentLayout;
+    private final View infoParentLayout;
     public final TextView title;
     public final TextView writer;
     public final TextView publish_year;

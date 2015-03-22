@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+    android:layout_height="fill_parent">
 
     <ExpandableListView
         android:id="@+id/tab_transport_listview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true" >
-    </ExpandableListView>
+        android:layout_alignParentTop="true"/>
 
     <TextView
         android:id="@+id/empty_view"
@@ -22,4 +21,9 @@
         android:text="@string/tab_transport_empty"
         android:visibility="invisible" />
 
+    <include
+        layout="@layout/view_loading_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" />
 </RelativeLayout>

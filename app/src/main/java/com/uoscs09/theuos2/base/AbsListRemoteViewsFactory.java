@@ -25,7 +25,7 @@ public abstract class AbsListRemoteViewsFactory<T> implements
 		this.mContext = context;
 	}
 
-	protected boolean addAll(int position, Collection<? extends T> collection) {
+	protected boolean addAll(Collection<? extends T> collection) {
 		return mDataList.addAll(collection);
 	}
 

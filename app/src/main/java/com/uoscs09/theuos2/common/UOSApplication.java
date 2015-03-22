@@ -39,7 +39,7 @@ public class UOSApplication extends Application{
         ECOMMERCE_TRACKER,     // 아마 유료 결재 트래킹 개념 같음
     }
 
-    final HashMap<TrackerName, Tracker> mTrackers = new HashMap<>();
+    private final HashMap<TrackerName, Tracker> mTrackers = new HashMap<>();
 
     public synchronized Tracker getTracker(TrackerName trackerId) {
 

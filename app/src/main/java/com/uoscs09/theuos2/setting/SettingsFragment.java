@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager.OnBackStackChangedListener;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Resources;
@@ -18,8 +19,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.TypedValue;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -27,6 +26,7 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.javacan.asyncexcute.AsyncCallback;
 import com.uoscs09.theuos2.R;
+import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.common.AsyncLoader;
 import com.uoscs09.theuos2.common.PieProgressDrawable;
 import com.uoscs09.theuos2.common.UOSApplication;
@@ -45,7 +45,7 @@ import java.util.concurrent.Callable;
  * 메인 설정화면을 나타내는 {@code PreferenceFragment}
  */
 public class SettingsFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener {
-    AlertDialog mThemeSelectorDialog;
+    private AlertDialog mThemeSelectorDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -182,19 +182,6 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
     }
 
     /**
-     * White, * BlackAndWhite, * Black, * LightBlue <br>
-     * <br>
-     * // ActionBar text, colorPrimary, colorPrimaryDark (또는 비슷한 색)<br>
-     * colorText, colorDrawableCentor, colorDrawableBorder
-     */
-    static final int[][] THEME_COLORS_RES = {
-            {R.color.material_deep_teal_500, android.R.color.white, R.color.primary_material_light},
-            {R.color.primary_dark_material_dark, android.R.color.white, R.color.primary_dark_material_dark},
-            {R.color.primary_dark_material_dark, R.color.primary_material_dark, R.color.primary_dark_material_dark},
-            {R.color.material_light_blue_400, R.color.material_light_blue_400, R.color.material_light_blue_600}
-    };
-
-    /**
      * 테마를 선택하는 dialog를 보여준다.dialog가 null일시 초기화도 같이한다.
      */
     private void showThemeDialog() {
@@ -202,29 +189,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
             mThemeSelectorDialog = new MaterialDialog.Builder(getActivity())
                     .iconAttr(R.attr.ic_content_paint)
                     .title(R.string.setting_plz_select_theme)
-                    .adapter(new ArrayAdapter<AppTheme>(getActivity(), android.R.layout.simple_list_item_1, AppTheme.values()) {
-                                 @Override
-                                 public View getView(int position, View convertView, ViewGroup parent) {
-                                     View view = super.getView(position, convertView, parent);
-                                     Resources res = getResources();
-                                     int colorText = res.getColor(THEME_COLORS_RES[position][0]);
-                                     int colorDrawableCentor = res.getColor(THEME_COLORS_RES[position][1]);
-
-                                     int colorDrawableBorder = res.getColor(THEME_COLORS_RES[position][2]);
-                                     TextView tv = (TextView) view;
-                                     tv.setTextColor(colorText);
-
-                                     PieProgressDrawable d = new PieProgressDrawable();
-                                     d.setBounds(new Rect(0, 0, 60, 60));
-                                     d.setBorderWidth(2, res.getDisplayMetrics());
-                                     d.setCentorColor(colorDrawableCentor);
-                                     d.setColor(colorDrawableBorder);
-                                     d.setLevel(100);
-                                     tv.setCompoundDrawablePadding(50);
-                                     tv.setCompoundDrawables(d, null, null, null);
-                                     return view;
-                                 }
-                             },
+                    .adapter(new ThemeSelectAdapter(getActivity()),
                             new MaterialDialog.ListCallback() {
                                 @Override
                                 public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
@@ -233,7 +198,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 
                                     if (originalValue != i) {
 
-                                        Tracker t = ((UOSApplication)getActivity().getApplication()).getTracker(UOSApplication.TrackerName.APP_TRACKER);
+                                        Tracker t = ((UOSApplication) getActivity().getApplication()).getTracker(UOSApplication.TrackerName.APP_TRACKER);
                                         t.send(new HitBuilders.EventBuilder()
                                                 .setCategory("setting fragment")
                                                 .setAction("apply theme")
@@ -254,6 +219,74 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         mThemeSelectorDialog.show();
     }
 
+    private static class ThemeSelectAdapter extends AbsArrayAdapter<AppTheme, ViewHolder> {
+        public ThemeSelectAdapter(Context context) {
+            super(context, android.R.layout.simple_list_item_1, AppTheme.values());
+        }
+
+        @Override
+        public void onBindViewHolder(int position, SettingsFragment.ViewHolder holder) {
+            holder.setView(getItem(position));
+        }
+
+        @Override
+        public SettingsFragment.ViewHolder getViewHolder(View convertView) {
+            return new SettingsFragment.ViewHolder(convertView);
+        }
+    }
+
+    /**
+     * White, * BlackAndWhite, * Black, * LightBlue <br>
+     * <br>
+     * // ActionBar text, colorPrimary, colorPrimaryDark (또는 비슷한 색)<br>
+     * colorText, colorDrawableCentor, colorDrawableBorder
+     */
+    static final int[][] THEME_COLORS_RES = {
+            {R.color.material_deep_teal_500, android.R.color.white, R.color.primary_material_light},
+            {R.color.primary_dark_material_dark, android.R.color.white, R.color.primary_dark_material_dark},
+            {R.color.primary_dark_material_dark, R.color.primary_material_dark, R.color.primary_dark_material_dark},
+            {R.color.material_light_blue_400, R.color.material_light_blue_400, R.color.material_light_blue_600}
+    };
+
+    private static class ViewHolder extends AbsArrayAdapter.SimpleViewHolder {
+        final PieProgressDrawable drawable;
+
+        public ViewHolder(View view) {
+            super(view);
+
+            Resources resources = view.getResources();
+            int drawableSize = resources.getDimensionPixelSize(R.dimen.theme_selector_drawable_size);
+            int drawablePadding = resources.getDimensionPixelSize(R.dimen.theme_selector_drawable_padding);
+
+            drawable = new PieProgressDrawable();
+            drawable.setBounds(new Rect(0, 0, drawableSize, drawableSize));
+            drawable.setBorderWidth(2, resources.getDisplayMetrics());
+            drawable.setLevel(100);
+
+            textView.setCompoundDrawablePadding(drawablePadding);
+            textView.setCompoundDrawables(drawable, null, null, null);
+
+        }
+
+        void setView(AppTheme appTheme) {
+            textView.setText(appTheme.toString());
+
+            int position = appTheme.ordinal();
+            Resources res = textView.getResources();
+
+            int colorText = res.getColor(THEME_COLORS_RES[position][0]);
+            textView.setTextColor(colorText);
+
+            int colorDrawableCentor = res.getColor(THEME_COLORS_RES[position][1]);
+            int colorDrawableBorder = res.getColor(THEME_COLORS_RES[position][2]);
+
+            drawable.setCentorColor(colorDrawableCentor);
+            drawable.setColor(colorDrawableBorder);
+
+            textView.invalidateDrawable(drawable);
+        }
+    }
+
     /**
      * 어플리케이션의 모든 캐쉬를 삭제한다.
      */
@@ -264,11 +297,11 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
                 AppUtil.clearCache(getActivity());
                 return null;
             }
-        }, new AsyncLoader.OnTaskFinishedListener() {
+        }, new AsyncLoader.OnTaskFinishedListener<Void>() {
             @Override
-            public void onTaskFinished(boolean isExceptionOccurred, Object data) {
+            public void onTaskFinished(boolean isExceptionOccurred, Void data, Exception e) {
                 if (isExceptionOccurred) {
-                    AppUtil.showErrorToast(getActivity(), (Exception) data, true);
+                    AppUtil.showErrorToast(getActivity(), e, true);
                 } else {
                     AppUtil.showToast(getActivity(), R.string.execute_delete);
                 }
@@ -357,7 +390,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
                 break;
 
             case PrefUtil.KEY_HOME:
-                Tracker t = ((UOSApplication)getActivity().getApplication()).getTracker(UOSApplication.TrackerName.APP_TRACKER);
+                Tracker t = ((UOSApplication) getActivity().getApplication()).getTracker(UOSApplication.TrackerName.APP_TRACKER);
                 t.send(new HitBuilders.EventBuilder()
                         .setCategory("setting fragment")
                         .setAction("enable home fragment")

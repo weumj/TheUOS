@@ -12,8 +12,8 @@ import java.util.List;
 @Deprecated
 public class SubjectAdapter extends AbsArrayAdapter<SubjectItem, SubjectAdapter.Holder> {
 
-    public SubjectAdapter(Context context, int layout, List<SubjectItem> list) {
-        super(context, layout, list);
+    public SubjectAdapter(Context context, List<SubjectItem> list) {
+        super(context, R.layout.list_layout_subject, list);
     }
 
     @Override

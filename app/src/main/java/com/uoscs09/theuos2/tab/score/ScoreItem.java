@@ -14,7 +14,7 @@ public class ScoreItem implements Parcelable {
 		this.title = title;
 	}
 	
-	protected ScoreItem(Parcel p) {
+	private ScoreItem(Parcel p) {
 		title = p.readString();
 		p.readList(list, DetailScoreItem.class.getClassLoader());
 	}

@@ -41,15 +41,15 @@ import java.util.Hashtable;
 public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<SubjectItem2>> implements
         AdapterView.OnItemClickListener, AdapterView.OnItemSelectedListener, View.OnClickListener {
     @AsyncData
-    protected ArrayList<SubjectItem2> mSubjectList;
-    protected Hashtable<String, String> mOApiParams;
+    private ArrayList<SubjectItem2> mSubjectList;
+    private Hashtable<String, String> mOApiParams;
 
     @ReleaseWhenDestroy
     private SubjectAdapter2 mAdapter;
     @ReleaseWhenDestroy
-    protected AlertDialog mSearchDialog;
+    private AlertDialog mSearchDialog;
     @ReleaseWhenDestroy
-    protected EditText mSearchEditText;
+    private EditText mSearchEditText;
     @ReleaseWhenDestroy
     private Spinner mDialogSpinner1, mDialogSpinner2, mDialogSpinner3, mDialogSpinner4, mDialogTermSpinner, mDialogYearSpinner;
     private final int[] selections = new int[4];
@@ -58,7 +58,7 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
     @ReleaseWhenDestroy
     private TextView[] textViews;
 
-    private CoursePlanDialogFragment mCoursePlanDialogFragment = new CoursePlanDialogFragment();
+    private final CoursePlanDialogFragment mCoursePlanDialogFragment = new CoursePlanDialogFragment();
 
     private final ParseSubject2 mParser = new ParseSubject2();
 

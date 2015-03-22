@@ -14,8 +14,8 @@ import java.util.regex.Pattern;
 
 public class AnounceAdapter extends AbsArrayAdapter<AnnounceItem, AnounceAdapter.Holder> {
 
-    public AnounceAdapter(Context context, int layout, List<AnnounceItem> list) {
-        super(context, layout, list);
+    public AnounceAdapter(Context context,  List<AnnounceItem> list) {
+        super(context, R.layout.list_layout_announce, list);
     }
 
     /**

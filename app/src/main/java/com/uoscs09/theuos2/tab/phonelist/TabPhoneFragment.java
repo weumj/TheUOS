@@ -37,12 +37,14 @@ import java.util.List;
 
 public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>> {
     @ReleaseWhenDestroy
+    private
     ArrayAdapter<PhoneItem> phoneAdapter;
     @ReleaseWhenDestroy
+    private
     MaterialDialog mProgressDialog;
     @ReleaseWhenDestroy
     private AlertDialog dialog;
-    protected static final String PHONE_LIST = "phone_list";
+    private static final String PHONE_LIST = "phone_list";
     @AsyncData
     private List<PhoneItem> mPhoneList;
 
@@ -75,7 +77,7 @@ public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>> {
         initDialog();
 
         // 리스트 어댑터 생성
-        phoneAdapter = new PhoneListAdapter(getActivity(), R.layout.list_layout_phone, mPhoneList, mOnClickListener);
+        phoneAdapter = new PhoneListAdapter(getActivity(), mPhoneList, mOnClickListener);
         // 리스트 뷰
         ListView phoneListView = (ListView) rootView.findViewById(R.id.tab_phone_list_phone);
 

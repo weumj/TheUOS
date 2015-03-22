@@ -13,12 +13,6 @@ public class ParseCoursePlan extends OApiParser2.ReflectionParser<CoursePlanItem
 
     @NonNull
     @Override
-    protected Class<? extends CoursePlanItem> getReflectionClass(CoursePlanItem instance) {
-        return instance.getClass();
-    }
-
-    @NonNull
-    @Override
     public String getListTag() {
         return "mainlist";
     }

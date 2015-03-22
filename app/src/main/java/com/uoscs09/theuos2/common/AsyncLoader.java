@@ -42,7 +42,7 @@ public class AsyncLoader {
      * @param task 비동기 작업이 실시될 {@link Callable}
      * @param l    작업 종료후 호출될 callback
      */
-    public static <Data> AsyncTask<Void, Void, Data> excute(Callable<Data> task, OnTaskFinishedListener l) {
+    public static <Data> AsyncTask<Void, Void, Data> excute(@NonNull Callable<Data> task, OnTaskFinishedListener<Data> l) {
         return getTasker(task, l).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
@@ -61,7 +61,7 @@ public class AsyncLoader {
      *
      * @param r 비동기 작업이 실시될 {@link Runnable}
      */
-    public static void excute(Runnable r) {
+    public static void excute(@NonNull Runnable r) {
         AsyncTask.THREAD_POOL_EXECUTOR.execute(r);
     }
 
@@ -73,41 +73,39 @@ public class AsyncLoader {
      *
      * @param r 비동기 작업이 실시될 {@link Runnable}
      */
-    public static void excuteFor(Runnable r) {
+    public static void excuteFor(@NonNull Runnable r) {
         sEXECUTOR.execute(r);
     }
 
-    private static <Data> AsyncTask<Void, Void, Data> getTasker(Callable<Data> task, final OnTaskFinishedListener l) {
-        return new AsyncExecutor<Data>()
-                .setCallable(task
-                ).setCallback(
-                        new AsyncCallback.Base<Data>() {
-                            public void onResult(Data result) {
-                                if (l != null)
-                                    l.onTaskFinished(false, result);
-                            }
+    private static <Data> AsyncTask<Void, Void, Data> getTasker(@NonNull Callable<Data> task, final OnTaskFinishedListener<Data> l) {
+        return new AsyncExecutor<Data>().setCallable(task).setCallback(
+                new AsyncCallback.Base<Data>() {
+                    public void onResult(Data result) {
+                        if (l != null)
+                            l.onTaskFinished(false, result, null);
+                    }
 
-                            @Override
-                            public void exceptionOccured(Exception e) {
-                                if (l != null)
-                                    l.onTaskFinished(true, e);
-                            }
-                        }
-                );
+                    @Override
+                    public void exceptionOccured(Exception e) {
+                        if (l != null)
+                            l.onTaskFinished(true, null, e);
+                    }
+                }
+        );
     }
 
     /**
      * 비 동기 작업 후 호출될 listener
      */
-    public static interface OnTaskFinishedListener {
+    public static interface OnTaskFinishedListener<T> {
         /**
          * 비 동기 작업 후 호출되는 메소드
          *
          * @param isExceptionOccurred Exception 발생 여부
-         * @param data                <li>Exception이 발생한 경우 : {@link Exception}객체</li> <li>
-         *                            Exception이 발생하지 않은 경우 : {@link Callable} 에서 반환된 결과</li>
+         * @param e                   Exception이 발생한 경우 : {@link Exception}객체, 아니면 null
+         * @param data                Exception이 발생하지 않은 경우 : 작업한 결과 , 아니면 null
          */
-        public void onTaskFinished(boolean isExceptionOccurred, Object data);
+        public void onTaskFinished(boolean isExceptionOccurred, T data, Exception e);
     }
 
 }

@@ -2,7 +2,7 @@ package com.uoscs09.theuos2.tab.schedule;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
+@Deprecated
 public class BoardItem implements Parcelable {
 	/** seq, notice_dt, title, content */
 	public String[] stringArray = new String[4];
@@ -14,7 +14,7 @@ public class BoardItem implements Parcelable {
 		System.arraycopy(array, 0, stringArray, 0, stringArray.length);
 	}
 
-	protected BoardItem(Parcel in) {
+	BoardItem(Parcel in) {
 		in.readStringArray(stringArray);
 	}
 

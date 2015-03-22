@@ -11,8 +11,8 @@ import java.util.List;
 
 public class SeatDismissInfoListAdapter extends AbsArrayAdapter<String, Holder> {
 
-    public SeatDismissInfoListAdapter(Context context, int layout, List<String> list) {
-        super(context, layout, list);
+    public SeatDismissInfoListAdapter(Context context, List<String> list) {
+        super(context, R.layout.list_layout_two_text_view, list);
     }
 
     @Override

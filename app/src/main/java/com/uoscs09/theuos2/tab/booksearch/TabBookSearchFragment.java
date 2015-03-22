@@ -53,7 +53,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
     /**
      * 현재 mCurrentPage
      */
-    protected int mCurrentPage = 1;
+    private int mCurrentPage = 1;
     /**
      * 중앙 도서관에 질의할 매개변수들
      */
@@ -61,9 +61,9 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
     private String mRawQuery;
     // private String mOptionString;
     @ReleaseWhenDestroy
-    protected BookItemListAdapter mBookListAdapter;
+    private BookItemListAdapter mBookListAdapter;
     @ReleaseWhenDestroy
-    protected AnimationAdapter mAnimAdapter;
+    private AnimationAdapter mAnimAdapter;
     @AsyncData
     private ArrayList<BookItem> mBookList;
     /**
@@ -75,24 +75,24 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
      * option : catergory
      */
     @ReleaseWhenDestroy
-    protected Spinner oi;
+    private Spinner oi;
     /**
      * option : sort
      */
     @ReleaseWhenDestroy
-    protected Spinner os;
+    private Spinner os;
     /**
      * 옵션을 선택하게 하는 Dialog
      */
     @ReleaseWhenDestroy
-    protected AlertDialog optionDialog;
+    private AlertDialog optionDialog;
     /**
      * 검색 메뉴, 검색할 단어가 입력되는 곳
      */
     @ReleaseWhenDestroy
-    protected MenuItem searchMenu;
+    private MenuItem searchMenu;
     @ReleaseWhenDestroy
-    protected ActionMode actionMode;
+    private ActionMode actionMode;
 
     private final ParserBook mParser = new ParserBook();
 
@@ -182,7 +182,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
         // 리스트 뷰
         ListView mListView = (ListView) rootView.findViewById(R.id.tab_book_list_search);
 
-        mBookListAdapter = new BookItemListAdapter(getActivity(), R.layout.list_layout_book, mBookList, mLongClickListener);
+        mBookListAdapter = new BookItemListAdapter(getActivity(), mBookList, mLongClickListener);
         mAnimAdapter = new AlphaInAnimationAdapter(mBookListAdapter);
 
         View progressLayout = inflater.inflate(R.layout.view_loading_layout, mListView, false);
@@ -298,7 +298,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
         return true;
     }
 
-    protected String getSpinnerItemString(int which, int pos) {
+    String getSpinnerItemString(int which, int pos) {
         switch (which) {
             case 0:
                 switch (pos) {
@@ -388,7 +388,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
         isResultEmpty = false;
     }
 
-    protected ArrayList<BookItem> getFilteredList(ArrayList<BookItem> originalList) {
+    ArrayList<BookItem> getFilteredList(ArrayList<BookItem> originalList) {
         ArrayList<BookItem> newList = new ArrayList<>();
         BookItem item;
         final String cando = "가능";
@@ -473,14 +473,14 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
             actionMode.finish();
     }
 
-    protected void copyItem(String text) {
+    void copyItem(String text) {
         ClipboardManager clipboard = (ClipboardManager) getActivity()
                 .getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText("copy", text);
         clipboard.setPrimaryClip(clip);
     }
 
-    protected void searchItem(String text) {
+    void searchItem(String text) {
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_WEB_SEARCH);
         intent.putExtra(SearchManager.QUERY, text);

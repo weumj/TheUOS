@@ -27,7 +27,7 @@ public class RestListService extends RemoteViewsService {
             clear();
             ArrayList<RestItem> list = intent.getBundleExtra(RestWidget.REST_WIDGET_ITEM).getParcelableArrayList(RestWidget.REST_WIDGET_ITEM);
 
-            addAll(0, list);
+            addAll(list);
             this.position = intent.getIntExtra(RestWidget.REST_WIDGET_POSITION, 0);
         }
 
@@ -71,7 +71,7 @@ public class RestListService extends RemoteViewsService {
             super.onDataSetChanged();
             clear();
             ArrayList<RestItem> list = IOUtil.readFromFileSuppressed(getContext(), IOUtil.FILE_REST);
-            addAll(0, list);
+            addAll(list);
         }
     }
 

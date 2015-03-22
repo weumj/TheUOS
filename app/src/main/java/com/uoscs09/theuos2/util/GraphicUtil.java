@@ -103,9 +103,9 @@ public class GraphicUtil {
 
 	/** 두개의 비트맵을 합친다. bmp1이 위에 위치한다. */
 	public static Bitmap merge(Bitmap bmp1, Bitmap bmp2) {
-		Bitmap cs = null;
+		Bitmap cs;
 
-		int width, height = 0;
+		int width, height;
 
 		height = bmp1.getHeight() + bmp2.getHeight();
 		width = bmp1.getWidth();

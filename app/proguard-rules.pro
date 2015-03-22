@@ -48,7 +48,7 @@
 
 -keep class com.uoscs09.theuos2.annotation.**
 
--keepclassmembernames  @theuos2.annotation.KeepName class * {
+-keepclassmembernames  @com.uoscs09.theuos2.annotation.KeepName class * {
      *;
 }
 

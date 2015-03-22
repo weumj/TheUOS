@@ -14,12 +14,6 @@ public class ParseEmptyRoom2 extends OApiParser2.ReflectionParser<ClassRoomItem>
 
     @NonNull
     @Override
-    protected Class<? extends ClassRoomItem> getReflectionClass(ClassRoomItem instance) {
-        return instance.getClass();
-    }
-
-    @NonNull
-    @Override
     public String getListTag() {
         return "mainlist";
     }

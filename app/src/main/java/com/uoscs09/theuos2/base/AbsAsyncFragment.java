@@ -61,7 +61,7 @@ public abstract class AbsAsyncFragment<T> extends BaseFragment implements AsyncC
 	}
 
 	/** 현재 백그라운드 작업이 실행 중 인지 여부를 반환한다. */
-	public final boolean isRunning() {
+	protected final boolean isRunning() {
 		return mRunning;
 	}
 
@@ -218,7 +218,7 @@ public abstract class AbsAsyncFragment<T> extends BaseFragment implements AsyncC
 	}
 
 	/** 현재 Fragment가 존재하고, 비동기 작업이 성공적으로 끝났을 때 호출된다. */
-	public abstract void onTransactResult(T result);
+	protected abstract void onTransactResult(T result);
 
 	/**
 	 * 비동기 작업이 끝난 후, Fragment가 이미 파괴되었을 때 호출되어 <br>

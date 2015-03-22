@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.uoscs09.theuos2.R;
+import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
 
@@ -37,17 +38,17 @@ import java.util.List;
  * 취소한 경우 preference의 값은 바뀌지 않는다.
  */
 public class SettingsFileSelectDialogFragment extends DialogFragment {
-    protected TextView pathTextView;
-    protected String path;
-    protected List<File> list;
-    protected ArrayAdapter<File> adapter;
-    protected final String ROOT = "/";
+    private TextView pathTextView;
+    private String path;
+    private ArrayList<File> mFileList;
+    private ArrayAdapter<File> mFileArrayAdapter;
+    private final String ROOT = "/";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // getActivity().getActionBar().setTitle(R.string.setting_save_route);
-        list = new ArrayList<>();
+        mFileList = new ArrayList<>();
         path = getPathFromPref(getActivity());
     }
 
@@ -55,7 +56,7 @@ public class SettingsFileSelectDialogFragment extends DialogFragment {
      * Dialog의 View를 생성한다.
      */
     private View createView() {
-        adapter = new FileListAdapter(getActivity(), R.layout.list_layout_save_route, list);
+        mFileArrayAdapter = new FileListAdapter(getActivity(), mFileList);
 
         View rootView = View.inflate(getActivity(), R.layout.dialog_setting_save_route, null);
 
@@ -79,7 +80,7 @@ public class SettingsFileSelectDialogFragment extends DialogFragment {
                 loadFileListToListView((File) arg0.getItemAtPosition(position));
             }
         });
-        listView.setAdapter(adapter);
+        listView.setAdapter(mFileArrayAdapter);
 
         pathTextView = (TextView) rootView.findViewById(R.id.dialog_setting_save_route_text_path);
         pathTextView.setText(path);
@@ -93,15 +94,14 @@ public class SettingsFileSelectDialogFragment extends DialogFragment {
         super.onResume();
     }
 
-    protected void loadFileListToListView(File file) {
+    void loadFileListToListView(File file) {
         if (file == null) {
-            AppUtil.showToast(getActivity(),
-                    R.string.setting_save_route_error_parent, true);
+            AppUtil.showToast(getActivity(), R.string.setting_save_route_error_parent, true);
             return;
         }
 
         if (file.isDirectory()) {
-            adapter.clear();
+            mFileArrayAdapter.clear();
 
             File[] files = file.listFiles();
             if (files == null)
@@ -109,18 +109,18 @@ public class SettingsFileSelectDialogFragment extends DialogFragment {
 
             for (File f : files) {
                 if (!f.isHidden() && f.isDirectory())
-                    list.add(f);
+                    mFileList.add(f);
             }
-            // adapter.addAll(files);
+            // mFileArrayAdapter.addAll(files);
 
-            Collections.sort(list, caseIgnoreComparator);
-            adapter.notifyDataSetChanged();
+            Collections.sort(mFileList, caseIgnoreComparator);
+            mFileArrayAdapter.notifyDataSetChanged();
             path = file.getAbsolutePath();
             pathTextView.setText(path);
         }
     }
 
-    protected final Comparator<File> caseIgnoreComparator = new Comparator<File>() {
+    private final Comparator<File> caseIgnoreComparator = new Comparator<File>() {
         @Override
         public int compare(File lhs, File rhs) {
             return lhs.getName().compareToIgnoreCase(rhs.getName());
@@ -144,7 +144,7 @@ public class SettingsFileSelectDialogFragment extends DialogFragment {
                 .build();
     }
 
-    protected void putPathToPref(Context context, String path) {
+    void putPathToPref(Context context, String path) {
         PrefUtil.getInstance(context).put(PrefUtil.KEY_IMAGE_SAVE_PATH, path);
     }
 
@@ -152,4 +152,18 @@ public class SettingsFileSelectDialogFragment extends DialogFragment {
         String defaultRoute = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
         return PrefUtil.getInstance(context).get(PrefUtil.KEY_IMAGE_SAVE_PATH, defaultRoute);
     }
+
+
+    private static class FileListAdapter extends AbsArrayAdapter.SimpleAdapter<File> {
+
+        public FileListAdapter(Context context, List<File> list) {
+            super(context, R.layout.list_layout_save_route, list);
+        }
+
+        @Override
+        public String getTextFromItem(File item) {
+            return item.getName();
+        }
+    }
+
 }

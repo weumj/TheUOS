@@ -19,16 +19,12 @@ import com.uoscs09.theuos2.util.AppUtil;
 import java.util.List;
 
 public class SeatListAdapter extends RecyclerView.Adapter<SeatListAdapter.ViewHolder> {
-    final int textColor;
-    final List<SeatItem> mDataSet;
-    final Context mContext;
-    final LayoutInflater mInflater;
+    private final int textColor;
+    private final List<SeatItem> mDataSet;
 
     public SeatListAdapter(Context context, List<SeatItem> list) {
         this.mDataSet = list;
-        this.mContext = context;
-        this.mInflater = LayoutInflater.from(context);
-        textColor = context.getResources().getColor(AppUtil.getAttrValue(mContext, R.attr.colorAccent));
+        textColor = context.getResources().getColor(AppUtil.getAttrValue(context, R.attr.colorAccent));
     }
 
     @Override
@@ -52,7 +48,7 @@ public class SeatListAdapter extends RecyclerView.Adapter<SeatListAdapter.ViewHo
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ViewHolder(mInflater.inflate(R.layout.list_layout_seat, parent, false));
+        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.list_layout_seat, parent, false));
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

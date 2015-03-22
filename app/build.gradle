@@ -12,7 +12,7 @@ android {
 
     buildTypes {
         debug{
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         release {
@@ -40,5 +40,6 @@ dependencies {
     compile 'com.getbase:floatingactionbutton:1.9.0'
     compile 'com.balysv:material-ripple:1.0.1'
     compile 'com.github.navasmdc:MaterialDesign:1.+@aar'
-
+    compile 'com.github.alamkanak:android-week-view:1.2.1'
+    compile 'se.emilsjolander:stickylistheaders:+'
 }

@@ -57,11 +57,6 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
      */
     private ArrayList<String> mDissmissInfoList;
     /**
-     * 좌석 정보 리스트 뷰
-     */
-    @ReleaseWhenDestroy
-    private RecyclerView mSeatListView;
-    /**
      * 해지 될 좌석 정보 뷰, infoDialog에서 보여진다.
      */
     @ReleaseWhenDestroy
@@ -87,7 +82,7 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
     /**
      * 중앙 도서관 좌석 정보 확인 페이지
      */
-    public final static String URL = "http://203.249.102.34:8080/seat/domian5.asp";
+    private final static String URL = "http://203.249.102.34:8080/seat/domian5.asp";
     /**
      * bundle에서 동기화 시간 정보 String을 가리킨다.
      */
@@ -119,7 +114,7 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
         }
 
         Activity activity = getActivity();
-        mInfoAdapter = new SeatDismissInfoListAdapter(activity, R.layout.list_layout_two_text_view, mDissmissInfoList);
+        mInfoAdapter = new SeatDismissInfoListAdapter(activity, mDissmissInfoList);
         mSeatAdapter = new SeatListAdapter(getActivity(), mSeatList);
         mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
@@ -145,7 +140,10 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
             }
         });
 
-        mSeatListView = (RecyclerView) rootView.findViewById(R.id.tab_library_list_seat);
+        /*
+      좌석 정보 리스트 뷰
+     */
+        RecyclerView mSeatListView = (RecyclerView) rootView.findViewById(R.id.tab_library_list_seat);
         mSeatListView.setAdapter(mSeatAdapter);
         mSeatListView.setLayoutManager(mLayoutManager);
         mSeatListView.setItemAnimator(new DefaultItemAnimator());

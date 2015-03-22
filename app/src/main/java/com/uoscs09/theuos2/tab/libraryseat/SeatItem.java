@@ -28,7 +28,7 @@ public class SeatItem implements Parcelable, Serializable {
 		this.index = index;
 	}
 
-	protected SeatItem(Parcel source) {
+	private SeatItem(Parcel source) {
 		roomName = source.readString();
 		occupySeat = source.readString();
 		vacancySeat = source.readString();

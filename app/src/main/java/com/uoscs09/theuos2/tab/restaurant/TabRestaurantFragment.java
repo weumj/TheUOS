@@ -1,6 +1,5 @@
 package com.uoscs09.theuos2.tab.restaurant;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -197,7 +196,7 @@ public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>>
             mVacationTimeView.setText(TIME_VACATION[i]);
     }
 
-    public void setBody(final String name) {
+    void setBody(final String name) {
 
         sendClickEvent(name);
 
@@ -248,7 +247,7 @@ public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>>
         String body = HttpRequest.getBody("http://m.uos.ac.kr/mkor/food/list.do");
         ArrayList<RestItem> list = parser.parse(body);
 
-        IOUtil.saveToFile(context, IOUtil.FILE_REST, Activity.MODE_PRIVATE, list);
+        IOUtil.saveToFile(context, IOUtil.FILE_REST, list);
         PrefUtil.getInstance(context).put(PrefUtil.KEY_REST_DATE_TIME, OApiUtil.getDate());
         return list;
     }
@@ -276,7 +275,7 @@ public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>>
         return mCurrentRestName;
     }
 */
-    protected static class Tab {
+    static class Tab {
         public final FrameLayout tabView;
         public final TextView mTextView;
         public final View ripple;

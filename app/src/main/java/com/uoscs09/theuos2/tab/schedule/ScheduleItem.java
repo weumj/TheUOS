@@ -2,7 +2,7 @@ package com.uoscs09.theuos2.tab.schedule;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
+@Deprecated
 public class ScheduleItem implements Parcelable {
 	/** content, sch_date, year, month */
 	public String[] stringArray;
@@ -20,7 +20,7 @@ public class ScheduleItem implements Parcelable {
 		System.arraycopy(array, 0, stringArray, 0, stringArray.length);
 	}
 
-	protected ScheduleItem(Parcel in) {
+	ScheduleItem(Parcel in) {
 		in.readStringArray(stringArray);
 	}
 

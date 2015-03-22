@@ -47,7 +47,7 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Cl
     @AsyncData
     private ArrayList<ClassRoomItem> mClassRoomList;
     @ReleaseWhenDestroy
-    protected AlertDialog dialog;
+    private AlertDialog dialog;
     private final Hashtable<String, String> params = new Hashtable<>();
     @ReleaseWhenDestroy
     private Spinner buildingSpinner;

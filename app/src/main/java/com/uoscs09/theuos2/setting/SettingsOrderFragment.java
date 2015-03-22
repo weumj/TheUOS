@@ -32,8 +32,8 @@ import java.util.List;
  * page 순서를 바꾸는 설정이 있는 fragment
  */
 public class SettingsOrderFragment extends Fragment {
-    ArrayList<AppUtil.Page> orderList;
-    DynamicListView mListView;
+    private ArrayList<AppUtil.Page> orderList;
+    private DynamicListView mListView;
     private SwapAdapter mAdapter;
 
     @Override
@@ -171,8 +171,8 @@ public class SettingsOrderFragment extends Fragment {
     }
 
     static class ViewHolder extends AbsArrayAdapter.ViewHolder implements CheckBox.OnCheckedChangeListener{
-        public TextView textView;
-        public CheckBox checkBox;
+        public final TextView textView;
+        public final CheckBox checkBox;
         AppUtil.Page item;
 
         public ViewHolder(View view) {

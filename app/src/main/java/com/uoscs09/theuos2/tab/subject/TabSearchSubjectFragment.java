@@ -44,12 +44,12 @@ public class TabSearchSubjectFragment extends AbsProgressFragment<ArrayList<Subj
     @ReleaseWhenDestroy
     private SubjectAdapter adapter;
     @AsyncData
-    protected ArrayList<SubjectItem> mSubjectList;
-    protected Hashtable<String, String> params;
+    private ArrayList<SubjectItem> mSubjectList;
+    private Hashtable<String, String> params;
     @ReleaseWhenDestroy
-    protected AlertDialog mSearchDialog;
+    private AlertDialog mSearchDialog;
     @ReleaseWhenDestroy
-    protected EditText mSearchEditText;
+    private EditText mSearchEditText;
     @ReleaseWhenDestroy
     private Spinner mDialogSpinner1, mDialogSpinner2, mDialogSpinner3,
             mDialogSpinner4, mDialogTermSpinner, mDialogYearSpinner;
@@ -121,7 +121,7 @@ public class TabSearchSubjectFragment extends AbsProgressFragment<ArrayList<Subj
         }
 
         ListView listView = (ListView) rootView.findViewById(R.id.tab_search_subject_list_view);
-        adapter = new SubjectAdapter(context, R.layout.list_layout_subject, mSubjectList);
+        adapter = new SubjectAdapter(context, mSubjectList);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
         listView.setEmptyView(mEmptyView);

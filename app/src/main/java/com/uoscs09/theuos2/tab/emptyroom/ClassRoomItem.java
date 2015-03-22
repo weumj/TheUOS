@@ -26,7 +26,7 @@ public class ClassRoomItem implements Parcelable {
     public ClassRoomItem() {
     }
 
-    protected ClassRoomItem(Parcel p) {
+    private ClassRoomItem(Parcel p) {
         person_cnt = p.readInt();
         room_no = p.readString();
         room_div = p.readString();

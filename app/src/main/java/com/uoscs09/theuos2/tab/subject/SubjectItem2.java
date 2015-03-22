@@ -4,10 +4,11 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.uoscs09.theuos2.annotation.KeepName;
+import com.uoscs09.theuos2.parse.OApiParser2;
 
 import java.util.Comparator;
 @KeepName
-public class SubjectItem2 implements Parcelable {
+public class SubjectItem2 implements Parcelable, OApiParser2.Parsable {
 
     /**
      * 학부
@@ -208,5 +209,10 @@ public class SubjectItem2 implements Parcelable {
             default:
                 return null;
         }
+    }
+
+    @Override
+    public void afterParsing() {
+        setInfoArray();
     }
 }

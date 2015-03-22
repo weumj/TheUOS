@@ -27,9 +27,9 @@ public class LibrarySeatWidget extends    AbsAsyncWidgetProvider<ArrayList<SeatI
     public static final String LIBRARY_SEAT_WIDGET_ACTIVITY = "com.uoscs09.theuos2.widget.libraryseat.ACTIVITY";
 
     private final static int[] STUDY_ROOM_NUMBER_ARRAY = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 23, 24, 25, 26, 27, 28};
-    final static int REQUEST_REFRESH = 0;
-    final static int REQUEST_ITEM_CLICK = 1;
-    final static String DATE_FILE = "LIB_SEAT_WIDGET_UPDATE_DATE";
+    private final static int REQUEST_REFRESH = 0;
+    private final static int REQUEST_ITEM_CLICK = 1;
+    private final static String DATE_FILE = "LIB_SEAT_WIDGET_UPDATE_DATE";
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -97,9 +97,9 @@ public class LibrarySeatWidget extends    AbsAsyncWidgetProvider<ArrayList<SeatI
 
         // 파일 저장
         IOUtil.saveToFileSuppressed(context, IOUtil.FILE_LIBRARY_SEAT,
-                Context.MODE_PRIVATE, newList);
+                newList);
         // 불러온 시간 기록
-        IOUtil.saveToFileSuppressed(context, DATE_FILE, Context.MODE_PRIVATE,
+        IOUtil.saveToFileSuppressed(context, DATE_FILE,
                 TimeUtil.sFormat_am_hms.format(new Date()));
         return newList;
     }

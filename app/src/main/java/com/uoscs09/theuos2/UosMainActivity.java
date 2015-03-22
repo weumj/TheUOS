@@ -51,7 +51,7 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
      */
     private ArrayList<Integer> mPageOrderList;
 
-    protected DrawerLayout mDrawerLayout;
+    private DrawerLayout mDrawerLayout;
     /**
      * Left ListView
      */
@@ -63,7 +63,7 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
     private Toolbar mToolbar;
 
     private static final int START_SETTING = 999;
-    public static final String SAVED_TAB_NUM = "saved_tab_num";
+    private static final String SAVED_TAB_NUM = "saved_tab_num";
     private View mLeftDrawerLayout;
 
     private void initValues() {
@@ -543,8 +543,8 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
     }
 
     private class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        ImageView img;
-        TextView text;
+        final ImageView img;
+        final TextView text;
         public ViewHolder(View itemView) {
             super(itemView);
             View ripple = itemView.findViewById(R.id.drawer_list_ripple);

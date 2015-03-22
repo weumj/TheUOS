@@ -112,7 +112,7 @@ public class Subject implements Parcelable, Serializable {
         return Locale.getDefault().equals(Locale.KOREA) ? professor : professorEng;
     }
 
-    protected Subject(Parcel in) {
+    Subject(Parcel in) {
         setSubjectName(in.readString());
         setSubjectNameEng(in.readString());
         professor = in.readString();

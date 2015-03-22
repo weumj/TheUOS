@@ -15,11 +15,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PhoneListAdapter extends AbsArrayAdapter<PhoneItem, Holder> {
-    protected Filter filter;
+    private Filter filter;
     private final View.OnClickListener l;
 
-    public PhoneListAdapter(Context context, int layout,List<PhoneItem> telList, View.OnClickListener l) {
-        super(context, layout, telList);
+    public PhoneListAdapter(Context context,List<PhoneItem> telList, View.OnClickListener l) {
+        super(context, R.layout.list_layout_phone, telList);
         this.l = l;
     }
 

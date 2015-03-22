@@ -14,15 +14,15 @@ import android.util.DisplayMetrics;
  */
 public class PieProgressDrawable extends Drawable {
 
-    final Paint mPaint;
-    final Paint mCentorPaint;
-    RectF mBoundsF;
-    RectF mInnerBoundsF;
-    final float START_ANGLE = 0.f;
-    float mDrawTo;
+    private final Paint mPaint;
+    private final Paint mCentorPaint;
+    private RectF mBoundsF;
+    private RectF mInnerBoundsF;
+    private final float START_ANGLE = 0.f;
+    private float mDrawTo;
 
-    CharSequence mText;
-    final Paint mTextPaint;
+    private CharSequence mText;
+    private final Paint mTextPaint;
 
     public PieProgressDrawable() {
         super();

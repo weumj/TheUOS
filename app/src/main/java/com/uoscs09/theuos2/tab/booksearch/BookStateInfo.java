@@ -16,7 +16,7 @@ public class BookStateInfo implements Parcelable {
 		infoArray[2] = state;
 	}
 
-	protected BookStateInfo(Parcel source) {
+	BookStateInfo(Parcel source) {
 		source.readStringArray(infoArray);
 	}
 

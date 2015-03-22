@@ -31,7 +31,7 @@ import java.util.Hashtable;
 
 public class ScoreFragment extends AbsAsyncFragment<ArrayList<ScoreItem>> {
 	@ReleaseWhenDestroy
-	protected AlertDialog alertDialog;
+    private AlertDialog alertDialog;
 	@ReleaseWhenDestroy
 	private Dialog mProgressDialog;
 	@ReleaseWhenDestroy

@@ -97,13 +97,11 @@ public class SubMapActivity extends BaseActivity implements LocationListener {
                 if (isInit) {
                     isInit = false;
                 }
+
                 googleMap.clear();
                 OApiUtil.UnivBuilding univBuilding = OApiUtil.UnivBuilding.fromNumber(position + 1);
                 moveCamera(univBuilding);
                 setMapMarker(univBuilding);
-
-                //moveCameraPositionAt(position + 1);
-                //setCameraMapMarkerAt(position + 1, getResources().getStringArray(R.array.buildings_univ)[position]);
             }
 
             @Override

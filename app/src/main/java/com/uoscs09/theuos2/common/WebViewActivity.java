@@ -26,6 +26,7 @@ public abstract class WebViewActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setFitsSystemWindows(true);
 
         View toolbarLayout = View.inflate(this, R.layout.view_toolbar, null);
         mToolbar = (Toolbar) toolbarLayout.findViewById(R.id.toolbar);

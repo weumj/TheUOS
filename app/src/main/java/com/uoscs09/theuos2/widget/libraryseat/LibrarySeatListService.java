@@ -32,7 +32,7 @@ public class LibrarySeatListService extends RemoteViewsService {
 							LibrarySeatWidget.LIBRARY_SEAT_WIDGET_DATA);
 			if (!extraList.isEmpty()) {
 				clear();
-				addAll(0, extraList);
+				addAll(extraList);
 			}
 		}
 
@@ -94,8 +94,8 @@ public class LibrarySeatListService extends RemoteViewsService {
 		public void onDataSetChanged() {
 			super.onDataSetChanged();
 			clear();
-			addAll(0,
-					(Collection<? extends SeatItem>) IOUtil
+			addAll(
+                    (Collection<? extends SeatItem>) IOUtil
 							.readFromFileSuppressed(getContext(),
 									IOUtil.FILE_LIBRARY_SEAT));
 		}

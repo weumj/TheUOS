@@ -24,7 +24,7 @@ import java.util.Calendar;
 
 public class SettingsAnnounceNotificationFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener {
     private TimePickerDialog timePicker;
-    protected boolean isAccepted = false;
+    private boolean isAccepted = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

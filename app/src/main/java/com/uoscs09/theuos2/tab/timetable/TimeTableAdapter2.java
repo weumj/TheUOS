@@ -19,9 +19,9 @@ import java.util.Locale;
 public class TimeTableAdapter2 extends AbsArrayAdapter<Subject[], TimeTableViewHolder> {
     private final Hashtable<String, Integer> colorTable;
     private OnItemClickListener onItemClickListener;
-    private SparseBooleanArray mClickedArray = new SparseBooleanArray(15);
-    private String[] periodTimeArray;
-    private TimeTable mTimeTable;
+    private final SparseBooleanArray mClickedArray = new SparseBooleanArray(15);
+    private final String[] periodTimeArray;
+    private final TimeTable mTimeTable;
 
     public TimeTableAdapter2(Context context, TimeTable timeTable, Hashtable<String, Integer> colorTable) {
         super(context, R.layout.list_layout_timetable2, timeTable.subjects);

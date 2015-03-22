@@ -22,6 +22,75 @@ public abstract class OApiParser2<T> extends XmlParser<T> {
         return in.replace(CDATA_HEAD, StringUtil.NULL).replace(CDATA_TAIL, StringUtil.NULL).trim();
     }
 
+    protected static <Data> void readListAndFillObject(XmlPullParser parser, Data newInstance) throws IOException, XmlPullParserException{
+        Class<?> clazz = newInstance.getClass();
+
+        Field[] fields = clazz.getDeclaredFields();
+        for (Field f : fields) {
+            f.setAccessible(true);
+        }
+
+        while (parser.next() != XmlPullParser.END_TAG) {
+            if (parser.getEventType() != XmlPullParser.START_TAG) {
+                continue;
+            }
+
+            String tagName = parser.getName();
+
+            boolean set = false;
+            for (Field f : fields) {
+                if (f.getName().equals(tagName)) {
+                    set = setObjectData(f, newInstance, parser);
+
+                    if (set)
+                        break;
+                }
+            }
+
+            if (set)
+                continue;
+
+            skip(parser);
+
+        }
+
+    }
+
+    private static boolean setObjectData(Field f, Object object, XmlPullParser parser) {
+        Class<?> type = f.getType();
+
+        String text;
+
+        try {
+            text = readText(parser);
+        } catch (IOException | XmlPullParserException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        if (type.equals(String.class)) {
+
+            try {
+                f.set(object, text == null ? StringUtil.NULL : removeCDATA(text));
+                return true;
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+
+        } else if (type.equals(Integer.TYPE)) {
+            try {
+                f.setInt(object, text == null ? 0 : Integer.valueOf(text));
+                return true;
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return false;
+
+    }
+
+
     public abstract static class SimpleListParser<T> extends OApiParser2<T> {
         private final String TAG_LIST;
         private static final String LIST = "list";
@@ -58,12 +127,13 @@ public abstract class OApiParser2<T> extends XmlParser<T> {
 
             }
 
-            afterParsing(item);
+            if(item instanceof Parsable){
+                ((Parsable) item).afterParsing();
+            }
+
             return item;
         }
 
-        protected void afterParsing(T item) {
-        }
 
         protected void readListParentTag(XmlPullParser parser, T item) throws IOException, XmlPullParserException {
             int count = 0;
@@ -108,83 +178,24 @@ public abstract class OApiParser2<T> extends XmlParser<T> {
         @NonNull
         protected abstract T newInstance();
 
-        @NonNull
-        protected abstract Class<? extends T> getReflectionClass(T instance);
-
         @Override
         protected void readList(XmlPullParser parser, int count, ArrayList<T> item) throws IOException, XmlPullParserException {
 
             T object = newInstance();
-            Class<? extends T> clazz = getReflectionClass(object);
 
-            Field[] fields = clazz.getDeclaredFields();
-            for (Field f : fields) {
-                f.setAccessible(true);
+            readListAndFillObject(parser, object);
+
+            if(object instanceof Parsable){
+                ((Parsable) object).afterParsing();
             }
 
-            while (parser.next() != XmlPullParser.END_TAG) {
-                if (parser.getEventType() != XmlPullParser.START_TAG) {
-                    continue;
-                }
-
-                String tagName = parser.getName();
-
-                boolean set = false;
-                for (Field f : fields) {
-                    if (f.getName().equals(tagName)) {
-                        set = setObjectData(f, object, parser);
-
-                        if (set)
-                            break;
-                    }
-                }
-
-                if (set)
-                    continue;
-                skip(parser);
-
-            }
-
-            afterParseList(object);
             item.add(object);
         }
 
-        protected void afterParseList(T item) {
-        }
+    }
 
-        private boolean setObjectData(Field f, Object object, XmlPullParser parser) {
-            Class<?> type = f.getType();
 
-            String text;
-
-            try {
-                text = readText(parser);
-            } catch (IOException | XmlPullParserException e) {
-                e.printStackTrace();
-                return false;
-            }
-
-            if (type.equals(String.class)) {
-
-                try {
-                    f.set(object, text == null ? StringUtil.NULL : removeCDATA(text));
-                    return true;
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-
-            } else if (type.equals(Integer.TYPE)) {
-                try {
-                    f.setInt(object, text == null ? 0 : Integer.valueOf(text));
-                    return true;
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            return false;
-
-        }
-
+    public static interface Parsable {
+        public void afterParsing();
     }
 }

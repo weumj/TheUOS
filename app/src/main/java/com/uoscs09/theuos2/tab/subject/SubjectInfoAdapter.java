@@ -13,8 +13,8 @@ import java.util.List;
 public class SubjectInfoAdapter extends AbsArrayAdapter<String, SubjectInfoAdapter.SubjectInfoHolder> {
     private final String[] array;
 
-    public SubjectInfoAdapter(Context context, int layout, List<String> list) {
-        super(context, layout, list);
+    public SubjectInfoAdapter(Context context, List<String> list) {
+        super(context, R.layout.list_layout_subject_info, list);
         array = context.getResources().getStringArray(R.array.subject_info_array);
     }
 

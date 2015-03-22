@@ -1,6 +1,5 @@
 package com.uoscs09.theuos2.tab.timetable;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -23,7 +22,6 @@ import android.widget.Spinner;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.gc.materialdesign.widgets.ColorSelector;
-import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
@@ -40,8 +38,7 @@ import com.uoscs09.theuos2.util.OApiUtil.Semester;
 import com.uoscs09.theuos2.util.PrefUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 
-import org.apache.http.client.ClientProtocolException;
-
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -73,12 +70,12 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
     private TimeTableAdapter2 mTimeTableAdapter2;
 
     private boolean mIsOnLoad;
-    private Hashtable<String, Integer> colorTable = new Hashtable<>();
+    private final Hashtable<String, Integer> colorTable = new Hashtable<>();
     @ReleaseWhenDestroy
     private View emptyView;
 
 
-    private SubjectDetailDialogFragment mSubjectDetailDialog = new SubjectDetailDialogFragment();
+    private final SubjectDetailDialogFragment mSubjectDetailDialog = new SubjectDetailDialogFragment();
 
     @SuppressWarnings("unchecked")
     @Override
@@ -112,77 +109,6 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
         mTimeTableAdapter2.setOnItemClickListener(this);
     }
 
-    private void initDialog() {
-        Context context = getActivity();
-        View wiseDialogLayout = View.inflate(context, R.layout.dialog_timetable_wise_login, null);
-
-        mWiseYearSpinner = (Spinner) wiseDialogLayout.findViewById(R.id.dialog_wise_spinner_year);
-        mWiseYearSpinner.setAdapter(new ArrayAdapter<>(context, android.R.layout.simple_spinner_dropdown_item, OApiUtil.getYears()));
-        mWiseYearSpinner.setSelection(2);
-
-        mWiseIdView = (EditText) wiseDialogLayout.findViewById(R.id.dialog_wise_id_input);
-        mWisePasswdView = (EditText) wiseDialogLayout.findViewById(R.id.dialog_wise_passwd_input);
-        mWiseTermSpinner = (Spinner) wiseDialogLayout.findViewById(R.id.dialog_wise_spinner_term);
-        loginDialog = new MaterialDialog.Builder(context)
-                .title(R.string.tab_timetable_wise_login_title)
-                .customView(wiseDialogLayout, true)
-                .positiveText(R.string.confirm)
-                .positiveColorAttr(R.attr.colorPrimaryDark)
-                .negativeText(R.string.cancel)
-                .callback(new MaterialDialog.ButtonCallback() {
-                    @Override
-                    public void onNegative(MaterialDialog dialog) {
-                        super.onNegative(dialog);
-                        clearPassWd();
-                    }
-
-                    @Override
-                    public void onPositive(MaterialDialog dialog) {
-                        super.onPositive(dialog);
-                        String id = mWiseIdView.getText().toString();
-                        Context context = getActivity();
-
-                        if (id.equals("123456789") && mWisePasswdView.length() < 1) {
-                            if (AppUtil.test) {
-                                AppUtil.test = false;
-                            } else {
-                                AppUtil.test = true;
-                                AppUtil.showToast(context, "test", isVisible());
-                            }
-
-                            PrefUtil.getInstance(context).put("test", AppUtil.test);
-                            clearText();
-                            return;
-                        }
-
-                        if (mWisePasswdView.length() < 1 || StringUtil.NULL.equals(id)) {
-                            AppUtil.showToast(context, R.string.tab_timetable_wise_login_warning_null, true);
-                            clearText();
-                        } else {
-                            execute();
-                        }
-                    }
-                })
-                .build();
-    }
-
-
-    private void clearText() {
-        clearId();
-        clearPassWd();
-    }
-
-    private void clearId() {
-        if (mWiseIdView != null && mWiseIdView.length() > 0) {
-            TextKeyListener.clear(mWiseIdView.getText());
-        }
-    }
-
-    private void clearPassWd() {
-        if (mWisePasswdView != null && mWisePasswdView.length() > 0) {
-            TextKeyListener.clear(mWisePasswdView.getText());
-        }
-    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -202,8 +128,7 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
         listView.setEmptyView(emptyView);
         listView.setAdapter(mTimeTableAdapter2);
 
-        FloatingActionButton actionButton = (FloatingActionButton) rootView.findViewById(R.id.tab_timetable_action_btn);
-        actionButton.setOnClickListener(new View.OnClickListener() {
+        rootView.findViewById(R.id.tab_timetable_action_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (isRunning()) {
@@ -227,7 +152,7 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
             execute();
         }
 
-        if(getUserVisibleHint()){
+        if (getUserVisibleHint()) {
             addOrRemoveTabMenu(true);
         }
         super.onResume();
@@ -389,7 +314,7 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
                 this.colorTable.clear();
                 this.colorTable.putAll(colorTable);
 
-                IOUtil.saveToFile(context, IOUtil.FILE_TIMETABLE, Activity.MODE_PRIVATE, result);
+                IOUtil.saveToFile(context, IOUtil.FILE_TIMETABLE, result);
 
             }
 
@@ -400,7 +325,7 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
 
     @Override
     public void exceptionOccured(Exception e) {
-        if (e instanceof ClientProtocolException || e instanceof NullPointerException) {
+        if (e instanceof IOException || e instanceof NullPointerException) {
             e.printStackTrace();
             AppUtil.showToast(getActivity(), R.string.tab_timetable_wise_login_warning_fail, isMenuVisible());
         } else {
@@ -421,6 +346,59 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
         }
     }
 
+    private void initDialog() {
+        Context context = getActivity();
+        View wiseDialogLayout = View.inflate(context, R.layout.dialog_timetable_wise_login, null);
+
+        mWiseYearSpinner = (Spinner) wiseDialogLayout.findViewById(R.id.dialog_wise_spinner_year);
+        mWiseYearSpinner.setAdapter(new ArrayAdapter<>(context, android.R.layout.simple_spinner_dropdown_item, OApiUtil.getYears()));
+        mWiseYearSpinner.setSelection(2);
+
+        mWiseIdView = (EditText) wiseDialogLayout.findViewById(R.id.dialog_wise_id_input);
+        mWisePasswdView = (EditText) wiseDialogLayout.findViewById(R.id.dialog_wise_passwd_input);
+        mWiseTermSpinner = (Spinner) wiseDialogLayout.findViewById(R.id.dialog_wise_spinner_term);
+        loginDialog = new MaterialDialog.Builder(context)
+                .title(R.string.tab_timetable_wise_login_title)
+                .customView(wiseDialogLayout, true)
+                .positiveText(R.string.confirm)
+                .negativeText(R.string.cancel)
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onNegative(MaterialDialog dialog) {
+                        super.onNegative(dialog);
+                        clearPassWd();
+                    }
+
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                        super.onPositive(dialog);
+                        String id = mWiseIdView.getText().toString();
+                        Context context = getActivity();
+
+                        if (id.equals("123456789") && mWisePasswdView.length() < 1) {
+                            if (AppUtil.test) {
+                                AppUtil.test = false;
+                            } else {
+                                AppUtil.test = true;
+                                AppUtil.showToast(context, "test", isVisible());
+                            }
+
+                            PrefUtil.getInstance(context).put("test", AppUtil.test);
+                            clearText();
+                            return;
+                        }
+
+                        if (mWisePasswdView.length() < 1 || StringUtil.NULL.equals(id)) {
+                            AppUtil.showToast(context, R.string.tab_timetable_wise_login_warning_null, true);
+                            clearText();
+                        } else {
+                            execute();
+                        }
+                    }
+                })
+                .build();
+    }
+
 
     /**
      * 시간표 정보를 파일로부터 읽어온다.
@@ -438,7 +416,7 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
      * @param colorTable color map
      */
     public static void saveColorTable(Context context, Hashtable<String, Integer> colorTable) {
-        IOUtil.saveToFileAsync(context, IOUtil.FILE_COLOR_TABLE, Activity.MODE_PRIVATE, colorTable, null);
+        IOUtil.saveObjectToFileAsync(context, IOUtil.FILE_COLOR_TABLE, colorTable);
     }
 
     /**
@@ -495,6 +473,25 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
         return table;
     }
 
+
+    private void clearText() {
+        clearId();
+        clearPassWd();
+    }
+
+    private void clearId() {
+        if (mWiseIdView != null && mWiseIdView.length() > 0) {
+            TextKeyListener.clear(mWiseIdView.getText());
+        }
+    }
+
+    private void clearPassWd() {
+        if (mWisePasswdView != null && mWisePasswdView.length() > 0) {
+            TextKeyListener.clear(mWisePasswdView.getText());
+        }
+    }
+
+
     private void initDeleteDialog() {
         deleteDialog = new MaterialDialog.Builder(getActivity())
                 .content(R.string.confirm_delete)
@@ -516,11 +513,10 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
 
                                 return b;
                             }
-                        }, new OnTaskFinishedListener() {
+                        }, new OnTaskFinishedListener<Boolean>() {
                             @Override
-                            public void onTaskFinished(boolean isExceptionOccurred, Object data) {
-                                boolean result = (Boolean) data;
-                                if (!isExceptionOccurred && result) {
+                            public void onTaskFinished(boolean isExceptionOccurred, Boolean data, Exception e) {
+                                if (!isExceptionOccurred && data) {
 
                                     mTimeTableAdapter2.clear();
 

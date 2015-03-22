@@ -22,8 +22,8 @@ public class TimetableAdapter extends AbsArrayAdapter<TimeTableItem, TimetableAd
     private final Map<String, Integer> colorTable;
     private int maxTime;
 
-    public TimetableAdapter(Context context, int layout, List<TimeTableItem> list, Map<String, Integer> colorTable, View.OnClickListener l) {
-        super(context, layout, list);
+    public TimetableAdapter(Context context, List<TimeTableItem> list, Map<String, Integer> colorTable, OnClickListener l) {
+        super(context, R.layout.list_layout_timetable, list);
         this.l = l;
         this.colorTable = colorTable;
         init();

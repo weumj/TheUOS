@@ -22,7 +22,7 @@ public class CoursePlanItem implements Parcelable {
     public String week_book= StringUtil.NULL;
     public String prjt_etc= StringUtil.NULL;
 
-    protected CoursePlanItem(Parcel source) {
+    private CoursePlanItem(Parcel source) {
         subject_no = source.readString();
         subject_nm = source.readString();
         prof_nm = source.readString();

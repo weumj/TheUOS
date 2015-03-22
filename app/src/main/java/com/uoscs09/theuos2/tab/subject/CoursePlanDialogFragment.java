@@ -43,7 +43,7 @@ public class CoursePlanDialogFragment extends DialogFragment implements Callable
     private final static String URL = "http://wise.uos.ac.kr/uosdoc/api.ApiApiCoursePlanView.oapi";
     private final static String INFO = "info";
 
-    private Hashtable<String, String> mOApiParams;
+    private final Hashtable<String, String> mOApiParams;
 
 
     private View mCourseTitle;
@@ -59,9 +59,9 @@ public class CoursePlanDialogFragment extends DialogFragment implements Callable
     private boolean isDataInvalid = false;
     private SubjectItem2 mSubject;
 
-    private ParseCoursePlan mParser = new ParseCoursePlan();
+    private final ParseCoursePlan mParser = new ParseCoursePlan();
 
-    protected AsyncExecutor<ArrayList<CoursePlanItem>> mExecutor;
+    private AsyncExecutor<ArrayList<CoursePlanItem>> mExecutor;
 
     public void setSubjectItem(SubjectItem2 item) {
 
@@ -179,7 +179,7 @@ public class CoursePlanDialogFragment extends DialogFragment implements Callable
         mCourseBook.setText(course.book_nm);
     }
 
-    protected void execute() {
+    void execute() {
         if (mExecutor != null && mExecutor.getStatus() != AsyncTask.Status.FINISHED)
             mExecutor.cancel(true);
 
@@ -273,15 +273,15 @@ public class CoursePlanDialogFragment extends DialogFragment implements Callable
     }
 
 
-    protected Tracker getTracker(UOSApplication.TrackerName name) {
+    Tracker getTracker(UOSApplication.TrackerName name) {
         return ((UOSApplication) getActivity().getApplication()).getTracker(name);
     }
 
-    protected Tracker getTracker() {
+    Tracker getTracker() {
         return getTracker(UOSApplication.TrackerName.APP_TRACKER);
     }
 
-    protected void sendTrackerEvent(String action, String label) {
+    void sendTrackerEvent(String action, String label) {
         getTracker().send(new HitBuilders.EventBuilder()
                 .setCategory("CoursePlanDialogFragment")
                 .setAction(action)
@@ -289,7 +289,7 @@ public class CoursePlanDialogFragment extends DialogFragment implements Callable
                 .build());
     }
 
-    protected void sendTrackerEvent(String action, String label, long value) {
+    void sendTrackerEvent(String action, String label, long value) {
         getTracker().send(new HitBuilders.EventBuilder()
                 .setCategory("CoursePlanDialogFragment")
                 .setAction(action)
@@ -298,7 +298,7 @@ public class CoursePlanDialogFragment extends DialogFragment implements Callable
                 .build());
     }
 
-    protected void sendClickEvent(String label) {
+    void sendClickEvent(String label) {
         sendTrackerEvent("click", label);
     }
 

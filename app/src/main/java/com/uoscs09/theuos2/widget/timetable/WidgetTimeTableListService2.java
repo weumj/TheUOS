@@ -56,7 +56,7 @@ public abstract class WidgetTimeTableListService2 extends RemoteViewsService {
                 R.id.widget_time_table_list_thr_sub,
                 R.id.widget_time_table_list_fri_sub};
 
-        private String[] periodTimeArray;
+        private final String[] periodTimeArray;
 
         public ListRemoteViewsFactory(Context applicationContext, Intent intent) {
             super(applicationContext);
@@ -176,7 +176,7 @@ public abstract class WidgetTimeTableListService2 extends RemoteViewsService {
             mTimeTable = TabTimeTableFragment2.readTimetable(getContext());
             clear();
             if (mTimeTable != null) {
-                addAll(0, mTimeTable.subjects);
+                addAll(mTimeTable.subjects);
                 colorTable = TabTimeTableFragment2.getColorTable(mTimeTable, getContext());
             }
         }

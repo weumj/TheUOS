@@ -168,16 +168,15 @@ public class PrefUtil {
     }
 
     public void remove(String key) {
-        pref.edit().remove(key).commit();
+        pref.edit().remove(key).apply();
     }
 
     public void remove(String... keys) {
         SharedPreferences.Editor editor = pref.edit();
-        if (keys != null)
-            for (String key : keys)
-                editor.remove(key);
 
-        editor.commit();
+        if (keys != null) for (String key : keys) editor.remove(key);
+
+        editor.apply();
     }
 
     public Map<String, ?> getAll() {
@@ -188,10 +187,6 @@ public class PrefUtil {
      * 그림파일이 저장되는 경로를 얻는다.
      */
     public static String getPictureSavedPath(Context context) {
-        return PrefUtil.getInstance(context).get(
-                KEY_IMAGE_SAVE_PATH,
-                Environment.getExternalStoragePublicDirectory(
-                        Environment.DIRECTORY_PICTURES).toString()
-                        + "/");
+        return getInstance(context).get(KEY_IMAGE_SAVE_PATH, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString() + "/");
     }
 }

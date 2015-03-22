@@ -51,7 +51,7 @@ public class TabAnounceFragment extends AbsProgressFragment<ArrayList<AnnounceIt
      * 상단 액션바에 추가될 위젯, 카테고리 선택
      */
     @ReleaseWhenDestroy
-    protected Spinner spinner;
+    private Spinner spinner;
     @ReleaseWhenDestroy
     private ArrayAdapter<AnnounceItem> adapter;
     private Hashtable<String, String> mQueryTable;
@@ -63,7 +63,7 @@ public class TabAnounceFragment extends AbsProgressFragment<ArrayList<AnnounceIt
      * searchView
      */
     @ReleaseWhenDestroy
-    protected MenuItem searchMenu;
+    private MenuItem searchMenu;
     /**
      * viewpager 이동 시 스피너의 아이템 리스너를 한번만 발동시키게 하는 변수
      */
@@ -76,30 +76,28 @@ public class TabAnounceFragment extends AbsProgressFragment<ArrayList<AnnounceIt
     /**
      * (검색 메뉴 선택시)검색어를 저장함
      */
-    protected String searchQuery;
-    protected int spinnerSelection = 0;
-    protected int pageNum;
+    private String searchQuery;
+    private int spinnerSelection = 0;
+    private int pageNum;
     @ReleaseWhenDestroy
-    protected AlertDialog pageSelectDialog;
+    private AlertDialog pageSelectDialog;
     @ReleaseWhenDestroy
-    protected NumberPicker mPageNumberPicker;
+    private NumberPicker mPageNumberPicker;
     /**
      * 표시할 공지사항목록의 변동이 생겼을 때 (분류 변경 등등..)<br>
      * 페이지의 최대값이 변경되어야 하는지를 가리키는 값
      */
-    protected boolean mShouldChangeMaxValueOfPage = false;
+    private boolean mShouldChangeMaxValueOfPage = false;
 
     /**
      * 이전 페이지 번호, 공지사항 검색 결과가 없으면 현재 페이지 번호를 변하지 않게하는 역할
      */
     private int prevPageNum = pageNum;
-    protected static final String PAGE_NUM = "PAGE";
-    protected static final String LIST_AN = "list_an";
+    static final String PAGE_NUM = "PAGE";
+    static final String LIST_AN = "list_an";
     private static final String SP_SELECTION = "spinner_selection";
     @ReleaseWhenDestroy
     private View mEmptyView;
-    @ReleaseWhenDestroy
-    private ListView mListView;
 
     /* TODO Fragment Callback */
     @Override
@@ -117,7 +115,7 @@ public class TabAnounceFragment extends AbsProgressFragment<ArrayList<AnnounceIt
         Context context = getActivity();
         initDialog();
 
-        adapter = new AnounceAdapter(context, R.layout.list_layout_announce, mDataList);
+        adapter = new AnounceAdapter(context, mDataList);
         super.onCreate(savedInstanceState);
 
         mToolBarParent = (ViewGroup) getActivity().findViewById(R.id.toolbar_parent);
@@ -145,7 +143,7 @@ public class TabAnounceFragment extends AbsProgressFragment<ArrayList<AnnounceIt
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.tab_anounce, container, false);
 
-        mListView = (ListView) rootView.findViewById(R.id.tab_announce_list_announce);
+        ListView mListView = (ListView) rootView.findViewById(R.id.tab_announce_list_announce);
 
         mEmptyView = rootView.findViewById(R.id.tab_anounce_empty_view);
         mEmptyView.setOnClickListener(new View.OnClickListener() {
@@ -423,7 +421,7 @@ public class TabAnounceFragment extends AbsProgressFragment<ArrayList<AnnounceIt
 
 	/* TODO AsyncExcutor Callback end */
 
-    protected void updatePageNumber() {
+    void updatePageNumber() {
         if (pageView != null)
             pageView.setText(String.valueOf(pageNum) + StringUtil.SPACE + PAGE_NUM);
     }
@@ -475,7 +473,7 @@ public class TabAnounceFragment extends AbsProgressFragment<ArrayList<AnnounceIt
     /**
      * 현재 page의 번호를 설정한다.
      */
-    protected void setPageValue(int newValue) {
+    void setPageValue(int newValue) {
         prevPageNum = pageNum;
         pageNum = newValue;
     }

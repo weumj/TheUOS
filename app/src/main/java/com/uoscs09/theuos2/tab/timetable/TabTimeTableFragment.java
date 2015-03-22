@@ -1,6 +1,5 @@
 package com.uoscs09.theuos2.tab.timetable;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -109,7 +108,7 @@ public class TabTimeTableFragment extends AbsProgressFragment<ArrayList<TimeTabl
         mTimeTableYear = pref.get("timetable_year", OApiUtil.getSemesterYear(semester));
         cb.year = mTimeTableYear;
 
-        adapter = new TimetableAdapter(context, R.layout.list_layout_timetable, mTimetableList, colorTable, cb);
+        adapter = new TimetableAdapter(context, mTimetableList, colorTable, cb);
 
         initDialog();
 
@@ -370,7 +369,7 @@ public class TabTimeTableFragment extends AbsProgressFragment<ArrayList<TimeTabl
         // 시간표를 정상적으로 불러왔다면, 시간표를 저장하고,
         // 시간표의 과목과 과목의 색을 Mapping한다.
         if (!result.isEmpty()) {
-            IOUtil.saveToFile(context, IOUtil.FILE_TIMETABLE, Activity.MODE_PRIVATE, result);
+            IOUtil.saveToFile(context, IOUtil.FILE_TIMETABLE, result);
             colorTable.putAll(getColorTable(result, context));
         }
         return result;
@@ -458,7 +457,7 @@ public class TabTimeTableFragment extends AbsProgressFragment<ArrayList<TimeTabl
      * @param colorTable color map
      */
     public static void saveColorTable(Context context, Hashtable<String, Integer> colorTable) {
-        IOUtil.saveToFileAsync(context, IOUtil.FILE_COLOR_TABLE, Activity.MODE_PRIVATE, colorTable, null);
+        IOUtil.saveToFileAsync(context, IOUtil.FILE_COLOR_TABLE, colorTable, null);
     }
 
     /**
@@ -486,10 +485,10 @@ public class TabTimeTableFragment extends AbsProgressFragment<ArrayList<TimeTabl
                                 }
                                 return b;
                             }
-                        }, new OnTaskFinishedListener() {
+                        }, new OnTaskFinishedListener<Boolean>() {
                             @Override
-                            public void onTaskFinished(boolean isExceptionOccurred, Object data) {
-                                boolean result = (Boolean) data;
+                            public void onTaskFinished(boolean isExceptionOccurred, Boolean data, Exception e) {
+                                boolean result = data;
                                 if (!isExceptionOccurred && result) {
                                     adapter.clear();
                                     adapter.notifyDataSetChanged();

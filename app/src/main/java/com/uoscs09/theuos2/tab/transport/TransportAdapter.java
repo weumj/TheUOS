@@ -16,9 +16,9 @@ import java.util.Map;
 public class TransportAdapter extends
 		AbsExpendableAdapter<String, TransportItem> {
 
-	public TransportAdapter(Context context, int groupLayout, int childLayout,
-			Map<String, ? extends List<TransportItem>> data) {
-		super(context, groupLayout, childLayout, data);
+	public TransportAdapter(Context context, int groupLayout,
+                            Map<String, ? extends List<TransportItem>> data) {
+		super(context, groupLayout, R.layout.list_layout_transport, data);
 	}
 
 	@Override
