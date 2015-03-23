@@ -36,7 +36,6 @@ import com.uoscs09.theuos2.tab.transport.TabTransportFragment;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.List;
 
 public class AppUtil {
     public static final String DB_PHONE = "PhoneNumberDB.db";
@@ -153,7 +152,7 @@ public class AppUtil {
         }
     }
 
-    public static ArrayList<Page> loadDefaultOrder2(Context context) {
+    public static ArrayList<Page> loadDefaultOrder2() {
         ArrayList<Page> list = new ArrayList<>();
         for (int i = 1; i < PAGE_SIZE; i++) {
             list.add(new Page(i));
@@ -194,53 +193,7 @@ public class AppUtil {
 
     }
 
-    /**
-     * 저장된 탭 순서를 불러옴
-     */
-    @Deprecated
-    public static ArrayList<Integer> loadPageOrder(Context context) {
-        PrefUtil pref = PrefUtil.getInstance(context);
-        ArrayList<Integer> tabList = new ArrayList<>();
-        String page = "page";
-        for (int i = 1; i < PAGE_SIZE; i++) {
-            tabList.add(getTitleResId(pref.get(page + i, i)));
-        }
-        // tabList.add(getTitleResId(mPrefUtil.get("page99", 99)));
-
-        return tabList;
-    }
-
-    @Deprecated
-    private static int[] getPages() {
-        return new int[]{
-                R.string.title_tab_announce, /* 공지사항 */
-                R.string.title_tab_restaurant, /* 식당메뉴 */
-                R.string.title_tab_book_search, /* 도서검색 */
-                R.string.title_tab_library_seat, /* 도서관좌석 */
-                R.string.title_tab_timetable, /* 시간표 */
-                R.string.title_tab_map, /* 학교지도 */
-                R.string.title_tab_search_empty_room, /* 빈강의실 */
-                R.string.title_tab_search_subject, /* 교과목 */
-                R.string.title_tab_phone, /* 전화번호 */
-                R.string.title_tab_transport, /* 교통정보 */
-                R.string.title_tab_score /* 수업평가 */};
-    }
-
-
-    /**
-     * 기본 탭 순서를 불러옴
-     */
-    @Deprecated
-    public static ArrayList<Integer> loadDefaultPageOrder() {
-        ArrayList<Integer> list = new ArrayList<>();
-        int[] pages = getPages();
-        for (int i = 0; i < PAGE_SIZE - 1; i++) {
-            list.add(pages[i]);
-        }
-        return list;
-    }
-
-    /**
+      /**
      * 기본 page title의 resource id에 따른 page순서를 반환한다.
      */
     public static int titleResIdToOrder(int titleResId) {
@@ -322,48 +275,6 @@ public class AppUtil {
         }
     }
 
-    /**
-     * page 순서를 저장한다.
-     */
-    @Deprecated
-    public static void savePageOrder(List<Integer> list, Context context) {
-        PrefUtil pref = PrefUtil.getInstance(context);
-        String PAGE = "page";
-        for (int i = 1; i < PAGE_SIZE; i++) {
-            pref.put(PAGE + i, titleResIdToOrder(list.get(i - 1)));
-        }
-    }
-
-    /**
-     * 탭 아이콘을 불러옴<br>
-     * <i>추후에 이 메소드를 삭제할 예정</i>
-     */
-    @Deprecated
-    public static int getPageIcon(int pageStringResourceId, AppTheme theme) {
-        switch (theme) {
-            case BlackAndWhite:
-            case Black:
-                return getPageIconWhite(pageStringResourceId);
-            case White:
-            default:
-                return getPageIconGray(pageStringResourceId);
-        }
-    }
-
-    /**
-     * 탭 아이콘을 불러옴
-     */
-    @Deprecated
-    public static int getPageIcon(int pageStringResourceId) {
-        switch (theme) {
-            case BlackAndWhite:
-            case Black:
-                return getPageIconWhite(pageStringResourceId);
-            case White:
-            default:
-                return getPageIconGray(pageStringResourceId);
-        }
-    }
 
     public static int getPageIcon(Context context, int pageStringResId) {
         int iconId;
@@ -398,7 +309,7 @@ public class AppUtil {
                 iconId = R.attr.ic_content_paste;
                 break;
             case R.string.title_tab_schedule:
-                iconId = R.attr.ic_content_timetable;
+                iconId = R.attr.ic_schedule;
                 break;
             case R.string.title_tab_score:
                 iconId = R.attr.ic_content_copy;
@@ -455,7 +366,7 @@ public class AppUtil {
                 iconId = R.attr.menu_ic_content_paste;
                 break;
             case R.string.title_tab_schedule:
-                iconId = R.attr.menu_ic_content_timetable;
+                iconId = R.attr.menu_ic_schedule;
                 break;
             case R.string.title_tab_score:
                 iconId = R.attr.menu_ic_content_copy;
@@ -502,7 +413,7 @@ public class AppUtil {
             case R.string.title_tab_search_subject:
                 return R.drawable.ic_action_content_content_paste;
             case R.string.title_tab_schedule:
-                return R.drawable.ic_action_content_timetable;
+                return R.drawable.ic_action_action_assignment;
             case R.string.title_tab_score:
                 return R.drawable.ic_action_content_content_copy;
             case R.string.title_tab_transport:
@@ -541,7 +452,7 @@ public class AppUtil {
             case R.string.title_tab_search_subject:
                 return R.drawable.ic_action_content_content_paste_dark;
             case R.string.title_tab_schedule:
-                return R.drawable.ic_action_content_timetable_dark;
+                return R.drawable.ic_action_action_assignment_dark;
             case R.string.title_tab_score:
                 return R.drawable.ic_action_content_content_copy_dark;
             case R.string.title_tab_transport:
@@ -613,7 +524,6 @@ public class AppUtil {
                 return TabPhoneFragment.class;
 
             case R.string.title_tab_timetable:
-                // return TabTimeTableFragment.class;
                 return TabTimeTableFragment2.class;
 
             case R.string.title_tab_search_empty_room:
@@ -657,7 +567,6 @@ public class AppUtil {
         else if (fragmentClass.equals(TabPhoneFragment.class))
             return R.string.title_tab_phone;
 
-            // else if (fragmentClass.equals(TabTimeTableFragment.class))
         else if (fragmentClass.equals(TabTimeTableFragment2.class))
             return R.string.title_tab_timetable;
 
@@ -905,37 +814,6 @@ public class AppUtil {
         }
     }
 
-    /**
-     * 주어진 idx에 따라 color를 얻음, 범위는 0~9<br>
-     * 시간표 과목마다 색을 달리하는데 사용됨
-     */
-    @Deprecated
-    public static int getTimetableColor(int idx) {
-        switch (idx) {
-            case 0:
-                return R.drawable.layout_color_red_yellow;
-            case 1:
-                return R.drawable.layout_color_light_blue;
-            case 2:
-                return R.drawable.layout_color_yellow;
-            case 3:
-                return R.drawable.layout_color_violet;
-            case 4:
-                return R.drawable.layout_color_green;
-            case 5:
-                return R.drawable.layout_color_gray_blue;
-            case 6:
-                return R.drawable.layout_color_purple;
-            case 7:
-                return R.drawable.layout_color_yellow_green;
-            case 8:
-                return R.drawable.layout_color_blue_green;
-            case 9:
-                return R.drawable.layout_color_gray_red;
-            default:
-                return -1;
-        }
-    }
 
     /**
      * <b>{@code @ReleaseWhenDestroy}</b> annotation이 붙은 Field를 null로 설정한다.

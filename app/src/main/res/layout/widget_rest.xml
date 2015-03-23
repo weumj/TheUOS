@@ -8,14 +8,16 @@
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="@color/background_floating_material_dark" >
+        android:background="@color/material_red_400"
+        android:minHeight="40dp">
 
         <ImageButton
             android:id="@+id/widget_rest_btn_next"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="4dp"
             android:background="@drawable/selector_button"
             android:contentDescription="@string/action_forward"
             android:src="@drawable/ic_action_navigation_arrow_forward_dark" />
@@ -24,10 +26,9 @@
             android:id="@+id/widget_rest_main_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/widget_rest_btn_prev"
-            android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:gravity="center"
+            android:layout_centerVertical="true"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@android:color/white" />
 
@@ -36,16 +37,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="4dp"
             android:background="@drawable/selector_button"
             android:contentDescription="@string/action_backward"
             android:src="@drawable/ic_action_navigation_arrow_back_dark" />
     </RelativeLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="1dip"
-        android:background="@android:color/darker_gray" />
 
     <ListView
         android:id="@+id/widget_rest_listview"

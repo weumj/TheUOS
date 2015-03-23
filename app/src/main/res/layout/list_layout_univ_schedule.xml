@@ -30,26 +30,15 @@
                 android:minHeight="60dp"
                 android:padding="10dp">
 
-                <LinearLayout
+                <TextView
+                    android:id="@android:id/text1"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:layout_weight="40"
-                    android:orientation="horizontal">
-
-                    <View
-                        android:id="@android:id/background"
-                        android:layout_width="10dp"
-                        android:layout_height="10dp"
-                        android:layout_marginTop="6dp"
-                        android:layout_marginBottom="2dp"
-                        android:layout_marginRight="10dp" />
-
-                    <TextView
-                        android:id="@android:id/text1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="16sp" />
-                </LinearLayout>
+                    android:drawablePadding="10dp"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center_vertical"
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@android:id/text2"

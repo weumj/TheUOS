@@ -1,21 +1,15 @@
 package com.uoscs09.theuos2.tab.timetable;
 
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.app.NotificationCompat;
-
-import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.util.IOUtil;
-import com.uoscs09.theuos2.util.OApiUtil;
 
 /** 시간표 알림 이벤트를 받아 알림을 띄우는 BroadcastReceiver */
 public class TimeTableNotiReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
+        /*
 		String action = intent.getAction();
 		if (action.equals(TimeTableInfoCallback.ACTION_SET_ALARM)) {
 			long[] vibrate = new long[] { 200, 200, 500, 300 };
@@ -42,5 +36,6 @@ public class TimeTableNotiReceiver extends BroadcastReceiver {
 					.setWhen(time).build();
 			nm.notify(code * 100, notify);
 		}
+		*/
 	}
 }

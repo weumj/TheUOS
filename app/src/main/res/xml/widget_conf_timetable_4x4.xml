@@ -5,6 +5,5 @@
     android:minResizeHeight="146dip"
     android:minResizeWidth="294dip"
     android:minWidth="294dip"
-    android:previewImage="@drawable/preview_widget_timetable"
     android:resizeMode="vertical"
     android:updatePeriodMillis="43200000" />

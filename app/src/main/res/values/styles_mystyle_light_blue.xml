@@ -12,7 +12,6 @@
         <item name="toolbar_actionbar_title">@style/Mystyle.Light.Blue.ActionBar.TitleTextStyle</item>
         <item name="toolbar_actionbar_subtitle">@style/Mystyle.Light.Blue.ActionBar.SubTitleTextStyle</item>
         <item name="windowActionBarOverlay">true</item>
-        <item name="android:alertDialogTheme">@style/Mystyle.Light.Blue.AlertDialog</item>
         <item name="ic_loading">@anim/progress_medium_light_blue</item>
 
         <!-- for color -->
@@ -35,17 +34,5 @@
         <item name="android:textColor">@android:color/white</item>
     </style>
 
-    <!-- AlertDialog -->
-    <style name="Mystyle.Light.Blue.AlertDialog" parent="Theme.Mystyle.Light.AlertDialog">
-        <item name="android:windowTitleStyle">@style/Mystyle.Light.Blue.AlertDialogStyle</item>
-    </style>
-
-    <style name="Mystyle.Light.Blue.AlertDialogStyle" parent="Theme.Mystyle.Light.AlertDialogSytle">
-        <item name="android:textAppearance">@style/Mystyle.Light.Blue.AlertDialogStyle.TextAppearance</item>
-    </style>
-
-    <style name="Mystyle.Light.Blue.AlertDialogStyle.TextAppearance" parent="Theme.Mystyle.Light.AlertDialogSytle.TextAppearance">
-        <item name="android:textColor">@color/material_light_blue_600</item>
-    </style>
 
 </resources>

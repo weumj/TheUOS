@@ -77,6 +77,8 @@
         <!-- 식당 아이콘, Drawable -->
         <attr name="ic_restaurant" format="reference|color" />
 
+        <attr name="ic_schedule" format="reference|color"/>
+
         <attr name="ic_loading" format="reference" />
     </declare-styleable>
     <declare-styleable name="ThemeDrawable.Selector">
@@ -124,6 +126,7 @@
         <attr name="menu_ic_secure_login" format="reference|color" />
         <attr name="menu_ic_navigation_drawer" format="reference|color" />
         <attr name="menu_ic_restaurant" format="reference|color" />
+        <attr name="menu_ic_schedule" format="reference|color"/>
         <attr name="menu_ic_loading" format="reference" />
     </declare-styleable>
     <declare-styleable name="ThemeDrawable.Color">

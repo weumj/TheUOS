@@ -3,42 +3,36 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/rounded_box_widget"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:minHeight="40dp"
         android:layout_gravity="center_vertical"
-        android:background="@color/background_material_light"
-        android:gravity="center_vertical" >
+        android:background="@color/material_deep_teal_500">
 
         <TextView
             android:id="@android:id/text1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBaseline="@android:id/selectedIcon"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            android:layout_marginLeft="5dip"
-            android:layout_marginTop="3dip"
+            android:layout_marginLeft="10dip"
             android:gravity="center_vertical"
-            android:textColor="@android:color/black" />
+            android:layout_centerVertical="true"
+            android:textColor="@android:color/white" />
 
         <ImageView
             android:id="@android:id/selectedIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
+            android:layout_centerVertical="true"
             android:background="@drawable/selector_button"
             android:contentDescription="@string/action_refresh"
-            android:src="@drawable/ic_action_navigation_refresh" />
+            android:src="@drawable/ic_action_navigation_refresh_dark" />
     </RelativeLayout>
-
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="1dip"
-        android:background="@color/light_gray" />
 
     <ListView
         android:id="@android:id/list"
@@ -48,8 +42,7 @@
         android:divider="#33888888"
         android:dividerHeight="1dip"
         android:padding="2dp"
-        android:scrollbarStyle="outsideOverlay" >
-    </ListView>
+        android:scrollbarStyle="outsideOverlay"/>
 
     <TextView
         android:id="@android:id/empty"

@@ -1,28 +1,23 @@
-<resources xmlns:android="http://schemas.android.com/apk/res/android">
+<resources>
 
-    <style name="Theme.Mystyle.Light.AlertDialog" parent="@style/Theme.AppCompat.Light.Dialog">
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:windowTitleStyle">@style/Theme.Mystyle.Light.AlertDialogSytle</item>
-        <item name="android:buttonBarButtonStyle">@style/Widget.AppCompat.Toolbar.Button.Navigation</item>
-        <item name="android:buttonBarStyle">@style/Widget.AppCompat.Toolbar.Button.Navigation</item>
+    <eat-comment/>
+    <!-- for all api theme-->
+
+    <style name="Theme.Mystyle.Light.DarkActionBar" parent="@style/Theme.Mystyle.Base.Light.DarkActionBar">
     </style>
 
-    <style name="Theme.Mystyle.Light.AlertDialogSytle">
-        <item name="android:maxLines">1</item>
-        <item name="android:scrollHorizontally">true</item>
-        <item name="android:textAppearance">@style/Theme.Mystyle.Light.AlertDialogSytle.TextAppearance</item>
+
+    <style name="Theme.Mystyle.Light" parent="@style/Theme.Mystyle.Base.Light">
     </style>
 
-    <style name="Theme.Mystyle.Light.AlertDialogSytle.TextAppearance">
-        <item name="android:textSize">18sp</item>
-        <item name="android:textColor">?android:attr/textColorPrimary</item>
-        <item name="android:textStyle">bold</item>
+    <style name="Theme.Mystyle.Dark" parent="@style/Theme.Mystyle.Base.Dark">
     </style>
 
-    <style name="Theme.Mystyle.Light" parent="@style/Theme.AppCompat.Light">
-        <item name="android:windowTranslucentStatus">true</item>
-        <item name="android:alertDialogTheme">@style/Theme.Mystyle.Light.AlertDialog</item>
 
+    <eat-comment/>
+    <!-- base mystyle theme-->
+
+    <style name="Theme.Mystyle.Base.Light" parent="@style/Theme.AppCompat.Light">
         <!-- for selector -->
         <item name="selector_list">@drawable/selector_list</item>
         <item name="selector_list_shadow">@drawable/selector_list_shadow</item>
@@ -69,6 +64,7 @@
         <item name="ic_navigation_drawer">@drawable/ic_action_navigation_menu</item>
         <item name="ic_loading">@anim/progress_medium_white</item>
         <item name="ic_restaurant">@drawable/ic_restaurant</item>
+        <item name="ic_schedule">@drawable/ic_action_action_assignment</item>
 
         <!-- for menu icon drawables -->
         <item name="menu_ic_action_about">@drawable/ic_action_action_about</item>
@@ -107,15 +103,14 @@
         <item name="menu_ic_content_paint">@drawable/ic_action_content_paint</item>
         <item name="menu_ic_navigation_drawer">@drawable/ic_action_navigation_menu</item>
         <item name="menu_ic_restaurant">@drawable/ic_restaurant</item>
+        <item name="menu_ic_schedule">@drawable/ic_action_action_assignment</item>
         <item name="menu_ic_loading">@anim/progress_medium_white</item>
         <item name="color_sidemenu_listview_text">@color/material_grey_600</item>
         <item name="color_primary_text">?color_actionbar_title</item>
     </style>
 
-    <style name="Theme.Mystyle.Light.DarkActionBar" parent="@style/Theme.AppCompat.Light.DarkActionBar">
-        <item name="android:windowTranslucentStatus">true</item>
-        <item name="android:alertDialogTheme">@style/Theme.Mystyle.Light.AlertDialog</item>
 
+    <style name="Theme.Mystyle.Base.Light.DarkActionBar" parent="@style/Theme.AppCompat.Light">
         <!-- for selector -->
         <item name="selector_list">@drawable/selector_list</item>
         <item name="selector_list_shadow">@drawable/selector_list_shadow</item>
@@ -162,6 +157,7 @@
         <item name="ic_navigation_drawer">@drawable/ic_action_navigation_menu</item>
         <item name="ic_loading">@anim/progress_medium_white</item>
         <item name="ic_restaurant">@drawable/ic_restaurant</item>
+        <item name="ic_schedule">@drawable/ic_action_action_assignment</item>
 
         <!-- for menu icon drawables -->
         <item name="menu_ic_action_about">@drawable/ic_action_action_about_dark</item>
@@ -201,21 +197,13 @@
         <item name="menu_ic_navigation_drawer">@drawable/ic_action_navigation_menu_dark</item>
         <item name="menu_ic_restaurant">@drawable/ic_restaurant_dark</item>
         <item name="menu_ic_loading">@anim/progress_medium_dark</item>
+        <item name="menu_ic_schedule">@drawable/ic_action_action_assignment_dark</item>
         <item name="color_sidemenu_listview_text">@android:color/white</item>
         <item name="color_primary_text">?colorPrimary</item>
     </style>
 
-    <style name="Theme.Mystyle.Dark.AlertDialog" parent="@style/Theme.AppCompat.Dialog">
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:windowTitleStyle">@style/Theme.Mystyle.Light.AlertDialogSytle</item>
-        <item name="android:buttonBarButtonStyle">@style/Widget.AppCompat.Toolbar.Button.Navigation</item>
-        <item name="android:buttonBarStyle">@style/Widget.AppCompat.Toolbar.Button.Navigation</item>
-    </style>
 
-    <style name="Theme.Mystyle.Dark" parent="@style/Theme.AppCompat">
-        <item name="android:windowTranslucentStatus">true</item>
-        <item name="android:alertDialogTheme">@style/Theme.Mystyle.Dark.AlertDialog</item>
-
+    <style name="Theme.Mystyle.Base.Dark" parent="@style/Theme.AppCompat">
         <!-- for selector -->
         <item name="selector_list">@drawable/selector_list_dark</item>
         <item name="selector_list_shadow">@drawable/selector_list_dark</item>
@@ -261,6 +249,7 @@
         <item name="ic_content_paint">@drawable/ic_action_content_paint_dark</item>
         <item name="ic_navigation_drawer">@drawable/ic_action_navigation_menu_dark</item>
         <item name="ic_loading">@anim/progress_medium_dark</item>
+        <item name="ic_schedule">@drawable/ic_action_action_assignment_dark</item>
         <item name="ic_restaurant">@drawable/ic_restaurant_dark</item>
 
         <!-- for menu icon drawables -->
@@ -301,8 +290,10 @@
         <item name="menu_ic_navigation_drawer">@drawable/ic_action_navigation_menu_dark</item>
         <item name="menu_ic_restaurant">@drawable/ic_restaurant_dark</item>
         <item name="menu_ic_loading">@anim/progress_medium_dark</item>
+        <item name="menu_ic_schedule">@drawable/ic_action_action_assignment_dark</item>
         <item name="color_sidemenu_listview_text">@android:color/white</item>
         <item name="color_primary_text">@android:color/white</item>
     </style>
+
 
 </resources>

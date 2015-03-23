@@ -108,7 +108,7 @@ public class SettingsOrderFragment extends Fragment {
                 finish();
                 return true;
             case R.id.action_goto_default:
-                refresh(AppUtil.loadDefaultOrder2(activity));
+                refresh(AppUtil.loadDefaultOrder2());
                 AppUtil.showToast(activity, R.string.apply_default, true);
                 return true;
             default:

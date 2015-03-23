@@ -2,13 +2,13 @@ package com.uoscs09.theuos2.tab.schedule;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.support.annotation.NonNull;
@@ -58,7 +58,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
 
     Adapter mAdapter;
 
-    AlertDialog mItemSelectDialog;
+    MaterialDialog mItemSelectDialog;
 
     UnivScheduleItem mSelectedItem;
 
@@ -76,6 +76,8 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mSelectedItem = mList.get(position);
+
+                mItemSelectDialog.setContent(String.format(getString(R.string.tab_univ_schedule_add_schedule_to_calender), mSelectedItem.content));
                 mItemSelectDialog.show();
             }
         });
@@ -105,7 +107,6 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
                     @Override
                     public void onPositive(MaterialDialog dialog) {
                         super.onPositive(dialog);
-                        dialog.setContent(String.format(getString(R.string.tab_univ_schedule_add_schedule_to_calender), mSelectedItem.content));
 
                         sendClickEvent("add schedule to calender");
 
@@ -114,7 +115,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
                 })
                 .build();
 
-        mProgressDialog = AppUtil.getProgressDialog(getActivity(), false ,null);
+        mProgressDialog = AppUtil.getProgressDialog(getActivity(), false, null);
 
         return view;
     }
@@ -139,10 +140,11 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
                 + CalendarContract.Calendars.OWNER_ACCOUNT + " = ?))";
         private String[] selectionArgs;
 
+
         @Override
         public Uri call() throws Exception {
 
-            if(mAccount == null) {
+            if (mAccount == null) {
                 AccountManager accountManager = AccountManager.get(getActivity());
                 Account[] accounts = accountManager.getAccountsByType("com.google");
 
@@ -152,13 +154,13 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
 
                 mAccount = accounts[0].name;
 
-                selectionArgs = new String[]{mAccount , "com.google", mAccount};
+                selectionArgs = new String[]{mAccount, "com.google", mAccount};
 
             }
 
             ContentResolver cr = getActivity().getContentResolver();
 
-            Cursor c = cr.query(CalendarContract.Calendars.CONTENT_URI, EVENT_PROJECTION, SELECTION , selectionArgs, null);
+            Cursor c = cr.query(CalendarContract.Calendars.CONTENT_URI, EVENT_PROJECTION, SELECTION, selectionArgs, null);
 
             if (c == null) {
                 throw new Exception(getString(R.string.tab_univ_schedule_calendar_not_exist));
@@ -173,21 +175,25 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
             long calendarId = c.getLong(0);
 
             ContentValues cv = mSelectedItem.toContentValues(calendarId);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
+                cv.put(CalendarContract.Events.EVENT_COLOR, getResources().getColor(AppUtil.getColor(mList.indexOf(mSelectedItem))));
+
             Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, cv);
 
             c.close();
 
             return uri;
         }
-    } ;
+    };
 
     private final AsyncCallback<Uri> mCalendarQueryCallback = new AsyncCallback.Base<Uri>() {
         @Override
         public void onResult(Uri result) {
-            if(result != null)
-                AppUtil.showToast(getActivity(), R.string.tab_univ_schedule_add_to_calendar_success ,isMenuVisible());
+            if (result != null)
+                AppUtil.showToast(getActivity(), R.string.tab_univ_schedule_add_to_calendar_success, isMenuVisible());
             else
-                AppUtil.showToast(getActivity(), R.string.tab_univ_schedule_add_to_calendar_fail ,isMenuVisible());
+                AppUtil.showToast(getActivity(), R.string.tab_univ_schedule_add_to_calendar_fail, isMenuVisible());
         }
 
         @Override
@@ -262,8 +268,12 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
 
             holder.textView1.setText(item.content);
             holder.textView2.setText(item.sch_date);
-            holder.drawable.setColor(holder.itemView.getResources().getColor(AppUtil.getColor(position)));
-            holder.head.invalidateDrawable(holder.drawable);
+
+
+            holder.drawable.setColor(getContext().getResources().getColor(AppUtil.getColor(position)));
+            //holder.drawable.setCentorColor(getContext().getResources().getColor(AppUtil.getColor(position)));
+
+            holder.textView1.invalidateDrawable(holder.drawable);
 
         }
 
@@ -311,7 +321,6 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
     static class ViewHolder extends AbsArrayAdapter.ViewHolder {
         final TextView textView1, textView2;
         final CardView cardView;
-        final View head;
         UnivScheduleItem item;
         PieProgressDrawable drawable = new PieProgressDrawable();
 
@@ -321,16 +330,16 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
 
             cardView = (CardView) view.findViewById(R.id.card_view);
 
-            drawable.setLevel(100);
-            int size = itemView.getResources().getDimensionPixelSize(R.dimen.univ_schedule_list_drawable_size);
-            drawable.setBounds(0, 0, size, size);
-
-            head = view.findViewById(android.R.id.background);
-            head.setBackgroundDrawable(drawable);
 
             textView1 = (TextView) view.findViewById(android.R.id.text1);
             textView2 = (TextView) view.findViewById(android.R.id.text2);
 
+            drawable.setLevel(100);
+            drawable.setBorderWidth(-1f, view.getResources().getDisplayMetrics());
+            int size = itemView.getResources().getDimensionPixelSize(R.dimen.univ_schedule_list_drawable_size);
+            drawable.setBounds(0, 0, size, size);
+
+            textView1.setCompoundDrawables(drawable, null, null, null);
         }
 
     }

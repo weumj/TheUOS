@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Resources;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -259,7 +258,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
             int drawablePadding = resources.getDimensionPixelSize(R.dimen.theme_selector_drawable_padding);
 
             drawable = new PieProgressDrawable();
-            drawable.setBounds(new Rect(0, 0, drawableSize, drawableSize));
+            drawable.setBounds(0, 0, drawableSize, drawableSize);
             drawable.setBorderWidth(2, resources.getDisplayMetrics());
             drawable.setLevel(100);
 

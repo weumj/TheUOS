@@ -3,7 +3,7 @@ package com.uoscs09.theuos2.tab.schedule;
 import android.content.ContentValues;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.provider.CalendarContract;
+import android.provider.CalendarContract.Events;
 
 import com.uoscs09.theuos2.annotation.KeepName;
 import com.uoscs09.theuos2.parse.OApiParser2;
@@ -51,14 +51,13 @@ public class UnivScheduleItem implements Parcelable, OApiParser2.Parsable {
 
     public ContentValues toContentValues(long id){
         ContentValues cv = new ContentValues();
-        cv.put(CalendarContract.Events.CALENDAR_ID, id);
-        cv.put(CalendarContract.Events.TITLE, content);
-        cv.put(CalendarContract.Events.DESCRIPTION, content);
+        cv.put(Events.CALENDAR_ID, id);
+        cv.put(Events.TITLE, content);
+        cv.put(Events.DESCRIPTION, content);
 
-        cv.put(CalendarContract.Events.DTSTART, getDate(true).getTimeInMillis());
-        cv.put(CalendarContract.Events.DTEND, getDate(false).getTimeInMillis());
-        cv.put(CalendarContract.Events.EVENT_TIMEZONE, "Asia/Seoul");
-
+        cv.put(Events.DTSTART, getDate(true).getTimeInMillis());
+        cv.put(Events.DTEND, getDate(false).getTimeInMillis());
+        cv.put(Events.EVENT_TIMEZONE, "Asia/Seoul");
 
         return cv;
     }

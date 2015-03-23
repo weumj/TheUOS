@@ -23,9 +23,9 @@
         android:horizontalSpacing="3dip"
         android:listSelector="@android:color/transparent"
         android:numColumns="auto_fit"
-        android:paddingLeft="@dimen/tab_home_gridview_horizontal_margin"
-        android:paddingRight="@dimen/tab_home_gridview_horizontal_margin"
-        android:paddingTop="@dimen/tab_home_gridview_vertical_margin"
+        android:paddingLeft="@dimen/tab_home_grid_view_horizontal_margin"
+        android:paddingRight="@dimen/tab_home_grid_view_horizontal_margin"
+        android:paddingTop="@dimen/tab_home_grid_view_vertical_margin"
         android:scrollbars="none"
         android:stretchMode="spacingWidthUniform"
         android:verticalSpacing="10dip" >

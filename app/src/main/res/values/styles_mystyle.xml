@@ -32,7 +32,6 @@
         <item name="toolbar_actionbar_title">@style/Mystyle.White.ActionBar.TitleTextStyle</item>
         <item name="toolbar_actionbar_subtitle">@style/Mystyle.White.ActionBar.SubTitleTextStyle</item>
         <item name="windowActionBarOverlay">true</item>
-        <item name="android:alertDialogTheme">@style/Mystyle.White.AlertDialog</item>
 
         <!-- for color -->
         <item name="color_rosy_brown">@color/rosy_brown</item>
@@ -53,17 +52,5 @@
         <item name="android:textColor">@color/material_deep_teal_200</item>
     </style>
 
-    <!-- AlertDialog -->
-    <style name="Mystyle.White.AlertDialog" parent="Theme.Mystyle.Light.AlertDialog">
-        <item name="android:windowTitleStyle">@style/Mystyle.White.AlertDialogStyle</item>
-    </style>
-
-    <style name="Mystyle.White.AlertDialogStyle" parent="Theme.Mystyle.Light.AlertDialogSytle">
-        <item name="android:textAppearance">@style/Mystyle.White.AlertDialogStyle.TextAppearance</item>
-    </style>
-
-    <style name="Mystyle.White.AlertDialogStyle.TextAppearance" parent="Theme.Mystyle.Light.AlertDialogSytle.TextAppearance">
-        <item name="android:textColor">@color/material_teal_200</item>
-    </style>
 
 </resources>

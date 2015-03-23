@@ -5,6 +5,5 @@
     android:minResizeHeight="40dip"
     android:minResizeWidth="146dip"
     android:minWidth="146dip"
-    android:previewImage="@drawable/preview_widget_rest"
     android:resizeMode="vertical"
     android:updatePeriodMillis="43200000" />
