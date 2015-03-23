@@ -59,6 +59,15 @@ public abstract class BaseFragment extends Fragment {
         }
     }
 
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+
+        if (isVisibleToUser) {
+            TrackerUtil.getInstance(this).sendEvent(getFragmentNameForTracker(), "User Visible");
+        }
+    }
+
     /**
      * ActionBar의 subTitle
      */
@@ -77,7 +86,7 @@ public abstract class BaseFragment extends Fragment {
 
     protected void sendTrackerEvent(String action, String label, long value) {
         TrackerUtil.getInstance(this).sendEvent(getFragmentNameForTracker(), action, label, value);
-     }
+    }
 
     protected void sendClickEvent(String label) {
         TrackerUtil.getInstance(this).sendClickEvent(getFragmentNameForTracker(), label);

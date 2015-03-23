@@ -19,6 +19,7 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
 import com.uoscs09.theuos2.util.StringUtil;
+import com.uoscs09.theuos2.util.TrackerUtil;
 
 import java.util.Calendar;
 
@@ -31,6 +32,8 @@ public class SettingsAnnounceNotificationFragment extends PreferenceFragment imp
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.prefrence_announce_noti);
         bindPreferenceSummaryToValue();
+
+        TrackerUtil.getInstance(this).sendEvent("use", "onCreate", "SettingsAnnounceNotificationFragment");
     }
 
     @Override

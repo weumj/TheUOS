@@ -9,12 +9,15 @@ import android.support.v7.app.ActionBarActivity;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.util.AppUtil;
+import com.uoscs09.theuos2.util.TrackerUtil;
 
 public class SettingsWebPageFragment extends PreferenceFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.prefrence_web_page);
+
+        TrackerUtil.getInstance(this).sendEvent("use", "onCreate", "SettingsWebPageFragment");
     }
 
     @Override

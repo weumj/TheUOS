@@ -24,6 +24,7 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.common.UOSApplication;
 import com.uoscs09.theuos2.util.AppUtil;
+import com.uoscs09.theuos2.util.TrackerUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +43,8 @@ public class SettingsOrderFragment extends Fragment {
         orderList = AppUtil.loadPageOrder2(getActivity());
         mAdapter = new SwapAdapter(getActivity(), orderList);
         super.onCreate(savedInstanceState);
+
+        TrackerUtil.getInstance(this).sendEvent("use", "onCreate", "SettingsOrderFragment");
     }
 
     @Override

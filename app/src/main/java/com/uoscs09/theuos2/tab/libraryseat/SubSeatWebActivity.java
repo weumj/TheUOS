@@ -16,7 +16,7 @@ public class SubSeatWebActivity extends WebViewActivity {
         SeatItem item = getIntent().getParcelableExtra(TabLibrarySeatFragment.ITEM);
 
 
-        TrackerUtil.getsInstance(this).sendEvent(getScreenName(), "view", item.roomName);
+        TrackerUtil.getInstance(this).sendEvent(getScreenName(), "view", item.roomName);
 
         getSupportActionBar().setTitle("좌석 정보");
         getSupportActionBar().setSubtitle(item.roomName);

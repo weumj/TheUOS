@@ -16,6 +16,7 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
+import com.uoscs09.theuos2.util.TrackerUtil;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -47,6 +48,8 @@ public class SettingsFileSelectDialogFragment extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        TrackerUtil.getInstance(this).sendEvent("use", "onCreate", "SettingsFileSelectDialogFragment");
         // getActivity().getActionBar().setTitle(R.string.setting_save_route);
         mFileList = new ArrayList<>();
         path = getPathFromPref(getActivity());

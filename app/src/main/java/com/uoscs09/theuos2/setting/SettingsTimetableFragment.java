@@ -12,6 +12,7 @@ import android.support.v7.app.ActionBarActivity;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.util.PrefUtil;
+import com.uoscs09.theuos2.util.TrackerUtil;
 
 public class SettingsTimetableFragment extends PreferenceFragment implements
         OnSharedPreferenceChangeListener {
@@ -21,6 +22,8 @@ public class SettingsTimetableFragment extends PreferenceFragment implements
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.prefrence_timetable);
         bindPreferenceSummaryToValue();
+
+        TrackerUtil.getInstance(this).sendEvent("use", "onCreate", "SettingsTimetableFragment");
     }
 
     @Override

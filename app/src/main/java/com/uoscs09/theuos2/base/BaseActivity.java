@@ -20,7 +20,7 @@ public abstract class BaseActivity extends ActionBarActivity {
         AppUtil.applyTheme(this);
         super.onCreate(arg0);
 
-        Tracker t = TrackerUtil.getsInstance(this).getTracker();
+        Tracker t = TrackerUtil.getInstance(this).getTracker();
         t.setScreenName(getScreenName());
         t.send(new HitBuilders.AppViewBuilder().build());
     }

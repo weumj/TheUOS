@@ -3,7 +3,7 @@
 
     <string name="setting_app_info">앱 정보</string>
     <string name="setting_app_version">버전</string>
-    <string name="setting_app_version_desc">beta-0.01</string>
+    <string name="setting_app_version_desc">1.00</string>
     <string name="setting_app_version_update">최신버전 확인</string>
     <string name="setting_app_version_update_desc">어플리케이션의 최신 버전을 확인합니다.</string>
     <string name="setting_app_version_update_require">어플리케이션 업데이트 필요!</string>

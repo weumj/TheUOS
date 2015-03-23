@@ -6,14 +6,19 @@ import android.support.v4.app.Fragment;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.common.UOSApplication;
 
 public class TrackerUtil {
     private static TrackerUtil sInstance;
     private Tracker mTracker;
 
+    private static final String APP_VERSION = "App Version";
+    private final String appVersion;
+
     private TrackerUtil(UOSApplication app){
         mTracker = app.getTracker(UOSApplication.TrackerName.APP_TRACKER);
+        appVersion = app.getString(R.string.setting_app_version);
     }
 
     public static TrackerUtil getInstance(UOSApplication app){
@@ -24,11 +29,15 @@ public class TrackerUtil {
     }
 
     public static  TrackerUtil getInstance(Fragment fragment){
-        return getsInstance(fragment.getActivity());
+        return getInstance(fragment.getActivity());
     }
 
-    public static TrackerUtil getsInstance(Activity activity){
+    public static TrackerUtil getInstance(Activity activity){
         return getInstance((UOSApplication) activity.getApplication());
+    }
+
+    public static TrackerUtil getInstance(android.app.Fragment fragment){
+        return getInstance(fragment.getActivity());
     }
 
 
@@ -36,11 +45,20 @@ public class TrackerUtil {
         return mTracker;
     }
 
+    public void sendEvent(String category, String action){
+        mTracker.send(new HitBuilders.EventBuilder()
+                .setCategory(category)
+                .setAction(action)
+                .set(APP_VERSION, appVersion)
+                .build());
+    }
+
     public void sendEvent(String category, String action, String label) {
         mTracker.send(new HitBuilders.EventBuilder()
                 .setCategory(category)
                 .setAction(action)
                 .setLabel(label)
+                .set(APP_VERSION, appVersion)
                 .build());
     }
 
@@ -50,6 +68,7 @@ public class TrackerUtil {
                 .setAction(action)
                 .setLabel(label)
                 .setValue(value)
+                .set(APP_VERSION, appVersion)
                 .build());
     }
 
