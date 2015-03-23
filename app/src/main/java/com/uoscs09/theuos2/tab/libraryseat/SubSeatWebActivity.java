@@ -4,9 +4,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.webkit.WebSettings;
 
-import com.google.android.gms.analytics.HitBuilders;
 import com.uoscs09.theuos2.common.WebViewActivity;
 import com.uoscs09.theuos2.util.StringUtil;
+import com.uoscs09.theuos2.util.TrackerUtil;
 
 public class SubSeatWebActivity extends WebViewActivity {
     @Override
@@ -15,11 +15,8 @@ public class SubSeatWebActivity extends WebViewActivity {
 
         SeatItem item = getIntent().getParcelableExtra(TabLibrarySeatFragment.ITEM);
 
-        getTracker().send(new HitBuilders.EventBuilder()
-                .setCategory(getScreenName())
-                .setAction("view")
-                .setLabel(item.roomName)
-                .build());
+
+        TrackerUtil.getsInstance(this).sendEvent(getScreenName(), "view", item.roomName);
 
         getSupportActionBar().setTitle("좌석 정보");
         getSupportActionBar().setSubtitle(item.roomName);

@@ -11,6 +11,10 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
 
+    <uses-permission android:name="android.permission.WRITE_CALENDAR"/>
+    <uses-permission android:name="android.permission.READ_CALENDAR"/>
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+
     <uses-feature
         android:glEsVersion="0x00020000"
         android:required="true" />
@@ -61,22 +65,22 @@
         <activity android:name="com.uoscs09.theuos2.TestActivity" />
 
         <service
-            android:name="com.uoscs09.theuos2.widget.timetable.Widget5x4ListService"
+            android:name="com.uoscs09.theuos2.appwidget.timetable.Widget5x4ListService"
             android:exported="true"
             android:label="@string/widget_timetable"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
         <service
-            android:name="com.uoscs09.theuos2.widget.timetable.Widget4x4ListService"
+            android:name="com.uoscs09.theuos2.appwidget.timetable.Widget4x4ListService"
             android:exported="true"
             android:label="@string/widget_timetable"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
         <service
-            android:name="com.uoscs09.theuos2.widget.restaurant.RestListService"
+            android:name="com.uoscs09.theuos2.appwidget.restaurant.RestListService"
             android:exported="true"
             android:label="@string/widget_rest"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
         <service
-            android:name="com.uoscs09.theuos2.widget.libraryseat.LibrarySeatListService"
+            android:name="com.uoscs09.theuos2.appwidget.libraryseat.LibrarySeatListService"
             android:exported="true"
             android:label="@string/widget_library_seat"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
@@ -102,7 +106,7 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:name="com.uoscs09.theuos2.widget.timetable.TimeTableWidget4x4"
+            android:name="com.uoscs09.theuos2.appwidget.timetable.TimeTableWidget4x4"
             android:label="@string/widget_timetable4x4">
             <meta-data
                 android:name="android.appwidget.provider"
@@ -116,7 +120,7 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:name="com.uoscs09.theuos2.widget.timetable.TimeTableWidget5x4"
+            android:name="com.uoscs09.theuos2.appwidget.timetable.TimeTableWidget5x4"
             android:label="@string/widget_timetable5x4">
             <meta-data
                 android:name="android.appwidget.provider"
@@ -130,7 +134,7 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:name="com.uoscs09.theuos2.widget.restaurant.RestWidget"
+            android:name="com.uoscs09.theuos2.appwidget.restaurant.RestWidget"
             android:label="@string/widget_rest_desc">
             <meta-data
                 android:name="android.appwidget.provider"
@@ -145,7 +149,7 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:name="com.uoscs09.theuos2.widget.libraryseat.LibrarySeatWidget"
+            android:name="com.uoscs09.theuos2.appwidget.libraryseat.LibrarySeatWidget"
             android:label="@string/widget_library_seat_desc">
             <meta-data
                 android:name="android.appwidget.provider"

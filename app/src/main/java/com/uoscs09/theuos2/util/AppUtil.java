@@ -41,7 +41,10 @@ import java.util.List;
 public class AppUtil {
     public static final String DB_PHONE = "PhoneNumberDB.db";
     public static final int RELAUNCH_ACTIVITY = 6565;
-    private static int PAGE_SIZE = 9;
+
+    private static final int MAX_PAGE_SIZE_NORMAL = 10;
+
+    private static int PAGE_SIZE = MAX_PAGE_SIZE_NORMAL;
     public static boolean test;
     public static AppTheme theme;
 
@@ -85,7 +88,8 @@ public class AppUtil {
         }
         AppUtil.theme = vals[v];
         AppUtil.test = pref.get("test", false);
-        PAGE_SIZE = test ? 13 : 9;
+
+        PAGE_SIZE = test ? 13 : MAX_PAGE_SIZE_NORMAL;
     }
 
 
@@ -206,6 +210,7 @@ public class AppUtil {
         return tabList;
     }
 
+    @Deprecated
     private static int[] getPages() {
         return new int[]{
                 R.string.title_tab_announce, /* 공지사항 */
@@ -244,23 +249,24 @@ public class AppUtil {
                 return 0;
             case R.string.title_tab_announce:
                 return 1;
-            case R.string.title_tab_restaurant:
-                return 2;
-            case R.string.title_tab_book_search:
-                return 3;
-            case R.string.title_tab_library_seat:
-                return 4;
-            case R.string.title_tab_timetable:
-                return 5;
-            case R.string.title_tab_map:
-                return 6;
-            case R.string.title_tab_search_empty_room:
-                return 7;
-            case R.string.title_tab_search_subject:
-                return 8;
-            case R.string.title_tab_phone:
-                return 9;
             case R.string.title_tab_schedule:
+                return 2;
+            case R.string.title_tab_restaurant:
+                return 3;
+            case R.string.title_tab_book_search:
+                return 4;
+            case R.string.title_tab_library_seat:
+                return 5;
+            case R.string.title_tab_timetable:
+                return 6;
+            case R.string.title_tab_map:
+                return 7;
+            case R.string.title_tab_search_empty_room:
+                return 8;
+            case R.string.title_tab_search_subject:
+                return 9;
+
+            case R.string.title_tab_phone:
                 return 10;
             case R.string.title_tab_score:
                 return 11;
@@ -285,23 +291,24 @@ public class AppUtil {
             case 1:
                 return R.string.title_tab_announce;
             case 2:
-                return R.string.title_tab_restaurant;
-            case 3:
-                return R.string.title_tab_book_search;
-            case 4:
-                return R.string.title_tab_library_seat;
-            case 5:
-                return R.string.title_tab_timetable;
-            case 6:
-                return R.string.title_tab_map;
-            case 7:
-                return R.string.title_tab_search_empty_room;
-            case 8:
-                return R.string.title_tab_search_subject;
-            case 9:
-                return R.string.title_tab_phone;
-            case 10:
                 return R.string.title_tab_schedule;
+            case 3:
+                return R.string.title_tab_restaurant;
+            case 4:
+                return R.string.title_tab_book_search;
+            case 5:
+                return R.string.title_tab_library_seat;
+            case 6:
+                return R.string.title_tab_timetable;
+            case 7:
+                return R.string.title_tab_map;
+            case 8:
+                return R.string.title_tab_search_empty_room;
+            case 9:
+                return R.string.title_tab_search_subject;
+
+            case 10:
+                return R.string.title_tab_phone;
             case 11:
                 return R.string.title_tab_score;
             case 12:
@@ -859,14 +866,14 @@ public class AppUtil {
     }
 
     public static int getColor(int index){
-        switch (index % 20){
+        switch (index % 17){
             case 0:
             default:
                 return R.color.red_yellow;
             case 1:
                 return R.color.light_blue;
             case 2:
-                return R.color.red_material_300;
+                return R.color.material_light_blue_800;
             case 3:
                 return R.color.purple;
             case 4:
@@ -876,30 +883,24 @@ public class AppUtil {
             case 6:
                 return R.color.material_blue_grey_400;
             case 7:
-                return R.color.pink;
-            case 8:
                 return R.color.material_green_700;
-            case 9:
+            case 8:
                 return R.color.material_deep_teal_500;
-            case 10:
+            case 9:
                 return R.color.material_blue_grey_200;
-            case 11:
-                return R.color.material_blue_grey_900;
-            case 12:
-                return R.color.material_red_700;
-            case 13:
+            case 10:
                 return R.color.material_deep_teal_200;
-            case 14:
+            case 11:
                 return R.color.material_grey_600;
-            case 15:
+            case 12:
                 return R.color.material_red_200;
-            case 16:
+            case 13:
                 return R.color.material_light_blue_400;
-            case 17:
+            case 14:
                 return R.color.material_indigo_200;
-            case 18:
+            case 15:
                 return R.color.material_green_200;
-            case 19:
+            case 16:
                 return R.color.material_green_300;
         }
     }

@@ -63,7 +63,7 @@
     <string name="tab_anounce_invaild_category">카테고리를 선택해 주세요.</string>
     <string name="tab_anounce_plz_select_page">이동할 페이지를 선택해 주세요.</string>
 
-   <string name="tab_book_book_opt">도서 검색 옵션</string>
+    <string name="tab_book_book_opt">도서 검색 옵션</string>
     <string name="tab_book_book_opt_sub">분류와 정렬 방식을 선택해 주세요</string>
     <string name="tab_book_not_found">검색된 페이지에 대여 가능 도서가 없습니다.</string>
     <string name="tab_book_subject_opt">검색 옵션을 선택해주세요</string>
@@ -155,6 +155,14 @@
     <string name="tab_transport_empty">버튼을 눌러 정보를 불러오세요.</string>
 
     <string name="tab_score_input_subject_name">과목명을 입력하세요</string>
+
+    <string name="tab_univ_schedule_calendar_not_exist">캘린더가 존재하지 않습니다.</string>
+    <string name="tab_univ_schedule_add_to_calendar">캘린더에 일정 등록</string>
+    <string name="tab_univ_schedule_add_schedule_to_calender">일정 \' %s \' 을(를) 캘린더에 추가합니다.</string>
+    <string name="tab_univ_schedule_google_account_not_exist">등록된 구글계정이 존재하지 않습니다.</string>
+    <string name="tab_univ_schedule_add_to_calendar_success">일정을 추가했습니다.</string>
+    <string name="tab_univ_schedule_add_to_calendar_fail">일정을 추가하는데 실패하였습니다.</string>
+
 
     <string name="emptyview_button_or_menu_to_search">버튼이나 메뉴버튼을 눌러 검색하세요</string>
     <string name="emptyview_button_to_search">버튼을 눌러 검색하세요</string>

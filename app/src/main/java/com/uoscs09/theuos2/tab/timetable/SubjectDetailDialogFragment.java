@@ -21,14 +21,11 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.gc.materialdesign.widgets.ColorSelector;
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
 import com.javacan.asyncexcute.AsyncCallback;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.common.AsyncLoader;
 import com.uoscs09.theuos2.common.PieProgressDrawable;
-import com.uoscs09.theuos2.common.UOSApplication;
 import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.parse.ParseSubjectList2;
 import com.uoscs09.theuos2.tab.map.SubMapActivity;
@@ -37,6 +34,7 @@ import com.uoscs09.theuos2.tab.subject.SubjectItem2;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.StringUtil;
+import com.uoscs09.theuos2.util.TrackerUtil;
 
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
@@ -361,40 +359,13 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
         }
     }
 
-    Tracker getTracker(UOSApplication.TrackerName name) {
-        return ((UOSApplication) getActivity().getApplication()).getTracker(name);
-    }
-
-    Tracker getTracker() {
-        return getTracker(UOSApplication.TrackerName.APP_TRACKER);
-    }
-
-    void sendTrackerEvent(String action, String label) {
-        getTracker().send(new HitBuilders.EventBuilder()
-                .setCategory("SubjectDetailDialogFragment")
-                .setAction(action)
-                .setLabel(label)
-                .build());
-    }
-
-    void sendTrackerEvent(String action, String label, long value) {
-        getTracker().send(new HitBuilders.EventBuilder()
-                .setCategory("SubjectDetailDialogFragment")
-                .setAction(action)
-                .setLabel(label)
-                .setValue(value)
-                .build());
-    }
-
-    void sendClickEvent(String label) {
-        sendTrackerEvent("click", label);
+    protected void sendClickEvent(String label) {
+        TrackerUtil.getInstance(this).sendClickEvent("SubjectDetailDialogFragment", label);
     }
 
     protected void sendClickEvent(String label, long value) {
-        sendTrackerEvent("click", label, value);
+        TrackerUtil.getInstance(this).sendClickEvent("SubjectDetailDialogFragment", label, value);
     }
 
-    protected void sendEmptyViewClickEvent() {
-        sendClickEvent("emptyView");
-    }
+
 }

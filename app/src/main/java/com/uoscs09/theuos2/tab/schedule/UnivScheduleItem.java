@@ -1,10 +1,14 @@
 package com.uoscs09.theuos2.tab.schedule;
 
+import android.content.ContentValues;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.provider.CalendarContract;
 
 import com.uoscs09.theuos2.annotation.KeepName;
 import com.uoscs09.theuos2.parse.OApiParser2;
+
+import java.util.Calendar;
 
 @KeepName
 public class UnivScheduleItem implements Parcelable, OApiParser2.Parsable {
@@ -23,17 +27,41 @@ public class UnivScheduleItem implements Parcelable, OApiParser2.Parsable {
         parseDate();
     }
 
-    public void parseDate() {
+    private void parseDate() {
         String[] array = sch_date.split("~");
 
         if (array.length > 1) {
             dateStart = new ScheduleDate(array[0]);
             dateEnd = new ScheduleDate(array[1]);
 
-        } else if (sch_date.contains(" ("))
-            dateStart = new ScheduleDate(sch_date);
+        } else if (sch_date.contains(" (")) {
+            dateStart = dateEnd =new ScheduleDate(sch_date);
+        }
     }
 
+    public Calendar getDate(boolean isStart) {
+        try {
+            int y = Integer.valueOf(year.substring(0, 4));
+            return isStart ? dateStart.getDate(y, true) : dateEnd.getDate(y, false);
+        } catch (Exception e) {
+            return null;
+        }
+
+    }
+
+    public ContentValues toContentValues(long id){
+        ContentValues cv = new ContentValues();
+        cv.put(CalendarContract.Events.CALENDAR_ID, id);
+        cv.put(CalendarContract.Events.TITLE, content);
+        cv.put(CalendarContract.Events.DESCRIPTION, content);
+
+        cv.put(CalendarContract.Events.DTSTART, getDate(true).getTimeInMillis());
+        cv.put(CalendarContract.Events.DTEND, getDate(false).getTimeInMillis());
+        cv.put(CalendarContract.Events.EVENT_TIMEZONE, "Asia/Seoul");
+
+
+        return cv;
+    }
 
     private UnivScheduleItem(Parcel source) {
         content = source.readString();
@@ -133,6 +161,14 @@ public class UnivScheduleItem implements Parcelable, OApiParser2.Parsable {
 
         public boolean isEmpty() {
             return dayInWeek == day && day == month && month == -1;
+        }
+
+
+        Calendar getDate(int year, boolean isStart) {
+            Calendar c = Calendar.getInstance();
+            c.set(year, month - 1, day, isStart? 9 : 18, 0);
+
+            return c;
         }
 
         ScheduleDate(Parcel source) {

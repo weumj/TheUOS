@@ -10,4 +10,7 @@
     <dimen name="timetable_color_icon_size">20dp</dimen>
     <dimen name="theme_selector_drawable_size">20dp</dimen>
     <dimen name="theme_selector_drawable_padding">20dp</dimen>
+
+    <dimen name="univ_schdule_header_drawable_size">40dp</dimen>
+    <dimen name="univ_schedule_list_drawable_size">10dp</dimen>
 </resources>

@@ -6,10 +6,8 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
-import com.uoscs09.theuos2.common.UOSApplication;
 import com.uoscs09.theuos2.util.AppUtil;
+import com.uoscs09.theuos2.util.TrackerUtil;
 
 /**
  * 기본적인 편의 기능이 구현된 Fragment<br>
@@ -70,40 +68,23 @@ public abstract class BaseFragment extends Fragment {
     }
 
 
-    protected Tracker getTracker(UOSApplication.TrackerName name) {
-        return ((UOSApplication) getActivity().getApplication()).getTracker(name);
-    }
-
-    protected Tracker getTracker() {
-        return getTracker(UOSApplication.TrackerName.APP_TRACKER);
-    }
-
     @NonNull
     protected abstract String getFragmentNameForTracker();
 
     protected void sendTrackerEvent(String action, String label) {
-        getTracker().send(new HitBuilders.EventBuilder()
-                .setCategory(getFragmentNameForTracker())
-                .setAction(action)
-                .setLabel(label)
-                .build());
+        TrackerUtil.getInstance(this).sendEvent(getFragmentNameForTracker(), action, label);
     }
 
     protected void sendTrackerEvent(String action, String label, long value) {
-        getTracker().send(new HitBuilders.EventBuilder()
-                .setCategory(getFragmentNameForTracker())
-                .setAction(action)
-                .setLabel(label)
-                .setValue(value)
-                .build());
-    }
+        TrackerUtil.getInstance(this).sendEvent(getFragmentNameForTracker(), action, label, value);
+     }
 
     protected void sendClickEvent(String label) {
-        sendTrackerEvent("click", label);
+        TrackerUtil.getInstance(this).sendClickEvent(getFragmentNameForTracker(), label);
     }
 
     protected void sendClickEvent(String label, long value) {
-        sendTrackerEvent("click", label, value);
+        TrackerUtil.getInstance(this).sendClickEvent(getFragmentNameForTracker(), label, value);
     }
 
     protected void sendEmptyViewClickEvent() {

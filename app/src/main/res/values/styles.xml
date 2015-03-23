@@ -109,6 +109,7 @@
         <item name="menu_ic_restaurant">@drawable/ic_restaurant</item>
         <item name="menu_ic_loading">@anim/progress_medium_white</item>
         <item name="color_sidemenu_listview_text">@color/material_grey_600</item>
+        <item name="color_primary_text">?color_actionbar_title</item>
     </style>
 
     <style name="Theme.Mystyle.Light.DarkActionBar" parent="@style/Theme.AppCompat.Light.DarkActionBar">
@@ -201,6 +202,7 @@
         <item name="menu_ic_restaurant">@drawable/ic_restaurant_dark</item>
         <item name="menu_ic_loading">@anim/progress_medium_dark</item>
         <item name="color_sidemenu_listview_text">@android:color/white</item>
+        <item name="color_primary_text">?colorPrimary</item>
     </style>
 
     <style name="Theme.Mystyle.Dark.AlertDialog" parent="@style/Theme.AppCompat.Dialog">
@@ -211,6 +213,7 @@
     </style>
 
     <style name="Theme.Mystyle.Dark" parent="@style/Theme.AppCompat">
+        <item name="android:windowTranslucentStatus">true</item>
         <item name="android:alertDialogTheme">@style/Theme.Mystyle.Dark.AlertDialog</item>
 
         <!-- for selector -->
@@ -299,6 +302,7 @@
         <item name="menu_ic_restaurant">@drawable/ic_restaurant_dark</item>
         <item name="menu_ic_loading">@anim/progress_medium_dark</item>
         <item name="color_sidemenu_listview_text">@android:color/white</item>
+        <item name="color_primary_text">@android:color/white</item>
     </style>
 
 </resources>

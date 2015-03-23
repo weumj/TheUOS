@@ -1,0 +1,63 @@
+package com.uoscs09.theuos2.util;
+
+
+import android.app.Activity;
+import android.support.v4.app.Fragment;
+
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+import com.uoscs09.theuos2.common.UOSApplication;
+
+public class TrackerUtil {
+    private static TrackerUtil sInstance;
+    private Tracker mTracker;
+
+    private TrackerUtil(UOSApplication app){
+        mTracker = app.getTracker(UOSApplication.TrackerName.APP_TRACKER);
+    }
+
+    public static TrackerUtil getInstance(UOSApplication app){
+        if(sInstance == null)
+            sInstance = new TrackerUtil(app);
+
+        return sInstance;
+    }
+
+    public static  TrackerUtil getInstance(Fragment fragment){
+        return getsInstance(fragment.getActivity());
+    }
+
+    public static TrackerUtil getsInstance(Activity activity){
+        return getInstance((UOSApplication) activity.getApplication());
+    }
+
+
+    public Tracker getTracker(){
+        return mTracker;
+    }
+
+    public void sendEvent(String category, String action, String label) {
+        mTracker.send(new HitBuilders.EventBuilder()
+                .setCategory(category)
+                .setAction(action)
+                .setLabel(label)
+                .build());
+    }
+
+    public void sendEvent(String category, String action, String label, long value) {
+        mTracker.send(new HitBuilders.EventBuilder()
+                .setCategory(category)
+                .setAction(action)
+                .setLabel(label)
+                .setValue(value)
+                .build());
+    }
+
+    public void sendClickEvent(String category, String label) {
+        sendEvent(category, "click", label);
+    }
+
+    public void sendClickEvent(String category, String label, long value) {
+        sendEvent(category, "click", label, value);
+    }
+}

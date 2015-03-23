@@ -1,4 +1,4 @@
-package com.uoscs09.theuos2.widget.libraryseat;
+package com.uoscs09.theuos2.appwidget.libraryseat;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;

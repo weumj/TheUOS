@@ -15,7 +15,9 @@ public abstract class AbsProgressFragment<T> extends AbsAsyncFragment<T> {
 
     protected void registerProgressView(View progressView) {
         this.mProgressLayout = progressView;
-        mProgressWheel = (ProgressWheel) progressView.findViewById(R.id.progress_wheel);
+
+        if (progressView != null)
+            mProgressWheel = (ProgressWheel) progressView.findViewById(R.id.progress_wheel);
     }
 
     /**

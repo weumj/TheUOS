@@ -8,8 +8,8 @@ import android.view.MenuItem;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-import com.uoscs09.theuos2.common.UOSApplication;
 import com.uoscs09.theuos2.util.AppUtil;
+import com.uoscs09.theuos2.util.TrackerUtil;
 
 /**
  * onCreate에서 테마 설정을 하는 fragment액티비티
@@ -20,13 +20,9 @@ public abstract class BaseActivity extends ActionBarActivity {
         AppUtil.applyTheme(this);
         super.onCreate(arg0);
 
-        Tracker t = getTracker();
+        Tracker t = TrackerUtil.getsInstance(this).getTracker();
         t.setScreenName(getScreenName());
         t.send(new HitBuilders.AppViewBuilder().build());
-    }
-
-    protected Tracker getTracker() {
-        return ((UOSApplication) getApplication()).getTracker(UOSApplication.TrackerName.APP_TRACKER);
     }
 
     @NonNull

@@ -129,6 +129,7 @@
     <declare-styleable name="ThemeDrawable.Color">
         <attr name="color_rosy_brown" format="reference|color" />
         <attr name="color_actionbar_title" format="reference|color" />
+        <attr name="color_primary_text" format="reference|color"/>
         <attr name="color_sidemenu_listview_text" format="reference|color" />
     </declare-styleable>
     <declare-styleable name="MyStyle">
@@ -136,7 +137,7 @@
         <attr name="toolbar_actionbar_subtitle" format="reference" />
     </declare-styleable>
 
-
+    
     <color name="black_semi_transparent">#B2000000</color>
     <color name="background">#e5e5e5</color>
     <color name="half_black">#808080</color>

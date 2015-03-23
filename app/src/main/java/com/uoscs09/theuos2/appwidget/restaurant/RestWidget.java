@@ -1,4 +1,4 @@
-package com.uoscs09.theuos2.widget.restaurant;
+package com.uoscs09.theuos2.appwidget.restaurant;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;

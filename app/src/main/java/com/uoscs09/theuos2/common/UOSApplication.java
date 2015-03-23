@@ -15,6 +15,18 @@ import java.util.HashMap;
 public class UOSApplication extends Application{
     private RequestQueue mRequestQueue;
     private ImageLoader mImageLoader;
+
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        Tracker t = getTracker(TrackerName.APP_TRACKER);
+        t.enableAdvertisingIdCollection(true);
+        t.enableAutoActivityTracking(true);
+        t.enableExceptionReporting(true);
+    }
+
     public RequestQueue getRequestQueue() {
         if (mRequestQueue == null) {
             mRequestQueue = Volley.newRequestQueue(getApplicationContext());

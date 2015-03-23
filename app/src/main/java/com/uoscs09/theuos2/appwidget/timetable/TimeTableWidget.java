@@ -1,4 +1,4 @@
-package com.uoscs09.theuos2.widget.timetable;
+package com.uoscs09.theuos2.appwidget.timetable;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
