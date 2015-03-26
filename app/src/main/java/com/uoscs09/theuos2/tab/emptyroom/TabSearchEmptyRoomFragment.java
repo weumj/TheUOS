@@ -132,7 +132,7 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Cl
         listView.setAdapter(mAdapter);
 
         empty = root.findViewById(R.id.tab_search_subject_empty_view);
-        empty.setOnClickListener(new View.OnClickListener() {
+        empty.findViewById(R.id.empty1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 sendEmptyViewClickEvent();

@@ -12,12 +12,16 @@ import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.TrackerUtil;
 
 public class SettingsWebPageFragment extends PreferenceFragment {
+
+    private static final String TAG = "SettingsWebPageFragment";
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.prefrence_web_page);
 
-        TrackerUtil.getInstance(this).sendEvent("use", "onCreate", "SettingsWebPageFragment");
+        TrackerUtil.getInstance(this).sendVisibleEvent(TAG);
     }
 
     @Override

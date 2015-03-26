@@ -4,14 +4,16 @@
     android:layout_height="fill_parent"
     android:divider="?attr/colorPrimaryDark"
     android:dividerPadding="1dp"
+    android:minWidth="1000dp"
+    android:minHeight="60dp"
     android:orientation="horizontal"
-    android:weightSum="330" >
+    android:weightSum="660" >
 
     <TextView
         android:id="@+id/list_subject_text_sub_dept"
         android:layout_width="0dp"
         android:layout_height="fill_parent"
-        android:layout_weight="30"
+        android:layout_weight="60"
         android:gravity="center"
         android:padding="4dp" />
 
@@ -19,7 +21,7 @@
         android:id="@+id/list_subject_text_sub_div"
         android:layout_width="0dp"
         android:layout_height="fill_parent"
-        android:layout_weight="40"
+        android:layout_weight="80"
         android:gravity="center"
         android:padding="4dp" />
 
@@ -27,7 +29,7 @@
         android:id="@+id/list_subject_text_no"
         android:layout_width="0dp"
         android:layout_height="fill_parent"
-        android:layout_weight="30"
+        android:layout_weight="60"
         android:gravity="center"
         android:padding="4dp" />
 
@@ -35,7 +37,7 @@
         android:id="@+id/list_subject_text_class_div"
         android:layout_width="0dp"
         android:layout_height="fill_parent"
-        android:layout_weight="20"
+        android:layout_weight="40"
         android:gravity="center"
         android:padding="4dp" />
 
@@ -43,7 +45,7 @@
         android:id="@+id/list_subject_text_sub_nm"
         android:layout_width="0dp"
         android:layout_height="fill_parent"
-        android:layout_weight="40"
+        android:layout_weight="80"
         android:gravity="center"
         android:padding="4dp" />
 
@@ -51,7 +53,7 @@
         android:id="@+id/list_subject_text_yr"
         android:layout_width="0dp"
         android:layout_height="fill_parent"
-        android:layout_weight="20"
+        android:layout_weight="40"
         android:gravity="center"
         android:padding="4dp" />
 
@@ -59,7 +61,7 @@
         android:id="@+id/list_subject_text_credit"
         android:layout_width="0dp"
         android:layout_height="fill_parent"
-        android:layout_weight="20"
+        android:layout_weight="40"
         android:gravity="center"
         android:padding="4dp" />
 
@@ -67,7 +69,7 @@
         android:id="@+id/list_subject_text_prof_nm"
         android:layout_width="0dp"
         android:layout_height="fill_parent"
-        android:layout_weight="40"
+        android:layout_weight="80"
         android:gravity="center"
         android:padding="4dp" />
 
@@ -75,7 +77,7 @@
         android:id="@+id/list_subject_text_class_nm"
         android:layout_width="0dp"
         android:layout_height="fill_parent"
-        android:layout_weight="50"
+        android:layout_weight="100"
         android:gravity="center"
         android:padding="4dp" />
 
@@ -83,7 +85,7 @@
         android:id="@+id/list_subject_text_tlsn_cnt"
         android:layout_width="0dp"
         android:layout_height="fill_parent"
-        android:layout_weight="20"
+        android:layout_weight="40"
         android:gravity="center"
         android:padding="4dp" />
 
@@ -91,7 +93,7 @@
         android:id="@+id/list_subject_text_tlsn_limit"
         android:layout_width="0dp"
         android:layout_height="fill_parent"
-        android:layout_weight="20"
+        android:layout_weight="40"
         android:gravity="center"
         android:padding="4dp" />
 

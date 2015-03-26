@@ -117,7 +117,7 @@
     <string name="tab_timetable_noti">시간표 알리미</string>
     <string name="tab_timatable_callback_noti">수업 시작 알림</string>
     <string name="tab_timetable_empty_text1"> 버튼을 터치하여 시간표를 불러오세요.</string>
-    <string name="tab_timetable_empty_text2">교과목을 터치하면\n추가 정보를 얻을 수 있습니다.</string>
+    <string name="tab_timetable_empty_text2">교과목을 터치하면 추가 정보를 얻을 수 있습니다.</string>
     <string name="tab_timetable_no_subject">과목 정보가 없습니다.</string>
     <string name="tab_timetable_no_timetable">시간표 정보가 없습니다.</string>
     <string name="tab_timetable_error_on_search_subject">교과목을 처리하는데 에러가 발생하였습니다.</string>
@@ -143,8 +143,8 @@
     <string name="tab_search_subject_tlsn_limit1">정원</string>
 
     <string name="tab_subject_empty_view_hint">버튼을 터치하여 검색을 시작하세요.</string>
-    <string name="tab_subject_empty_view_sort">각 항목의 분류를 터치하면\n오름/내림차순으로 정렬할 수 있습니다.</string>
-    <string name="tab_subject_empty_view_hint_subj">교과목을 터치하면\n수업계획서를 볼 수 있습니다</string>
+    <string name="tab_subject_empty_view_sort">각 항목의 분류를 터치하면 오름/내림차순으로 정렬할 수 있습니다.</string>
+    <string name="tab_subject_empty_view_hint_subj">교과목을 터치하면 수업계획서를 볼 수 있습니다</string>
     <string name="tab_subject_info_plz_select_div_no">분반을 선택해 주세요.</string>
 
     <string name="tab_course_plan_title">수업계획서</string>

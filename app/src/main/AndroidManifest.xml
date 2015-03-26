@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.uoscs09.theuos2"
     android:versionCode="2"
-    android:versionName="@string/setting_app_version_desc">
+    android:versionName="@string/setting_app_version_name">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />

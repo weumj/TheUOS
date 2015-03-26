@@ -1,6 +1,5 @@
 package com.uoscs09.theuos2.setting;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
@@ -16,13 +15,10 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
 import com.nhaarman.listviewanimations.itemmanipulation.DynamicListView;
 import com.nhaarman.listviewanimations.util.Swappable;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
-import com.uoscs09.theuos2.common.UOSApplication;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.TrackerUtil;
 
@@ -33,6 +29,7 @@ import java.util.List;
  * page 순서를 바꾸는 설정이 있는 fragment
  */
 public class SettingsOrderFragment extends Fragment {
+    private static final String TAG = "SettingsOrderFragment";
     private ArrayList<AppUtil.Page> orderList;
     private DynamicListView mListView;
     private SwapAdapter mAdapter;
@@ -44,7 +41,7 @@ public class SettingsOrderFragment extends Fragment {
         mAdapter = new SwapAdapter(getActivity(), orderList);
         super.onCreate(savedInstanceState);
 
-        TrackerUtil.getInstance(this).sendEvent("use", "onCreate", "SettingsOrderFragment");
+        TrackerUtil.getInstance(this).sendVisibleEvent(TAG);
     }
 
     @Override
@@ -86,34 +83,31 @@ public class SettingsOrderFragment extends Fragment {
             sb.append(p.order).append('-').append(p.isEnable).append('\n');
         }
 
-        Tracker t = ((UOSApplication)getActivity().getApplication()).getTracker(UOSApplication.TrackerName.APP_TRACKER);
-        t.send(new HitBuilders.EventBuilder()
-                .setCategory("setting order fragment")
-                .setAction("change tab order")
-                .setLabel(sb.toString())
-                .build());
+        TrackerUtil.getInstance(this).sendEvent(TAG, "change tab order", sb.toString());
 
         AppUtil.savePageOrder2(orderList, getActivity());
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Activity activity = getActivity();
         switch (item.getItemId()) {
             case R.id.action_apply:
                 saveTabOrderList();
                 finish();
-                activity.setResult(AppUtil.RELAUNCH_ACTIVITY);
+                getActivity().setResult(AppUtil.RELAUNCH_ACTIVITY);
                 return true;
+
             case R.id.action_cancel:
-                refresh(AppUtil.loadPageOrder2(activity));
-                AppUtil.showCanceledToast(activity, true);
+                refresh(AppUtil.loadPageOrder2(getActivity()));
+                AppUtil.showCanceledToast(getActivity(), true);
                 finish();
                 return true;
+
             case R.id.action_goto_default:
                 refresh(AppUtil.loadDefaultOrder2());
-                AppUtil.showToast(activity, R.string.apply_default, true);
+                AppUtil.showToast(getActivity(), R.string.apply_default, true);
                 return true;
+
             default:
                 return false;
         }

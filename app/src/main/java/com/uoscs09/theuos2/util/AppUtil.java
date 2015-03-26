@@ -7,6 +7,8 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
+import android.support.annotation.AttrRes;
+import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v7.internal.widget.AdapterViewCompat;
 import android.util.TypedValue;
@@ -196,7 +198,7 @@ public class AppUtil {
       /**
      * 기본 page title의 resource id에 따른 page순서를 반환한다.
      */
-    public static int titleResIdToOrder(int titleResId) {
+    public static int titleResIdToOrder(@StringRes int titleResId) {
         switch (titleResId) {
             case R.string.title_section0_home:
                 return 0;
@@ -276,7 +278,7 @@ public class AppUtil {
     }
 
 
-    public static int getPageIcon(Context context, int pageStringResId) {
+    public static int getPageIcon(Context context, @StringRes int pageStringResId) {
         int iconId;
         switch (pageStringResId) {
             case R.string.title_section0_home:
@@ -333,7 +335,7 @@ public class AppUtil {
         return getAttrValue(context, iconId);
     }
 
-    public static int getPageIconForMenu(Context context, int pageStringResId) {
+    public static int getPageIconForMenu(Context context, @StringRes int pageStringResId) {
         int iconId;
         switch (pageStringResId) {
             case R.string.title_section0_home:
@@ -390,7 +392,7 @@ public class AppUtil {
         return getAttrValue(context, iconId);
     }
 
-    public static int getPageIconGray(int id) {
+    public static int getPageIconGray(@StringRes int id) {
         switch (id) {
             case R.string.title_section0_home:
                 return R.drawable.ic_launcher;
@@ -429,7 +431,7 @@ public class AppUtil {
         }
     }
 
-    public static int getPageIconWhite(int id) {
+    public static int getPageIconWhite(@StringRes int id) {
         switch (id) {
             case R.string.title_section0_home:
                 return R.drawable.ic_launcher;
@@ -474,7 +476,7 @@ public class AppUtil {
      * @param attrId 가져올 값의 Id
      * @return 현재 테마에서 정의한 해당 값의 id
      */
-    public static int getAttrValue(Context context, int attrId) {
+    public static int getAttrValue(Context context,@AttrRes int attrId) {
         TypedValue out = new TypedValue();
         context.getTheme().resolveAttribute(attrId, out, true);
 

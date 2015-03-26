@@ -2,6 +2,8 @@ package com.uoscs09.theuos2;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -13,6 +15,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.SparseBooleanArray;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -56,6 +59,8 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
      * Left ListView
      */
     private RecyclerView mDrawerListView;
+    private DrawerAdapter mDrawerAdapter;
+
     /**
      * ActionBar Toggle
      */
@@ -99,10 +104,13 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
         int tabNumber = getIntent().getIntExtra(SAVED_TAB_NUM, 0);
         if (savedInstanceState != null) {
             navigateItem(mPageOrderList.indexOf(savedInstanceState.getInt(SAVED_TAB_NUM)), false);
+
         } else if (tabNumber != 0) {
             navigateItem(mPageOrderList.indexOf(tabNumber), false);
+
         } else {
             navigateItem(0, false);
+
         }
 
         AppUtil.startOrStopServiceAnounce(getApplicationContext());
@@ -146,6 +154,11 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
             getSupportActionBar().setTitle(res);
             // getSupportActionBar().setIcon(AppUtil.getPageIcon(res));
         }
+
+        mDrawerAdapter.putSelected(position);
+
+        mDrawerListView.scrollToPosition(position);
+
     }
 
     private void initDrawer() {
@@ -186,7 +199,7 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mDrawerListView = (RecyclerView) mLeftDrawerLayout.findViewById(R.id.drawer_listview);
         mDrawerListView.setLayoutManager(layoutManager);
-        mDrawerListView.setAdapter(new DrawerAdapter());
+        mDrawerListView.setAdapter(mDrawerAdapter = new DrawerAdapter());
 
         mLeftDrawerLayout.findViewById(R.id.drawer_setting_ripple).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -207,7 +220,7 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
     }
 
     private void initPager() {
-        mPagerAdapter = new IndexPagerAdapter(getSupportFragmentManager(),  mPageOrderList, this);
+        mPagerAdapter = new IndexPagerAdapter(getSupportFragmentManager(), mPageOrderList, this);
         mViewPager = (ViewPager) findViewById(R.id.activity_pager_viewpager);
         mViewPager.setAdapter(mPagerAdapter);
         mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
@@ -357,7 +370,7 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
 
             navigateItem(0, false);
 
-        } */else {
+        } */ else {
             doBack();
         }
     }
@@ -521,30 +534,69 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
     }
 
 
-    private class DrawerAdapter extends RecyclerView.Adapter<ViewHolder>{
+    private class DrawerAdapter extends RecyclerView.Adapter<ViewHolder> {
+        private final SparseBooleanArray mSelectedPositionArray = new SparseBooleanArray(mPageOrderList.size());
+        private final int mDefaultTextColor, mSelectedTextColor;
+        private final PorterDuffColorFilter mColorFilter;
+        private int mPrevSelection = 0;
+
+        public DrawerAdapter() {
+
+            mDefaultTextColor = getResources().getColor(AppUtil.getAttrValue(UosMainActivity.this, R.attr.colorControlNormal));
+            mSelectedTextColor = getResources().getColor(AppUtil.getAttrValue(UosMainActivity.this, R.attr.color_primary_text));
+            mColorFilter = new PorterDuffColorFilter(mSelectedTextColor, PorterDuff.Mode.SRC_IN);
+
+            mSelectedPositionArray.put(mPrevSelection, true);
+        }
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.list_layout_drawer ,parent, false));
+            return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.list_layout_drawer, parent, false));
         }
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
             int titleStringId = mPageOrderList.get(position);
 
-            holder.img.setImageResource(AppUtil.getPageIcon(holder.itemView.getContext() , titleStringId));
+            holder.img.setImageResource(AppUtil.getPageIcon(holder.itemView.getContext(), titleStringId));
             holder.text.setText(titleStringId);
+            if (mSelectedPositionArray.get(position)) {
+
+                if (position != 0)
+                    holder.img.setColorFilter(mColorFilter);
+                else
+                    holder.img.setColorFilter(null);
+                holder.text.setTextColor(mSelectedTextColor);
+
+            } else {
+                holder.img.setColorFilter(null);
+                holder.text.setTextColor(mDefaultTextColor);
+
+            }
         }
 
         @Override
         public int getItemCount() {
             return mPageOrderList.size();
         }
+
+        protected void putSelected(int position) {
+            mSelectedPositionArray.delete(mPrevSelection);
+            notifyItemChanged(mPrevSelection);
+
+            mSelectedPositionArray.put(position, true);
+            notifyItemChanged(position);
+
+            mPrevSelection = position;
+
+        }
+
     }
 
-    private class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    private class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         final ImageView img;
         final TextView text;
+
         public ViewHolder(View itemView) {
             super(itemView);
             View ripple = itemView.findViewById(R.id.drawer_list_ripple);

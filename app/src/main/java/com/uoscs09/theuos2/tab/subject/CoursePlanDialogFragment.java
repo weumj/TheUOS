@@ -4,6 +4,8 @@ package com.uoscs09.theuos2.tab.subject;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Resources;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -16,8 +18,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
 import com.javacan.asyncexcute.AsyncCallback;
 import com.javacan.asyncexcute.AsyncExecutor;
 import com.nhaarman.listviewanimations.appearance.AnimationAdapter;
@@ -25,13 +25,13 @@ import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.common.ListViewBitmapWriteTask;
-import com.uoscs09.theuos2.common.UOSApplication;
 import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.parse.ParseCoursePlan;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
 import com.uoscs09.theuos2.util.StringUtil;
+import com.uoscs09.theuos2.util.TrackerUtil;
 
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
@@ -42,6 +42,8 @@ import java.util.concurrent.Callable;
 public class CoursePlanDialogFragment extends DialogFragment implements Callable<ArrayList<CoursePlanItem>>, AsyncCallback<ArrayList<CoursePlanItem>> {
     private final static String URL = "http://wise.uos.ac.kr/uosdoc/api.ApiApiCoursePlanView.oapi";
     private final static String INFO = "info";
+
+    private final static String TAG = "CoursePlanDialogFragment";
 
     private final Hashtable<String, String> mOApiParams;
 
@@ -106,13 +108,14 @@ public class CoursePlanDialogFragment extends DialogFragment implements Callable
                 }
         );
 
+        TrackerUtil.getInstance(this).sendVisibleEvent(TAG);
 
     }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        MaterialDialog dialog =  new MaterialDialog.Builder(getActivity())
+        MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
                 .title(R.string.tab_course_plan_title)
                 .titleColorAttr(R.attr.color_actionbar_title)
                 .customView(createView(), false)
@@ -142,7 +145,7 @@ public class CoursePlanDialogFragment extends DialogFragment implements Callable
             public void onClick(View v) {
                 String dir = PrefUtil.getPictureSavedPath(getActivity()) + getString(R.string.tab_course_plan_title) + '_' + mSubject.subject_nm + '_' + mSubject.prof_nm + '_' + mSubject.class_div + ".jpeg";
 
-                sendClickEvent("save course plan to image");
+                TrackerUtil.getInstance(CoursePlanDialogFragment.this).sendClickEvent(TAG, "save course plan to image");
 
                 ListViewBitmapWriteTask.TitleListViewBitmapWriteTask task = new ListViewBitmapWriteTask.TitleListViewBitmapWriteTask(dir, mListView, mCourseTitle);
                 task.execute();
@@ -164,7 +167,6 @@ public class CoursePlanDialogFragment extends DialogFragment implements Callable
         aAdapter.setAbsListView(mListView);
 
         mListView.setAdapter(aAdapter);
-
 
 
         return v;
@@ -268,45 +270,23 @@ public class CoursePlanDialogFragment extends DialogFragment implements Callable
                 meth = (TextView) view.findViewById(R.id.course_plan_meth);
                 book = (TextView) view.findViewById(R.id.course_plan_book);
                 etc = (TextView) view.findViewById(R.id.course_plan_etc);
+
+                Resources r = view.getResources();
+
+                int size = r.getDimensionPixelSize(R.dimen.univ_schedule_list_drawable_size) / 2;
+
+
+                ColorDrawable d = new ColorDrawable(r.getColor(AppUtil.getAttrValue(view.getContext(), R.attr.colorPrimary)));
+
+                d.setBounds(0, 0, size, size);
+
+                content.setCompoundDrawables(d, null, null, null);
+                meth.setCompoundDrawables(d, null, null, null);
+                book.setCompoundDrawables(d, null, null, null);
+                etc.setCompoundDrawables(d, null, null, null);
+
             }
         }
     }
 
-
-    Tracker getTracker(UOSApplication.TrackerName name) {
-        return ((UOSApplication) getActivity().getApplication()).getTracker(name);
-    }
-
-    Tracker getTracker() {
-        return getTracker(UOSApplication.TrackerName.APP_TRACKER);
-    }
-
-    void sendTrackerEvent(String action, String label) {
-        getTracker().send(new HitBuilders.EventBuilder()
-                .setCategory("CoursePlanDialogFragment")
-                .setAction(action)
-                .setLabel(label)
-                .build());
-    }
-
-    void sendTrackerEvent(String action, String label, long value) {
-        getTracker().send(new HitBuilders.EventBuilder()
-                .setCategory("CoursePlanDialogFragment")
-                .setAction(action)
-                .setLabel(label)
-                .setValue(value)
-                .build());
-    }
-
-    void sendClickEvent(String label) {
-        sendTrackerEvent("click", label);
-    }
-
-    protected void sendClickEvent(String label, long value) {
-        sendTrackerEvent("click", label, value);
-    }
-
-    protected void sendEmptyViewClickEvent() {
-        sendClickEvent("emptyView");
-    }
 }

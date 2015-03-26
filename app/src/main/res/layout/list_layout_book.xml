@@ -11,10 +11,8 @@
 
     <com.balysv.materialripple.MaterialRippleLayout
         android:id="@+id/ripple"
-        android:focusableInTouchMode="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:mrl_rippleInAdapter="true"
         app:mrl_rippleColor="?colorPrimaryDark">
 
         <FrameLayout

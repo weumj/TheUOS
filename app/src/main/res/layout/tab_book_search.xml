@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -27,48 +28,74 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true">
 
-        <TextView
-            android:id="@+id/tab_book_search_empty_info1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="20dp"
+        <com.balysv.materialripple.MaterialRippleLayout
+            android:id="@+id/tab_book_search_empty_info1_ripple"
+            android:padding="4dp"
             android:layout_marginRight="20dp"
-            android:background="?selector_button"
-            android:drawableLeft="?ic_action_search"
-            android:gravity="center_vertical"
-            android:padding="1dp"
-            android:text="@string/tab_book_empty_text1" />
+            android:layout_marginLeft="20dp"
+            android:layout_width="wrap_content"
+            app:mrl_rippleColor="?colorAccent"
+            app:mrl_rippleDelayClick="false"
+            android:layout_centerHorizontal="true"
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/tab_book_search_empty_info2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@id/tab_book_search_empty_info1"
-            android:layout_below="@id/tab_book_search_empty_info1"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="20dp"
-            android:background="?selector_button"
-            android:drawableLeft="?ic_action_help"
-            android:gravity="center_vertical"
-            android:padding="1dp"
-            android:text="@string/tab_book_empty_text2" />
+            <TextView
+                android:id="@+id/tab_book_search_empty_info1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableLeft="?ic_action_search"
+                android:gravity="center_vertical"
+                android:padding="1dp"
+                android:text="@string/tab_book_empty_text1" />
+        </com.balysv.materialripple.MaterialRippleLayout>
 
-        <TextView
+        <com.balysv.materialripple.MaterialRippleLayout
+            android:id="@+id/tab_book_search_empty_info2_ripple"
+            android:padding="4dp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@id/tab_book_search_empty_info1"
-            android:layout_below="@id/tab_book_search_empty_info2"
+            app:mrl_rippleColor="?colorAccent"
+            app:mrl_rippleDelayClick="false"
+            android:layout_marginTop="10dp"
             android:layout_centerHorizontal="true"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="20dp"
-            android:background="?selector_button"
-            android:drawableLeft="?ic_navigation_accept"
-            android:gravity="center_vertical"
-            android:padding="1dp"
-            android:text="@string/tab_book_empty_text3" />
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/tab_book_search_empty_info1_ripple"
+            android:layout_alignRight="@id/tab_book_search_empty_info1_ripple"
+            android:layout_below="@id/tab_book_search_empty_info1_ripple">
+
+            <TextView
+                android:id="@+id/tab_book_search_empty_info2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:drawableLeft="?ic_action_help"
+                android:gravity="center_vertical"
+                android:padding="1dp"
+                android:text="@string/tab_book_empty_text2" />
+        </com.balysv.materialripple.MaterialRippleLayout>
+
+        <com.balysv.materialripple.MaterialRippleLayout
+            android:id="@+id/tab_book_search_empty_info3_ripple"
+            android:padding="4dp"
+            android:layout_width="wrap_content"
+            app:mrl_rippleColor="?colorAccent"
+            app:mrl_rippleDelayClick="false"
+            android:layout_marginTop="10dp"
+            android:layout_centerHorizontal="true"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/tab_book_search_empty_info1_ripple"
+            android:layout_alignRight="@id/tab_book_search_empty_info1_ripple"
+            android:layout_below="@id/tab_book_search_empty_info2_ripple">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:drawableLeft="?ic_navigation_accept"
+                android:gravity="center_vertical"
+                android:padding="1dp"
+                android:text="@string/tab_book_empty_text3" />
+        </com.balysv.materialripple.MaterialRippleLayout>
     </RelativeLayout>
+
 
 </RelativeLayout>

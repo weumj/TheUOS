@@ -1,6 +1,5 @@
 package com.uoscs09.theuos2.setting;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
@@ -14,8 +13,8 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.util.PrefUtil;
 import com.uoscs09.theuos2.util.TrackerUtil;
 
-public class SettingsTimetableFragment extends PreferenceFragment implements
-        OnSharedPreferenceChangeListener {
+public class SettingsTimetableFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener {
+    private static final String TAG = "SettingsTimetableFragment";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -23,7 +22,7 @@ public class SettingsTimetableFragment extends PreferenceFragment implements
         addPreferencesFromResource(R.xml.prefrence_timetable);
         bindPreferenceSummaryToValue();
 
-        TrackerUtil.getInstance(this).sendEvent("use", "onCreate", "SettingsTimetableFragment");
+        TrackerUtil.getInstance(this).sendVisibleEvent(TAG);
     }
 
     @Override
@@ -45,26 +44,22 @@ public class SettingsTimetableFragment extends PreferenceFragment implements
         SharedPreferences pref = getPreferenceScreen().getSharedPreferences();
         pref.registerOnSharedPreferenceChangeListener(this);
         String[] keys = {PrefUtil.KEY_TIMETABLE_LIMIT,};
+
         for (String key : keys) {
             onSharedPreferenceChanged(pref, key);
         }
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
-                                          String key) {
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (key.equals(PrefUtil.KEY_TIMETABLE_LIMIT)) {
             Preference connectionPref = findPreference(key);
             boolean limit = sharedPreferences.getBoolean(key, false);
 
-            Context context = getActivity();
-            if (context != null) {
-                if (limit) {
-                    connectionPref.setSummary(R.string.setting_timetable_limit_desc_check);
-                } else {
-                    connectionPref.setSummary(R.string.setting_timetable_limit_desc);
-                }
-            }
+            TrackerUtil.getInstance(this).sendEvent(TAG, key, "" + limit);
+
+            connectionPref.setSummary(limit ? R.string.setting_timetable_limit_desc_check : R.string.setting_timetable_limit_desc);
+
         }
     }
 }

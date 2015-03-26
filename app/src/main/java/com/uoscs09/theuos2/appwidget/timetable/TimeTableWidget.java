@@ -2,7 +2,6 @@ package com.uoscs09.theuos2.appwidget.timetable;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
-import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.widget.RemoteViews;
 
 import com.uoscs09.theuos2.R;
+import com.uoscs09.theuos2.base.AbsAppWidgetProvider;
 import com.uoscs09.theuos2.tab.timetable.TabTimeTableFragment2;
 import com.uoscs09.theuos2.tab.timetable.TimeTable;
 import com.uoscs09.theuos2.util.AppUtil;
@@ -21,7 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public abstract class TimeTableWidget extends AppWidgetProvider {
+public abstract class TimeTableWidget extends AbsAppWidgetProvider {
     public final static String WIDGET_TIMETABLE_REFRESH = "com.uoscs09.theuos2.widget.timetable.refresh";
     public final static String WIDGET_TIMETABLE_DAY = "WIDGET_TIMETABLE_DAY";
 
@@ -162,5 +162,11 @@ public abstract class TimeTableWidget extends AppWidgetProvider {
                 break;
         }
 
+    }
+
+    @NonNull
+    @Override
+    protected String getTrackerName() {
+        return "TimeTableWidget";
     }
 }

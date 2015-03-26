@@ -122,24 +122,13 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
         rootView = inflater.inflate(R.layout.tab_timetable, container, false);
 
         emptyView = rootView.findViewById(R.id.tab_timetable_empty);
-        emptyView.setOnClickListener(this);
+        emptyView.findViewById(R.id.tab_timetable_empty_text).setOnClickListener(this);
 
         listView = (ListView) rootView.findViewById(R.id.time_table_listView1);
         listView.setEmptyView(emptyView);
         listView.setAdapter(mTimeTableAdapter2);
 
-        rootView.findViewById(R.id.tab_timetable_action_btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isRunning()) {
-                    AppUtil.showToast(getActivity(), R.string.progress_ongoing, true);
-
-                } else {
-                    sendClickEvent("actionButton");
-                    loginDialog.show();
-                }
-            }
-        });
+        rootView.findViewById(R.id.tab_timetable_action_btn).setOnClickListener(this);
 
         registerProgressView(rootView.findViewById(R.id.progress_layout));
         return rootView;
@@ -337,10 +326,20 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.tab_timetable_empty:
+            case R.id.tab_timetable_empty_text:
                 sendEmptyViewClickEvent();
                 loginDialog.show();
                 break;
+
+            case R.id.tab_timetable_action_btn:
+                if (isRunning()) {
+                    AppUtil.showToast(getActivity(), R.string.progress_ongoing, true);
+
+                } else {
+                    sendClickEvent("actionButton");
+                    loginDialog.show();
+                }
+
             default:
                 break;
         }

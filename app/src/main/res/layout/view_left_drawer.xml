@@ -10,7 +10,7 @@
         android:id="@+id/drawer_top_image"
         android:contentDescription="@null"
         android:layout_width="fill_parent"
-        android:layout_height="160dp"
+        android:layout_height="180dp"
         android:scaleType="centerCrop"
         android:src="@drawable/univ_img_main_gate" />
 

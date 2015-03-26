@@ -134,8 +134,8 @@ public class BookItemListAdapter extends AbsArrayAdapter<BookItem, GroupHolder> 
             }
         };
 
-        holder.itemView.setOnClickListener(listener);
-        holder.ripple.setOnClickListener(listener);
+        //holder.itemView.setOnClickListener(listener);
+        //holder.ripple.setOnClickListener(listener);
         holder.frame.setOnClickListener(listener);
     }
 

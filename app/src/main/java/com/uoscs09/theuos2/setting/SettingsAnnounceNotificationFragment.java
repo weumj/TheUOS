@@ -27,13 +27,15 @@ public class SettingsAnnounceNotificationFragment extends PreferenceFragment imp
     private TimePickerDialog timePicker;
     private boolean isAccepted = false;
 
+    private static final String TAG = "SettingsAnnounceNotificationFragment";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.prefrence_announce_noti);
         bindPreferenceSummaryToValue();
 
-        TrackerUtil.getInstance(this).sendEvent("use", "onCreate", "SettingsAnnounceNotificationFragment");
+        TrackerUtil.getInstance(this).sendVisibleEvent(TAG);
     }
 
     @Override
@@ -104,7 +106,7 @@ public class SettingsAnnounceNotificationFragment extends PreferenceFragment imp
 
             case PrefUtil.KEY_NOTI_TIME: {
                 Preference connectionPref = findPreference(key);
-                
+
                 int hour = sharedPreferences.getInt(StringUtil.STR_HOUR, -1);
                 int min = sharedPreferences.getInt(StringUtil.STR_MIN, -1);
 

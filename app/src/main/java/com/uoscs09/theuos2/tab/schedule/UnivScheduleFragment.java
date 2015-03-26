@@ -64,8 +64,29 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
 
     Dialog mProgressDialog;
 
+    private String mSubTitle;
+
+    private SimpleDateFormat mDateFormat = new SimpleDateFormat("MMMM", Locale.getDefault());
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList("list", mList);
+        outState.putString("subTitle", mSubTitle);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        if(savedInstanceState != null){
+            mList.clear();
+
+            ArrayList<UnivScheduleItem> list = savedInstanceState.getParcelableArrayList("list");
+            mList.addAll(list);
+
+            mSubTitle = savedInstanceState.getString("subTitle");
+            setSubtitleWhenVisible(mSubTitle);
+        }
+
         View view = inflater.inflate(R.layout.tab_univ_schedule, container, false);
 
         mAdapter = new Adapter(getActivity(), mList);
@@ -96,8 +117,6 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
 
         registerProgressView(view.findViewById(R.id.progress_layout));
 
-        execute();
-
         mItemSelectDialog = new MaterialDialog.Builder(getActivity())
                 .title(R.string.tab_univ_schedule_add_to_calendar)
                 .positiveText(android.R.string.ok)
@@ -116,6 +135,10 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
                 .build();
 
         mProgressDialog = AppUtil.getProgressDialog(getActivity(), false, null);
+
+
+        if (mList.isEmpty())
+            execute();
 
         return view;
     }
@@ -246,6 +269,14 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
         mList.clear();
         mList.addAll(result);
         mAdapter.notifyDataSetChanged();
+
+        setSubtitleWhenVisible(mSubTitle = mDateFormat.format(mList.get(0).getDate(true).getTime()));
+    }
+
+    @Nullable
+    @Override
+    protected CharSequence getSubtitle() {
+        return mSubTitle;
     }
 
     @NonNull

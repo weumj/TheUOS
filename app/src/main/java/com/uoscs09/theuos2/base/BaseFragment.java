@@ -64,7 +64,7 @@ public abstract class BaseFragment extends Fragment {
         super.setUserVisibleHint(isVisibleToUser);
 
         if (isVisibleToUser) {
-            TrackerUtil.getInstance(this).sendEvent(getFragmentNameForTracker(), "User Visible");
+            TrackerUtil.getInstance(this).sendVisibleEvent(getFragmentNameForTracker());
         }
     }
 

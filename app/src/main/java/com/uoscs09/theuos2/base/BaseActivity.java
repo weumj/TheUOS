@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.uoscs09.theuos2.common.UOSApplication;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.TrackerUtil;
 
@@ -20,9 +21,11 @@ public abstract class BaseActivity extends ActionBarActivity {
         AppUtil.applyTheme(this);
         super.onCreate(arg0);
 
-        Tracker t = TrackerUtil.getInstance(this).getTracker();
-        t.setScreenName(getScreenName());
-        t.send(new HitBuilders.AppViewBuilder().build());
+        if (!UOSApplication.DEBUG) {
+            Tracker t = TrackerUtil.getInstance(this).getTracker();
+            t.setScreenName(getScreenName());
+            t.send(new HitBuilders.AppViewBuilder().build());
+        }
     }
 
     @NonNull
@@ -32,14 +35,16 @@ public abstract class BaseActivity extends ActionBarActivity {
     public void onStart() {
         super.onStart();
 
-        GoogleAnalytics.getInstance(this).reportActivityStart(this);
+        if (!UOSApplication.DEBUG)
+            GoogleAnalytics.getInstance(this).reportActivityStart(this);
     }
 
     @Override
     public void onStop() {
         super.onStop();
 
-        GoogleAnalytics.getInstance(this).reportActivityStop(this);
+        if (!UOSApplication.DEBUG)
+            GoogleAnalytics.getInstance(this).reportActivityStop(this);
     }
 
     @Override

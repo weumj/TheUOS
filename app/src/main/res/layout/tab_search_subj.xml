@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -8,17 +9,18 @@
         android:layout_height="match_parent"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
+        android:minWidth="1000dp"
         android:paddingTop="5dp">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:orientation="vertical">
+            android:layout_height="fill_parent">
 
             <LinearLayout
                 android:id="@+id/tab_search_subject_head_layout"
                 android:layout_width="fill_parent"
                 android:minWidth="1000dp"
+                android:layout_alignParentTop="true"
                 android:layout_height="wrap_content"
                 android:divider="?attr/colorPrimaryDark"
                 android:dividerPadding="1dp"
@@ -143,7 +145,9 @@
                 android:layout_width="fill_parent"
                 android:minWidth="1000dp"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/tab_search_subject_head_layout"
+                android:layout_below="@id/tab_search_subject_head_layout"
+                android:layout_alignRight="@id/tab_search_subject_head_layout"
+                android:layout_alignLeft="@id/tab_search_subject_head_layout"
                 android:clipToPadding="false"
                 android:fastScrollEnabled="true"
                 android:paddingLeft="10dp"
@@ -152,45 +156,85 @@
                 android:scrollbarStyle="outsideOverlay"
                 android:scrollingCache="true" />
 
-            <RelativeLayout
-                android:id="@+id/tab_search_subject_empty_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="100dp"
-                android:background="?selector_button"
-                android:padding="2dp"
-                android:visibility="gone">
-
-                <TextView
-                    android:id="@+id/empty1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:drawableLeft="?ic_action_search"
-                    android:gravity="center_vertical"
-                    android:text="@string/tab_subject_empty_view_hint" />
-
-                <TextView
-                    android:id="@+id/empty2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/empty1"
-                    android:layout_marginTop="20dp"
-                    android:drawableLeft="?ic_content_import_export"
-                    android:gravity="center_vertical"
-                    android:text="@string/tab_subject_empty_view_sort" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/empty2"
-                    android:layout_marginTop="30dp"
-                    android:drawableLeft="?ic_navigation_accept"
-                    android:text="@string/tab_subject_empty_view_hint_subj" />
-            </RelativeLayout>
-        </LinearLayout>
+        </RelativeLayout>
 
     </HorizontalScrollView>
+
+    <RelativeLayout
+        android:id="@+id/tab_search_subject_empty_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:padding="2dp"
+        android:visibility="gone">
+
+        <com.balysv.materialripple.MaterialRippleLayout
+            android:id="@+id/tab_search_subject_empty1_ripple"
+            android:padding="4dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_width="wrap_content"
+            app:mrl_rippleColor="?colorAccent"
+            app:mrl_rippleDelayClick="true"
+            android:layout_centerHorizontal="true"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/empty1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableLeft="?ic_action_search"
+                android:gravity="center_vertical"
+                android:text="@string/tab_subject_empty_view_hint" />
+        </com.balysv.materialripple.MaterialRippleLayout>
+
+        <com.balysv.materialripple.MaterialRippleLayout
+            android:id="@+id/tab_search_subject_empty2_ripple"
+            android:padding="4dp"
+            android:layout_width="wrap_content"
+            app:mrl_rippleColor="?colorAccent"
+            app:mrl_rippleDelayClick="true"
+            android:layout_below="@id/tab_search_subject_empty1_ripple"
+            android:layout_marginTop="10dp"
+            android:layout_alignRight="@id/tab_search_subject_empty1_ripple"
+            android:layout_alignLeft="@id/tab_search_subject_empty1_ripple"
+            android:layout_centerHorizontal="true"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/empty2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/empty1"
+                android:drawableLeft="?ic_content_import_export"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
+                android:text="@string/tab_subject_empty_view_sort" />
+        </com.balysv.materialripple.MaterialRippleLayout>
+
+
+        <com.balysv.materialripple.MaterialRippleLayout
+            android:id="@+id/tab_search_subject_empty3_ripple"
+            android:padding="4dp"
+            android:layout_width="wrap_content"
+            app:mrl_rippleColor="?colorAccent"
+            app:mrl_rippleDelayClick="true"
+            android:layout_below="@id/tab_search_subject_empty2_ripple"
+            android:layout_marginTop="10dp"
+            android:layout_alignRight="@id/tab_search_subject_empty1_ripple"
+            android:layout_alignLeft="@id/tab_search_subject_empty1_ripple"
+            android:layout_centerHorizontal="true"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/empty2"
+                android:layout_gravity="center_vertical"
+                android:drawableLeft="?ic_navigation_accept"
+                android:text="@string/tab_subject_empty_view_hint_subj" />
+        </com.balysv.materialripple.MaterialRippleLayout>
+    </RelativeLayout>
 
     <include
         layout="@layout/view_loading_layout"

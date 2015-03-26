@@ -45,12 +45,13 @@ public class SettingsFileSelectDialogFragment extends DialogFragment {
     private ArrayAdapter<File> mFileArrayAdapter;
     private final String ROOT = "/";
 
+    private static final String TAG = "SettingsFileSelectDialogFragment";
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        TrackerUtil.getInstance(this).sendEvent("use", "onCreate", "SettingsFileSelectDialogFragment");
-        // getActivity().getActionBar().setTitle(R.string.setting_save_route);
+        TrackerUtil.getInstance(this).sendVisibleEvent(TAG);
+
         mFileList = new ArrayList<>();
         path = getPathFromPref(getActivity());
     }

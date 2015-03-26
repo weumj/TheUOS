@@ -21,7 +21,7 @@ import com.uoscs09.theuos2.util.TimeUtil;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class LibrarySeatWidget extends    AbsAsyncWidgetProvider<ArrayList<SeatItem>> {
+public class LibrarySeatWidget extends AbsAsyncWidgetProvider<ArrayList<SeatItem>> {
     public static final String LIBRARY_SEAT_WIDGET_REFRASH = "com.uoscs09.theuos2.widget.libraryseat.REFRESH";
     public static final String LIBRARY_SEAT_WIDGET_DATA = "com.uoscs09.theuos2.widget.libraryseat.DATA";
     public static final String LIBRARY_SEAT_WIDGET_ACTIVITY = "com.uoscs09.theuos2.widget.libraryseat.ACTIVITY";
@@ -183,5 +183,11 @@ public class LibrarySeatWidget extends    AbsAsyncWidgetProvider<ArrayList<SeatI
             appWidgetManager.updateAppWidget(id, rv);
         }
 
+    }
+
+    @NonNull
+    @Override
+    protected String getTrackerName() {
+        return "LibrarySeatWidget";
     }
 }

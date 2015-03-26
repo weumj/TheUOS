@@ -21,18 +21,16 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
 import com.javacan.asyncexcute.AsyncCallback;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.common.AsyncLoader;
 import com.uoscs09.theuos2.common.PieProgressDrawable;
-import com.uoscs09.theuos2.common.UOSApplication;
 import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.AppUtil.AppTheme;
 import com.uoscs09.theuos2.util.PrefUtil;
+import com.uoscs09.theuos2.util.TrackerUtil;
 
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.Source;
@@ -45,6 +43,8 @@ import java.util.concurrent.Callable;
  */
 public class SettingsFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener {
     private AlertDialog mThemeSelectorDialog;
+
+    private static final String TAG = "SettingsFragment";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,6 +68,8 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         setHasOptionsMenu(true);
         addPreferencesFromResource(R.xml.prefrence);
         bindPreferenceSummaryToValue();
+
+        TrackerUtil.getInstance(this).sendVisibleEvent(TAG);
     }
 
     private void changeFragment(Class<? extends Fragment> clazz) {
@@ -138,7 +140,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         }, new AsyncCallback.Base<String>() {
             @Override
             public void onResult(String result) {
-                String thisVersion = getString(R.string.setting_app_version_desc);
+                String thisVersion = getString(R.string.setting_app_version_name);
                 if (thisVersion.equals(result)) {
                     AppUtil.showToast(getActivity(), R.string.setting_app_version_update_this_new, true);
                 } else {
@@ -197,13 +199,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 
                                     if (originalValue != i) {
 
-                                        Tracker t = ((UOSApplication) getActivity().getApplication()).getTracker(UOSApplication.TrackerName.APP_TRACKER);
-                                        t.send(new HitBuilders.EventBuilder()
-                                                .setCategory("setting fragment")
-                                                .setAction("apply theme")
-                                                .setLabel(AppTheme.values()[i].name())
-                                                .setValue(i)
-                                                .build());
+                                        TrackerUtil.getInstance(SettingsFragment.this).sendEvent(TAG, "apply theme", AppTheme.values()[i].name(), i);
 
                                         pref.put(PrefUtil.KEY_THEME, i);
                                         onSharedPreferenceChanged(getPreferenceScreen().getSharedPreferences(), PrefUtil.KEY_THEME);
@@ -389,12 +385,8 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
                 break;
 
             case PrefUtil.KEY_HOME:
-                Tracker t = ((UOSApplication) getActivity().getApplication()).getTracker(UOSApplication.TrackerName.APP_TRACKER);
-                t.send(new HitBuilders.EventBuilder()
-                        .setCategory("setting fragment")
-                        .setAction("enable home fragment")
-                        .setLabel("" + sharedPreferences.getBoolean(key, true))
-                        .build());
+
+                TrackerUtil.getInstance(this).sendEvent(TAG, "enable home fragment", "" + sharedPreferences.getBoolean(key, true));
 
                 getActivity().setResult(AppUtil.RELAUNCH_ACTIVITY);
                 break;

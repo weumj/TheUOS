@@ -38,8 +38,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<SubjectItem2>> implements
-        AdapterView.OnItemClickListener, AdapterView.OnItemSelectedListener, View.OnClickListener {
+public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<SubjectItem2>> implements AdapterView.OnItemClickListener, AdapterView.OnItemSelectedListener, View.OnClickListener {
     @AsyncData
     private ArrayList<SubjectItem2> mSubjectList;
     private Hashtable<String, String> mOApiParams;
@@ -109,7 +108,7 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
         mTitleLayout.setVisibility(View.INVISIBLE);
 
         mEmptyView = rootView.findViewById(R.id.tab_search_subject_empty_view);
-        mEmptyView.setOnClickListener(new View.OnClickListener() {
+        mEmptyView.findViewById(R.id.empty1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 sendEmptyViewClickEvent();
@@ -130,15 +129,9 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
         listView.setOnItemClickListener(this);
         listView.setEmptyView(mEmptyView);
 
-        int[] ids = {R.id.tab_search_subject_sub_dept1,
-                R.id.tab_search_subject_sub_div1, R.id.tab_search_subject_no1,
-                R.id.tab_search_subject_class_div1,
-                R.id.tab_search_subject_sub_nm1, R.id.tab_search_subject_yr1,
-                R.id.tab_search_subject_credit1,
-                R.id.tab_search_subject_prof_nm1,
-                R.id.tab_search_subject_class_nm1,
-                R.id.tab_search_subject_tlsn_cnt1,
-                R.id.tab_search_subject_tlsn_limit1};
+        int[] ids = {R.id.tab_search_subject_sub_dept1, R.id.tab_search_subject_sub_div1, R.id.tab_search_subject_no1, R.id.tab_search_subject_class_div1,
+                R.id.tab_search_subject_sub_nm1, R.id.tab_search_subject_yr1, R.id.tab_search_subject_credit1, R.id.tab_search_subject_prof_nm1,
+                R.id.tab_search_subject_class_nm1, R.id.tab_search_subject_tlsn_cnt1, R.id.tab_search_subject_tlsn_limit1};
         textViews = new TextView[ids.length];
         int i = 0;
         for (int id : ids) {
@@ -227,7 +220,7 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
 
     @Override
     public void onItemClick(AdapterView<?> ad, View v, int pos, long id) {
-        if(!mCoursePlanDialogFragment.isAdded()){
+        if (!mCoursePlanDialogFragment.isAdded()) {
             mCoursePlanDialogFragment.setSubjectItem(mSubjectList.get(pos));
             mCoursePlanDialogFragment.show(getFragmentManager(), "course");
         }

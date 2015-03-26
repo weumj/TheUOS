@@ -78,7 +78,7 @@
     <PreferenceCategory android:title="@string/setting_app_info" >
         <PreferenceScreen
             android:icon="?attr/ic_action_about"
-            android:summary="@string/setting_app_version_desc"
+            android:summary="@string/setting_app_version_name"
             android:title="@string/setting_app_version" >
         </PreferenceScreen>
         <!--
