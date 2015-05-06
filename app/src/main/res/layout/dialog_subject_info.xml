@@ -27,6 +27,6 @@
         android:background="?selector_button"
         android:contentDescription="@string/action_copy"
         android:padding="2dp"
-        android:src="?ic_content_save" />
+        android:src="?theme_ic_action_content_save" />
 
 </RelativeLayout>

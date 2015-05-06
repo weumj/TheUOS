@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Deprecated
 public class ParserSubjectScore extends OApiParser<ScoreItem, ArrayList<String>> {
     private final String[] PTN = {"subject_nm", "subject_no", "class_div", "class_person", "prof_nm", "dept"};
     private final String[] PTN2 = {"type", "class_eval_item", "raw_score", "eval_grade", "ave"};

@@ -5,20 +5,20 @@
 
     <PreferenceCategory android:title="@string/setting_screen" >
         <PreferenceScreen
-            android:icon="?attr/ic_content_import_export"
+            android:icon="?theme_ic_action_communication_import_export"
             android:key="@string/pref_key_order"
             android:summary="@string/setting_order_desc"
             android:title="@string/setting_order" >
         </PreferenceScreen>
         <PreferenceScreen
-            android:icon="?attr/ic_content_paint"
+            android:icon="?theme_ic_action_image_palette"
             android:key="@string/pref_key_theme"
             android:summary="@string/setting_theme_desc"
             android:title="@string/setting_theme" />
 
         <CheckBoxPreference
             android:defaultValue="true"
-            android:icon="?attr/ic_device_phone"
+            android:icon="?theme_ic_action_hardware_phone_android"
             android:key="@string/pref_key_home"
             android:summary="@string/setting_home_desc"
             android:title="@string/setting_home" />
@@ -34,35 +34,35 @@
     -->
     <PreferenceCategory android:title="@string/title_tab_book_search" >
         <CheckBoxPreference
-            android:icon="?attr/ic_book"
+            android:icon="?theme_ic_action_book_search"
             android:key="@string/pref_key_check_borrow"
             android:title="@string/setting_check_borrow" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/title_tab_library_seat" >
         <CheckBoxPreference
-            android:icon="?attr/ic_chair"
+            android:icon="?theme_ic_action_book_opened"
             android:key="@string/pref_key_check_seat"
             android:title="@string/setting_check_seat" />
          <CheckBoxPreference
-            android:icon="?attr/ic_chair"
+            android:icon="?theme_ic_action_book_opened"
             android:key="@string/pref_key_widget_seat_show_all"
             android:title="@string/setting_widget_seat_show_all" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/title_tab_timetable" >
         <PreferenceScreen
-            android:icon="?attr/ic_content_timetable"
+            android:icon="?theme_ic_action_timetable"
             android:summary="@string/setting_timetable_desc"
             android:title="@string/setting_timetable" >
         </PreferenceScreen>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/setting_data" >
         <PreferenceScreen
-            android:icon="?attr/ic_content_picture"
+            android:icon="?theme_ic_action_image_image"
             android:key="@string/pref_key_save_route"
             android:title="@string/setting_save_route_sub_title" >
         </PreferenceScreen>
         <PreferenceScreen
-            android:icon="?attr/ic_content_discard"
+            android:icon="?theme_ic_action_action_delete"
             android:key="@string/pref_key_delete_cache"
             android:summary="@string/setting_delete_cache_desc"
             android:title="@string/setting_delete_cache" >
@@ -70,24 +70,24 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/setting_etc" >
         <PreferenceScreen
-            android:icon="?attr/ic_location_web_site"
+            android:icon="?theme_ic_action_action_language"
             android:summary="@string/setting_web_page_desc"
             android:title="@string/setting_web_page" >
         </PreferenceScreen>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/setting_app_info" >
         <PreferenceScreen
-            android:icon="?attr/ic_action_about"
+            android:icon="?theme_ic_action_action_about"
             android:summary="@string/setting_app_version_name"
             android:title="@string/setting_app_version" >
         </PreferenceScreen>
-        <!--
+
         <PreferenceScreen
-            android:icon="?attr/ic_action_search"
+            android:icon="?theme_ic_action_action_search"
             android:summary="@string/setting_app_version_update_desc"
             android:title="@string/setting_app_version_update" >
         </PreferenceScreen>
-        -->
+
     </PreferenceCategory>
 
 </PreferenceScreen>

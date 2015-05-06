@@ -12,7 +12,7 @@ import com.javacan.asyncexcute.AsyncCallback;
 import com.javacan.asyncexcute.AsyncExecutor;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.util.AppUtil;
-import com.uoscs09.theuos2.util.GraphicUtil;
+import com.uoscs09.theuos2.util.ImageUtil;
 
 import java.lang.ref.WeakReference;
 import java.util.concurrent.Callable;
@@ -75,7 +75,7 @@ public class ListViewBitmapWriteTask implements Callable<String>,
 		Bitmap bitmap = null;
 		try {
 			bitmap = getBitmap();
-			GraphicUtil.saveImageToFile(fileName, bitmap);
+			ImageUtil.saveImageToFile(fileName, bitmap);
 			return fileName;
 		} finally {
 			if (bitmap != null)
@@ -87,7 +87,7 @@ public class ListViewBitmapWriteTask implements Callable<String>,
 		ListView listView = listViewRef.get();
 		if (listView == null)
 			return null;
-        return GraphicUtil.getWholeListViewItemsToBitmap(listView);
+        return ImageUtil.getWholeListViewItemsToBitmap(listView);
 	}
 
 	/** progressDialog의 cancel listener */
@@ -116,8 +116,8 @@ public class ListViewBitmapWriteTask implements Callable<String>,
                 title.buildDrawingCache(true);
                 titleBitmap = title.getDrawingCache(true);
                 if (titleBitmap == null)
-                    titleBitmap = GraphicUtil.createBitmapFromView(title);
-                bitmap = GraphicUtil.merge(titleBitmap, capture);
+                    titleBitmap = ImageUtil.createBitmapFromView(title);
+                bitmap = ImageUtil.merge(titleBitmap, capture);
 
                 return bitmap;
             } finally {

@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -12,6 +14,7 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos2.base.BaseFragment;
@@ -21,43 +24,51 @@ import com.uoscs09.theuos2.util.AppUtil;
 
 @SuppressLint("ClickableViewAccessibility")
 public class TabMapFragment extends BaseFragment implements OnTouchListener, View.OnClickListener {
-	@ReleaseWhenDestroy
-	private NonLeakingWebView mWebView;
-	private final static String URL = "http://m.uos.ac.kr/mkor/html/01_auos/05_location/location.do";
+    @ReleaseWhenDestroy
+    private NonLeakingWebView mWebView;
+    private final static String URL = "http://m.uos.ac.kr/mkor/html/01_auos/05_location/location.do";
 
-	@SuppressLint("SetJavaScriptEnabled")
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
-		setHasOptionsMenu(true);
+    @SuppressLint("SetJavaScriptEnabled")
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
 
         View root = inflater.inflate(R.layout.tab_map, container, false);
         mWebView = (NonLeakingWebView) root.findViewById(R.id.webview);
-		mWebView.setWebViewClient(new CustomWebViewClient());
-		WebSettings settings = mWebView.getSettings();
-		settings.setJavaScriptEnabled(true);
-		settings.setSupportZoom(true);
-		settings.setBuiltInZoomControls(true);
-		settings.setDisplayZoomControls(false);
-		settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
-		settings.setUseWideViewPort(true);
+        mWebView.setWebViewClient(new CustomWebViewClient());
+        WebSettings settings = mWebView.getSettings();
+        settings.setJavaScriptEnabled(true);
+        settings.setSupportZoom(true);
+        settings.setBuiltInZoomControls(true);
+        settings.setDisplayZoomControls(false);
+        settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        settings.setUseWideViewPort(true);
 
-		mWebView.loadUrl(URL);
+        mWebView.loadUrl(URL);
 
-        root.findViewById(R.id.action_btn).setOnClickListener(this);
-        root.findViewById(R.id.action_refresh).setOnClickListener(this);
-        root.findViewById(R.id.action_backward).setOnClickListener(this);
-        root.findViewById(R.id.action_forward).setOnClickListener(this);
-		return root;
-	}
+        FloatingActionButton mapBtn = (FloatingActionButton) root.findViewById(R.id.action_btn);
+        mapBtn.setOnClickListener(this);
+
+        View floatingActionsMenu = root.findViewById(R.id.floating_actionsmenu);
+        FloatingActionButton refreshBtn = (FloatingActionButton) floatingActionsMenu.findViewById(R.id.action_refresh);
+        refreshBtn.setOnClickListener(this);
+
+        FloatingActionButton backBtn = (FloatingActionButton) floatingActionsMenu.findViewById(R.id.action_backward);
+        backBtn.setOnClickListener(this);
+
+        FloatingActionButton forwardBtn = (FloatingActionButton) floatingActionsMenu.findViewById(R.id.action_forward);
+        forwardBtn.setOnClickListener(this);
+
+        return root;
+    }
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.action_btn:
                 sendClickEvent("action button : to sub map");
                 Activity activity = getActivity();
-                startActivity(new Intent(activity, SubMapActivity.class));
-                AppUtil.overridePendingTransition(activity, 0);
+                ActivityCompat.startActivity(activity, new Intent(activity, SubMapActivity.class), ActivityOptionsCompat.makeScaleUpAnimation(v, v.getWidth() / 2, v.getHeight() / 2, v.getWidth(), v.getHeight()).toBundle());
                 break;
 
             case R.id.action_refresh:
@@ -78,36 +89,36 @@ public class TabMapFragment extends BaseFragment implements OnTouchListener, Vie
     }
 
     @Override
-	public void setUserVisibleHint(boolean isVisibleToUser) {
-		if (mWebView != null) {
-			if (isVisibleToUser) {
-				// mWebView.setVisibility(View.VISIBLE);
-				mWebView.setOnTouchListener(null);
-			} else {
-				mWebView.setOnTouchListener(this);
-				// mWebView.setVisibility(View.INVISIBLE);
-			}
-		}
-		super.setUserVisibleHint(isVisibleToUser);
-	}
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        if (mWebView != null) {
+            if (isVisibleToUser) {
+                // mWebView.setVisibility(View.VISIBLE);
+                mWebView.setOnTouchListener(null);
+            } else {
+                mWebView.setOnTouchListener(this);
+                // mWebView.setVisibility(View.INVISIBLE);
+            }
+        }
+        super.setUserVisibleHint(isVisibleToUser);
+    }
 
-	@Override
-	public boolean onTouch(View v, MotionEvent event) {
-		return true;
-	}
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        return true;
+    }
 
-	@Override
-	public void onDestroyView() {
-		if (mWebView != null) {
-			mWebView.clearCache(true);
-			mWebView.loadUrl("about:blank");
-			AppUtil.unbindDrawables(mWebView);
-			mWebView.destroy();
-			mWebView = null;
-			System.gc();
-		}
-		super.onDestroyView();
-	}
+    @Override
+    public void onDestroyView() {
+        if (mWebView != null) {
+            mWebView.clearCache(true);
+            mWebView.loadUrl("about:blank");
+            AppUtil.unbindDrawables(mWebView);
+            mWebView.destroy();
+            mWebView = null;
+            System.gc();
+        }
+        super.onDestroyView();
+    }
 
     @NonNull
     @Override
@@ -116,7 +127,7 @@ public class TabMapFragment extends BaseFragment implements OnTouchListener, Vie
     }
 
     /*
-	@Override
+    @Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		inflater.inflate(R.menu.tab_map, menu);
 		super.onCreateOptionsMenu(menu, inflater);

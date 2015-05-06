@@ -10,7 +10,10 @@
     <string name="caution">주의</string>
     <string name="canceled">취소되었습니다.</string>
     <string name="cancel">취소</string>
+    <string name="success">성공하였습니다.</string>
     <string name="saved">에 저장되었습니다.</string>
+    <string name="deleted">삭제되었습니다.</string>
+    <string name="failed">실패하였습니다.</string>
     <string name="error_occur">에러!</string>
     <string name="error_internet">인터넷 또는 학교 서버 접속에 실패하였습니다.</string>
 
@@ -40,7 +43,7 @@
 
     <string name="search_hint">검색어를 입력하세요.</string>
     <string name="search_result_empty">검색된 결과가 없습니다.</string>
-    <string name="search_found">개 검색되었습니다.</string>
+    <string name="search_found_amount">%1$s 개 검색되었습니다.</string>
     <string name="search_input_empty">검색어를 입력해주세요</string>
 
     <string name="action_exit">종료</string>
@@ -53,6 +56,7 @@
     <string name="action_web_for_tab_map_find">복지시설 검색</string>
     <string name="action_forward">앞으로</string>
     <string name="action_backward">뒤로</string>
+    <string name="action_share">공유</string>
     <string name="action_copy">복사</string>
     <string name="action_save">저장</string>
     <string name="action_delete">삭제</string>
@@ -70,6 +74,7 @@
     <string name="tab_book_empty_text1"> 버튼을 터치하여 도서 검색을 해 보세요.</string>
     <string name="tab_book_empty_text2"> 버튼을 터치하여 도서 검색 옵션을 설정하세요.</string>
     <string name="tab_book_empty_text3"> 리스트나 책 이미지를 터치하면 자세한 정보를 볼 수 있습니다.</string>
+    <string name="tab_book_available_in_online">온라인 이용 가능</string>
 
     <string name="tab_library_seat_last_update">최근 조회 시간\n</string>
     <string name="tab_library_seat_dissmiss_info_not_exist_in_1hr">1시간 내에 해지될 좌석이 없습니다.</string>
@@ -108,14 +113,16 @@
     <string name="tab_timetable_thr">목</string>
     <string name="tab_timetable_fri">금</string>
     <string name="tab_timetable_sat">토</string>
-    <string name="tab_timtable_period">시간</string>
+    <string name="tab_timetable_period">시간</string>
     <string name="tab_timetable_not_exist">시간표 데이터가 없습니다.</string>
+    <string name="tab_timetable_notify_subject">수업 (%1$s) 시작 %2$s 입니다.</string>
 
-    <string name="tab_timatable_callback_show_location_in_map">지도에서 건물 위치 보기</string>
-    <string name="tab_timatable_callback_show_subject_plan">수업계획서 보기</string>
-    <string name="tab_timatable_callback_show_color_selector">배경색 선택</string>
+    <string name="tab_timetable_dialog_show_location_in_map">지도에서 건물 위치 보기</string>
+    <string name="tab_timetable_dialog_show_subject_plan">수업계획서 보기</string>
+    <string name="tab_timetable_dialog_show_color_selector">배경색 선택</string>
     <string name="tab_timetable_noti">시간표 알리미</string>
-    <string name="tab_timatable_callback_noti">수업 시작 알림</string>
+    <string name="tab_timetable_dialog_notification">수업 시작 알림</string>
+    <string name="tab_timetable_callback_noti_service">수업 시작 알림 서비스</string>
     <string name="tab_timetable_empty_text1"> 버튼을 터치하여 시간표를 불러오세요.</string>
     <string name="tab_timetable_empty_text2">교과목을 터치하면 추가 정보를 얻을 수 있습니다.</string>
     <string name="tab_timetable_no_subject">과목 정보가 없습니다.</string>

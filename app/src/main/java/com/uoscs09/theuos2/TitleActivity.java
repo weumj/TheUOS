@@ -23,6 +23,6 @@ public class TitleActivity extends Activity {
                 finish();
 
             }
-        }, 300);
+        }, 200);
     }
 }

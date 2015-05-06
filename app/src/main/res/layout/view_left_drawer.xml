@@ -28,18 +28,19 @@
             android:layout_width="0dp"
             android:gravity="center"
             android:layout_height="fill_parent"
-            android:paddingLeft="20dp"
             app:mrl_rippleInAdapter="false"
             app:mrl_rippleColor="?colorPrimaryDark">
 
             <TextView
                 android:id="@+id/drawer_setting"
-                android:layout_width="fill_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 android:gravity="center_vertical"
+                android:layout_gravity="center"
                 android:drawablePadding="10dp"
                 android:text="@string/setting"
-                android:drawableLeft="?ic_action_settings" />
+                android:textColor="?color_tint_normal"
+                android:drawableLeft="?theme_ic_action_action_settings" />
         </com.balysv.materialripple.MaterialRippleLayout>
 
 
@@ -54,13 +55,14 @@
 
             <TextView
                 android:id="@+id/drawer_exit"
-                android:layout_width="fill_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 android:drawablePadding="10dp"
+                android:layout_gravity="center"
                 android:gravity="center_vertical"
                 android:text="@string/action_exit"
-                android:visibility="gone"
-                android:drawableLeft="?ic_content_remove" />
+                android:textColor="?color_tint_normal"
+                android:drawableLeft="?theme_ic_action_navigation_close" />
         </com.balysv.materialripple.MaterialRippleLayout>
     </LinearLayout>
 
@@ -68,7 +70,7 @@
         android:layout_width="fill_parent"
         android:layout_height="1dp"
         android:layout_above="@id/drawer_bottom"
-        android:background="?colorAccent" />
+        android:background="?color_primary_text" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/drawer_listview"

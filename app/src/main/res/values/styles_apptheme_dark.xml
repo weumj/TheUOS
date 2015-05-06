@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources >
+
+    <style name="AppTheme.Style.Black" parent="@style/AppTheme.Dark">
+        <item name="cardBackgroundColor">@color/button_material_dark</item>
+        <item name="colorAccent">@android:color/white</item>
+        <item name="colorPrimary">@color/primary_material_dark</item>
+        <item name="colorPrimaryDark">@color/primary_dark_material_dark</item>
+        <!--<item name="android:textColorPrimary">@android:color/white</item>-->
+        <item name="windowActionBarOverlay">true</item>
+    </style>
+
+</resources>

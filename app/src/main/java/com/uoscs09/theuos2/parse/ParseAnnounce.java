@@ -1,6 +1,6 @@
 package com.uoscs09.theuos2.parse;
 
-import com.uoscs09.theuos2.tab.anounce.AnnounceItem;
+import com.uoscs09.theuos2.tab.announce.AnnounceItem;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import java.util.ArrayList;

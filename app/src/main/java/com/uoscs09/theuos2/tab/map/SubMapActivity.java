@@ -1,6 +1,5 @@
 package com.uoscs09.theuos2.tab.map;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,6 +11,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -20,9 +21,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.Spinner;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -47,7 +46,7 @@ public class SubMapActivity extends BaseActivity implements LocationListener {
     @ReleaseWhenDestroy
     private Location location;
     @ReleaseWhenDestroy
-    private Spinner mLocationSelectSpinner;
+    private AppCompatSpinner mLocationSelectSpinner;
 
     private int buildingNo;
 
@@ -90,7 +89,7 @@ public class SubMapActivity extends BaseActivity implements LocationListener {
         actionBar.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP | ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE);
 
         View spinnerLayout = View.inflate(this, R.layout.view_tab_map_sub_spinner_layout, null);
-        mLocationSelectSpinner = (Spinner) spinnerLayout.findViewById(R.id.spinner);
+        mLocationSelectSpinner = (AppCompatSpinner) spinnerLayout.findViewById(R.id.spinner);
         mLocationSelectSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -128,11 +127,11 @@ public class SubMapActivity extends BaseActivity implements LocationListener {
             }
         });
 
-        locationSelector = new MaterialDialog.Builder(this)
-                .customView(listView, false)
-                .title(R.string.tab_map_submap_select_dest)
-                .content(R.string.tab_map_submap_select_building)
-                .build();
+        locationSelector = new AlertDialog.Builder(this)
+                .setView(listView)
+                .setTitle(R.string.tab_map_submap_select_dest)
+                .setMessage(R.string.tab_map_submap_select_building)
+                .create();
 
         listView.postDelayed(new Runnable() {
             @Override
@@ -201,23 +200,21 @@ public class SubMapActivity extends BaseActivity implements LocationListener {
             String provider = locationManager.getBestProvider(criteria, true);
             if (provider == null) {
                 // 위치정보 설정이 안되어 있으면 설정하는 엑티비티로 이동
-                new MaterialDialog.Builder(this)
-                        .title("위치서비스 동의")
-                        .neutralText("이동")
-                        .callback(new MaterialDialog.ButtonCallback() {
+                new AlertDialog.Builder(this)
+                        .setTitle("위치서비스 동의")
+                        .setNeutralButton("이동", new DialogInterface.OnClickListener() {
                             @Override
-                            public void onNeutral(MaterialDialog dialog) {
-                                super.onNeutral(dialog);
+                            public void onClick(DialogInterface dialog, int which) {
                                 startActivityForResult(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), REQUEST_LOCATION_SOURCE_SETTINGS);
                             }
                         })
-                        .cancelListener(new DialogInterface.OnCancelListener() {
+
+                        .setOnCancelListener(new DialogInterface.OnCancelListener() {
                             @Override
                             public void onCancel(DialogInterface dialog) {
                                 finish();
                             }
                         })
-                        .build()
                         .show();
 
             } else {
@@ -317,12 +314,11 @@ public class SubMapActivity extends BaseActivity implements LocationListener {
 
     private void selectWelfareBuildingMenu() {
         if (dialog == null) {
-            dialog = new MaterialDialog.Builder(this)
-                    .title("복지시설")
-                    .items(R.array.tab_map_submap_buildings_welfare)
-                    .itemsCallback(new MaterialDialog.ListCallback() {
+            dialog = new AlertDialog.Builder(this)
+                    .setTitle("복지시설")
+                    .setItems(R.array.tab_map_submap_buildings_welfare, new DialogInterface.OnClickListener() {
                         @Override
-                        public void onSelection(MaterialDialog materialDialog, View view, int item, CharSequence charSequence) {
+                        public void onClick(DialogInterface dialog, int item) {
                             googleMap.clear();
                             String locationName = getResources().getStringArray(R.array.tab_map_submap_buildings_welfare)[item];
 
@@ -430,7 +426,7 @@ public class SubMapActivity extends BaseActivity implements LocationListener {
                             dialog.dismiss();
                         }
                     })
-                    .build();
+                  .create();
 
         }
         dialog.show();

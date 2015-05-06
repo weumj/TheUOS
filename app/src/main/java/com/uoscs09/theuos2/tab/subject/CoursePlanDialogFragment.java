@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +18,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.javacan.asyncexcute.AsyncCallback;
 import com.javacan.asyncexcute.AsyncExecutor;
 import com.nhaarman.listviewanimations.appearance.AnimationAdapter;
@@ -115,13 +115,13 @@ public class CoursePlanDialogFragment extends DialogFragment implements Callable
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
-                .title(R.string.tab_course_plan_title)
-                .titleColorAttr(R.attr.color_actionbar_title)
-                .customView(createView(), false)
-                .build();
+        AlertDialog dialog = new AlertDialog.Builder(getActivity())
+                .setTitle(R.string.tab_course_plan_title)
+                //.titleColorAttr(R.attr.color_actionbar_title)
+                .setView(createView())
+                .create();
 
-        dialog.getTitleFrame().setBackgroundResource(AppUtil.getAttrValue(getActivity(), R.attr.colorPrimary));
+        //dialog.getTitleFrame().setBackgroundResource(AppUtil.getAttrValue(getActivity(), R.attr.colorPrimary));
 
         return dialog;
     }

@@ -1,7 +1,6 @@
 package com.uoscs09.theuos2.tab.phonelist;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -11,6 +10,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -37,11 +37,9 @@ import java.util.List;
 
 public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>> {
     @ReleaseWhenDestroy
-    private
-    ArrayAdapter<PhoneItem> phoneAdapter;
+    private ArrayAdapter<PhoneItem> phoneAdapter;
     @ReleaseWhenDestroy
-    private
-    MaterialDialog mProgressDialog;
+    private MaterialDialog mProgressDialog;
     @ReleaseWhenDestroy
     private AlertDialog dialog;
     private static final String PHONE_LIST = "phone_list";
@@ -54,8 +52,7 @@ public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>> {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList(PHONE_LIST,
-                (ArrayList<? extends Parcelable>) mPhoneList);
+        outState.putParcelableArrayList(PHONE_LIST, (ArrayList<? extends Parcelable>) mPhoneList);
         super.onSaveInstanceState(outState);
     }
 
@@ -96,7 +93,6 @@ public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>> {
             case R.id.action_web:
                 Activity activity = getActivity();
                 startActivity(new Intent(activity, PhoneListWebActivity.class));
-                AppUtil.overridePendingTransition(activity, 0);
                 return true;
             default:
                 return false;
@@ -108,34 +104,31 @@ public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>> {
         inflater.inflate(R.menu.tab_phone, menu);
         final MenuItem searchMenu = menu.findItem(R.id.action_search);
 
-        final SearchView searchView = (SearchView) MenuItemCompat
-                .getActionView(searchMenu);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchMenu);
         if (searchView != null) {
-            searchView
-                    .setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
-                        @Override
-                        public boolean onQueryTextSubmit(String query) {
-                            return true;
-                        }
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    return true;
+                }
 
-                        @Override
-                        public boolean onQueryTextChange(String newText) {
-                            phoneAdapter.getFilter().filter(newText);
-                            return true;
-                        }
-                    });
-            searchView
-                    .setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
-                        @Override
-                        public void onFocusChange(View view,
-                                                  boolean queryTextFocused) {
-                            if (!queryTextFocused) {
-                                searchMenu.collapseActionView();
-                                searchView.setQuery("", false);
-                            }
-                        }
-                    });
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    phoneAdapter.getFilter().filter(newText);
+                    return true;
+                }
+            });
+            searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View view,
+                                          boolean queryTextFocused) {
+                    if (!queryTextFocused) {
+                        searchMenu.collapseActionView();
+                        searchView.setQuery("", false);
+                    }
+                }
+            });
             searchView.setSubmitButtonEnabled(true);
             searchView.setQueryHint(getText(R.string.tab_phone_search_hint));
         } else {
@@ -211,26 +204,25 @@ public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>> {
     private void initProgress() {
         if (mProgressDialog == null)
             mProgressDialog = AppUtil.getProgressDialog(getActivity(), true, new OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            cancelExecutor();
-                        }
-                    });
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    cancelExecutor();
+                }
+            });
     }
 
     private void initDialog() {
-        dialog = new MaterialDialog.Builder(getActivity())
-                .content(R.string.tab_phone_caution_update)
-                .negativeText(R.string.cancel)
-                .positiveText(R.string.confirm)
-                .callback(new MaterialDialog.ButtonCallback() {
+        dialog = new AlertDialog.Builder(getActivity())
+                .setMessage(R.string.tab_phone_caution_update)
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.confirm, new OnClickListener() {
                     @Override
-                    public void onPositive(MaterialDialog dialog) {
+                    public void onClick(DialogInterface dialog, int which) {
                         mProgressDialog.show();
                         execute();
                     }
                 })
-                .build();
+                .create();
     }
 
     @Override
@@ -313,20 +305,15 @@ public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>> {
             final Context context = getActivity();
             final String phoneNum = parseTelNumber(item.sitePhoneNumber);
             new AlertDialog.Builder(context)
-                    .setTitle(
-                            item.siteName
-                                    + context
-                                    .getString(R.string.tab_phone_confirm_call))
+                    .setTitle(item.siteName + context
+                            .getString(R.string.tab_phone_confirm_call))
                     .setMessage(phoneNum).setCancelable(true)
                     .setPositiveButton(R.string.confirm, new OnClickListener() {
 
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            Intent callIntent = new Intent(Intent.ACTION_DIAL,
-                                    Uri.parse("tel:" + phoneNum));
+                            Intent callIntent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + phoneNum));
                             context.startActivity(callIntent);
-                            AppUtil.overridePendingTransition(
-                                    (Activity) context, 1);
                         }
                     }).setNegativeButton(R.string.cancel, null).create().show();
 

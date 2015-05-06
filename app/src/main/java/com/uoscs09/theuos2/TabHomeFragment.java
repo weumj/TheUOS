@@ -1,9 +1,10 @@
 package com.uoscs09.theuos2;
 
-import android.app.AlertDialog;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,12 +13,12 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 import android.widget.ListView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.nhaarman.listviewanimations.appearance.simple.SwingBottomInAnimationAdapter;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.base.BaseFragment;
 import com.uoscs09.theuos2.util.AppUtil;
+import com.uoscs09.theuos2.util.ImageUtil;
 
 import java.util.List;
 
@@ -52,7 +53,7 @@ public class TabHomeFragment extends BaseFragment implements OnItemClickListener
         @Override
         public void onBindViewHolder(int position, SimpleViewHolder holder) {
             super.onBindViewHolder(position, holder);
-            holder.textView.setCompoundDrawablesWithIntrinsicBounds(AppUtil.getPageIcon(getContext(), getItem(position)), 0, 0, 0);
+            holder.textView.setCompoundDrawablesWithIntrinsicBounds(ImageUtil.getPageIcon(holder.textView.getContext(), getItem(position)), null, null, null);
         }
 
         @Override
@@ -78,12 +79,12 @@ public class TabHomeFragment extends BaseFragment implements OnItemClickListener
             }
         });
 
-        etcDialog = new MaterialDialog.Builder(context)
-                .cancelable(true)
-                .iconAttr(R.attr.ic_navigation_accept)
-                .title(R.string.tab_etc_selection)
-                .customView(dialogView, false)
-                .build();
+        etcDialog = new AlertDialog.Builder(context)
+                .setCancelable(true)
+                .setIconAttribute(R.attr.theme_ic_action_navigation_check)
+                .setTitle(R.string.tab_etc_selection)
+                .setView(dialogView)
+                .create();
     }
 
     @Override
@@ -136,5 +137,9 @@ public class TabHomeFragment extends BaseFragment implements OnItemClickListener
     @Override
     protected String getFragmentNameForTracker() {
         return "TabHomeFragment";
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
     }
 }

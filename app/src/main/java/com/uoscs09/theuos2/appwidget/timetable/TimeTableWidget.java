@@ -12,8 +12,8 @@ import android.widget.RemoteViews;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsAppWidgetProvider;
-import com.uoscs09.theuos2.tab.timetable.TabTimeTableFragment2;
 import com.uoscs09.theuos2.tab.timetable.TimeTable;
+import com.uoscs09.theuos2.tab.timetable.TimetableUtil;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
 
@@ -88,7 +88,7 @@ public abstract class TimeTableWidget extends AbsAppWidgetProvider {
                 SimpleDateFormat date = new SimpleDateFormat("yyyy MMM dd E", Locale.getDefault());
                 views.setTextViewText(R.id.widget_time_date, date.format(new Date()));
 
-                TimeTable timeTable = TabTimeTableFragment2.readTimetable(context);
+                TimeTable timeTable = TimetableUtil.readTimetable(context);
                 if (timeTable != null) {
                     views.setTextViewText(R.id.widget_time_term, timeTable.getYearAndSemester());
 

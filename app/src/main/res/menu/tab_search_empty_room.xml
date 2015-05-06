@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:com.uoscs09.theuos="http://schemas.android.com/apk/res-auto" >
+    xmlns:app="http://schemas.android.com/apk/res-auto" >
 
     <item
         android:id="@+id/action_search"
-        android:icon="?menu_ic_action_search"
+        android:icon="?menu_theme_ic_action_action_search"
         android:orderInCategory="101"
         android:showAsAction="always"
         android:title="@string/action_search"
-        com.uoscs09.theuos:showAsAction="always">
+        app:showAsAction="always">
     </item>
 
 </menu>

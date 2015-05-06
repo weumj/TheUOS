@@ -26,64 +26,76 @@ public class ParserBook extends JerichoParser<BookItem> {
     private static final String COVER = "cover";
     private static final String LI = "li";
 
-    @Override
-    protected ArrayList<BookItem> parseHttpBody(Source source) throws IOException {
-        List<Element> briefList = source.getAllElementsByClass("briefList");
-        final List<Element> bookHtmlList = briefList.get(0).getAllElements(LI);
+    private static class TaskCallable implements Callable<ArrayList<BookItem>> {
+        final List<Element> bookHtmlList;
+        final int start, end;
 
-        final int size = bookHtmlList.size();
-        if (size > 7) {
-            final int halfSize = size / 2;
-            FutureTask<ArrayList<BookItem>> task1 = new FutureTask<>(new Callable<ArrayList<BookItem>>() {
-                @Override
-                public ArrayList<BookItem> call() throws Exception {
-                    return parseListElement(bookHtmlList, 0, halfSize);
-                }
-            });
-            AsyncLoader.excuteFor(task1);
+        TaskCallable(List<Element> bookHtmlList, int start, int end) {
+            this.bookHtmlList = bookHtmlList;
+            this.start = start;
+            this.end = end;
+        }
 
-            FutureTask<ArrayList<BookItem>> task2 = new FutureTask<>(new Callable<ArrayList<BookItem>>() {
-                @Override
-                public ArrayList<BookItem> call() throws Exception {
-                    return parseListElement(bookHtmlList, halfSize, size);
-                }
-            });
-            AsyncLoader.excuteFor(task2);
-
-            ArrayList<BookItem> bookItemList = new ArrayList<>();
-
-            // AsyncTask를 사용한다면 현재 Thread가 interrupt될 가능성이 존재함.
-            for (; ; ) {
-                try {
-                    bookItemList.addAll(task1.get());
-                    break;
-                } catch (InterruptedException e) {
-                    Log.e(LOG_TAG, "interrupted TASK #1", e);
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    break;
-                }
-            }
-            for (; ; ) {
-                try {
-                    bookItemList.addAll(task2.get());
-                    break;
-                } catch (InterruptedException e) {
-                    Log.e(LOG_TAG, "interrupted TASK #2", e);
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    break;
-                }
-            }
-            return bookItemList;
-        } else {
-            return parseListElement(bookHtmlList, 0, size);
+        @Override
+        public ArrayList<BookItem> call() throws Exception {
+            return parseListElement(bookHtmlList, start, end);
         }
     }
 
-    ArrayList<BookItem> parseListElement(List<Element> bookHtmlList, int start, int end) {
+    @Override
+    protected ArrayList<BookItem> parseHttpBody(Source source) throws IOException {
+        List<Element> briefList = source.getAllElementsByClass("briefList");
+        List<Element> bookHtmlList = briefList.get(0).getAllElements(LI);
+
+        int size = bookHtmlList.size();
+        if (size > 7 && Runtime.getRuntime().availableProcessors() > 2) {
+            return parseListElementUsing2Thread(bookHtmlList, size);
+
+        } else {
+            return parseListElement(bookHtmlList, 0, size);
+
+        }
+    }
+
+    private static ArrayList<BookItem> parseListElementUsing2Thread(List<Element> bookHtmlList, int size) {
+        int halfSize = size / 2;
+        FutureTask<ArrayList<BookItem>> task1 = new FutureTask<>(new TaskCallable(bookHtmlList, 0, halfSize)),
+                task2 = new FutureTask<>(new TaskCallable(bookHtmlList, halfSize, size));
+
+        AsyncLoader.excuteFor(task1);
+        AsyncLoader.excuteFor(task2);
+
+        ArrayList<BookItem> bookItemList = new ArrayList<>();
+
+        // AsyncTask를 사용한다면 현재 Thread가 interrupt될 가능성이 존재함.
+        for (; ; ) {
+            try {
+                bookItemList.addAll(task1.get());
+                break;
+            } catch (InterruptedException e) {
+                Log.e(LOG_TAG, "interrupted TASK #1", e);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                break;
+            }
+        }
+        for (; ; ) {
+            try {
+                bookItemList.addAll(task2.get());
+                break;
+            } catch (InterruptedException e) {
+                Log.e(LOG_TAG, "interrupted TASK #2", e);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                break;
+            }
+        }
+        return bookItemList;
+    }
+
+    static ArrayList<BookItem> parseListElement(List<Element> bookHtmlList, int start, int end) {
         ArrayList<BookItem> bookItemList = new ArrayList<>();
         for (int i = start; i < end; i++) {
             Element rawBookHtml = bookHtmlList.get(i);
@@ -94,7 +106,7 @@ public class ParserBook extends JerichoParser<BookItem> {
         return bookItemList;
     }
 
-    BookItem parseElement(Element rawBookElement) {
+    static BookItem parseElement(Element rawBookElement) {
         BookItem item = new BookItem();
         Element bookUrl = rawBookElement.getFirstElement(HTMLElementName.A);
         if (bookUrl != null) {
@@ -102,7 +114,7 @@ public class ParserBook extends JerichoParser<BookItem> {
         }
 
         try {
-            Element cover = rawBookElement.getFirstElementByClass(COVER) .getFirstElement(IFRAME);
+            Element cover = rawBookElement.getFirstElementByClass(COVER).getFirstElement(IFRAME);
             if (cover != null)
                 item.coverSrc = getImgSrc(cover.getAttributeValue(SRC));
 
@@ -135,18 +147,18 @@ public class ParserBook extends JerichoParser<BookItem> {
                 item.bookState = stateAndLocations[1];
 
             } else {
-                List<Element> aElements = rawBookElement .getAllElements(HTMLElementName.A);
+                List<Element> aElements = rawBookElement.getAllElements(HTMLElementName.A);
                 if (aElements != null && aElements.size() > 1) {
                     Element onlineUrl = aElements.get(1);
 
-                    item.site = "http://mlibrary.uos.ac.kr"  + onlineUrl.getAttributeValue(HREF);
+                    item.site = "http://mlibrary.uos.ac.kr" + onlineUrl.getAttributeValue(HREF);
                     item.bookState = "온라인 이용 가능";
                 }
 
             }
         }
 
-        Element bookStateInfos = rawBookElement .getFirstElementByClass("downIcon");
+        Element bookStateInfos = rawBookElement.getFirstElementByClass("downIcon");
         item.bookStateInfoList = null;
 
         if (bookStateInfos != null) {
@@ -166,8 +178,10 @@ public class ParserBook extends JerichoParser<BookItem> {
         return item;
     }
 
-    /** 책 커버 이미지의 주소를 얻어온다.*/
-    private String getImgSrc(String imgUrl) {
+    /**
+     * 책 커버 이미지의 주소를 얻어온다.
+     */
+    private static String getImgSrc(String imgUrl) {
         String imgSrc = StringUtil.NULL;
         if (imgUrl == null || imgUrl.equals(StringUtil.NULL))
             return imgSrc;

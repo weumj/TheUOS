@@ -11,9 +11,9 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
 
-    <uses-permission android:name="android.permission.WRITE_CALENDAR"/>
-    <uses-permission android:name="android.permission.READ_CALENDAR"/>
-    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
 
     <uses-feature
         android:glEsVersion="0x00020000"
@@ -48,44 +48,58 @@
                 <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name="com.uoscs09.theuos2.UosMainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
+
         <activity android:name="com.uoscs09.theuos2.tab.phonelist.PhoneListWebActivity" />
+
         <activity android:name="com.uoscs09.theuos2.tab.map.SubMapActivity" />
-        <activity android:name="com.uoscs09.theuos2.tab.anounce.SubAnounceWebActivity" />
+
+        <activity android:name=".tab.announce.SubAnnounceWebActivity" />
+
         <activity
             android:name="com.uoscs09.theuos2.setting.SettingActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:uiOptions="splitActionBarWhenNarrow" />
+
         <activity android:name="com.uoscs09.theuos2.tab.libraryseat.SubSeatWebActivity" />
 
         <activity android:name="com.uoscs09.theuos2.TestActivity" />
+
+        <service
+            android:name=".tab.timetable.TimeTableAlarmService"
+            android:label="@string/tab_timetable_callback_noti_service" />
 
         <service
             android:name="com.uoscs09.theuos2.appwidget.timetable.Widget5x4ListService"
             android:exported="true"
             android:label="@string/widget_timetable"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
+
         <service
             android:name="com.uoscs09.theuos2.appwidget.timetable.Widget4x4ListService"
             android:exported="true"
             android:label="@string/widget_timetable"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
+
         <service
             android:name="com.uoscs09.theuos2.appwidget.restaurant.RestListService"
             android:exported="true"
             android:label="@string/widget_rest"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
+
         <service
             android:name="com.uoscs09.theuos2.appwidget.libraryseat.LibrarySeatListService"
             android:exported="true"
             android:label="@string/widget_library_seat"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
+
         <service
-            android:name="com.uoscs09.theuos2.tab.anounce.ServiceForAnnounce"
+            android:name="com.uoscs09.theuos2.tab.announce.ServiceForAnnounce"
             android:label="@string/setting_announce_noti" />
 
         <receiver android:name="com.uoscs09.theuos2.service.BReceiver">
@@ -98,6 +112,7 @@
                 <data android:scheme="package" />
             </intent-filter>
         </receiver>
+
         <receiver
             android:name="com.uoscs09.theuos2.tab.timetable.TimeTableNotiReceiver"
             android:exported="false">
@@ -105,6 +120,7 @@
                 <action android:name="com.uoscs09.theuos2.tab.timetable.set_alarm" />
             </intent-filter>
         </receiver>
+
         <receiver
             android:name="com.uoscs09.theuos2.appwidget.timetable.TimeTableWidget4x4"
             android:label="@string/widget_timetable4x4">
@@ -119,6 +135,7 @@
                 <action android:name="android.intent.action.ACTION_EXTERNAL_APPLICATION_AVAILABLE" />
             </intent-filter>
         </receiver>
+
         <receiver
             android:name="com.uoscs09.theuos2.appwidget.timetable.TimeTableWidget5x4"
             android:label="@string/widget_timetable5x4">
@@ -133,6 +150,7 @@
                 <action android:name="android.intent.action.ACTION_EXTERNAL_APPLICATION_AVAILABLE" />
             </intent-filter>
         </receiver>
+
         <receiver
             android:name="com.uoscs09.theuos2.appwidget.restaurant.RestWidget"
             android:label="@string/widget_rest_desc">
@@ -148,6 +166,7 @@
                 <action android:name="android.intent.action.ACTION_EXTERNAL_APPLICATION_AVAILABLE" />
             </intent-filter>
         </receiver>
+
         <receiver
             android:name="com.uoscs09.theuos2.appwidget.libraryseat.LibrarySeatWidget"
             android:label="@string/widget_library_seat_desc">
@@ -161,6 +180,7 @@
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
         </receiver>
+
     </application>
 
 </manifest>

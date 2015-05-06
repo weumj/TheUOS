@@ -28,7 +28,7 @@ public class TestActivity extends Activity {
         button.setSize(FloatingActionButton.SIZE_MINI);
         button.setColorNormalResId(R.color.pink);
         button.setColorPressedResId(R.color.pink_pressed);
-        button.setIcon(R.drawable.ic_action_action_about);
+        button.setIcon(R.drawable.theme_ic_action_action_about);
         button.setStrokeVisible(false);
 
         final View actionB = findViewById(R.id.action_b);

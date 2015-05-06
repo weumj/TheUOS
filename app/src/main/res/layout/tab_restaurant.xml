@@ -47,7 +47,7 @@
                             android:layout_marginLeft="15dp"
                             android:layout_marginTop="3dp"
                             android:text="@string/tab_rest_breakfast"
-                            android:textColor="?attr/colorAccent"
+                            android:textColor="?color_primary_text"
                             android:textSize="15sp"
                             android:textStyle="bold" />
 
@@ -83,7 +83,7 @@
                             android:layout_marginLeft="15dp"
                             android:layout_marginTop="3dp"
                             android:text="@string/tab_rest_lunch"
-                            android:textColor="?attr/colorAccent"
+                            android:textColor="?color_primary_text"
                             android:textSize="15sp"
                             android:textStyle="bold" />
 
@@ -119,7 +119,7 @@
                             android:layout_marginLeft="15dp"
                             android:layout_marginTop="3dp"
                             android:text="@string/tab_rest_dinner"
-                            android:textColor="?attr/colorAccent"
+                            android:textColor="?color_primary_text"
                             android:textSize="15sp"
                             android:textStyle="bold" />
 
@@ -155,7 +155,7 @@
                             android:layout_marginLeft="15dp"
                             android:layout_marginTop="3dp"
                             android:text="운영시간"
-                            android:textColor="?attr/colorAccent"
+                            android:textColor="?color_primary_text"
                             android:textSize="15sp"
                             android:textStyle="bold" />
 
@@ -193,12 +193,12 @@
         </ScrollView>
     </android.support.v4.widget.SwipeRefreshLayout>
 
-    <com.getbase.floatingactionbutton.FloatingActionButton
+    <com.getbase.floatingactionbutton.AppCompatFloatingActionButton
         android:id="@+id/action_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:fab_colorNormal="?colorPrimary"
-        app:fab_icon="?menu_ic_navigation_refresh"
+        app:fab_icon="?menu_theme_ic_action_navigation_refresh"
         app:fab_colorPressed="?colorPrimaryDark"
         android:layout_gravity="bottom|right"
         android:layout_margin="16dp"

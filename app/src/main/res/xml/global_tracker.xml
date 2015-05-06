@@ -10,7 +10,7 @@
     <screenName name="com.uoscs09.theuos2.setting.SettingActivity">SettingActivity</screenName>
     <screenName name="com.uoscs09.theuos2.tab.map.SubMapActivity">SubMapActivity</screenName>
 
-    <screenName name="com.uoscs09.theuos2.tab.anounce.TabAnounceFragment">TabAnounceFragment</screenName>
+    <screenName name="com.uoscs09.theuos2.tab.announce.TabAnnounceFragment">TabAnounceFragment</screenName>
     <screenName name="com.uoscs09.theuos2.tab.booksearch.TabBookSearchFragment">TabBookSearchFragment</screenName>
     <screenName name="com.uoscs09.theuos2.tab.emptyroom.TabSearchEmptyRoomFragment">TabSearchEmptyRoomFragment</screenName>
     <screenName name="com.uoscs09.theuos2.tab.libraryseat.TabLibrarySeatFragment">TabLibrarySeatFragment</screenName>

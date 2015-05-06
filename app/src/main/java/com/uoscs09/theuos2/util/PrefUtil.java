@@ -67,11 +67,11 @@ public class PrefUtil {
      * @see R.string#pref_key_theme
      */
     public static final String KEY_THEME = "APP_THEME";
-    // public static final String KEY_TIMETABLE_NOTIFY = "TIMETABLE_NOTIFY";
     /**
-     * 시간표 알림 시간, 이 자체로는 쓰이지 않고 숫자와 조합되서 사용된다.
+     * 시간표 알리미의 사용 여부, {@code boolean}
      */
-    public static final String KEY_TIMETABLE_NOTIFY_TIME = "TIMETABLE_NOTIFY_TIME";
+    public static final String KEY_CHECK_TIMETABLE_NOTIFY_SERVICE = "ACTIVE_TIMETABLE_NOTIFY_SERVICE";
+
     /**
      * 시간표 표시 제한 여부, {@code boolean}
      *
@@ -168,15 +168,17 @@ public class PrefUtil {
     }
 
     public void remove(String key) {
-        pref.edit().remove(key).apply();
+        pref.edit().remove(key).commit();
     }
 
     public void remove(String... keys) {
-        SharedPreferences.Editor editor = pref.edit();
 
-        if (keys != null) for (String key : keys) editor.remove(key);
+        if (keys != null) {
+            SharedPreferences.Editor editor = pref.edit();
+            for (String key : keys) editor.remove(key);
+            editor.commit();
+        }
 
-        editor.apply();
     }
 
     public Map<String, ?> getAll() {

@@ -3,7 +3,7 @@ package com.uoscs09.theuos2.setting;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,6 +20,7 @@ import com.nhaarman.listviewanimations.util.Swappable;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.util.AppUtil;
+import com.uoscs09.theuos2.util.ImageUtil;
 import com.uoscs09.theuos2.util.TrackerUtil;
 
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ public class SettingsOrderFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        ActionBarActivity activity = (ActionBarActivity) getActivity();
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.getSupportActionBar().setTitle(R.string.setting_order);
     }
 
@@ -79,7 +80,7 @@ public class SettingsOrderFragment extends Fragment {
 
         StringBuilder sb = new StringBuilder();
 
-        for(AppUtil.Page p : orderList){
+        for (AppUtil.Page p : orderList) {
             sb.append(p.order).append('-').append(p.isEnable).append('\n');
         }
 
@@ -128,7 +129,7 @@ public class SettingsOrderFragment extends Fragment {
     private class SwapAdapter extends AbsArrayAdapter<AppUtil.Page, ViewHolder> implements Swappable {
 
         public SwapAdapter(Context context, List<AppUtil.Page> list) {
-            super(context,R.layout.list_layout_order,  list);
+            super(context, R.layout.list_layout_order, list);
         }
 
         @Override
@@ -137,7 +138,7 @@ public class SettingsOrderFragment extends Fragment {
             holder.item = item;
 
             holder.textView.setText(item.stringId);
-            holder.textView.setCompoundDrawablesWithIntrinsicBounds(AppUtil.getPageIcon(getContext(), item.stringId), 0 ,0, 0);
+            holder.textView.setCompoundDrawablesWithIntrinsicBounds(ImageUtil.getPageIcon(holder.itemView.getContext(), item.stringId), null, null, null);
             holder.checkBox.setChecked(item.isEnable);
         }
 
@@ -167,7 +168,7 @@ public class SettingsOrderFragment extends Fragment {
 
     }
 
-    static class ViewHolder extends AbsArrayAdapter.ViewHolder implements CheckBox.OnCheckedChangeListener{
+    static class ViewHolder extends AbsArrayAdapter.ViewHolder implements CheckBox.OnCheckedChangeListener {
         public final TextView textView;
         public final CheckBox checkBox;
         AppUtil.Page item;

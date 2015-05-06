@@ -24,46 +24,46 @@
         app:fab_labelStyle="@style/menu_labels_style"
         app:fab_labelsPosition="left">
 
-        <com.getbase.floatingactionbutton.FloatingActionButton
+        <com.getbase.floatingactionbutton.AppCompatFloatingActionButton
             android:id="@+id/action_refresh"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:fab_colorNormal="?colorPrimary"
             app:fab_size="mini"
-            app:fab_icon="?menu_ic_navigation_refresh"
+            app:fab_icon="?menu_theme_ic_action_navigation_refresh"
             app:fab_colorPressed="?colorPrimaryDark"
             app:fab_title="@string/action_refresh" />
 
-        <com.getbase.floatingactionbutton.FloatingActionButton
+        <com.getbase.floatingactionbutton.AppCompatFloatingActionButton
             android:id="@+id/action_forward"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:fab_colorNormal="?colorPrimary"
             app:fab_colorPressed="?colorPrimaryDark"
             app:fab_size="mini"
-            app:fab_icon="?menu_ic_navigation_forward"
+            app:fab_icon="?menu_theme_ic_action_navigation_arrow_forward"
             app:fab_title="@string/action_forward" />
 
-        <com.getbase.floatingactionbutton.FloatingActionButton
+        <com.getbase.floatingactionbutton.AppCompatFloatingActionButton
             android:id="@+id/action_backward"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:fab_colorNormal="?colorPrimary"
             app:fab_colorPressed="?colorPrimaryDark"
             app:fab_size="mini"
-            app:fab_icon="?menu_ic_navigation_back"
+            app:fab_icon="?menu_theme_ic_action_navigation_arrow_back"
             app:fab_title="@string/action_backward" />
 
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
 
-    <com.getbase.floatingactionbutton.FloatingActionButton
+    <com.getbase.floatingactionbutton.AppCompatFloatingActionButton
         android:id="@+id/action_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         app:fab_colorNormal="?colorPrimary"
-        app:fab_icon="?menu_ic_location_place"
         android:layout_marginRight="96dp"
+        app:fab_icon="?menu_theme_ic_action_maps_place"
         app:fab_colorPressed="?colorPrimaryDark"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="16dp"

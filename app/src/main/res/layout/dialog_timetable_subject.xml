@@ -34,11 +34,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:drawableLeft="?ic_location_place"
+            android:drawableLeft="?theme_ic_action_maps_place"
             android:drawablePadding="4dp"
             android:padding="2dp"
             android:textSize="14sp"
-            android:text="@string/tab_timatable_callback_show_location_in_map" />
+            android:text="@string/tab_timetable_dialog_show_location_in_map" />
 
     </com.balysv.materialripple.MaterialRippleLayout>
 
@@ -63,8 +63,8 @@
             android:padding="2dp"
             android:textSize="14sp"
             android:drawablePadding="4dp"
-            android:drawableLeft="?ic_collections_view_as_list"
-            android:text="@string/tab_timatable_callback_show_subject_plan" />
+            android:drawableLeft="?theme_ic_action_action_view_list"
+            android:text="@string/tab_timetable_dialog_show_subject_plan" />
     </com.balysv.materialripple.MaterialRippleLayout>
 
     <com.balysv.materialripple.MaterialRippleLayout
@@ -88,35 +88,38 @@
             android:textSize="14sp"
             android:padding="2dp"
             android:drawablePadding="4dp"
-            android:drawableLeft="?ic_content_paint"
-            android:text="@string/tab_timatable_callback_show_color_selector" />
+            android:drawableLeft="?theme_ic_action_image_palette"
+            android:text="@string/tab_timetable_dialog_show_color_selector" />
     </com.balysv.materialripple.MaterialRippleLayout>
 
-    <TextView
-        android:id="@+id/dialog_timetable_button_alarm"
+    <RelativeLayout
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
-        android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/dialog_timetable_button_color"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="12dp"
         android:gravity="center_vertical"
-        android:drawableLeft="?ic_device_access_alarms"
-        android:padding="6dp"
-        android:drawablePadding="4dp"
-        android:text="@string/tab_timatable_callback_noti"
-        android:visibility="invisible" />
+        android:layout_below="@+id/dialog_timetable_button_color">
 
-    <Spinner
-        android:id="@+id/timetable_callback_alarm_spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/dialog_timetable_button_alarm"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="6dp"
-        android:layout_toRightOf="@id/dialog_timetable_button_alarm"
-        android:entries="@array/tab_timetable_alarm_time_array"
-        android:scrollbars="none"
-        android:visibility="invisible" />
+        <TextView
+            android:id="@+id/dialog_timetable_button_alarm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_centerVertical="true"
+            android:drawableLeft="?theme_ic_action_action_alarm"
+            android:padding="6dp"
+            android:drawablePadding="4dp"
+            android:text="@string/tab_timetable_dialog_notification" />
 
+        <Spinner
+            android:id="@+id/timetable_callback_alarm_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/dialog_timetable_button_alarm"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/dialog_timetable_button_alarm"
+            android:entries="@array/tab_timetable_alarm_time_array"
+            android:scrollbars="none" />
+    </RelativeLayout>
 </RelativeLayout>

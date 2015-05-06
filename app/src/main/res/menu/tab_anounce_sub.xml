@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:com.uoscs09.theuos="http://schemas.android.com/apk/res-auto" >
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_share"
+        android:orderInCategory="102"
+        android:title="@string/action_share"
+        android:icon="?menu_theme_ic_action_social_share"
+        android:showAsAction="always"
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/action_web"
-        android:icon="?menu_ic_location_web_site"
+        android:icon="?menu_theme_ic_action_action_language"
         android:orderInCategory="103"
         android:title="@string/action_web"
-        android:showAsAction="always"
-        com.uoscs09.theuos:showAsAction="always">
-    </item>
+        android:showAsAction="ifRoom"
+        app:showAsAction="ifRoom" />
 
 </menu>

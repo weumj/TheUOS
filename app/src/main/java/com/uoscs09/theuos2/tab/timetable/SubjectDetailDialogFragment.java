@@ -1,17 +1,18 @@
 package com.uoscs09.theuos2.tab.timetable;
 
 
-import android.app.ActivityOptions;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -19,7 +20,6 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.gc.materialdesign.widgets.ColorSelector;
 import com.javacan.asyncexcute.AsyncCallback;
 import com.uoscs09.theuos2.R;
@@ -43,13 +43,18 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 
-public class SubjectDetailDialogFragment extends DialogFragment implements View.OnClickListener, AdapterView.OnItemSelectedListener, Callable<ArrayList<SubjectInfoItem>>, ColorSelector.OnColorSelectedListener {
+public class SubjectDetailDialogFragment extends DialogFragment implements View.OnClickListener, Callable<ArrayList<SubjectInfoItem>>, ColorSelector.OnColorSelectedListener {
+    private static final String TAG = "SubjectDetailDialogFragment";
+    private static final String URL = "http://wise.uos.ac.kr/uosdoc/api.ApiApiSubjectList.oapi";
+
     private final Hashtable<String, String> params;
     private final ParseSubjectList2 mParser = new ParseSubjectList2();
 
     private TextView mTimeTableDialogTitle;
     private Dialog mProgress;
     private Dialog mClassDivSelectDialog;
+    private Spinner mAlarmTimeSelectSpinner;
+
     private ArrayAdapter<SubjectInfoItem> mClassDivSelectAdapter;
     private Subject mSubject;
     private TimeTable mTimeTable;
@@ -77,10 +82,8 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
         mTimeTable = timeTable;
     }
 
-    public void setSubject(Subject subject) {
-        if (mSubject == null || !mSubject.isEqualsTo(subject)) {
-            mSubject = subject;
-        }
+    public void setSubject(@NonNull Subject subject) {
+        mSubject = subject;
     }
 
 
@@ -97,21 +100,26 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
             if (colorTable != null) {
                 Integer idx = colorTable.get(mSubject.subjectName);
                 if (idx != null)
-                    color = AppUtil.getTimeTableColor(getActivity(), idx);
+                    color = TimetableUtil.getTimeTableColor(getActivity(), idx);
             }
 
             pieProgressDrawable.setColor(color);
             mTimeTableDialogTitle.setText(mSubject.getSubjectNameLocal());
             mTimeTableDialogTitle.invalidateDrawable(pieProgressDrawable);
+
+            if (mAlarmTimeSelectSpinner != null) {
+                mAlarmTimeSelectSpinner.setTag(TAG);
+                mAlarmTimeSelectSpinner.setSelection(TimetableAlarmUtil.readTimeSelection(getActivity(), mSubject.period, mSubject.day));
+            }
         }
     }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        return new MaterialDialog.Builder(getActivity())
-                .customView(createView(), true)
-                .build();
+        return new AlertDialog.Builder(getActivity())
+                .setView(createView())
+                .create();
     }
 
     private View createView() {
@@ -130,12 +138,33 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
         mTimeTableDialogTitle.setCompoundDrawables(pieProgressDrawable, null, null, null);
         mTimeTableDialogTitle.setCompoundDrawablePadding(40);
 
-        View alarmButton = view.findViewById(R.id.dialog_timetable_button_alarm);
-        Spinner spinner = (Spinner) view.findViewById(R.id.timetable_callback_alarm_spinner);
+        //View alarmButton = view.findViewById(R.id.dialog_timetable_button_alarm);
+        mAlarmTimeSelectSpinner = (Spinner) view.findViewById(R.id.timetable_callback_alarm_spinner);
 
-        spinner.setOnItemSelectedListener(this);
+        mAlarmTimeSelectSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (mAlarmTimeSelectSpinner.getTag() != null) {
+                    mAlarmTimeSelectSpinner.setTag(null);
+                    return;
+                }
+
+                TrackerUtil.getInstance(SubjectDetailDialogFragment.this).sendEvent(TAG, "timetable alarm", "period : " + mSubject.period + " / day : " + mSubject.day);
+                setOrCancelAlarm(mSubject, position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+        if (mSubject != null) {
+            mAlarmTimeSelectSpinner.setTag(TAG);
+            mAlarmTimeSelectSpinner.setSelection(TimetableAlarmUtil.readTimeSelection(getActivity(), mSubject.period, mSubject.day));
+        }
 
 
+        /*
         if (AppUtil.test) {
             spinner.setVisibility(View.VISIBLE);
             alarmButton.setVisibility(View.VISIBLE);
@@ -143,7 +172,7 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
             spinner.setVisibility(View.GONE);
             alarmButton.setVisibility(View.GONE);
         }
-
+*/
         initSelectDialog();
 
         return view;
@@ -152,12 +181,11 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
 
     @Override
     public void onColorSelected(int i) {
-        // AppUtil.showToast(getActivity(), "" + i);
 
         if (mSubject != null && colorTable != null) {
             Integer idx = colorTable.get(mSubject.subjectName);
             if (idx != null) {
-                AppUtil.putTimeTableColor(getActivity(), idx, i);
+                TimetableUtil.putTimeTableColor(getActivity(), idx, i);
 
                 dismiss();
                 if (mColorSelectedListener != null)
@@ -189,12 +217,12 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
 
         if (mSubject != null && colorTable != null) {
             Integer idx = colorTable.get(mSubject.subjectName);
-            color = idx != null ? AppUtil.getTimeTableColor(getActivity(), idx) : Color.BLACK;
+            color = idx != null ? TimetableUtil.getTimeTableColor(getActivity(), idx) : Color.BLACK;
         } else {
             color = Color.BLACK;
         }
 
-        sendClickEvent("color table");
+        TrackerUtil.getInstance(this).sendClickEvent(TAG, "color table");
         ColorSelector colorSelector = new ColorSelector(getActivity(), color, this);
         colorSelector.show();
     }
@@ -204,15 +232,10 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
         if (mSubject != null && mSubject.univBuilding.code > 0) {
             Intent intent = new Intent(getActivity(), SubMapActivity.class);
             intent.putExtra("building", mSubject.univBuilding.code);
+
+            TrackerUtil.getInstance(this).sendClickEvent(TAG, "map");
+            ActivityCompat.startActivity(getActivity(), intent, ActivityOptionsCompat.makeScaleUpAnimation(v, 0, 0, v.getWidth(), v.getHeight()).toBundle());
             dismiss();
-
-            sendClickEvent("map");
-            if(Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
-                getActivity().startActivity(intent, ActivityOptions.makeScaleUpAnimation(v, 0, 0, v.getWidth(), v.getHeight()).toBundle());
-            } else{
-                startActivity(intent);
-            }
-
 
         } else {
             AppUtil.showToast(getActivity(), R.string.tab_timetable_no_subject);
@@ -223,7 +246,7 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
 
         if (mSubject != null && !mSubject.subjectName.equals(StringUtil.NULL)) {
 
-            sendClickEvent("course plan");
+            TrackerUtil.getInstance(this).sendClickEvent(TAG, "course plan");
             AsyncLoader.excute(this, CALLBACK);
             mProgress.show();
 
@@ -232,18 +255,23 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
         }
     }
 
+    void setOrCancelAlarm(Subject subject, int spinnerSelection) {
+        TimetableAlarmUtil.startService(getActivity(), subject, spinnerSelection);
+    }
+
+
     void initSelectDialog() {
         View dialogView = View.inflate(getActivity(), R.layout.dialog_timecallback, null);
-        mClassDivSelectDialog = new MaterialDialog.Builder(getActivity())
-                .title(mSubject.getSubjectNameLocal())
-                .customView(dialogView, false)
-                .dismissListener(new DialogInterface.OnDismissListener() {
+        mClassDivSelectDialog = new AlertDialog.Builder(getActivity())
+                .setTitle(mSubject.getSubjectNameLocal())
+                .setView(dialogView)
+                .setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
                     public void onDismiss(DialogInterface dialog) {
                         dismiss();
                     }
                 })
-                .build();
+                .create();
 
         mClassDivSelectAdapter = new ClassDivAdapter(getActivity(), new ArrayList<SubjectInfoItem>());
 
@@ -305,19 +333,6 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
     };
 
     @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        // PrefUtil.getInstance(context).put(PrefUtil.KEY_TIMETABLE_NOTIFY_TIME + pos + "-" + day, arg2);
-        //setOrCancelAlarm(pos, day, subjectName, arg2, arg2 > 0);
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
-    }
-
-    private static final String URL = "http://wise.uos.ac.kr/uosdoc/api.ApiApiSubjectList.oapi";
-
-    @Override
     public ArrayList<SubjectInfoItem> call() throws Exception {
         params.put(OApiUtil.SUBJECT_NAME, mSubject.subjectName);
         params.put(OApiUtil.YEAR, Integer.toString(mTimeTable.year));
@@ -357,14 +372,6 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
         public ViewHolder(View v) {
             textView = (TextView) v.findViewById(android.R.id.text1);
         }
-    }
-
-    protected void sendClickEvent(String label) {
-        TrackerUtil.getInstance(this).sendClickEvent("SubjectDetailDialogFragment", label);
-    }
-
-    protected void sendClickEvent(String label, long value) {
-        TrackerUtil.getInstance(this).sendClickEvent("SubjectDetailDialogFragment", label, value);
     }
 
 

@@ -1,11 +1,11 @@
 package com.uoscs09.theuos2.setting;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager.OnBackStackChangedListener;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Resources;
@@ -15,12 +15,12 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.javacan.asyncexcute.AsyncCallback;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
@@ -154,18 +154,17 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
                     tv.setText(f.toString() + " " + result);
                     f.close();
 
-                    AlertDialog d = new MaterialDialog.Builder(getActivity())
-                            .title(R.string.setting_app_version_update_require)
-                            .iconAttr(R.attr.ic_action_about)
-                            .positiveText(R.string.update)
-                            .negativeText(R.string.later)
-                            .callback(new MaterialDialog.ButtonCallback() {
+                    AlertDialog d = new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.setting_app_version_update_require)
+                            .setIcon(R.drawable.theme_ic_action_action_about)
+                            .setPositiveButton(R.string.update, new DialogInterface.OnClickListener() {
                                 @Override
-                                public void onPositive(MaterialDialog dialog) {
+                                public void onClick(DialogInterface dialog, int which) {
                                     startActivity(AppUtil.setWebPageIntent(URL));
                                 }
                             })
-                            .build();
+                            .setNegativeButton(R.string.later, null)
+                            .create();
                     d.show();
                 }
             }
@@ -187,29 +186,28 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
      */
     private void showThemeDialog() {
         if (mThemeSelectorDialog == null) {
-            mThemeSelectorDialog = new MaterialDialog.Builder(getActivity())
-                    .iconAttr(R.attr.ic_content_paint)
-                    .title(R.string.setting_plz_select_theme)
-                    .adapter(new ThemeSelectAdapter(getActivity()),
-                            new MaterialDialog.ListCallback() {
-                                @Override
-                                public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
-                                    PrefUtil pref = PrefUtil.getInstance(getActivity());
-                                    int originalValue = pref.get(PrefUtil.KEY_THEME, 0);
+            mThemeSelectorDialog = new AlertDialog.Builder(getActivity())
+                    .setIconAttribute(R.attr.theme_ic_action_image_palette)
+                    .setTitle(R.string.setting_plz_select_theme)
+                    .setAdapter(new ThemeSelectAdapter(getActivity()), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int i) {
+                            PrefUtil pref = PrefUtil.getInstance(getActivity());
+                            int originalValue = pref.get(PrefUtil.KEY_THEME, 0);
 
-                                    if (originalValue != i) {
+                            if (originalValue != i) {
 
-                                        TrackerUtil.getInstance(SettingsFragment.this).sendEvent(TAG, "apply theme", AppTheme.values()[i].name(), i);
+                                TrackerUtil.getInstance(SettingsFragment.this).sendEvent(TAG, "apply theme", AppTheme.values()[i].name(), i);
 
-                                        pref.put(PrefUtil.KEY_THEME, i);
-                                        onSharedPreferenceChanged(getPreferenceScreen().getSharedPreferences(), PrefUtil.KEY_THEME);
-                                        getActivity().setResult(AppUtil.RELAUNCH_ACTIVITY);
-                                    }
+                                pref.put(PrefUtil.KEY_THEME, i);
+                                onSharedPreferenceChanged(getPreferenceScreen().getSharedPreferences(), PrefUtil.KEY_THEME);
+                                getActivity().setResult(AppUtil.RELAUNCH_ACTIVITY);
+                            }
 
-                                    mThemeSelectorDialog.dismiss();
-                                }
-                            })
-                    .build();
+                            mThemeSelectorDialog.dismiss();
+                        }
+                    })
+                    .create();
         }
         mThemeSelectorDialog.show();
     }
@@ -240,7 +238,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
             {R.color.material_deep_teal_500, android.R.color.white, R.color.primary_material_light},
             {R.color.primary_dark_material_dark, android.R.color.white, R.color.primary_dark_material_dark},
             {R.color.primary_dark_material_dark, R.color.primary_material_dark, R.color.primary_dark_material_dark},
-            {R.color.material_light_blue_400, R.color.material_light_blue_400, R.color.material_light_blue_600}
+            {R.color.material_light_blue_500, R.color.material_light_blue_500, R.color.material_light_blue_700}
     };
 
     private static class ViewHolder extends AbsArrayAdapter.SimpleViewHolder {
@@ -307,7 +305,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
     @Override
     public void onResume() {
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
-        ActionBar actionBar = ((ActionBarActivity) getActivity()).getSupportActionBar();
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         actionBar.setTitle(R.string.setting);
         actionBar.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP | ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE);
 
@@ -323,7 +321,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
     public void onHiddenChanged(boolean hidden) {
         if (isVisible()) {
             getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
-            ActionBar actionBar = ((ActionBarActivity) getActivity()).getSupportActionBar();
+            ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
 
             actionBar.setTitle(R.string.setting);
             actionBar.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP | ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE);

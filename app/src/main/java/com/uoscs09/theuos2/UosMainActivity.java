@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -29,6 +30,7 @@ import com.uoscs09.theuos2.base.BaseActivity;
 import com.uoscs09.theuos2.common.BackPressCloseHandler;
 import com.uoscs09.theuos2.setting.SettingActivity;
 import com.uoscs09.theuos2.util.AppUtil;
+import com.uoscs09.theuos2.util.ImageUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
 
 import java.util.ArrayList;
@@ -36,6 +38,7 @@ import java.util.ArrayList;
 /**
  * Main Activity, ViewPager가 존재한다.
  */
+@SuppressWarnings("ConstantConditions")
 public class UosMainActivity extends BaseActivity implements DrawerLayout.DrawerListener {
     /**
      * ViewPager
@@ -65,6 +68,7 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
      * ActionBar Toggle
      */
     private ActionBarDrawerToggle mDrawerToggle;
+    private ViewGroup mToolBarParent;
     private Toolbar mToolbar;
 
     private static final int START_SETTING = 999;
@@ -91,7 +95,8 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_uosmain);
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolBarParent = (ViewGroup) findViewById(R.id.toolbar_parent);
+        mToolbar = (Toolbar) mToolBarParent.findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
 
         // getSupportActionBar().setHideOnContentScrollEnabled(true);
@@ -114,6 +119,7 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
         }
 
         AppUtil.startOrStopServiceAnounce(getApplicationContext());
+        AppUtil.startOrStopServiceTimetableAlarm(getApplicationContext());
         mBackCloseHandler = new BackPressCloseHandler();
         System.gc();
 
@@ -159,6 +165,7 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
 
         mDrawerListView.scrollToPosition(position);
 
+        mToolbar.setVisibility(View.VISIBLE);
     }
 
     private void initDrawer() {
@@ -170,6 +177,9 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
+
+        //actionBar.setHideOnContentScrollEnabled(true);
+        //actionBar.setHideOffset(40);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.activity_uos_drawer_layout);
 
@@ -195,7 +205,6 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
     private void initDrawerDetail() {
         mLeftDrawerLayout = mDrawerLayout.findViewById(R.id.left_drawer);
 
-
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mDrawerListView = (RecyclerView) mLeftDrawerLayout.findViewById(R.id.drawer_listview);
         mDrawerListView.setLayoutManager(layoutManager);
@@ -208,15 +217,16 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
                 mDrawerLayout.closeDrawer(mLeftDrawerLayout);
             }
         });
+        TextView drawerSetting = (TextView) mLeftDrawerLayout.findViewById(R.id.drawer_setting);
+        drawerSetting.setCompoundDrawablesWithIntrinsicBounds(AppUtil.getAttrValue(this, R.attr.theme_ic_action_action_settings), 0, 0, 0);
 
-        /*
+
         mLeftDrawerLayout.findViewById(R.id.drawer_exit_ripple).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                AppUtil.exit(UosMainActivity.this);
             }
         });
-*/
     }
 
     private void initPager() {
@@ -229,7 +239,9 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
                 navigateItem(position, true);
             }
         });
-        //mViewPager.setOffscreenPageLimit(mPagerAdapter.getCount());
+
+        //mViewPager.setOffscreenPageLimit(mPageOrderList.size() >= 6 ? 6 : mPageOrderList.size());
+        /*
         switch (AppUtil.theme) {
             case BlackAndWhite:
                 mViewPager.setPageTransformer(true, new PagerTransformer(2));
@@ -244,7 +256,16 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
                 mViewPager.setPageTransformer(true, new PagerTransformer(0));
                 break;
         }
+        */
 
+    }
+
+    public ViewGroup getToolbarParent() {
+        return mToolBarParent;
+    }
+
+    public Toolbar getToolbar(){
+        return mToolbar;
     }
 
     /**
@@ -397,18 +418,21 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_MENU) {
-            if (!PrefUtil.getInstance(this).get(PrefUtil.KEY_HOME, true)) {
-                openOrCloseDrawer();
+        switch (keyCode){
+            case KeyEvent.KEYCODE_MENU:
+                if (!PrefUtil.getInstance(this).get(PrefUtil.KEY_HOME, true)) {
+                    openOrCloseDrawer();
 
-            } else if (getCurrentPageIndex() != 0) {
-                openOrCloseDrawer();
+                } else if (getCurrentPageIndex() != 0) {
+                    openOrCloseDrawer();
 
-            }
+                }
+                return true;
 
-            return true;
-        } else
-            return super.onKeyDown(keyCode, event);
+            default:
+                return super.onKeyDown(keyCode, event);
+        }
+
     }
 
     @Override
@@ -438,6 +462,7 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
             mDrawerLayout.openDrawer(mLeftDrawerLayout);
     }
 
+    /*
     public static class PagerTransformer implements ViewPager.PageTransformer {
         private final int i;
 
@@ -532,7 +557,7 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
             }
         }
     }
-
+*/
 
     private class DrawerAdapter extends RecyclerView.Adapter<ViewHolder> {
         private final SparseBooleanArray mSelectedPositionArray = new SparseBooleanArray(mPageOrderList.size());
@@ -558,7 +583,10 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
         public void onBindViewHolder(ViewHolder holder, int position) {
             int titleStringId = mPageOrderList.get(position);
 
-            holder.img.setImageResource(AppUtil.getPageIcon(holder.itemView.getContext(), titleStringId));
+            Drawable drawable = ImageUtil.getPageIcon(holder.itemView.getContext(), titleStringId);
+
+            holder.img.setImageDrawable(drawable);
+
             holder.text.setText(titleStringId);
             if (mSelectedPositionArray.get(position)) {
 

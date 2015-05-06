@@ -33,8 +33,8 @@
             android:layout_marginRight="20dp"
             android:layout_marginLeft="20dp"
             android:layout_width="wrap_content"
-            app:mrl_rippleColor="?colorAccent"
-            app:mrl_rippleDelayClick="true"
+            app:mrl_rippleColor="?color_primary_text"
+            app:mrl_rippleDelayClick="false"
             android:layout_centerHorizontal="true"
             android:layout_height="wrap_content">
 
@@ -43,7 +43,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:drawableLeft="?ic_action_search"
+                android:drawableLeft="?theme_ic_action_action_search"
                 android:gravity="center_vertical"
                 android:padding="2dp"
                 android:text="@string/tab_subject_empty_view_hint" />
@@ -53,7 +53,7 @@
             android:id="@+id/tab_search_empty_room_empty2_ripple"
             android:padding="4dp"
             android:layout_width="wrap_content"
-            app:mrl_rippleColor="?colorAccent"
+            app:mrl_rippleColor="?color_primary_text"
             app:mrl_rippleDelayClick="true"
             android:layout_below="@id/tab_search_empty_room_empty1_ripple"
             android:layout_marginTop="10dp"
@@ -67,7 +67,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/empty1"
                 android:layout_gravity="center_vertical"
-                android:drawableLeft="?ic_content_import_export"
+                android:drawableLeft="?theme_ic_action_communication_import_export"
                 android:gravity="center_vertical"
                 android:padding="2dp"
                 android:text="@string/tab_subject_empty_view_sort" />

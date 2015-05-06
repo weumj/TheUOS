@@ -67,6 +67,8 @@ public class UnivScheduleItem implements Parcelable, OApiParser2.Parsable {
         sch_date = source.readString();
         year = source.readString();
         month = source.readString();
+        dateStart = source.readParcelable(ScheduleDate.class.getClassLoader());
+        dateEnd = source.readParcelable(ScheduleDate.class.getClassLoader());
     }
 
 
@@ -81,6 +83,8 @@ public class UnivScheduleItem implements Parcelable, OApiParser2.Parsable {
         dest.writeString(sch_date);
         dest.writeString(year);
         dest.writeString(month);
+        dest.writeParcelable(dateStart, flags);
+        dest.writeParcelable(dateEnd, flags);
     }
 
     public static final Creator<UnivScheduleItem> CREATOR = new Creator<UnivScheduleItem>() {

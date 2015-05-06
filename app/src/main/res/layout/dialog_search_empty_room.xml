@@ -17,7 +17,7 @@
         android:id="@+id/etc_empty_spinner_building"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
+        android:layout_alignLeft="@id/etc_empty_text_building"
         android:layout_below="@+id/etc_empty_text_building"
         android:entries="@array/etc_search_building" />
 
@@ -35,7 +35,7 @@
         android:id="@+id/etc_empty_spinner_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
+        android:layout_alignLeft="@id/etc_empty_text_time"
         android:layout_below="@+id/etc_empty_text_time"
         android:entries="@array/tab_timetable_timelist" />
 
@@ -52,7 +52,7 @@
         android:id="@+id/etc_empty_spinner_term"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
+        android:layout_alignLeft="@id/etc_empty_text_term"
         android:layout_below="@+id/etc_empty_text_term"
         android:entries="@array/terms" />
 

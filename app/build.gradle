@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 22
-    buildToolsVersion '22.0.0'
+    buildToolsVersion '22.0.1'
 
     defaultConfig {
         applicationId "com.uoscs09.theuos2"
@@ -12,7 +12,7 @@ android {
 
     buildTypes {
         debug{
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         release {
@@ -29,7 +29,8 @@ dependencies {
     compile 'com.android.support:appcompat-v7:+'
     compile 'com.android.support:recyclerview-v7:+'
     compile 'com.android.support:cardview-v7:+'
-    compile 'com.google.android.gms:play-services:+'
+    compile 'com.google.android.gms:play-services-maps:+'
+    compile 'com.google.android.gms:play-services-analytics:+';
     compile 'com.mcxiaoke.volley:library:1.0.10@aar'
     compile 'com.nineoldandroids:library:+'
     compile 'com.nhaarman.listviewanimations:lib-core:3.1.0@aar'
@@ -40,6 +41,9 @@ dependencies {
     compile 'com.getbase:floatingactionbutton:1.9.0'
     compile 'com.balysv:material-ripple:1.0.1'
     compile 'com.github.navasmdc:MaterialDesign:1.+@aar'
-    compile 'com.github.alamkanak:android-week-view:1.2.1'
     compile 'se.emilsjolander:stickylistheaders:+'
+    compile 'jp.wasabeef:recyclerview-animators:1.1.2@aar'
+    compile 'com.sothree.slidinguppanel:library:3.0.0'
+
+
 }

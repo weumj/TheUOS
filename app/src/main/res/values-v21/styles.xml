@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme.Light.DarkActionBar" parent="@style/AppTheme.Base.Light.DarkActionBar">
+        <item name="menu_theme_ic_action_action_about" >@drawable/theme_ic_action_action_about_menu</item>
+        <item name="menu_theme_ic_action_action_alarm" >@drawable/theme_ic_action_action_alarm_menu</item>
+        <item name="menu_theme_ic_action_action_assignment" >@drawable/theme_ic_action_action_assignment_menu</item>
+        <item name="menu_theme_ic_action_action_delete" >@drawable/theme_ic_action_action_delete_menu</item>
+        <item name="menu_theme_ic_action_action_help" >@drawable/theme_ic_action_action_help_menu</item>
+        <item name="menu_theme_ic_action_action_language" >@drawable/theme_ic_action_action_language_menu</item>
+        <item name="menu_theme_ic_action_action_search" >@drawable/theme_ic_action_action_search_menu</item>
+        <item name="menu_theme_ic_action_action_settings" >@drawable/theme_ic_action_action_settings_menu</item>
+        <item name="menu_theme_ic_action_action_view_list" >@drawable/theme_ic_action_action_view_list_menu</item>
+        <item name="menu_theme_ic_action_av_replay" >@drawable/theme_ic_action_av_replay_menu</item>
+        <item name="menu_theme_ic_action_book_search" >@drawable/theme_ic_action_book_search_menu</item>
+        <item name="menu_theme_ic_action_book_opened" >@drawable/theme_ic_action_book_opened_menu</item>
+        <item name="menu_theme_ic_action_calendar">@drawable/theme_ic_action_calendar_menu</item>
+        <item name="menu_theme_ic_action_communication_call" >@drawable/theme_ic_action_communication_call_menu</item>
+        <item name="menu_theme_ic_action_communication_import_export" >@drawable/theme_ic_action_communication_import_export_menu</item>
+        <item name="menu_theme_ic_action_content_content_copy" >@drawable/theme_ic_action_content_content_copy_menu</item>
+        <item name="menu_theme_ic_action_content_content_paste" >@drawable/theme_ic_action_content_content_paste_menu</item>
+        <item name="menu_theme_ic_action_content_save" >@drawable/theme_ic_action_content_save_menu</item>
+        <item name="menu_theme_ic_action_content_undo" >@drawable/theme_ic_action_content_undo_menu</item>
+        <item name="menu_theme_ic_action_device_storage" >@drawable/theme_ic_action_device_storage_menu</item>
+        <item name="menu_theme_ic_action_file_folder" >@drawable/theme_ic_action_file_folder_menu</item>
+        <item name="menu_theme_ic_action_hardware_phone_android" >@drawable/theme_ic_action_hardware_phone_android_menu</item>
+        <item name="menu_theme_ic_action_image_image" >@drawable/theme_ic_action_image_image_menu</item>
+        <item name="menu_theme_ic_action_image_palette" >@drawable/theme_ic_action_image_palette_menu</item>
+        <item name="menu_theme_ic_action_login" >@drawable/theme_ic_action_login_menu</item>
+        <item name="menu_theme_ic_action_maps_directions" >@drawable/theme_ic_action_maps_directions_menu</item>
+        <item name="menu_theme_ic_action_maps_place" >@drawable/theme_ic_action_maps_place_menu</item>
+        <item name="menu_theme_ic_action_maps_local_restaurant" >@drawable/theme_ic_action_maps_local_restaurant_menu</item>
+        <item name="menu_theme_ic_action_navigation_arrow_back" >@drawable/theme_ic_action_navigation_arrow_back_menu</item>
+        <item name="menu_theme_ic_action_navigation_arrow_drop_down" >@drawable/theme_ic_action_navigation_arrow_drop_down_menu</item>
+        <item name="menu_theme_ic_action_navigation_arrow_drop_up" >@drawable/theme_ic_action_navigation_arrow_drop_up_menu</item>
+        <item name="menu_theme_ic_action_navigation_arrow_forward" >@drawable/theme_ic_action_navigation_arrow_forward_menu</item>
+        <item name="menu_theme_ic_action_navigation_close" >@drawable/theme_ic_action_navigation_close_menu</item>
+        <item name="menu_theme_ic_action_navigation_check" >@drawable/theme_ic_action_navigation_check_menu</item>
+        <item name="menu_theme_ic_action_navigation_refresh" >@drawable/theme_ic_action_navigation_refresh_menu</item>
+        <item name="menu_theme_ic_action_social_share" >@drawable/theme_ic_action_social_share_menu</item>
+        <item name="menu_theme_ic_action_timetable" >@drawable/theme_ic_action_timetable_menu</item>
+
+        <item name="theme_ic_action_action_about" >@drawable/theme_ic_action_action_about</item>
+        <item name="theme_ic_action_action_alarm" >@drawable/theme_ic_action_action_alarm</item>
+        <item name="theme_ic_action_action_assignment" >@drawable/theme_ic_action_action_assignment</item>
+        <item name="theme_ic_action_action_delete" >@drawable/theme_ic_action_action_delete</item>
+        <item name="theme_ic_action_action_help" >@drawable/theme_ic_action_action_help</item>
+        <item name="theme_ic_action_action_language" >@drawable/theme_ic_action_action_language</item>
+        <item name="theme_ic_action_action_search" >@drawable/theme_ic_action_action_search</item>
+        <item name="theme_ic_action_action_settings" >@drawable/theme_ic_action_action_settings</item>
+        <item name="theme_ic_action_action_view_list" >@drawable/theme_ic_action_action_view_list</item>
+        <item name="theme_ic_action_av_replay" >@drawable/theme_ic_action_av_replay</item>
+        <item name="theme_ic_action_book_search" >@drawable/theme_ic_action_book_search</item>
+        <item name="theme_ic_action_book_opened" >@drawable/theme_ic_action_book_opened</item>
+        <item name="theme_ic_action_calendar">@drawable/theme_ic_action_calendar</item>
+        <item name="theme_ic_action_communication_call" >@drawable/theme_ic_action_communication_call</item>
+        <item name="theme_ic_action_communication_import_export" >@drawable/theme_ic_action_communication_import_export</item>
+        <item name="theme_ic_action_content_content_copy" >@drawable/theme_ic_action_content_content_copy</item>
+        <item name="theme_ic_action_content_content_paste" >@drawable/theme_ic_action_content_content_paste</item>
+        <item name="theme_ic_action_content_save" >@drawable/theme_ic_action_content_save</item>
+        <item name="theme_ic_action_content_undo" >@drawable/theme_ic_action_content_undo</item>
+        <item name="theme_ic_action_device_storage" >@drawable/theme_ic_action_device_storage</item>
+        <item name="theme_ic_action_file_folder" >@drawable/theme_ic_action_file_folder</item>
+        <item name="theme_ic_action_hardware_phone_android" >@drawable/theme_ic_action_hardware_phone_android</item>
+        <item name="theme_ic_action_image_image" >@drawable/theme_ic_action_image_image</item>
+        <item name="theme_ic_action_image_palette" >@drawable/theme_ic_action_image_palette</item>
+        <item name="theme_ic_action_login" >@drawable/theme_ic_action_login</item>
+        <item name="theme_ic_action_maps_directions" >@drawable/theme_ic_action_maps_directions</item>
+        <item name="theme_ic_action_maps_place" >@drawable/theme_ic_action_maps_place</item>
+        <item name="theme_ic_action_maps_local_restaurant" >@drawable/theme_ic_action_maps_local_restaurant</item>
+        <item name="theme_ic_action_navigation_arrow_back" >@drawable/theme_ic_action_navigation_arrow_back</item>
+        <item name="theme_ic_action_navigation_arrow_drop_down" >@drawable/theme_ic_action_navigation_arrow_drop_down</item>
+        <item name="theme_ic_action_navigation_arrow_drop_up" >@drawable/theme_ic_action_navigation_arrow_drop_up</item>
+        <item name="theme_ic_action_navigation_arrow_forward" >@drawable/theme_ic_action_navigation_arrow_forward</item>
+        <item name="theme_ic_action_navigation_close" >@drawable/theme_ic_action_navigation_close</item>
+        <item name="theme_ic_action_navigation_check" >@drawable/theme_ic_action_navigation_check</item>
+        <item name="theme_ic_action_navigation_refresh" >@drawable/theme_ic_action_navigation_refresh</item>
+        <item name="theme_ic_action_social_share" >@drawable/theme_ic_action_social_share</item>
+        <item name="theme_ic_action_timetable" >@drawable/theme_ic_action_timetable</item>
+    </style>
+
+
+    <style name="AppTheme.Light" parent="@style/AppTheme.Base.Light">
+        <item name="menu_theme_ic_action_action_about" >@drawable/theme_ic_action_action_about_menu</item>
+        <item name="menu_theme_ic_action_action_alarm" >@drawable/theme_ic_action_action_alarm_menu</item>
+        <item name="menu_theme_ic_action_action_assignment" >@drawable/theme_ic_action_action_assignment_menu</item>
+        <item name="menu_theme_ic_action_action_delete" >@drawable/theme_ic_action_action_delete_menu</item>
+        <item name="menu_theme_ic_action_action_help" >@drawable/theme_ic_action_action_help_menu</item>
+        <item name="menu_theme_ic_action_action_language" >@drawable/theme_ic_action_action_language_menu</item>
+        <item name="menu_theme_ic_action_action_search" >@drawable/theme_ic_action_action_search_menu</item>
+        <item name="menu_theme_ic_action_action_settings" >@drawable/theme_ic_action_action_settings_menu</item>
+        <item name="menu_theme_ic_action_action_view_list" >@drawable/theme_ic_action_action_view_list_menu</item>
+        <item name="menu_theme_ic_action_av_replay" >@drawable/theme_ic_action_av_replay_menu</item>
+        <item name="menu_theme_ic_action_book_search" >@drawable/theme_ic_action_book_search_menu</item>
+        <item name="menu_theme_ic_action_book_opened" >@drawable/theme_ic_action_book_opened_menu</item>
+        <item name="menu_theme_ic_action_calendar">@drawable/theme_ic_action_calendar_menu</item>
+        <item name="menu_theme_ic_action_communication_call" >@drawable/theme_ic_action_communication_call_menu</item>
+        <item name="menu_theme_ic_action_communication_import_export" >@drawable/theme_ic_action_communication_import_export_menu</item>
+        <item name="menu_theme_ic_action_content_content_copy" >@drawable/theme_ic_action_content_content_copy_menu</item>
+        <item name="menu_theme_ic_action_content_content_paste" >@drawable/theme_ic_action_content_content_paste_menu</item>
+        <item name="menu_theme_ic_action_content_save" >@drawable/theme_ic_action_content_save_menu</item>
+        <item name="menu_theme_ic_action_content_undo" >@drawable/theme_ic_action_content_undo_menu</item>
+        <item name="menu_theme_ic_action_device_storage" >@drawable/theme_ic_action_device_storage_menu</item>
+        <item name="menu_theme_ic_action_file_folder" >@drawable/theme_ic_action_file_folder_menu</item>
+        <item name="menu_theme_ic_action_hardware_phone_android" >@drawable/theme_ic_action_hardware_phone_android_menu</item>
+        <item name="menu_theme_ic_action_image_image" >@drawable/theme_ic_action_image_image_menu</item>
+        <item name="menu_theme_ic_action_image_palette" >@drawable/theme_ic_action_image_palette_menu</item>
+        <item name="menu_theme_ic_action_login" >@drawable/theme_ic_action_login_menu</item>
+        <item name="menu_theme_ic_action_maps_directions" >@drawable/theme_ic_action_maps_directions_menu</item>
+        <item name="menu_theme_ic_action_maps_place" >@drawable/theme_ic_action_maps_place_menu</item>
+        <item name="menu_theme_ic_action_maps_local_restaurant" >@drawable/theme_ic_action_maps_local_restaurant_menu</item>
+        <item name="menu_theme_ic_action_navigation_arrow_back" >@drawable/theme_ic_action_navigation_arrow_back_menu</item>
+        <item name="menu_theme_ic_action_navigation_arrow_drop_down" >@drawable/theme_ic_action_navigation_arrow_drop_down_menu</item>
+        <item name="menu_theme_ic_action_navigation_arrow_drop_up" >@drawable/theme_ic_action_navigation_arrow_drop_up_menu</item>
+        <item name="menu_theme_ic_action_navigation_arrow_forward" >@drawable/theme_ic_action_navigation_arrow_forward_menu</item>
+        <item name="menu_theme_ic_action_navigation_close" >@drawable/theme_ic_action_navigation_close_menu</item>
+        <item name="menu_theme_ic_action_navigation_check" >@drawable/theme_ic_action_navigation_check_menu</item>
+        <item name="menu_theme_ic_action_navigation_refresh" >@drawable/theme_ic_action_navigation_refresh_menu</item>
+        <item name="menu_theme_ic_action_social_share" >@drawable/theme_ic_action_social_share_menu</item>
+        <item name="menu_theme_ic_action_timetable" >@drawable/theme_ic_action_timetable_menu</item>
+
+        <item name="theme_ic_action_action_about" >@drawable/theme_ic_action_action_about</item>
+        <item name="theme_ic_action_action_alarm" >@drawable/theme_ic_action_action_alarm</item>
+        <item name="theme_ic_action_action_assignment" >@drawable/theme_ic_action_action_assignment</item>
+        <item name="theme_ic_action_action_delete" >@drawable/theme_ic_action_action_delete</item>
+        <item name="theme_ic_action_action_help" >@drawable/theme_ic_action_action_help</item>
+        <item name="theme_ic_action_action_language" >@drawable/theme_ic_action_action_language</item>
+        <item name="theme_ic_action_action_search" >@drawable/theme_ic_action_action_search</item>
+        <item name="theme_ic_action_action_settings" >@drawable/theme_ic_action_action_settings</item>
+        <item name="theme_ic_action_action_view_list" >@drawable/theme_ic_action_action_view_list</item>
+        <item name="theme_ic_action_av_replay" >@drawable/theme_ic_action_av_replay</item>
+        <item name="theme_ic_action_book_search" >@drawable/theme_ic_action_book_search</item>
+        <item name="theme_ic_action_book_opened" >@drawable/theme_ic_action_book_opened</item>
+        <item name="theme_ic_action_calendar">@drawable/theme_ic_action_calendar</item>
+        <item name="theme_ic_action_communication_call" >@drawable/theme_ic_action_communication_call</item>
+        <item name="theme_ic_action_communication_import_export" >@drawable/theme_ic_action_communication_import_export</item>
+        <item name="theme_ic_action_content_content_copy" >@drawable/theme_ic_action_content_content_copy</item>
+        <item name="theme_ic_action_content_content_paste" >@drawable/theme_ic_action_content_content_paste</item>
+        <item name="theme_ic_action_content_save" >@drawable/theme_ic_action_content_save</item>
+        <item name="theme_ic_action_content_undo" >@drawable/theme_ic_action_content_undo</item>
+        <item name="theme_ic_action_device_storage" >@drawable/theme_ic_action_device_storage</item>
+        <item name="theme_ic_action_file_folder" >@drawable/theme_ic_action_file_folder</item>
+        <item name="theme_ic_action_hardware_phone_android" >@drawable/theme_ic_action_hardware_phone_android</item>
+        <item name="theme_ic_action_image_image" >@drawable/theme_ic_action_image_image</item>
+        <item name="theme_ic_action_image_palette" >@drawable/theme_ic_action_image_palette</item>
+        <item name="theme_ic_action_login" >@drawable/theme_ic_action_login</item>
+        <item name="theme_ic_action_maps_directions" >@drawable/theme_ic_action_maps_directions</item>
+        <item name="theme_ic_action_maps_place" >@drawable/theme_ic_action_maps_place</item>
+        <item name="theme_ic_action_maps_local_restaurant" >@drawable/theme_ic_action_maps_local_restaurant</item>
+        <item name="theme_ic_action_navigation_arrow_back" >@drawable/theme_ic_action_navigation_arrow_back</item>
+        <item name="theme_ic_action_navigation_arrow_drop_down" >@drawable/theme_ic_action_navigation_arrow_drop_down</item>
+        <item name="theme_ic_action_navigation_arrow_drop_up" >@drawable/theme_ic_action_navigation_arrow_drop_up</item>
+        <item name="theme_ic_action_navigation_arrow_forward" >@drawable/theme_ic_action_navigation_arrow_forward</item>
+        <item name="theme_ic_action_navigation_close" >@drawable/theme_ic_action_navigation_close</item>
+        <item name="theme_ic_action_navigation_check" >@drawable/theme_ic_action_navigation_check</item>
+        <item name="theme_ic_action_navigation_refresh" >@drawable/theme_ic_action_navigation_refresh</item>
+        <item name="theme_ic_action_social_share" >@drawable/theme_ic_action_social_share</item>
+        <item name="theme_ic_action_timetable" >@drawable/theme_ic_action_timetable</item>
+    </style>
+
+    <style name="AppTheme.Dark" parent="@style/AppTheme.Base.Dark">
+    </style>
+
+</resources>

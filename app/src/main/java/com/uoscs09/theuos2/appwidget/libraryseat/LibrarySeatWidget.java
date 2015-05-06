@@ -96,10 +96,10 @@ public class LibrarySeatWidget extends AbsAsyncWidgetProvider<ArrayList<SeatItem
         }
 
         // 파일 저장
-        IOUtil.saveToFileSuppressed(context, IOUtil.FILE_LIBRARY_SEAT,
+        IOUtil.writeObjectToFileSuppressed(context, IOUtil.FILE_LIBRARY_SEAT,
                 newList);
         // 불러온 시간 기록
-        IOUtil.saveToFileSuppressed(context, DATE_FILE,
+        IOUtil.writeObjectToFileSuppressed(context, DATE_FILE,
                 TimeUtil.sFormat_am_hms.format(new Date()));
         return newList;
     }

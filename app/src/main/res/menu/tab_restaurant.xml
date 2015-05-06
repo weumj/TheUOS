@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:com.uoscs09.theuos="http://schemas.android.com/apk/res-auto" >
+    xmlns:app="http://schemas.android.com/apk/res-auto" >
 
     <item
         android:id="@+id/action_refresh"
-        android:icon="?menu_ic_navigation_refresh"
+        android:icon="?menu_theme_ic_action_navigation_refresh"
         android:orderInCategory="101"
         android:showAsAction="always"
         android:title="@string/action_refresh"
-        com.uoscs09.theuos:showAsAction="always">
+        app:showAsAction="always">
     </item>
 
 </menu>

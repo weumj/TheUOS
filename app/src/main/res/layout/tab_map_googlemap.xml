@@ -4,15 +4,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:fitsSystemWindows="true"
-    tools:context="com.example.TabMap.SubMapActivity">
+    tools:context="com.uoscs09.theuos2.tab.map.SubMapActivity">
 
     <include layout="@layout/view_toolbar" />
 
-    <fragment
-        android:id="@+id/tab_map_submap"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <fragment
+            android:id="@+id/tab_map_submap"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+
+        <include layout="@layout/view_toolbar_shadow" />
+    </FrameLayout>
+
 
 </LinearLayout>

@@ -174,8 +174,8 @@
             android:layout_marginRight="20dp"
             android:layout_marginLeft="20dp"
             android:layout_width="wrap_content"
-            app:mrl_rippleColor="?colorAccent"
-            app:mrl_rippleDelayClick="true"
+            app:mrl_rippleColor="?color_primary_text"
+            app:mrl_rippleDelayClick="false"
             android:layout_centerHorizontal="true"
             android:layout_height="wrap_content">
 
@@ -183,7 +183,7 @@
                 android:id="@+id/empty1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawableLeft="?ic_action_search"
+                android:drawableLeft="?theme_ic_action_action_search"
                 android:gravity="center_vertical"
                 android:text="@string/tab_subject_empty_view_hint" />
         </com.balysv.materialripple.MaterialRippleLayout>
@@ -192,8 +192,8 @@
             android:id="@+id/tab_search_subject_empty2_ripple"
             android:padding="4dp"
             android:layout_width="wrap_content"
-            app:mrl_rippleColor="?colorAccent"
-            app:mrl_rippleDelayClick="true"
+            app:mrl_rippleColor="?color_primary_text"
+            app:mrl_rippleDelayClick="false"
             android:layout_below="@id/tab_search_subject_empty1_ripple"
             android:layout_marginTop="10dp"
             android:layout_alignRight="@id/tab_search_subject_empty1_ripple"
@@ -206,7 +206,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/empty1"
-                android:drawableLeft="?ic_content_import_export"
+                android:drawableLeft="?theme_ic_action_communication_import_export"
                 android:layout_gravity="center_vertical"
                 android:gravity="center_vertical"
                 android:text="@string/tab_subject_empty_view_sort" />
@@ -217,8 +217,8 @@
             android:id="@+id/tab_search_subject_empty3_ripple"
             android:padding="4dp"
             android:layout_width="wrap_content"
-            app:mrl_rippleColor="?colorAccent"
-            app:mrl_rippleDelayClick="true"
+            app:mrl_rippleColor="?color_primary_text"
+            app:mrl_rippleDelayClick="false"
             android:layout_below="@id/tab_search_subject_empty2_ripple"
             android:layout_marginTop="10dp"
             android:layout_alignRight="@id/tab_search_subject_empty1_ripple"
@@ -231,7 +231,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/empty2"
                 android:layout_gravity="center_vertical"
-                android:drawableLeft="?ic_navigation_accept"
+                android:drawableLeft="?theme_ic_action_navigation_check"
                 android:text="@string/tab_subject_empty_view_hint_subj" />
         </com.balysv.materialripple.MaterialRippleLayout>
     </RelativeLayout>

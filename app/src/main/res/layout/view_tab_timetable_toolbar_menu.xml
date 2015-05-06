@@ -18,7 +18,7 @@
         android:layout_weight="48"
         android:gravity="center"
         android:padding="2dp"
-        android:text="@string/tab_timtable_period"
+        android:text="@string/tab_timetable_period"
         android:textColor="?color_actionbar_title" />
 
     <TextView

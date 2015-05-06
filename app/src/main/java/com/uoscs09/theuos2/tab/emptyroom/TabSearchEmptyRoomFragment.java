@@ -1,12 +1,9 @@
 package com.uoscs09.theuos2.tab.emptyroom;
 
-import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,7 +15,6 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
@@ -47,19 +43,16 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Cl
     @AsyncData
     private ArrayList<ClassRoomItem> mClassRoomList;
     @ReleaseWhenDestroy
-    private AlertDialog dialog;
+    private AlertDialog mSearchDialog;
     private final Hashtable<String, String> params = new Hashtable<>();
     @ReleaseWhenDestroy
-    private Spinner buildingSpinner;
+    private Spinner mBuildingSpinner;
     @ReleaseWhenDestroy
-    private Spinner timeSpinner;
+    private Spinner mTimeSpinner;
     @ReleaseWhenDestroy
-    private Spinner termSpinner;
+    private Spinner mTermSpinner;
     @ReleaseWhenDestroy
     private TextView[] textViews;
-    private ViewGroup mToolBarParent;
-    @ReleaseWhenDestroy
-    private ViewGroup mTabParent;
 
     private final ParseEmptyRoom2 mParser = new ParseEmptyRoom2();
 
@@ -73,16 +66,10 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Cl
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        initTable();
-        Context context = getActivity();
-        View dialogLayout = View.inflate(context, R.layout.dialog_search_empty_room, null);
+        initParamsTable();
 
-        buildingSpinner = (Spinner) dialogLayout.findViewById(R.id.etc_empty_spinner_building);
-        buildingSpinner.setSelection(1, false);
-        timeSpinner = (Spinner) dialogLayout.findViewById(R.id.etc_empty_spinner_time);
-        termSpinner = (Spinner) dialogLayout.findViewById(R.id.etc_empty_spinner_term);
+        initSearchDialog();
 
-        initSearchDialog(dialogLayout);
         if (savedInstanceState != null) {
             mClassRoomList = savedInstanceState.getParcelableArrayList(BUILDING);
             mTermString = savedInstanceState.getString("time");
@@ -90,10 +77,10 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Cl
             mClassRoomList = new ArrayList<>();
         }
 
-        mToolBarParent = (ViewGroup) getActivity().findViewById(R.id.toolbar_parent);
-        mTabParent = (ViewGroup) LayoutInflater.from(getActivity()).inflate(R.layout.view_tab_emptyroom_toobar_menu, mToolBarParent, false);
+        ViewGroup mTabParent = (ViewGroup) LayoutInflater.from(getActivity()).inflate(R.layout.view_tab_emptyroom_toobar_menu, getToolbarParent(), false);
         textViews = new TextView[4];
-        int[] ids = {R.id.tab_search_empty_room_text_building_name,
+        int[] ids = {
+                R.id.tab_search_empty_room_text_building_name,
                 R.id.tab_search_empty_room_text_room_no,
                 R.id.tab_search_empty_room_text_room_subj,
                 R.id.tab_search_empty_room_text_room_person};
@@ -105,21 +92,29 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Cl
             textViews[i] = (TextView) ripple.findViewById(android.R.id.title);
             textViews[i++].setTag(id);
         }
+        registerTabParentView(mTabParent);
 
         super.onCreate(savedInstanceState);
     }
 
-    private void initSearchDialog(View innerView) {
-        dialog = new MaterialDialog.Builder(getActivity())
-                .customView(innerView, true)
-                .positiveText(R.string.confirm)
-                .callback(new MaterialDialog.ButtonCallback() {
+    private void initSearchDialog() {
+
+        View dialogLayout = View.inflate(getActivity(), R.layout.dialog_search_empty_room, null);
+
+        mBuildingSpinner = (Spinner) dialogLayout.findViewById(R.id.etc_empty_spinner_building);
+        mBuildingSpinner.setSelection(1, false);
+        mTimeSpinner = (Spinner) dialogLayout.findViewById(R.id.etc_empty_spinner_time);
+        mTermSpinner = (Spinner) dialogLayout.findViewById(R.id.etc_empty_spinner_term);
+
+        mSearchDialog = new AlertDialog.Builder(getActivity())
+                .setView(dialogLayout)
+                .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onPositive(MaterialDialog dialog) {
+                    public void onClick(DialogInterface dialog, int which) {
                         execute();
                     }
                 })
-                .build();
+                .create();
     }
 
     @Override
@@ -136,7 +131,7 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Cl
             @Override
             public void onClick(View v) {
                 sendEmptyViewClickEvent();
-                dialog.show();
+                mSearchDialog.show();
             }
         });
         listView.setEmptyView(empty);
@@ -156,13 +151,13 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Cl
 
     private void putParams() {
         Calendar c = Calendar.getInstance();
-        int time = timeSpinner.getSelectedItemPosition() + 1;
+        int time = mTimeSpinner.getSelectedItemPosition() + 1;
         String wdayTime = String.valueOf(c.get(Calendar.DAY_OF_WEEK)) + (time < 10 ? "0" : StringUtil.NULL) + String.valueOf(time);
-        String building = ((String) buildingSpinner.getSelectedItem()).split(StringUtil.SPACE)[0];
+        String building = ((String) mBuildingSpinner.getSelectedItem()).split(StringUtil.SPACE)[0];
 
         params.put(BUILDING, building);
         params.put("wdayTime", wdayTime);
-        params.put(OApiUtil.TERM, Semester.values()[termSpinner.getSelectedItemPosition()].code);
+        params.put(OApiUtil.TERM, Semester.values()[mTermSpinner.getSelectedItemPosition()].code);
     }
 
     @Override
@@ -176,7 +171,7 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Cl
         switch (item.getItemId()) {
             case R.id.action_search:
                 sendClickEvent("option menu : search");
-                dialog.show();
+                mSearchDialog.show();
                 return true;
             default:
                 return false;
@@ -188,13 +183,13 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Cl
         mClassRoomList.clear();
         mClassRoomList.addAll(result);
         mAdapter.notifyDataSetChanged();
-        AppUtil.showToast(getActivity(), String.valueOf(result.size()) + getString(R.string.search_found), true);
+        AppUtil.showToast(getActivity(), getString(R.string.search_found_amount, result.size()), true);
 
-        mTermString = timeSpinner.getSelectedItem().toString().split(StringUtil.NEW_LINE)[1] + StringUtil.NEW_LINE + termSpinner.getSelectedItem();
+        mTermString = mTimeSpinner.getSelectedItem().toString().split(StringUtil.NEW_LINE)[1] + StringUtil.NEW_LINE + mTermSpinner.getSelectedItem();
         setSubtitleWhenVisible(mTermString);
     }
 
-    private void initTable() {
+    private void initParamsTable() {
         String date = new SimpleDateFormat("yyyyMMdd", Locale.KOREAN).format(new Date());
         params.put(OApiUtil.API_KEY, OApiUtil.UOS_API_KEY);
         params.put(OApiUtil.YEAR, OApiUtil.getYear());
@@ -204,32 +199,6 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Cl
         params.put("classRoomDiv", StringUtil.NULL);
         params.put("wdayTime", StringUtil.NULL);
         params.put("aplyPosbYn", "Y");
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (getUserVisibleHint()) {
-            addOrRemoveTabMenu(true);
-        }
-    }
-
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-
-        addOrRemoveTabMenu(isVisibleToUser);
-    }
-
-    private void addOrRemoveTabMenu(boolean visible) {
-        if (mToolBarParent == null || mTabParent == null)
-            return;
-        if (visible) {
-            if (mTabParent.getParent() == null)
-                mToolBarParent.addView(mTabParent);
-        } else if (mToolBarParent.indexOfChild(mTabParent) > 0) {
-            mToolBarParent.removeView(mTabParent);
-        }
     }
 
     @Override
@@ -312,8 +281,9 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Cl
 
         sendClickEvent("sort", field);
 
-        Drawable d = ResourcesCompat.getDrawable(getResources(), AppUtil.getAttrValue(getActivity(), isReverse ? R.attr.ic_navigation_collapse : R.attr.ic_navigation_expand), getActivity().getTheme());
-        textViews[field].setCompoundDrawablesWithIntrinsicBounds(d, null, null, null);
+
+        textViews[field].setCompoundDrawablesWithIntrinsicBounds(
+                AppUtil.getAttrValue(getActivity(), isReverse ? R.attr.menu_theme_ic_action_navigation_arrow_drop_up : R.attr.menu_theme_ic_action_navigation_arrow_drop_down), 0, 0, 0);
 
         mAdapter.sort(ClassRoomItem.getComparator(field, isReverse));
     }

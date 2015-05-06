@@ -28,8 +28,7 @@ public class PhoneNumberDB implements Runnable {
     }
 
     private PhoneNumberDB(Context context) {
-        this.db = context.getApplicationContext().openOrCreateDatabase(
-                AppUtil.DB_PHONE, 0, null);
+        this.db = context.getApplicationContext().openOrCreateDatabase(AppUtil.DB_PHONE, 0, null);
         pref = PrefUtil.getInstance(context);
         createDB();
     }

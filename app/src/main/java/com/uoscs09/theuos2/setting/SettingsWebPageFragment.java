@@ -5,7 +5,7 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.support.annotation.NonNull;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.util.AppUtil;
@@ -27,7 +27,7 @@ public class SettingsWebPageFragment extends PreferenceFragment {
     @Override
     public void onResume() {
         super.onResume();
-        ActionBarActivity activity = (ActionBarActivity) getActivity();
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.getSupportActionBar().setTitle(R.string.setting_web_page);
     }
 

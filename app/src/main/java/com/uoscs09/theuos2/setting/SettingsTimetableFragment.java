@@ -1,5 +1,6 @@
 package com.uoscs09.theuos2.setting;
 
+import android.app.Dialog;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
@@ -7,9 +8,12 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.support.annotation.NonNull;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 
 import com.uoscs09.theuos2.R;
+import com.uoscs09.theuos2.common.AsyncLoader;
+import com.uoscs09.theuos2.tab.timetable.TimetableAlarmUtil;
+import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
 import com.uoscs09.theuos2.util.TrackerUtil;
 
@@ -28,13 +32,33 @@ public class SettingsTimetableFragment extends PreferenceFragment implements OnS
     @Override
     public void onResume() {
         super.onResume();
-        ActionBarActivity activity = (ActionBarActivity) getActivity();
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.getSupportActionBar().setTitle(R.string.setting_timetable);
     }
 
     @Override
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, @NonNull Preference preference) {
         switch (preference.getTitleRes()) {
+
+            case R.string.setting_timetable_clear_alarm_title:
+                final Dialog dialog = AppUtil.getProgressDialog(getActivity(), false, getString(R.string.progress_ongoing), null);
+                dialog.show();
+
+                TrackerUtil.getInstance(this).sendEvent(TAG, "clear timetable alarm");
+
+                TimetableAlarmUtil.clearAllAlarmWithResult(getActivity(), new AsyncLoader.OnTaskFinishedListener<Boolean>() {
+                    @Override
+                    public void onTaskFinished(boolean isExceptionOccurred, Boolean data, Exception e) {
+                        if (isExceptionOccurred || !data)
+                            AppUtil.showToast(getActivity(), R.string.failed);
+                        else
+                            AppUtil.showToast(getActivity(), R.string.success);
+
+                        dialog.dismiss();
+                    }
+                });
+                return true;
+
             default:
                 return false;
         }

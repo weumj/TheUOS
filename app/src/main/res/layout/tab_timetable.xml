@@ -19,12 +19,12 @@
         android:scrollbarStyle="outsideOverlay"
         android:scrollingCache="true" />
 
-    <com.getbase.floatingactionbutton.FloatingActionButton
+    <com.getbase.floatingactionbutton.AppCompatFloatingActionButton
         android:id="@+id/tab_timetable_action_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:fab_colorNormal="?colorPrimary"
-        app:fab_icon="?menu_ic_secure_login"
+        app:fab_icon="?menu_theme_ic_action_login"
         app:fab_colorPressed="?colorPrimaryDark"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
@@ -48,7 +48,7 @@
             android:layout_marginLeft="20dp"
             android:layout_width="wrap_content"
             app:mrl_rippleColor="?colorAccent"
-            app:mrl_rippleDelayClick="true"
+            app:mrl_rippleDelayClick="false"
             android:layout_centerHorizontal="true"
             android:layout_height="wrap_content">
 
@@ -56,7 +56,7 @@
                 android:id="@+id/tab_timetable_empty_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawableLeft="?ic_secure_login"
+                android:drawableLeft="?theme_ic_action_login"
                 android:gravity="center_vertical"
                 android:layout_gravity="center_vertical"
                 android:text="@string/tab_timetable_empty_text1" />
@@ -66,7 +66,7 @@
             android:padding="4dp"
             android:layout_width="wrap_content"
             app:mrl_rippleColor="?colorAccent"
-            app:mrl_rippleDelayClick="true"
+            app:mrl_rippleDelayClick="false"
             android:layout_marginTop="20dp"
             android:layout_alignLeft="@id/tab_timetable_empty_text_ripple"
             android:layout_alignRight="@id/tab_timetable_empty_text_ripple"
@@ -79,7 +79,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:layout_gravity="center_vertical"
-                android:drawableLeft="?ic_navigation_accept"
+                android:drawableLeft="?theme_ic_action_navigation_check"
                 android:text="@string/tab_timetable_empty_text2" />
         </com.balysv.materialripple.MaterialRippleLayout>
     </RelativeLayout>

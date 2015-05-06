@@ -10,6 +10,7 @@
         android:id="@+id/ripple"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
+        app:mrl_rippleDelayClick="false"
         app:mrl_rippleColor="?colorPrimaryDark">
 
         <LinearLayout

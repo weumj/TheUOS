@@ -3,15 +3,16 @@ package com.uoscs09.theuos2.setting;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.util.AppUtil;
@@ -133,19 +134,18 @@ public class SettingsFileSelectDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        return new MaterialDialog.Builder(getActivity())
-                .title(R.string.setting_save_route_sub_title)
-                .customView(createView(), false)
-                .iconAttr(R.attr.ic_content_picture)
-                .positiveText(android.R.string.ok)
-                .negativeText(android.R.string.cancel)
-                .callback(new MaterialDialog.ButtonCallback() {
+        return new AlertDialog.Builder(getActivity())
+                .setTitle(R.string.setting_save_route_sub_title)
+                .setView(createView())
+                .setIconAttribute(R.attr.theme_ic_action_image_image)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onPositive(MaterialDialog dialog) {
+                    public void onClick(DialogInterface dialog, int which) {
                         putPathToPref(getActivity(), path);
                     }
                 })
-                .build();
+                .setNegativeButton(android.R.string.cancel, null)
+                .create();
     }
 
     void putPathToPref(Context context, String path) {

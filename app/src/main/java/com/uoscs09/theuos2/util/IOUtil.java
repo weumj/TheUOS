@@ -68,9 +68,9 @@ public class IOUtil {
         }
     }
 
-    public static boolean saveToFileSuppressed(Context context, String fileName, Object obj) {
+    public static boolean writeObjectToFileSuppressed(Context context, String fileName, Object obj) {
         try {
-            return saveToFile(context, fileName, obj);
+            return writeObjectToFile(context, fileName, obj);
         } catch (IOException e) {
             e.printStackTrace();
             return false;
@@ -84,7 +84,7 @@ public class IOUtil {
      * @return 성공 여부
      * @throws IOException
      */
-    public static boolean saveToFile(Context context, String fileName, Object obj) throws IOException {
+    public static boolean writeObjectToFile(Context context, String fileName, Object obj) throws IOException {
         boolean state = false;
         FileOutputStream fos = null;
         BufferedOutputStream bos = null;
@@ -131,21 +131,23 @@ public class IOUtil {
      * 리스너의 result에 exception 발생 여부가 전달되고, <br>
      * data에 성공 할 경우 성공 여부, 실패 했을 경우 exception이 전달된다.
      */
-    public static void saveToFileAsync(final Context context, final String fileName, final Object obj, OnTaskFinishedListener<Boolean> l) {
+    public static void writeObjectToFileAsync(Context context, final String fileName, final Object obj, OnTaskFinishedListener<Boolean> l) {
+        final Context appContext = context.getApplicationContext();
         AsyncLoader.excute(new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
-                return saveToFile(context, fileName, obj);
+                return writeObjectToFile(appContext, fileName, obj);
             }
         }, l);
     }
 
-    public static void saveObjectToFileAsync(final Context context, final String fileName, final Object obj) {
+    public static void writeObjectToFileAsync(Context context, final String fileName, final Object obj) {
+        final Context appContext = context.getApplicationContext();
         AsyncLoader.excute(new Runnable() {
             @Override
             public void run() {
                 try {
-                    saveToFile(context, fileName, obj);
+                    writeObjectToFile(appContext, fileName, obj);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

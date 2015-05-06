@@ -1,11 +1,10 @@
 package com.uoscs09.theuos2.common;
 
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.View;
 import android.webkit.WebSettings;
-import android.widget.LinearLayout;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
@@ -24,31 +23,30 @@ public abstract class WebViewActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        LinearLayout layout = new LinearLayout(this);
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setFitsSystemWindows(true);
 
-        View toolbarLayout = View.inflate(this, R.layout.view_toolbar, null);
-        mToolbar = (Toolbar) toolbarLayout.findViewById(R.id.toolbar);
-        mWebView = new NonLeakingWebView(this);
+        setContentView(R.layout.activity_webview);
+
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mWebView = (NonLeakingWebView) findViewById(R.id.webview);
 
         setSupportActionBar(mToolbar);
-        layout.addView(toolbarLayout);
-        layout.addView(mWebView);
-        setContentView(layout);
 
         settings = mWebView.getSettings();
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(true);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowHomeEnabled(true);
+        actionBar.setDisplayShowTitleEnabled(true);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+
             case android.R.id.home:
-                finish();
+                supportFinishAfterTransition();
                 return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -67,4 +65,5 @@ public abstract class WebViewActivity extends BaseActivity {
         }
         super.onDestroy();
     }
+
 }

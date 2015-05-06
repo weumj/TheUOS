@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.TrackerUtil;
@@ -31,9 +31,13 @@ public abstract class BaseFragment extends Fragment {
      */
     protected final ActionBar getActionBar() {
         if (isAdded())
-            return ((ActionBarActivity) getActivity()).getSupportActionBar();
+            return getAppCompatActivity().getSupportActionBar();
         else
             return null;
+    }
+
+    protected final AppCompatActivity getAppCompatActivity() {
+        return (AppCompatActivity) getActivity();
     }
 
     /**

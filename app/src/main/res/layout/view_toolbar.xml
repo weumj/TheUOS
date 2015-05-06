@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:com.uoscs09.theuos="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/toolbar_parent"
     android:background="?attr/colorPrimary"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:fitsSystemWindows="true"
     android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
-        android:fitsSystemWindows="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="?attr/actionBarSize"
-        com.uoscs09.theuos:subtitleTextAppearance="?attr/toolbar_actionbar_subtitle"
-        com.uoscs09.theuos:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        com.uoscs09.theuos:titleTextAppearance="?attr/toolbar_actionbar_title">
+        android:layout_height="?actionBarSize"
+        android:theme="?actionBarStyle"
+        app:subtitleTextAppearance="?attr/toolbar_actionbar_subtitle"
+        app:titleTextAppearance="?attr/toolbar_actionbar_title"
+        app:popupTheme="?android:attr/theme"/>
 
-    </android.support.v7.widget.Toolbar>
 </LinearLayout>

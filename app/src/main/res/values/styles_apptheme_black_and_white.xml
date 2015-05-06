@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources >
+
+    <style name="AppTheme.Style.BlackAndWhite" parent="@style/AppTheme.Light.DarkActionBar">
+        <item name="cardBackgroundColor">@android:color/white</item>
+        <item name="colorPrimary">@color/primary_material_dark</item>
+        <item name="colorPrimaryDark">@color/material_blue_grey_950</item>
+        <item name="colorAccent">@color/material_grey_600</item>
+        <!--<item name="android:textColorPrimary">@color/material_blue_grey_400</item>-->
+
+    </style>
+
+
+</resources>

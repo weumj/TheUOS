@@ -2,12 +2,11 @@ package com.uoscs09.theuos2.tab.subject;
 
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,7 +21,6 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
@@ -198,8 +196,8 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
 
         sendClickEvent("sort", field);
 
-        Drawable d = ResourcesCompat.getDrawable(getResources(), AppUtil.getAttrValue(getActivity(), isInverse ? R.attr.ic_navigation_collapse : R.attr.ic_navigation_expand), getActivity().getTheme());
-        textViews[field].setCompoundDrawablesWithIntrinsicBounds(d, null, null, null);
+        textViews[field].setCompoundDrawablesWithIntrinsicBounds(
+                AppUtil.getAttrValue(getActivity(),isInverse ? R.attr.menu_theme_ic_action_navigation_arrow_drop_up : R.attr.menu_theme_ic_action_navigation_arrow_drop_down ), 0,0,0);
 
         mAdapter.sort(SubjectItem2.getComparator(field, isInverse));
     }
@@ -227,21 +225,19 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
     }
 
     private void initDialog(View v) {
-        mSearchDialog = new MaterialDialog.Builder(getActivity())
-                .customView(v, true)
-                .title(R.string.title_tab_search_subject)
-                .content(R.string.tab_book_subject_opt)
-                .positiveText(android.R.string.ok)
-                .callback(new MaterialDialog.ButtonCallback() {
+        mSearchDialog = new AlertDialog.Builder(getActivity())
+                .setView(v)
+                .setTitle(R.string.title_tab_search_subject)
+                .setMessage(R.string.tab_book_subject_opt)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onPositive(MaterialDialog dialog) {
-                        super.onPositive(dialog);
+                    public void onClick(DialogInterface dialog, int which) {
                         InputMethodManager ipm = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
                         ipm.hideSoftInputFromWindow(mSearchEditText.getWindowToken(), 0);
                         execute();
                     }
                 })
-                .build();
+                .create();
     }
 
     @Override
@@ -263,7 +259,7 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
             mTitleLayout.setVisibility(View.VISIBLE);
         }
 
-        AppUtil.showToast(getActivity(), String.valueOf(result.size()) + getString(R.string.search_found), true);
+        AppUtil.showToast(getActivity(), getString(R.string.search_found_amount, result.size()), true);
 
         mSearchConditionString = mDialogYearSpinner.getSelectedItem()
                 .toString()

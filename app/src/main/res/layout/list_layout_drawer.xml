@@ -6,6 +6,7 @@
     android:layout_height="fill_parent"
     android:paddingLeft="20dp"
     android:minHeight="60dp"
+    app:mrl_rippleDelayClick="false"
     app:mrl_rippleInAdapter="false"
     app:mrl_rippleColor="?colorPrimaryDark">
 

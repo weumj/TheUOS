@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.Mystyle.Light.DarkActionBar" parent="@style/Theme.Mystyle.Base.Light.DarkActionBar">
+    <style name="AppTheme.Light.DarkActionBar" parent="@style/AppTheme.Base.Light.DarkActionBar">
         <item name="android:windowTranslucentStatus">true</item>
     </style>
 
-    <style name="Theme.Mystyle.Light" parent="@style/Theme.Mystyle.Base.Light">
+    <style name="AppTheme.Light" parent="@style/AppTheme.Base.Light">
         <item name="android:windowTranslucentStatus">true</item>
     </style>
 
-    <style name="Theme.Mystyle.Dark" parent="@style/Theme.Mystyle.Base.Dark">
+    <style name="AppTheme.Dark" parent="@style/AppTheme.Base.Dark">
         <item name="android:windowTranslucentStatus">true</item>
     </style>
 

@@ -2,7 +2,7 @@ package com.uoscs09.theuos2.base;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
@@ -15,7 +15,8 @@ import com.uoscs09.theuos2.util.TrackerUtil;
 /**
  * onCreate에서 테마 설정을 하는 fragment액티비티
  */
-public abstract class BaseActivity extends ActionBarActivity {
+public abstract class BaseActivity extends AppCompatActivity {
+
     @Override
     protected void onCreate(Bundle arg0) {
         AppUtil.applyTheme(this);

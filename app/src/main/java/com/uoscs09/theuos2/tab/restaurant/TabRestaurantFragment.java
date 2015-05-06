@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
@@ -30,9 +31,6 @@ import java.util.Calendar;
 public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>> {
     @ReleaseWhenDestroy
     private ScrollView mScrollView;
-    private ViewGroup mToolBarParent;
-    @ReleaseWhenDestroy
-    private LinearLayout mTabParent;
     @ReleaseWhenDestroy
     private TextView mSemesterTimeView, mVacationTimeView,
             mContentBreakfastView, mContentLunchView, mContentSupperView;
@@ -87,8 +85,7 @@ public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>>
 
         super.onCreate(savedInstanceState);
 
-        mToolBarParent = (ViewGroup) getActivity().findViewById(R.id.toolbar_parent);
-        mTabParent = (LinearLayout) LayoutInflater.from(getActivity()).inflate(R.layout.view_tab_rest_toolbar_menu, mToolBarParent, false);
+        LinearLayout mTabParent = (LinearLayout) LayoutInflater.from(getActivity()).inflate(R.layout.view_tab_rest_toolbar_menu, getToolbarParent(), false);
 
         for (int stringId : REST_TAB_MENU_STRING_ID) {
             final Tab tab = new Tab(mTabParent);
@@ -104,6 +101,8 @@ public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>>
             mTabParent.addView(tab.tabView);
             mTabList.add(tab);
         }
+
+        registerTabParentView(mTabParent);
 
     }
 
@@ -137,7 +136,8 @@ public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>>
         mContentLunchView = (TextView) mScrollView.findViewById(R.id.tab_rest_text_lunch);
         mContentSupperView = (TextView) mScrollView.findViewById(R.id.tab_rest_text_supper);
 
-        rootView.findViewById(R.id.action_btn).setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton actionButton = (FloatingActionButton) rootView.findViewById(R.id.action_btn);
+        actionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 sendClickEvent("actionButton");
@@ -156,30 +156,7 @@ public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>>
         else
             performClick(mCurrentSelection);
 
-        if (getUserVisibleHint()) {
-            addOrRemoveTabMenu(true);
-        }
-
         super.onResume();
-    }
-
-
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-
-        addOrRemoveTabMenu(isVisibleToUser);
-    }
-
-    private void addOrRemoveTabMenu(boolean visible) {
-        if (mToolBarParent == null || mTabParent == null)
-            return;
-        if (visible) {
-            if (mTabParent.getParent() == null)
-                mToolBarParent.addView(mTabParent);
-        } else if (mToolBarParent.indexOfChild(mTabParent) > 0) {
-            mToolBarParent.removeView(mTabParent);
-        }
     }
 
     private void performClick(int position) {
@@ -247,7 +224,7 @@ public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>>
         String body = HttpRequest.getBody("http://m.uos.ac.kr/mkor/food/list.do");
         ArrayList<RestItem> list = parser.parse(body);
 
-        IOUtil.saveToFile(context, IOUtil.FILE_REST, list);
+        IOUtil.writeObjectToFile(context, IOUtil.FILE_REST, list);
         PrefUtil.getInstance(context).put(PrefUtil.KEY_REST_DATE_TIME, OApiUtil.getDate());
         return list;
     }

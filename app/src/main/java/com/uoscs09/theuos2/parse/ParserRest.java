@@ -7,14 +7,13 @@ import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ParserRest extends JerichoParser<RestItem> {
 
     @Override
-    protected ArrayList<RestItem> parseHttpBody(Source source) throws IOException {
+    protected ArrayList<RestItem> parseHttpBody(Source source) throws Exception {
         String AMP = "amp;";
         ArrayList<RestItem> resultList = new ArrayList<>();
 

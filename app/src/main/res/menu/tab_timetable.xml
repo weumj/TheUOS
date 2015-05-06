@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:com.uoscs09.theuos="http://schemas.android.com/apk/res-auto" >
+    xmlns:app="http://schemas.android.com/apk/res-auto" >
 <!--
     <item
         android:id="@+id/action_wise"
@@ -13,19 +13,19 @@
     -->
     <item
         android:id="@+id/action_delete"
-        android:icon="?menu_ic_content_discard"
+        android:icon="?menu_theme_ic_action_action_delete"
         android:orderInCategory="102"
         android:showAsAction="ifRoom"
         android:title="@string/action_delete"
-        com.uoscs09.theuos:showAsAction="ifRoom">
+        app:showAsAction="ifRoom">
     </item>
     <item
         android:id="@+id/action_save"
-        android:icon="?menu_ic_content_save"
+        android:icon="?menu_theme_ic_action_content_save"
         android:orderInCategory="103"
         android:showAsAction="ifRoom"
         android:title="@string/action_save"
-        com.uoscs09.theuos:showAsAction="ifRoom">
+        app:showAsAction="ifRoom">
     </item>
 
 </menu>

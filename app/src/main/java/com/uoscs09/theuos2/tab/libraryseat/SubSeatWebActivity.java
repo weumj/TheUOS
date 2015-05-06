@@ -41,8 +41,4 @@ public class SubSeatWebActivity extends WebViewActivity {
         return "SubSeatWebActivity";
     }
 
-    @Override
-    public void onBackPressed() {
-        supportFinishAfterTransition();
-    }
 }

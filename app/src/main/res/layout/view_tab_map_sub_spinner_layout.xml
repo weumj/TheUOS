@@ -7,9 +7,10 @@
     android:paddingBottom="4dp"
     android:layout_height="40dp">
 
-    <android.support.v7.internal.widget.TintSpinner
+    <android.support.v7.widget.AppCompatSpinner
         android:id="@+id/spinner"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
-        android:entries="@array/buildings_univ" />
+        android:entries="@array/buildings_univ"
+        android:theme="?theme_inverse"/>
 </LinearLayout>

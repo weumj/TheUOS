@@ -15,7 +15,7 @@
 
         <TextView
             android:id="@+id/search_subj_text_year"
-            android:layout_width="wrap_content"
+            android:layout_width="60dp"
             android:layout_height="wrap_content"
             android:layout_gravity="left|center_vertical"
             android:text="@string/year"
@@ -38,7 +38,7 @@
 
         <TextView
             android:id="@android:id/text2"
-            android:layout_width="wrap_content"
+            android:layout_width="60dp"
             android:layout_height="wrap_content"
             android:layout_gravity="left|center_vertical"
             android:text="@string/tab_empty_room_dialog_term"
@@ -59,7 +59,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginLeft="20dp"
+        android:layout_marginLeft="10dp"
         android:layout_marginTop="10dp"
         android:orientation="horizontal" >
 
@@ -83,7 +83,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginLeft="20dp"
+        android:layout_marginLeft="10dp"
         android:orientation="horizontal" >
 
         <Spinner

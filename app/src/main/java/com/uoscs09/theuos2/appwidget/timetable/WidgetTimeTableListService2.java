@@ -11,9 +11,8 @@ import android.widget.RemoteViewsService;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsListRemoteViewsFactory;
 import com.uoscs09.theuos2.tab.timetable.Subject;
-import com.uoscs09.theuos2.tab.timetable.TabTimeTableFragment2;
 import com.uoscs09.theuos2.tab.timetable.TimeTable;
-import com.uoscs09.theuos2.util.AppUtil;
+import com.uoscs09.theuos2.tab.timetable.TimetableUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 
@@ -128,7 +127,7 @@ public abstract class WidgetTimeTableListService2 extends RemoteViewsService {
                 }
 
                 idx = colorTable.get(item[j].subjectName);
-                views.setInt(viewIds[i], "setBackgroundColor", idx != null ? AppUtil.getTimeTableColor(getContext(), idx) : 0);
+                views.setInt(viewIds[i], "setBackgroundColor", idx != null ? TimetableUtil.getTimeTableColor(getContext(), idx) : 0);
 
             }
 
@@ -173,11 +172,11 @@ public abstract class WidgetTimeTableListService2 extends RemoteViewsService {
         }
 
         private void getData() {
-            mTimeTable = TabTimeTableFragment2.readTimetable(getContext());
+            mTimeTable = TimetableUtil.readTimetable(getContext());
             clear();
             if (mTimeTable != null) {
                 addAll(mTimeTable.subjects);
-                colorTable = TabTimeTableFragment2.getColorTable(mTimeTable, getContext());
+                colorTable = TimetableUtil.getColorTable(mTimeTable, getContext());
             }
         }
 

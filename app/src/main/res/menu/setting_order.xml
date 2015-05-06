@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:com.uoscs09.theuos="http://schemas.android.com/apk/res-auto" >
+    xmlns:app="http://schemas.android.com/apk/res-auto" >
 
     <item
         android:id="@+id/action_goto_default"
-        android:icon="?menu_ic_av_replay"
+        android:icon="?menu_theme_ic_action_av_replay"
         android:orderInCategory="101"
         android:showAsAction="ifRoom"
         android:title="@string/setting_order_goto_default"
-        com.uoscs09.theuos:showAsAction="ifRoom">
+        app:showAsAction="ifRoom">
     </item>
     <item
         android:id="@+id/action_cancel"
-        android:icon="?menu_ic_content_remove"
+        android:icon="?menu_theme_ic_action_navigation_close"
         android:orderInCategory="102"
         android:showAsAction="always"
         android:title="@string/cancel"
-        com.uoscs09.theuos:showAsAction="always">
+        app:showAsAction="ifRoom">
     </item>
     <item
         android:id="@+id/action_apply"
-        android:icon="?menu_ic_navigation_accept"
+        android:icon="?menu_theme_ic_action_navigation_check"
         android:orderInCategory="108"
         android:showAsAction="always"
         android:title="@string/apply"
-        com.uoscs09.theuos:showAsAction="always">
+        app:showAsAction="ifRoom">
     </item>
 
 </menu>

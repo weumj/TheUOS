@@ -1,17 +1,18 @@
 package com.uoscs09.theuos2.tab.booksearch;
 
-import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.view.ActionMode;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
-import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,7 +25,6 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.nhaarman.listviewanimations.appearance.AnimationAdapter;
 import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
 import com.uoscs09.theuos2.R;
@@ -126,30 +126,34 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
         os = (Spinner) dialogLayout.findViewById(R.id.tab_book_action_spinner_os);
         oi.setSelection(oiSelect);
         os.setSelection(osSelect);
-        optionDialog = new MaterialDialog.Builder(context)
-                .customView(dialogLayout, false)
-                .title(R.string.tab_book_book_opt)
-                .content(R.string.tab_book_book_opt_sub)
-                .iconAttr(R.attr.ic_action_help)
-                .positiveText(R.string.confirm)
-                .negativeText(android.R.string.cancel)
-                .callback(new MaterialDialog.ButtonCallback() {
-                    @Override
-                    public void onPositive(MaterialDialog dialog) {
+
+        DialogInterface.OnClickListener l = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case DialogInterface.BUTTON_POSITIVE:
                         if (!mBookList.isEmpty()) {
                             mBookList.clear();
                             mCurrentPage = 1;
                             execute();
                         }
-                    }
+                        break;
 
-                    @Override
-                    public void onNegative(MaterialDialog dialog) {
+                    case DialogInterface.BUTTON_NEGATIVE:
                         oi.setSelection(0);
                         os.setSelection(0);
-                    }
-                })
-                .build();
+                        break;
+                }
+            }
+        };
+        optionDialog = new AlertDialog.Builder(context)
+                .setView(dialogLayout)
+                .setTitle(R.string.tab_book_book_opt)
+                .setMessage(R.string.tab_book_book_opt_sub)
+                .setIconAttribute(R.attr.theme_ic_action_action_help)
+                .setPositiveButton(R.string.confirm, l)
+                .setNegativeButton(android.R.string.cancel, l)
+                .create();
 
         super.onCreate(savedInstanceState);
     }
@@ -375,7 +379,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
                 isResultEmpty = true;
 
             } else {
-                AppUtil.showToast(context, String.valueOf(result.size()) + context.getString(R.string.search_found), isMenuVisible());
+                AppUtil.showToast(getActivity(), getString(R.string.search_found_amount, result.size()), isMenuVisible());
                 mBookList.addAll(result);
                 mBookListAdapter.notifyDataSetChanged();
             }
@@ -433,6 +437,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             mode.getMenuInflater().inflate(R.menu.tab_book_contextual, menu);
+            //getActionBar().hide();
             return true;
         }
 
@@ -463,6 +468,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
             // View v = (View) mode.getTag();
             // if (v != null)
             // v.setSelected(false);
+            // getActionBar().show();
             actionMode = null;
         }
     };
@@ -474,8 +480,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
     }
 
     void copyItem(String text) {
-        ClipboardManager clipboard = (ClipboardManager) getActivity()
-                .getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText("copy", text);
         clipboard.setPrimaryClip(clip);
     }
@@ -495,7 +500,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
         @Override
         public boolean onLongClick(View v) {
             if (actionMode == null)
-                actionMode = getActivity().startActionMode(mActionModeCallback);
+                actionMode = getAppCompatActivity().startSupportActionMode(mActionModeCallback);
 
             // View prevView = (View) actionMode.getTag();
             // if (prevView != null)

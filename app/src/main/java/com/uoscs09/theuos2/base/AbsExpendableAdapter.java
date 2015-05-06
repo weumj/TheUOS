@@ -8,7 +8,8 @@ import android.widget.BaseExpandableListAdapter;
 import java.util.List;
 import java.util.Map;
 
-public abstract class AbsExpendableAdapter<K, V> extends BaseExpandableListAdapter {
+@SuppressWarnings("unchecked")
+public abstract class AbsExpendableAdapter<K, V, GVH extends AbsExpendableAdapter.ViewHolder, CVH extends AbsExpendableAdapter.ViewHolder> extends BaseExpandableListAdapter {
     private final Map<K, ? extends List<V>> mGroupData;
     private final int mGroupLayout;
     private final int mChildLayout;
@@ -68,46 +69,45 @@ public abstract class AbsExpendableAdapter<K, V> extends BaseExpandableListAdapt
 
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-        ViewHolder h;
+        GVH h;
         if (convertView == null) {
             convertView = View.inflate(mContext, mGroupLayout, null);
-            h = getViewHolder(convertView, false);
+            h = getGroupViewHolder(convertView);
             convertView.setTag(h);
         } else {
-            h = (ViewHolder) convertView.getTag();
+            h = (GVH) convertView.getTag();
         }
 
         setGroupView(groupPosition, isExpanded, convertView, parent, h);
         return convertView;
     }
 
-    protected abstract void setGroupView(int groupPosition, boolean isExpanded, View v, ViewGroup parent, ViewHolder h);
+    protected abstract void setGroupView(int groupPosition, boolean isExpanded, View v, ViewGroup parent, GVH h);
 
     @Override
-    public View getChildView(int groupPosition, int childPosition,
-                             boolean isLastChild, View convertView, ViewGroup parent) {
-        ViewHolder h;
+    public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+        CVH h;
         if (convertView == null) {
             convertView = View.inflate(mContext, mChildLayout, null);
-            h = getViewHolder(convertView, true);
+            h = getChildViewHolder(convertView);
             convertView.setTag(h);
         } else {
-            h = (ViewHolder) convertView.getTag();
+            h = (CVH) convertView.getTag();
         }
-        setChildView(groupPosition, childPosition, isLastChild, convertView,
-                parent, h);
+        setChildView(groupPosition, childPosition, isLastChild, convertView, parent, h);
         return convertView;
     }
 
-    protected abstract void setChildView(int groupPosition, int childPosition,
-                                         boolean isLastChild, View v, ViewGroup parent, ViewHolder h);
+    protected abstract void setChildView(int groupPosition, int childPosition, boolean isLastChild, View v, ViewGroup parent, CVH h);
 
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
         return false;
     }
 
-    protected abstract ViewHolder getViewHolder(View v, boolean isChild);
+    protected abstract GVH getGroupViewHolder(View v);
+
+    protected abstract CVH getChildViewHolder(View v);
 
     @Override
     public void notifyDataSetChanged() {
@@ -115,7 +115,7 @@ public abstract class AbsExpendableAdapter<K, V> extends BaseExpandableListAdapt
         super.notifyDataSetChanged();
     }
 
-    protected static interface ViewHolder {
+    public static interface ViewHolder {
     }
 
 }

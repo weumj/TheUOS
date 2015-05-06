@@ -1,10 +1,11 @@
 package com.uoscs09.theuos2.tab.score;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,7 +16,6 @@ import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.NumberPicker;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos2.base.AbsAsyncFragment;
@@ -63,17 +63,16 @@ public class ScoreFragment extends AbsAsyncFragment<ArrayList<ScoreItem>> {
 		termPicker.setMinValue(1);
 
 		edit = (EditText) dialogView.findViewById(R.id.score_editText1);
-		alertDialog = new MaterialDialog.Builder(context)
-                .customView(dialogView, false)
-				.title(R.string.title_tab_score)
-				.positiveText(android.R.string.ok)
-                .callback(new MaterialDialog.ButtonCallback() {
+		alertDialog = new AlertDialog.Builder(context)
+                .setView(dialogView)
+				.setTitle(R.string.title_tab_score)
+				.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onPositive(MaterialDialog dialog) {
-                        super.onPositive(dialog);
+                    public void onClick(DialogInterface dialog, int which) {
                         execute();
                     }
-                }).build();
+                })
+               .create();
 
 		mProgressDialog = AppUtil.getProgressDialog(context, false, null);
 		adapter = new ScoreAdapter(context, new ArrayList<ScoreItem>());

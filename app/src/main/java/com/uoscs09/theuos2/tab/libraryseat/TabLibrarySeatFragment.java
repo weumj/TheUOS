@@ -1,11 +1,13 @@
 package com.uoscs09.theuos2.tab.libraryseat;
 
-import android.app.Activity;
-import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
@@ -17,11 +19,12 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
+import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos2.base.AbsAsyncFragment;
+import com.uoscs09.theuos2.base.OnItemClickListener;
 import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.parse.ParserSeat;
 import com.uoscs09.theuos2.util.AppUtil;
@@ -32,15 +35,17 @@ import com.uoscs09.theuos2.util.TimeUtil;
 import java.util.ArrayList;
 import java.util.Date;
 
+import jp.wasabeef.recyclerview.animators.FadeInAnimator;
+import jp.wasabeef.recyclerview.animators.adapters.AlphaInAnimationAdapter;
+
 /**
  * 도서관 좌석 정보 현황을 보여주는 페이지
  */
-public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>> {
+public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>> implements OnItemClickListener<SeatListAdapter.ViewHolder> {
     /**
      * 좌석 현황 리스트 뷰의 adapter
      */
-    @ReleaseWhenDestroy
-    private RecyclerView.Adapter<SeatListAdapter.ViewHolder> mSeatAdapter;
+    private SeatListAdapter mSeatAdapter;
     private StaggeredGridLayoutManager mLayoutManager;
     /**
      * 해지 될 좌석 정보 리스트 뷰의 adapter
@@ -99,6 +104,8 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
      * {@code SubSeatWebActivity}에 전달할 SeatItem을 가리킨다.
      */
     public final static String ITEM = "item";
+    @ReleaseWhenDestroy
+    private RecyclerView mSeatListView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -113,9 +120,10 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
             mDissmissInfoList = new ArrayList<>();
         }
 
-        Activity activity = getActivity();
-        mInfoAdapter = new SeatDismissInfoListAdapter(activity, mDissmissInfoList);
+        mInfoAdapter = new SeatDismissInfoListAdapter(getActivity(), mDissmissInfoList);
         mSeatAdapter = new SeatListAdapter(getActivity(), mSeatList);
+        mSeatAdapter.setOnItemClickListener(this);
+
         mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
 
@@ -135,18 +143,15 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                sendTrackerEvent("swipe" , "SwipeRefreshView");
+                sendTrackerEvent("swipe", "SwipeRefreshView");
                 execute();
             }
         });
 
-        /*
-      좌석 정보 리스트 뷰
-     */
-        RecyclerView mSeatListView = (RecyclerView) rootView.findViewById(R.id.tab_library_list_seat);
-        mSeatListView.setAdapter(mSeatAdapter);
+        mSeatListView = (RecyclerView) rootView.findViewById(R.id.tab_library_list_seat);
+        mSeatListView.setAdapter(new AlphaInAnimationAdapter(mSeatAdapter));
         mSeatListView.setLayoutManager(mLayoutManager);
-        mSeatListView.setItemAnimator(new DefaultItemAnimator());
+        mSeatListView.setItemAnimator(new FadeInAnimator());
 
         mDismissDialogView = View.inflate(getActivity(), R.layout.dialog_library_dismiss_info, null);
 
@@ -154,7 +159,8 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
         mInfoListView.setEmptyView(mDismissDialogView.findViewById(android.R.id.empty));
         mInfoListView.setAdapter(mInfoAdapter);
 
-        rootView.findViewById(R.id.action_btn).setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton actionButton = (FloatingActionButton) rootView.findViewById(R.id.action_btn);
+        actionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 sendClickEvent("actionButton");
@@ -162,6 +168,7 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
                 execute();
             }
         });
+
 
         return rootView;
     }
@@ -205,10 +212,10 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
                 }
 
                 if (mInfoDialog == null) {
-                    mInfoDialog = new MaterialDialog.Builder(getActivity())
-                            .title(R.string.action_dissmiss_info)
-                            .customView(mDismissDialogView, false)
-                            .build();
+                    mInfoDialog = new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.action_dissmiss_info)
+                            .setView(mDismissDialogView)
+                            .create();
                 }
 
                 sendClickEvent("dismiss info");
@@ -221,10 +228,19 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
         }
     }
 
+
+    @Override
+    public void onItemClick(SeatListAdapter.ViewHolder viewHolder, View v) {
+        Intent intent = new Intent(getActivity(), SubSeatWebActivity.class);
+        intent.putExtra(TabLibrarySeatFragment.ITEM, (Parcelable) viewHolder.item);
+
+        ActivityCompat.startActivity(getActivity(), intent, ActivityOptionsCompat.makeScaleUpAnimation(v, 0, 0, v.getWidth(), v.getHeight()).toBundle());
+    }
+
     @Override
     protected void execute() {
+        mSeatListView.getAdapter().notifyItemRangeRemoved(0, mSeatList.size());
         mSeatList.clear();
-        mSeatAdapter.notifyDataSetChanged();
 
         super.execute();
     }
@@ -242,7 +258,7 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
         mSeatList.clear();
         mSeatList.addAll(result);
 
-        mSeatAdapter.notifyDataSetChanged();
+        mSeatListView.getAdapter().notifyItemRangeInserted(0, result.size());
         mInfoAdapter.notifyDataSetChanged();
     }
 
@@ -308,4 +324,5 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
     protected String getFragmentNameForTracker() {
         return "TabLibrarySeatFragment";
     }
+
 }

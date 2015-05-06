@@ -7,7 +7,7 @@
 
     <RelativeLayout
         android:layout_width="fill_parent"
-        android:background="@color/material_light_blue_800"
+        android:background="@color/material_light_blue_700"
         android:layout_height="wrap_content">
 
         <ImageButton
@@ -18,7 +18,7 @@
             android:layout_centerVertical="true"
             android:background="@drawable/selector_button"
             android:contentDescription="@string/action_refresh"
-            android:src="@drawable/ic_action_navigation_refresh_dark" />
+            android:src="@drawable/ic_action_navigation_refresh_white" />
 
         <TextView
             android:id="@+id/widget_time_date"
@@ -51,7 +51,7 @@
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:background="@color/material_light_blue_800"
+            android:background="@color/material_light_blue_700"
             android:orientation="horizontal"
             android:paddingBottom="6dp"
             android:weightSum="360">
@@ -67,7 +67,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="53"
                 android:gravity="center"
-                android:text="@string/tab_timtable_period"
+                android:text="@string/tab_timetable_period"
                 android:textColor="@android:color/white"
                 android:textSize="12sp" />
 
@@ -167,7 +167,7 @@
             android:layout_height="wrap_content"
             android:paddingLeft="120dip"
             android:paddingTop="20dip"
-            android:textColor="@color/material_light_blue_800"
+            android:textColor="@color/material_light_blue_700"
             android:text="@string/tab_timetable_not_exist"
             android:visibility="gone" />
     </LinearLayout>
