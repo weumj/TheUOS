@@ -59,6 +59,12 @@ public class HttpRequest {
     }
 
     public static HttpURLConnection getConnection(String url, String paramEncoding, Map<? extends CharSequence, ? extends CharSequence> params) throws IOException {
+        if(params == null)
+            return getConnection(url);
+
+        if(paramEncoding == null)
+            paramEncoding = StringUtil.ENCODE_UTF_8;
+
         StringBuilder sb = new StringBuilder();
         sb.append(url).append('?');
         encodeString(sb, params, paramEncoding);

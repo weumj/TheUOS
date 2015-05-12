@@ -1,17 +1,25 @@
 package com.uoscs09.theuos2;
 
-import android.app.Activity;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.OvalShape;
 import android.os.Bundle;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Toast;
+import android.support.v4.app.FragmentActivity;
 
-import com.getbase.floatingactionbutton.FloatingActionButton;
-import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.uoscs09.theuos2.tab.TabTest;
 
-public class TestActivity extends Activity {
+public class TestActivity extends FragmentActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_test);
+
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.content, new TabTest())
+                .commit();
+    }
+
+
+    /*
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +73,6 @@ public class TestActivity extends Activity {
 
         // Test that FAMs containing FABs with visibility GONE do not cause crashes
         findViewById(R.id.button_gone).setVisibility(View.GONE);
-    }
+    }*/
 }
 

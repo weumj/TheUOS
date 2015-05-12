@@ -19,14 +19,13 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
-import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.parse.ParseEmptyRoom2;
+import com.uoscs09.theuos2.parse.ParseUtil;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.OApiUtil.Semester;
 import com.uoscs09.theuos2.util.StringUtil;
 
-import java.net.HttpURLConnection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -220,26 +219,12 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Cl
 
             for (String bd : buildings) {
                 params.put(BUILDING, bd);
-
-                HttpURLConnection connection = HttpRequest.getConnection(URL, StringUtil.ENCODE_EUC_KR, params);
-
-                try {
-                    list.addAll(mParser.parse(connection.getInputStream()));
-                } finally {
-                    connection.disconnect();
-                }
-
+                list.addAll(ParseUtil.parseXml(mParser, URL, params));
             }
             return list;
 
         } else {
-            HttpURLConnection connection = HttpRequest.getConnection(URL, StringUtil.ENCODE_EUC_KR, params);
-
-            try {
-                return mParser.parse(connection.getInputStream());
-            } finally {
-                connection.disconnect();
-            }
+            return ParseUtil.parseXml(mParser, URL, params);
         }
 
     }

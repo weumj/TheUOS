@@ -4,7 +4,7 @@ import com.uoscs09.theuos2.tab.announce.AnnounceItem;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import java.util.ArrayList;
-
+//FIXME
 public class ParseAnnounce implements IParser<String, ArrayList<AnnounceItem>> {
     public static final int SCHOLAR = 1;
 

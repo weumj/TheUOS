@@ -123,7 +123,8 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
         mBackCloseHandler = new BackPressCloseHandler();
         System.gc();
 
-        //startActivity(new Intent(this, TestActivity.class));
+        //TODO test
+        startActivity(new Intent(this, TestActivity.class));
     }
 
     @NonNull

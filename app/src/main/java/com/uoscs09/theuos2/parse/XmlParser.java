@@ -16,8 +16,8 @@ import java.lang.reflect.Field;
 
 public abstract class XmlParser<T> implements IParser<InputStream, T> {
 
-    public static interface Parsable {
-        public void afterParsing();
+    public interface Parsable {
+        void afterParsing();
     }
 
     @Override

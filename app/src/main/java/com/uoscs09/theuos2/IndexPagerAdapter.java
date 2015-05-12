@@ -15,23 +15,29 @@ public class IndexPagerAdapter extends FixedFragmentStatePagerAdapter {
 
     public IndexPagerAdapter(FragmentManager fm, ArrayList<Integer> indexList, Context context) {
         super(fm);
+
         this.list = indexList;
         this.mContext = context;
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
+        //return AppUtil.TabInfo.find(list.get(position)).getTitle(mContext);
         return mContext.getText(list.get(position));
     }
 
     @Override
     public Fragment getItem(int position) {
+
+        //return AppUtil.TabInfo.find(list.get(position)).getFragment();
+
         Class<? extends Fragment> clz = AppUtil.getPageClass(list.get(position));
         if (clz == null) {
             list = AppUtil.loadEnabledPageOrder(mContext);
             clz = AppUtil.getPageClass(list.get(position));
         }
         return Fragment.instantiate(mContext, clz.getName());
+
     }
 
     @Override

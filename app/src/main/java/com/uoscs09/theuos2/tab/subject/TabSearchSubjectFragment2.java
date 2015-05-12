@@ -25,13 +25,12 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
-import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.parse.ParseSubject2;
+import com.uoscs09.theuos2.parse.ParseUtil;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 
-import java.net.HttpURLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -197,7 +196,7 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
         sendClickEvent("sort", field);
 
         textViews[field].setCompoundDrawablesWithIntrinsicBounds(
-                AppUtil.getAttrValue(getActivity(),isInverse ? R.attr.menu_theme_ic_action_navigation_arrow_drop_up : R.attr.menu_theme_ic_action_navigation_arrow_drop_down ), 0,0,0);
+                AppUtil.getAttrValue(getActivity(), isInverse ? R.attr.menu_theme_ic_action_navigation_arrow_drop_up : R.attr.menu_theme_ic_action_navigation_arrow_drop_down), 0, 0, 0);
 
         mAdapter.sort(SubjectItem2.getComparator(field, isInverse));
     }
@@ -302,13 +301,8 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
 
         mOApiParams.put("subjectNm", URLEncoder.encode(mSearchEditText.getText().toString(), StringUtil.ENCODE_EUC_KR));
 
-        HttpURLConnection connection = HttpRequest.getConnection(query, StringUtil.ENCODE_EUC_KR, mOApiParams);
+        return ParseUtil.parseXml(mParser, query, mOApiParams);
 
-        try {
-            return mParser.parse(connection.getInputStream());
-        } finally {
-            connection.disconnect();
-        }
     }
 
     @Override

@@ -29,6 +29,7 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
+import com.uoscs09.theuos2.base.TabHidingScrollListener;
 import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.parse.ParseAnnounce;
 import com.uoscs09.theuos2.util.AppUtil;
@@ -144,7 +145,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
         mListView.setEmptyView(mEmptyView);
         mListView.setOnItemClickListener(mListViewOnItemClickListener);
         mListView.setAdapter(mAnnounceAdapter);
-        //mListView.setOnScrollListener(new TabHidingScrollListener.ForAbsListView(getToolBar()));
+        mListView.setOnScrollListener(new TabHidingScrollListener.ForAbsListView(getToolBar()));
        /* mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
             private int mLastFirstVisibleItemPosition;
             @Override

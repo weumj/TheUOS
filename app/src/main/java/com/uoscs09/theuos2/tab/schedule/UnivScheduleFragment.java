@@ -31,12 +31,11 @@ import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.common.AsyncLoader;
 import com.uoscs09.theuos2.common.PieProgressDrawable;
-import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.parse.ParseUnivSchedule;
+import com.uoscs09.theuos2.parse.ParseUtil;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 
-import java.net.HttpURLConnection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -232,15 +231,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
 
     @Override
     public ArrayList<UnivScheduleItem> call() throws Exception {
-        HttpURLConnection connection = HttpRequest.getConnection(URL);
-
-        try {
-            return mParser.parse(connection.getInputStream());
-
-        } finally {
-            connection.disconnect();
-        }
-
+        return ParseUtil.parseXml(mParser, URL);
     }
 
     @Override

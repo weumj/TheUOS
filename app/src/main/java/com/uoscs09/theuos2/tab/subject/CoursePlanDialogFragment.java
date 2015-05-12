@@ -25,15 +25,13 @@ import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.common.ListViewBitmapWriteTask;
-import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.parse.ParseCoursePlan;
+import com.uoscs09.theuos2.parse.ParseUtil;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
-import com.uoscs09.theuos2.util.StringUtil;
 import com.uoscs09.theuos2.util.TrackerUtil;
 
-import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -117,7 +115,7 @@ public class CoursePlanDialogFragment extends DialogFragment implements Callable
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog dialog = new AlertDialog.Builder(getActivity())
                 .setTitle(R.string.tab_course_plan_title)
-                //.titleColorAttr(R.attr.color_actionbar_title)
+                        //.titleColorAttr(R.attr.color_actionbar_title)
                 .setView(createView())
                 .create();
 
@@ -225,14 +223,7 @@ public class CoursePlanDialogFragment extends DialogFragment implements Callable
 
     @Override
     public ArrayList<CoursePlanItem> call() throws Exception {
-        HttpURLConnection connection = HttpRequest.getConnection(URL, StringUtil.ENCODE_EUC_KR, mOApiParams);
-
-        try {
-            return mParser.parse(connection.getInputStream());
-        } finally {
-            connection.disconnect();
-        }
-
+        return ParseUtil.parseXml(mParser, URL, mOApiParams);
     }
 
     private static class CoursePlanAdapter extends AbsArrayAdapter<CoursePlanItem, CoursePlanAdapter.ViewHolder> {

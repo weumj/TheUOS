@@ -26,8 +26,8 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.common.AsyncLoader;
 import com.uoscs09.theuos2.common.PieProgressDrawable;
-import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.parse.ParseSubjectList2;
+import com.uoscs09.theuos2.parse.ParseUtil;
 import com.uoscs09.theuos2.tab.map.SubMapActivity;
 import com.uoscs09.theuos2.tab.subject.CoursePlanDialogFragment;
 import com.uoscs09.theuos2.tab.subject.SubjectItem2;
@@ -36,7 +36,6 @@ import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 import com.uoscs09.theuos2.util.TrackerUtil;
 
-import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -338,13 +337,7 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
         params.put(OApiUtil.YEAR, Integer.toString(mTimeTable.year));
         params.put(OApiUtil.TERM, mTimeTable.semesterCode.code);
 
-        HttpURLConnection connection = HttpRequest.getConnection(URL, StringUtil.ENCODE_EUC_KR, params);
-
-        try {
-            return mParser.parse(connection.getInputStream());
-        } finally {
-            connection.disconnect();
-        }
+        return ParseUtil.parseXml(mParser, URL, params);
 
     }
 

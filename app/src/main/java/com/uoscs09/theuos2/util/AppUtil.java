@@ -94,10 +94,10 @@ public class AppUtil {
         PAGE_SIZE = test ? 13 : MAX_PAGE_SIZE_NORMAL;
     }
 
-    /*
+/*
     public enum TabInfo {
         Home(TabHomeFragment.class, R.string.title_section0_home, R.drawable.ic_launcher),
-        Announce(TabAnounceFragment.class, R.string.title_tab_announce, R.attr.theme_ic_action_action_view_list),
+        Announce(TabAnnounceFragment.class, R.string.title_tab_announce, R.attr.theme_ic_action_action_view_list),
         Schedule(UnivScheduleFragment.class, R.string.title_tab_schedule, R.attr.theme_ic_action_calendar),
         Restaurant(TabRestaurantFragment.class, R.string.title_tab_restaurant, R.attr.theme_ic_action_maps_local_restaurant),
         BookSearch(TabBookSearchFragment.class, R.string.title_tab_book_search, R.attr.theme_ic_action_book_search),
@@ -115,7 +115,7 @@ public class AppUtil {
         public final Class<? extends Fragment> tabClass;
         @StringRes
         public final int title;
-
+        private CharSequence titleText;
         final int iconRes;
 
         TabInfo(Class<? extends Fragment> tabClass, @StringRes int titleId, int iconRes) {
@@ -129,6 +129,23 @@ public class AppUtil {
                 return iconRes;
             else
                 return getAttrValue(context, iconRes);
+        }
+
+        public CharSequence getTitle(Context context){
+            if(titleText == null)
+                titleText = context.getText(title);
+
+            return titleText;
+        }
+
+        public Fragment getFragment(){
+            try {
+                return tabClass.newInstance();
+            } catch (Exception e) {
+                e.printStackTrace();
+
+                return null;
+            }
         }
 
         public static TabInfo find(@StringRes int titleId){
@@ -178,7 +195,7 @@ public class AppUtil {
         }
 
     }
-    */
+*/
 
     public static class Page {
         public int stringId;
