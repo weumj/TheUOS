@@ -38,6 +38,12 @@
         <item name="colorControlNormal">?color_actionbar_title</item>
     </style>
 
+    <style name="menu_labels_style">
+        <item name="android:background">@drawable/fab_label_background</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+
     <!-- ActionBar -->
     <eat-comment/>
     <style name="AppWidget.ActionBar.ActionBarStyle.Light" parent="@style/Widget.AppCompat.Light.ActionBar">

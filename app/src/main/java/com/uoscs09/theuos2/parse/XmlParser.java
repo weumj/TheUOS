@@ -67,7 +67,7 @@ public abstract class XmlParser<T> implements IParser<InputStream, T> {
 
     }
 
-    protected static <Data> void readListAndFillObject(XmlPullParser parser, Data newInstance) throws IOException, XmlPullParserException {
+    protected static <Data> void readListAndFillObject(XmlPullParser parser, @NonNull Data newInstance) throws IOException, XmlPullParserException {
         Class<?> clazz = newInstance.getClass();
 
         Field[] fields = clazz.getDeclaredFields();

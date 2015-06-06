@@ -30,6 +30,7 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.common.AsyncLoader;
+import com.uoscs09.theuos2.common.ExpandableStickyListHeaderNestedListView;
 import com.uoscs09.theuos2.common.PieProgressDrawable;
 import com.uoscs09.theuos2.parse.ParseUnivSchedule;
 import com.uoscs09.theuos2.parse.ParseUtil;
@@ -44,7 +45,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Callable;
 
-import se.emilsjolander.stickylistheaders.ExpandableStickyListHeadersListView;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
@@ -55,6 +55,8 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
     private final ParseUnivSchedule mParser = new ParseUnivSchedule();
 
     private ArrayList<UnivScheduleItem> mList = new ArrayList<>();
+
+    private ExpandableStickyListHeaderNestedListView mListView;
 
     Adapter mAdapter;
 
@@ -91,9 +93,10 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
 
         mAdapter = new Adapter(getActivity(), mList);
 
-        final ExpandableStickyListHeadersListView listView = (ExpandableStickyListHeadersListView) view.findViewById(R.id.list);
+        mListView = (ExpandableStickyListHeaderNestedListView) view.findViewById(R.id.list);
+        setNestedScrollingChild(mListView);
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mSelectedItem = mList.get(position);
@@ -103,14 +106,14 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
             }
         });
 
-        listView.setAdapter(mAdapter);
-        listView.setOnHeaderClickListener(new StickyListHeadersListView.OnHeaderClickListener() {
+        mListView.setAdapter(mAdapter);
+        mListView.setOnHeaderClickListener(new StickyListHeadersListView.OnHeaderClickListener() {
             @Override
             public void onHeaderClick(StickyListHeadersListView l, View header, int itemPosition, long headerId, boolean currentlySticky) {
-                if (listView.isHeaderCollapsed(headerId)) {
-                    listView.expand(headerId);
+                if (mListView.isHeaderCollapsed(headerId)) {
+                    mListView.expand(headerId);
                 } else {
-                    listView.collapse(headerId);
+                    mListView.collapse(headerId);
                 }
             }
         });

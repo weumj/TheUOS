@@ -17,7 +17,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -25,6 +24,7 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
+import com.uoscs09.theuos2.common.NestedListView;
 import com.uoscs09.theuos2.parse.ParseSubject2;
 import com.uoscs09.theuos2.parse.ParseUtil;
 import com.uoscs09.theuos2.util.AppUtil;
@@ -63,7 +63,6 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
     private boolean isInverse = false;
     @ReleaseWhenDestroy
     private View mEmptyView;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -120,11 +119,12 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
             mSubjectList = new ArrayList<>();
         }
 
-        ListView listView = (ListView) rootView.findViewById(R.id.tab_search_subject_list_view);
+        NestedListView mListView = (NestedListView) rootView.findViewById(R.id.tab_search_subject_list_view);
+        setNestedScrollingChild(mListView);
         mAdapter = new SubjectAdapter2(context, mSubjectList);
-        listView.setAdapter(mAdapter);
-        listView.setOnItemClickListener(this);
-        listView.setEmptyView(mEmptyView);
+        mListView.setAdapter(mAdapter);
+        mListView.setOnItemClickListener(this);
+        mListView.setEmptyView(mEmptyView);
 
         int[] ids = {R.id.tab_search_subject_sub_dept1, R.id.tab_search_subject_sub_div1, R.id.tab_search_subject_no1, R.id.tab_search_subject_class_div1,
                 R.id.tab_search_subject_sub_nm1, R.id.tab_search_subject_yr1, R.id.tab_search_subject_credit1, R.id.tab_search_subject_prof_nm1,
@@ -894,5 +894,4 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
     protected String getFragmentNameForTracker() {
         return "TabSearchSubjectFragment";
     }
-
 }

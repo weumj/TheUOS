@@ -4,6 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.view.NestedScrollingChild;
+import android.support.v4.view.NestedScrollingChildHelper;
 import android.util.AttributeSet;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -15,7 +19,7 @@ import java.lang.reflect.Field;
  * stackoverflow에서 검색된 WebView의 subclass<br>
  * memory leak이 WebView보다 덜하다.
  */
-public class NonLeakingWebView extends WebView {
+public class NonLeakingWebView extends WebView implements NestedScrollingChild {
     private static Field sConfigCallback;
 
     static {
@@ -28,19 +32,21 @@ public class NonLeakingWebView extends WebView {
     }
 
     public NonLeakingWebView(Context context) {
-        super(context.getApplicationContext());
-        setWebViewClient(new MyWebViewClient((Activity) context));
+        this(context, null, 0);
     }
 
     public NonLeakingWebView(Context context, AttributeSet attrs) {
-        super(context.getApplicationContext(), attrs);
-        setWebViewClient(new MyWebViewClient((Activity) context));
+        this(context, attrs, 0);
     }
 
     public NonLeakingWebView(Context context, AttributeSet attrs, int defStyle) {
-        super(context.getApplicationContext(), attrs, defStyle);
+        super(context, attrs, defStyle);
         setWebViewClient(new MyWebViewClient((Activity) context));
+        mScrollingChildHelper = new NestedScrollingChildHelper(this);
+        setNestedScrollingEnabled(true);
     }
+
+    private final NestedScrollingChildHelper mScrollingChildHelper;
 
     @Override
     public void destroy() {
@@ -51,6 +57,51 @@ public class NonLeakingWebView extends WebView {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public void setNestedScrollingEnabled(boolean enabled) {
+        mScrollingChildHelper.setNestedScrollingEnabled(enabled);
+    }
+
+    @Override
+    public boolean isNestedScrollingEnabled() {
+        return mScrollingChildHelper.isNestedScrollingEnabled();
+    }
+
+    @Override
+    public boolean startNestedScroll(int axes) {
+        return mScrollingChildHelper.startNestedScroll(axes);
+    }
+
+    @Override
+    public void stopNestedScroll() {
+        mScrollingChildHelper.stopNestedScroll();
+    }
+
+    @Override
+    public boolean hasNestedScrollingParent() {
+        return mScrollingChildHelper.hasNestedScrollingParent();
+    }
+
+    @Override
+    public boolean dispatchNestedScroll(int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, int[] offsetInWindow) {
+        return mScrollingChildHelper.dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, offsetInWindow);
+    }
+
+    @Override
+    public boolean dispatchNestedPreScroll(int dx, int dy, int[] consumed, int[] offsetInWindow) {
+        return mScrollingChildHelper.dispatchNestedPreScroll(dx, dy, consumed, offsetInWindow);
+    }
+
+    @Override
+    public boolean dispatchNestedFling(float velocityX, float velocityY, boolean consumed) {
+        return mScrollingChildHelper.dispatchNestedFling(velocityX, velocityY, consumed);
+    }
+
+    @Override
+    public boolean dispatchNestedPreFling(float velocityX, float velocityY) {
+        return mScrollingChildHelper.dispatchNestedPreFling(velocityX, velocityY);
     }
 
     protected static class MyWebViewClient extends WebViewClient {
@@ -65,7 +116,7 @@ public class NonLeakingWebView extends WebView {
             try {
                 final Activity activity = activityRef.get();
                 if (activity != null)
-                    activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                    ActivityCompat.startActivity(activity, new Intent(Intent.ACTION_VIEW, Uri.parse(url)), ActivityOptionsCompat.makeScaleUpAnimation(view, 0, 0, view.getWidth(), view.getContentHeight()).toBundle());
             } catch (RuntimeException ignored) {
                 // ignore any url parsing exceptions
             }

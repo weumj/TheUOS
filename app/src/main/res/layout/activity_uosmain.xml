@@ -5,25 +5,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:orientation="vertical">
-
-            <include layout="@layout/view_toolbar" />
-
-            <FrameLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content">
-
-                <android.support.v4.view.ViewPager
-                    android:id="@+id/activity_pager_viewpager"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent" />
-
-                <include layout="@layout/view_toolbar_shadow" />
-            </FrameLayout>
-        </LinearLayout>
+        <include layout="@layout/activity_uosmain_main" />
 
         <include
             layout="@layout/view_left_drawer"

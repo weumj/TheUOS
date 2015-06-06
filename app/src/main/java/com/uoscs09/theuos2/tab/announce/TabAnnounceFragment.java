@@ -20,7 +20,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -29,7 +28,7 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
-import com.uoscs09.theuos2.base.TabHidingScrollListener;
+import com.uoscs09.theuos2.common.NestedListView;
 import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.parse.ParseAnnounce;
 import com.uoscs09.theuos2.util.AppUtil;
@@ -129,7 +128,8 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.tab_announce, container, false);
 
-        final ListView mListView = (ListView) rootView.findViewById(R.id.tab_announce_list_announce);
+        NestedListView mListView = (NestedListView) rootView.findViewById(R.id.tab_announce_list_announce);
+        setNestedScrollingChild(mListView);
 
         mEmptyView = rootView.findViewById(R.id.tab_announce_empty_view);
         mEmptyView.setOnClickListener(new View.OnClickListener() {
@@ -145,35 +145,6 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
         mListView.setEmptyView(mEmptyView);
         mListView.setOnItemClickListener(mListViewOnItemClickListener);
         mListView.setAdapter(mAnnounceAdapter);
-        mListView.setOnScrollListener(new TabHidingScrollListener.ForAbsListView(getToolBar()));
-       /* mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
-            private int mLastFirstVisibleItemPosition;
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-                switch (scrollState) {
-                    case AbsListView.OnScrollListener.SCROLL_STATE_FLING:
-                    case AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL:
-                        int currentFirstVisiblePosition = mListView.getFirstVisiblePosition();
-
-                        if (currentFirstVisiblePosition < mLastFirstVisibleItemPosition) {
-                            //scroll down
-                            getToolBar().setVisibility(View.VISIBLE);
-                        } else if (currentFirstVisiblePosition > mLastFirstVisibleItemPosition) {
-                            // scroll up
-                            getToolBar().setVisibility(View.GONE);
-                        }
-                        mLastFirstVisibleItemPosition = currentFirstVisiblePosition;
-
-                        break;
-                    case AbsListView.OnScrollListener.SCROLL_STATE_IDLE:
-                        break;
-                }
-            }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-            }
-        });*/
 
         registerProgressView(rootView.findViewById(R.id.progress_layout));
 
@@ -272,7 +243,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
             isSearching = false;
 
             // Fragment 가 ViewPager 내부에 존재하지만, 사용자에게 보이지 않는 경우
-            if(!isMenuVisible()){
+            if (!isMenuVisible()) {
                 return;
             }
             if (adapterView.getTag() != null) {
@@ -410,8 +381,10 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
 
 	/* TODO AsyncExcutor Callback end */
 
-    /** Toolbar 에 붙일 Tab (카테고리 Spinner & PageIndexView) 을 초기화 한다.*/
-    private void initToolbarAndTab(){
+    /**
+     * Toolbar 에 붙일 Tab (카테고리 Spinner & PageIndexView) 을 초기화 한다.
+     */
+    private void initToolbarAndTab() {
         ViewGroup mTabParent = (ViewGroup) LayoutInflater.from(getActivity()).inflate(R.layout.view_tab_announce_toolbar_menu, getToolbarParent(), false);
 
         mCategorySpinner = (Spinner) mTabParent.findViewById(R.id.tab_announce_action_spinner1);
@@ -487,4 +460,5 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
     protected String getFragmentNameForTracker() {
         return "TabAnnounceFragment";
     }
+
 }

@@ -15,7 +15,7 @@ public class BReceiver extends BroadcastReceiver {
 
         switch (intent.getAction()){
             case Intent.ACTION_BOOT_COMPLETED:
-                AppUtil.startOrStopServiceAnounce(context);
+                AppUtil.startOrStopServiceAnnounce(context);
                 AppUtil.startOrStopServiceTimetableAlarm(context);
 
                 break;

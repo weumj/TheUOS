@@ -140,7 +140,7 @@
                     android:text="@string/tab_search_subject_tlsn_limit1" />
             </LinearLayout>
 
-            <ListView
+            <com.uoscs09.theuos2.common.NestedListView
                 android:id="@+id/tab_search_subject_list_view"
                 android:layout_width="fill_parent"
                 android:minWidth="1000dp"

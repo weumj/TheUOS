@@ -11,7 +11,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -19,6 +18,7 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
+import com.uoscs09.theuos2.common.NestedListView;
 import com.uoscs09.theuos2.parse.ParseEmptyRoom2;
 import com.uoscs09.theuos2.parse.ParseUtil;
 import com.uoscs09.theuos2.util.AppUtil;
@@ -121,9 +121,10 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Cl
         View root = inflater.inflate(R.layout.tab_search_empty_room, container, false);
 
         mAdapter = new SearchEmptyRoomAdapter(getActivity(), mClassRoomList);
-        ListView listView = (ListView) root.findViewById(R.id.etc_search_list);
+        NestedListView mListView = (NestedListView) root.findViewById(R.id.etc_search_list);
+        setNestedScrollingChild(mListView);
 
-        listView.setAdapter(mAdapter);
+        mListView.setAdapter(mAdapter);
 
         empty = root.findViewById(R.id.tab_search_subject_empty_view);
         empty.findViewById(R.id.empty1).setOnClickListener(new View.OnClickListener() {
@@ -133,7 +134,7 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Cl
                 mSearchDialog.show();
             }
         });
-        listView.setEmptyView(empty);
+        mListView.setEmptyView(empty);
 
         registerProgressView(root.findViewById(R.id.progress_layout));
 

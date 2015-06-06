@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <attr name="theme_inverse" format="reference"/>
+    <attr name="theme_inverse" format="reference" />
     <declare-styleable name="ThemeDrawable">
         <attr name="menu_theme_ic_action_action_about" format="reference" />
         <attr name="menu_theme_ic_action_action_alarm" format="reference" />
@@ -91,7 +91,7 @@
     <declare-styleable name="ThemeDrawable.Color">
         <!-- actionbar title color -->
         <attr name="color_actionbar_title" format="reference|color" />
-        <attr name="color_actionbar_subtitle" format="reference|color"/>
+        <attr name="color_actionbar_subtitle" format="reference|color" />
         <attr name="color_primary_text" format="reference|color" />
         <!-- 일반적인 아이콘 tint color-->
         <attr name="color_tint_normal" format="reference|color" />
@@ -102,20 +102,15 @@
         <attr name="toolbar_actionbar_subtitle" format="reference" />
     </declare-styleable>
 
-
-    <color name="black_semi_transparent">#B2000000</color>
-    <color name="background">#e5e5e5</color>
-    <color name="half_black">#808080</color>
-    <color name="white">#fafafa</color>
-    <color name="white_pressed">#f1f1f1</color>
-    <color name="pink">#e91e63</color>
-    <color name="pink_pressed">#ec407a</color>
-    <color name="blue_semi_transparent">#805677fc</color>
-    <color name="blue_semi_transparent_pressed">#80738ffe</color>
-
-    <style name="menu_labels_style">
-        <item name="android:background">@drawable/fab_label_background</item>
-        <item name="android:textColor">@color/white</item>
-    </style>
+    <!-- material design library attribute-->
+    <eat-comment/>
+    <declare-styleable name="CustomAttributes">
+        <!-- indicate if the slider must show number indicator -->
+        <attr name="showNumberIndicator" format="boolean" />
+        <!-- in progress view indicate max value of progress -->
+        <attr name="max" format="integer" />
+        <!-- in progress view indicate min value of progress -->
+        <attr name="min" format="integer" />
+    </declare-styleable>
 
 </resources>

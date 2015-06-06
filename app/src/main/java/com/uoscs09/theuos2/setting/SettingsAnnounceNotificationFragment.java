@@ -42,7 +42,7 @@ public class SettingsAnnounceNotificationFragment extends PreferenceFragment imp
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, @NonNull Preference preference) {
         switch (preference.getTitleRes()) {
             case R.string.setting_check_announce_service:
-                AppUtil.startOrStopServiceAnounce(getActivity());
+                AppUtil.startOrStopServiceAnnounce(getActivity());
                 return true;
 
             case R.string.setting_noti_time:
@@ -123,7 +123,7 @@ public class SettingsAnnounceNotificationFragment extends PreferenceFragment imp
                     }
                     String text = am_pm + String.valueOf(hour) + "시 " + String.valueOf(min) + "분에 알려줍니다.";
                     connectionPref.setSummary(text);
-                    AppUtil.startOrStopServiceAnounce(getActivity());
+                    AppUtil.startOrStopServiceAnnounce(getActivity());
                 }
 
             }
@@ -134,7 +134,7 @@ public class SettingsAnnounceNotificationFragment extends PreferenceFragment imp
 
                 findPreference(key).setSummary(sharedPreferences.getBoolean(key, false) ? R.string.setting_check_announce_service_desc_enable : R.string.setting_check_announce_service_desc_disable);
 
-                AppUtil.startOrStopServiceAnounce(getActivity());
+                AppUtil.startOrStopServiceAnnounce(getActivity());
 
             }
             break;

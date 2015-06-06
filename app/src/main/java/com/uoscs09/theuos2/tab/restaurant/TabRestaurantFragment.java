@@ -3,13 +3,13 @@ package com.uoscs09.theuos2.tab.restaurant;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
@@ -30,7 +30,7 @@ import java.util.Calendar;
 
 public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>> {
     @ReleaseWhenDestroy
-    private ScrollView mScrollView;
+    private NestedScrollView mScrollView;
     @ReleaseWhenDestroy
     private TextView mSemesterTimeView, mVacationTimeView,
             mContentBreakfastView, mContentLunchView, mContentSupperView;
@@ -123,12 +123,13 @@ public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>>
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                sendTrackerEvent("swipe" , "SwipeRefreshView");
+                sendTrackerEvent("swipe", "SwipeRefreshView");
                 execute();
             }
         });
 
-        mScrollView = (ScrollView) swipeRefreshLayout.findViewById(R.id.tab_rest_scroll);
+        mScrollView = (NestedScrollView) swipeRefreshLayout.findViewById(R.id.tab_rest_scroll);
+        setNestedScrollingChild(mScrollView);
 
         mSemesterTimeView = (TextView) mScrollView.findViewById(R.id.tab_rest_text_semester);
         mVacationTimeView = (TextView) mScrollView.findViewById(R.id.tab_rest_text_vacation);
@@ -244,7 +245,6 @@ public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>>
     protected String getFragmentNameForTracker() {
         return "TabRestaurantFragment";
     }
-
 
     /*
     @Override

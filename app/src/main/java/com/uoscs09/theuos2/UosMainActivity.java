@@ -8,7 +8,8 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.design.widget.AppBarLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -16,7 +17,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.SparseBooleanArray;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -27,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.uoscs09.theuos2.base.BaseActivity;
+import com.uoscs09.theuos2.base.BaseTabFragment;
 import com.uoscs09.theuos2.common.BackPressCloseHandler;
 import com.uoscs09.theuos2.setting.SettingActivity;
 import com.uoscs09.theuos2.util.AppUtil;
@@ -39,7 +40,8 @@ import java.util.ArrayList;
  * Main Activity, ViewPager가 존재한다.
  */
 @SuppressWarnings("ConstantConditions")
-public class UosMainActivity extends BaseActivity implements DrawerLayout.DrawerListener {
+public class UosMainActivity extends BaseActivity {
+
     /**
      * ViewPager
      */
@@ -47,7 +49,7 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
     /**
      * ViewPager Adapter
      */
-    private FragmentStatePagerAdapter mPagerAdapter;
+    private IndexPagerAdapter mPagerAdapter;
     /**
      * 뒤로 두번눌러 종료
      */
@@ -68,7 +70,7 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
      * ActionBar Toggle
      */
     private ActionBarDrawerToggle mDrawerToggle;
-    private ViewGroup mToolBarParent;
+    private AppBarLayout mToolBarParent;
     private Toolbar mToolbar;
 
     private static final int START_SETTING = 999;
@@ -95,12 +97,10 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_uosmain);
-        mToolBarParent = (ViewGroup) findViewById(R.id.toolbar_parent);
+        mToolBarParent = (AppBarLayout) findViewById(R.id.toolbar_parent);
         mToolbar = (Toolbar) mToolBarParent.findViewById(R.id.toolbar);
-        setSupportActionBar(mToolbar);
 
-        // getSupportActionBar().setHideOnContentScrollEnabled(true);
-        // getSupportActionBar().setHideOffset(40);
+        setSupportActionBar(mToolbar);
 
         initPager();
         initDrawer();
@@ -118,13 +118,13 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
 
         }
 
-        AppUtil.startOrStopServiceAnounce(getApplicationContext());
+        AppUtil.startOrStopServiceAnnounce(getApplicationContext());
         AppUtil.startOrStopServiceTimetableAlarm(getApplicationContext());
         mBackCloseHandler = new BackPressCloseHandler();
         System.gc();
 
         //TODO test
-        startActivity(new Intent(this, TestActivity.class));
+        //startActivity(new Intent(this, TestActivity.class));
     }
 
     @NonNull
@@ -151,6 +151,13 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
             return;
         }
 
+
+        Fragment f = mPagerAdapter.getCurrentFragment();
+        if (f != null && f instanceof BaseTabFragment) {
+            ((BaseTabFragment) f).resetNestedScrollPosition();
+        }
+        mToolBarParent.setTranslationY(0);
+
         if (!isFromPager) {
             mViewPager.setCurrentItem(position, true);
             mDrawerLayout.closeDrawer(mLeftDrawerLayout);
@@ -166,7 +173,6 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
 
         mDrawerListView.scrollToPosition(position);
 
-        mToolbar.setVisibility(View.VISIBLE);
     }
 
     private void initDrawer() {
@@ -178,9 +184,6 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
-
-        //actionBar.setHideOnContentScrollEnabled(true);
-        //actionBar.setHideOffset(40);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.activity_uos_drawer_layout);
 
@@ -200,7 +203,29 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
                 invalidateOptionsMenu();
             }
         };
-        mDrawerLayout.setDrawerListener(this);
+
+        mDrawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                mDrawerToggle.onDrawerClosed(drawerView);
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                mDrawerToggle.onDrawerOpened(drawerView);
+            }
+
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+                mDrawerToggle.onDrawerSlide(drawerView, slideOffset);
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+                mDrawerToggle.onDrawerStateChanged(newState);
+            }
+        });
     }
 
     private void initDrawerDetail() {
@@ -230,11 +255,19 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
         });
     }
 
+    private void openOrCloseDrawer() {
+        if (mDrawerLayout.isDrawerOpen(mLeftDrawerLayout))
+            mDrawerLayout.closeDrawer(mLeftDrawerLayout);
+        else
+            mDrawerLayout.openDrawer(mLeftDrawerLayout);
+    }
+
     private void initPager() {
         mPagerAdapter = new IndexPagerAdapter(getSupportFragmentManager(), mPageOrderList, this);
+
         mViewPager = (ViewPager) findViewById(R.id.activity_pager_viewpager);
         mViewPager.setAdapter(mPagerAdapter);
-        mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+        mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
                 navigateItem(position, true);
@@ -265,7 +298,7 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
         return mToolBarParent;
     }
 
-    public Toolbar getToolbar(){
+    public Toolbar getToolbar() {
         return mToolbar;
     }
 
@@ -419,7 +452,7 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        switch (keyCode){
+        switch (keyCode) {
             case KeyEvent.KEYCODE_MENU:
                 if (!PrefUtil.getInstance(this).get(PrefUtil.KEY_HOME, true)) {
                     openOrCloseDrawer();
@@ -434,33 +467,6 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
                 return super.onKeyDown(keyCode, event);
         }
 
-    }
-
-    @Override
-    public void onDrawerClosed(View drawerView) {
-        mDrawerToggle.onDrawerClosed(drawerView);
-    }
-
-    @Override
-    public void onDrawerOpened(View drawerView) {
-        mDrawerToggle.onDrawerOpened(drawerView);
-    }
-
-    @Override
-    public void onDrawerSlide(View drawerView, float slideOffset) {
-        mDrawerToggle.onDrawerSlide(drawerView, slideOffset);
-    }
-
-    @Override
-    public void onDrawerStateChanged(int newState) {
-        mDrawerToggle.onDrawerStateChanged(newState);
-    }
-
-    private void openOrCloseDrawer() {
-        if (mDrawerLayout.isDrawerOpen(mLeftDrawerLayout))
-            mDrawerLayout.closeDrawer(mLeftDrawerLayout);
-        else
-            mDrawerLayout.openDrawer(mLeftDrawerLayout);
     }
 
     /*
@@ -561,23 +567,23 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
 */
 
     private class DrawerAdapter extends RecyclerView.Adapter<ViewHolder> {
-        private final SparseBooleanArray mSelectedPositionArray = new SparseBooleanArray(mPageOrderList.size());
         private final int mDefaultTextColor, mSelectedTextColor;
         private final PorterDuffColorFilter mColorFilter;
-        private int mPrevSelection = 0;
+        private int mCurrentSelection = 0;
+        private final LayoutInflater mInflater;
 
         public DrawerAdapter() {
 
             mDefaultTextColor = getResources().getColor(AppUtil.getAttrValue(UosMainActivity.this, R.attr.colorControlNormal));
             mSelectedTextColor = getResources().getColor(AppUtil.getAttrValue(UosMainActivity.this, R.attr.color_primary_text));
             mColorFilter = new PorterDuffColorFilter(mSelectedTextColor, PorterDuff.Mode.SRC_IN);
+            mInflater = LayoutInflater.from(UosMainActivity.this);
 
-            mSelectedPositionArray.put(mPrevSelection, true);
         }
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.list_layout_drawer, parent, false));
+            return new ViewHolder(mInflater.inflate(R.layout.list_layout_drawer, parent, false));
         }
 
         @Override
@@ -585,12 +591,12 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
             int titleStringId = mPageOrderList.get(position);
 
             Drawable drawable = ImageUtil.getPageIcon(holder.itemView.getContext(), titleStringId);
-
             holder.img.setImageDrawable(drawable);
-
             holder.text.setText(titleStringId);
-            if (mSelectedPositionArray.get(position)) {
 
+            // 표시해야할 아이템이 선택된 상태라면 특별한 컬러로 하이라이트 시켜주고
+            // 아니면 일반 상태로 표시한다.
+            if (mCurrentSelection == position) {
                 if (position != 0)
                     holder.img.setColorFilter(mColorFilter);
                 else
@@ -609,14 +615,15 @@ public class UosMainActivity extends BaseActivity implements DrawerLayout.Drawer
             return mPageOrderList.size();
         }
 
+        /**
+         * position 의 아이템을 선택된 상태로 만든다.
+         */
         protected void putSelected(int position) {
-            mSelectedPositionArray.delete(mPrevSelection);
-            notifyItemChanged(mPrevSelection);
+            notifyItemChanged(mCurrentSelection);
 
-            mSelectedPositionArray.put(position, true);
+            mCurrentSelection = position;
+
             notifyItemChanged(position);
-
-            mPrevSelection = position;
 
         }
 

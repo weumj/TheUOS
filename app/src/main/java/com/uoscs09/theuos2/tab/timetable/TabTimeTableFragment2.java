@@ -29,6 +29,7 @@ import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.common.AsyncLoader;
 import com.uoscs09.theuos2.common.AsyncLoader.OnTaskFinishedListener;
 import com.uoscs09.theuos2.common.ListViewBitmapWriteTask;
+import com.uoscs09.theuos2.common.NestedListView;
 import com.uoscs09.theuos2.http.TimeTableHttpRequest;
 import com.uoscs09.theuos2.parse.ParseTimeTable2;
 import com.uoscs09.theuos2.util.AppUtil;
@@ -56,7 +57,7 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
     @ReleaseWhenDestroy
     private AlertDialog mDeleteDialog;
     @ReleaseWhenDestroy
-    protected ListView mTimetableListView;
+    protected NestedListView mTimetableListView;
 
     private final ParseTimeTable2 mParser2 = new ParseTimeTable2();
     @AsyncData
@@ -137,13 +138,14 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
         emptyView = rootView.findViewById(R.id.tab_timetable_empty);
         emptyView.findViewById(R.id.tab_timetable_empty_text).setOnClickListener(this);
 
-        mTimetableListView = (ListView) rootView.findViewById(R.id.time_table_listView1);
+        mTimetableListView = (NestedListView) rootView.findViewById(R.id.time_table_listView1);
         mTimetableListView.setEmptyView(emptyView);
         mTimetableListView.setAdapter(mTimeTableAdapter2);
+        setNestedScrollingChild(mTimetableListView);
 
-
-        FloatingActionButton actionButton = (FloatingActionButton) rootView.findViewById(R.id.tab_timetable_action_btn);
+        final FloatingActionButton actionButton = (FloatingActionButton) rootView.findViewById(R.id.tab_timetable_action_btn);
         actionButton.setOnClickListener(this);
+
 
         registerProgressView(rootView.findViewById(R.id.progress_layout));
 

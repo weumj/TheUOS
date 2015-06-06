@@ -152,6 +152,7 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
         mSeatListView.setAdapter(new AlphaInAnimationAdapter(mSeatAdapter));
         mSeatListView.setLayoutManager(mLayoutManager);
         mSeatListView.setItemAnimator(new FadeInAnimator());
+        setNestedScrollingChild(mSeatListView);
 
         mDismissDialogView = View.inflate(getActivity(), R.layout.dialog_library_dismiss_info, null);
 
@@ -168,7 +169,6 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
                 execute();
             }
         });
-
 
         return rootView;
     }

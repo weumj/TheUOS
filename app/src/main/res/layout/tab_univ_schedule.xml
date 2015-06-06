@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <se.emilsjolander.stickylistheaders.ExpandableStickyListHeadersListView
+    <com.uoscs09.theuos2.common.ExpandableStickyListHeaderNestedListView
         android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

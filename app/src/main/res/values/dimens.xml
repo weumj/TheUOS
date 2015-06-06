@@ -13,4 +13,5 @@
 
     <dimen name="univ_schedule_header_drawable_size">40dp</dimen>
     <dimen name="univ_schedule_list_drawable_size">10dp</dimen>
+
 </resources>

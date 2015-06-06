@@ -527,6 +527,10 @@ public class AppUtil {
         return out.resourceId;
     }
 
+    public static int getAttrColor(Context context, @AttrRes int attrColorId){
+        return context.getResources().getColor(getAttrValue(context, attrColorId));
+    }
+
     /**
      * 메인 액티비티에 종료 인텐트를 보낸다.
      */
@@ -692,7 +696,7 @@ public class AppUtil {
     /**
      * 공지사항 알리미 서비스를 시작/정지한다.
      */
-    public static boolean startOrStopServiceAnounce(Context context) {
+    public static boolean startOrStopServiceAnnounce(Context context) {
         /*boolean isServiceEnable = PrefUtil.getInstance(context).get(context.getString(R.string.pref_key_check_anounce_service), true);
         Intent service = new Intent(context, ServiceForAnnounce.class);
 

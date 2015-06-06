@@ -7,7 +7,7 @@
     android:paddingRight="5dp"
     android:paddingTop="5dp">
 
-    <ListView
+    <com.uoscs09.theuos2.common.NestedListView
         android:id="@+id/etc_search_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

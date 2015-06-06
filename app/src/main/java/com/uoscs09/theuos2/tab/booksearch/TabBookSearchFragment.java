@@ -21,7 +21,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -31,6 +30,7 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
+import com.uoscs09.theuos2.common.NestedListView;
 import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.parse.ParserBook;
 import com.uoscs09.theuos2.util.AppUtil;
@@ -102,6 +102,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
     private static final String OI_SEL = "oi";
     private static final String OS_SEL = "os";
     private static final String URL = "http://mlibrary.uos.ac.kr/search/tot/result?sm=&st=KWRD&websysdiv=tot&si=TOTAL&pn=";
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -184,7 +185,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
         }
 
         // 리스트 뷰
-        ListView mListView = (ListView) rootView.findViewById(R.id.tab_book_list_search);
+        NestedListView mListView = (NestedListView) rootView.findViewById(R.id.tab_book_list_search);
 
         mBookListAdapter = new BookItemListAdapter(getActivity(), mBookList, mLongClickListener);
         mAnimAdapter = new AlphaInAnimationAdapter(mBookListAdapter);
@@ -196,6 +197,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
         mAnimAdapter.setAbsListView(mListView);
         mListView.setAdapter(mAnimAdapter);
         mListView.setOnScrollListener(this);
+        setNestedScrollingChild(mListView);
 
         return rootView;
     }
@@ -530,4 +532,5 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
     protected String getFragmentNameForTracker() {
         return "TabBookSearchFragment";
     }
+
 }
