@@ -10,8 +10,6 @@
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:divider="?attr/colorPrimaryDark"
-        android:dividerPadding="1dp"
         android:minHeight="60dp"
         android:minWidth="1000dp"
         android:orientation="horizontal"
@@ -86,7 +84,8 @@
             android:layout_width="0dp"
             android:layout_height="fill_parent"
             android:layout_weight="100"
-            android:gravity="center"
+            android:gravity="left|center_vertical"
+            android:layout_gravity="center"
             android:padding="4dp" />
 
         <TextView

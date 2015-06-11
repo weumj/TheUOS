@@ -24,9 +24,12 @@ public class SubjectAdapter2 extends AbsArrayAdapter<SubjectItem2, SubjectAdapte
 
         int i = 0;
         item.setInfoArray();
-        for(String a : item.infoArray){
+        for (String a : item.infoArray) {
             array[i++].setText(a);
         }
+
+        array[8].setText(item.getClassRoomInformation(getContext()));
+
         /*
         array[0].setText(item.sub_dept);
         array[1].setText(item.subject_div);

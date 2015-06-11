@@ -1,4 +1,4 @@
-package com.uoscs09.theuos2.common;
+package com.uoscs09.theuos2.customview;
 
 import android.app.Activity;
 import android.content.Context;

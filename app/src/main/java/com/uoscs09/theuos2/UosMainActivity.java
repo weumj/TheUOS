@@ -9,7 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
-import android.support.v4.app.Fragment;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -27,7 +27,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.uoscs09.theuos2.base.BaseActivity;
-import com.uoscs09.theuos2.base.BaseTabFragment;
 import com.uoscs09.theuos2.common.BackPressCloseHandler;
 import com.uoscs09.theuos2.setting.SettingActivity;
 import com.uoscs09.theuos2.util.AppUtil;
@@ -72,6 +71,8 @@ public class UosMainActivity extends BaseActivity {
     private ActionBarDrawerToggle mDrawerToggle;
     private AppBarLayout mToolBarParent;
     private Toolbar mToolbar;
+    private CoordinatorLayout mCoordinatorLayout;
+    private CoordinatorLayout.Behavior mAppBarBehavior;
 
     private static final int START_SETTING = 999;
     private static final String SAVED_TAB_NUM = "saved_tab_num";
@@ -97,8 +98,13 @@ public class UosMainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_uosmain);
+
+        mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.activity_uos_coordinator);
         mToolBarParent = (AppBarLayout) findViewById(R.id.toolbar_parent);
         mToolbar = (Toolbar) mToolBarParent.findViewById(R.id.toolbar);
+
+        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) mToolBarParent.getLayoutParams();
+        mAppBarBehavior = params.getBehavior();
 
         setSupportActionBar(mToolbar);
 
@@ -151,17 +157,30 @@ public class UosMainActivity extends BaseActivity {
             return;
         }
 
-
+        /*
         Fragment f = mPagerAdapter.getCurrentFragment();
+        BaseTabFragment tabFragment;
         if (f != null && f instanceof BaseTabFragment) {
-            ((BaseTabFragment) f).resetNestedScrollPosition();
+            tabFragment = (BaseTabFragment) f;
+            //tabFragment.removeTabMenu();
+            tabFragment.resetNestedScrollPosition();
         }
-        mToolBarParent.setTranslationY(0);
+        */
+
+        resetAppBar();
 
         if (!isFromPager) {
             mViewPager.setCurrentItem(position, true);
             mDrawerLayout.closeDrawer(mLeftDrawerLayout);
         }
+
+        /*
+        f = mPagerAdapter.getCurrentFragment();
+        if (f != null && f instanceof BaseTabFragment && f != tabFragment) {
+            tabFragment = (BaseTabFragment) f;
+            tabFragment.addTabMenu();
+        }
+        */
 
         int res = mPageOrderList.get(position);
         if (res != -1) {
@@ -300,6 +319,11 @@ public class UosMainActivity extends BaseActivity {
 
     public Toolbar getToolbar() {
         return mToolbar;
+    }
+
+
+    public void resetAppBar() {
+        mAppBarBehavior.onNestedFling(mCoordinatorLayout, mToolBarParent, null, 0, -1000, true);
     }
 
     /**

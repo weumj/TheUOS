@@ -28,7 +28,7 @@ public class ImageUtil {
     /**
      * 주어진 리스트뷰의 전체 아이템들을 하나의 통합된 비트맵으로 만든다.
      */
-    public static Bitmap getWholeListViewItemsToBitmap(ListView listView, ListAdapter adapter) {
+    public static Bitmap getWholeListViewItemsToBitmap(ListView listView, ListAdapter adapter, int color) {
 
         int itemscount = adapter.getCount();
         int allitemsheight = 0;
@@ -50,7 +50,7 @@ public class ImageUtil {
         }
 
         Bitmap bigbitmap = Bitmap.createBitmap(listView.getMeasuredWidth(), allitemsheight + itemscount, Bitmap.Config.ARGB_8888);
-        bigbitmap.eraseColor(Color.WHITE);
+        bigbitmap.eraseColor(color);
         Canvas bigcanvas = new Canvas(bigbitmap);
 
         Paint paint = new Paint();
@@ -122,7 +122,7 @@ public class ImageUtil {
         int width, height;
 
         height = bmp1.getHeight() + bmp2.getHeight();
-        width = bmp1.getWidth();
+        width = bmp1.getWidth() > bmp2.getWidth() ? bmp1.getWidth() : bmp2.getWidth();
 
         cs = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 

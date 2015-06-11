@@ -9,6 +9,7 @@ import android.webkit.WebSettings;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos2.base.BaseActivity;
+import com.uoscs09.theuos2.customview.NonLeakingWebView;
 import com.uoscs09.theuos2.util.AppUtil;
 
 /**

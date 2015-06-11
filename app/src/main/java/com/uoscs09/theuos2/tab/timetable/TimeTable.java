@@ -3,7 +3,10 @@ package com.uoscs09.theuos2.tab.timetable;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.SparseArray;
 
+import com.uoscs09.theuos2.parse.IParser;
+import com.uoscs09.theuos2.tab.subject.SubjectItem2;
 import com.uoscs09.theuos2.util.OApiUtil;
 
 import java.io.Serializable;
@@ -11,7 +14,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class TimeTable implements Parcelable, Serializable {
+public class TimeTable implements Parcelable, Serializable, IParser.AfterParsable {
     private static final long serialVersionUID = 5134424815398243634L;
 
     public OApiUtil.Semester semesterCode;
@@ -65,7 +68,7 @@ public class TimeTable implements Parcelable, Serializable {
         for (int i = subjects.size() - 1; i > -1; i--) {
             Subject[] subjectArray = subjects.get(i);
             for (Subject subject : subjectArray) {
-                if (subject != null && !subject.equals(Subject.EMPTY))
+                if (subject != null && !subject.isEqualsTo(Subject.EMPTY))
                     return i + 1;
 
             }
@@ -73,6 +76,88 @@ public class TimeTable implements Parcelable, Serializable {
         }
 
         return 1;
+    }
+
+    // Key - 과목 이름 hashCode, Value - 과목의 시간 & 장소 정보(SubjectItem2.ClassInformation 클래스)의 리스트
+    SparseArray<ArrayList<SubjectItem2.ClassInformation>> classInformationSparseArray;
+
+    public SparseArray<ArrayList<SubjectItem2.ClassInformation>> getClassTimeInformation() {
+        if (classInformationSparseArray == null) {
+            classInformationSparseArray = new SparseArray<>();
+        }
+
+        if (classInformationSparseArray.size() == 0) {
+            setMaxTime();
+
+            // 날짜 선택
+            for (int i = 0; i < 6; i++) {
+
+                // 하나의 요일 계산 (세로줄)
+                for (int j = 0; j < maxTime; j++) {
+                    Subject[] subjectArray = subjects.get(j);
+
+                    if (subjectArray.length <= i)
+                        continue;
+
+                    // 요일 - i , 시간 - j
+                    Subject subject = subjectArray[i];
+                    if (subject != null && !subject.isEqualsTo(Subject.EMPTY)) {
+                        int key = subject.subjectName.hashCode();
+
+                        ArrayList<SubjectItem2.ClassInformation> infoList = classInformationSparseArray.get(key);
+                        if (infoList == null) {
+                            infoList = new ArrayList<>();
+                            classInformationSparseArray.put(key, infoList);
+                        }
+
+                        SubjectItem2.ClassInformation info;
+                        boolean needAdd = true;
+                        if (!infoList.isEmpty()) {
+
+                            int infoListSize = infoList.size();
+                            for (int k = 0; k < infoListSize; k++) {
+                                info = infoList.get(k);
+                                if (info.dayInWeek == subject.day) {
+
+                                    // 기존 저장된 장소, 날짜가 완전히 같으면, 시간만 추가한다.
+                                    if (info.buildingAndRoom.equals(subject.building)) {
+                                        // times 는 1부터 시작 (1교시)
+                                        info.times.add(subject.period + 1);
+                                        needAdd = false;
+                                        break;
+                                    }
+                                    // 날짜만 같으면, 다음 항목에서 검사한다.
+                                    // else {}
+
+                                }
+                                // 장소, 날짜가 모두 다르면, 다음 항목에서 검사한다.
+                                // else {}
+
+                                // 모두 검사해서 일치하는 항목이 없으면 새로 추가한다.
+                            }
+
+                        }
+
+                        // 모두 검사해서 일치하는 항목이 없으면 새로 추가한다.
+                        if(needAdd) {
+                            info = new SubjectItem2.ClassInformation();
+                            info.dayInWeek = subject.day;
+                            info.buildingAndRoom += subject.building;
+                            // times 는 1부터 시작 (1교시)
+                            info.times.add(subject.period + 1);
+
+                            infoList.add(info);
+                        }
+
+                    }
+                }
+
+            }
+
+
+        }
+
+        return classInformationSparseArray;
     }
 
     public void copyFrom(TimeTable another) {
@@ -83,6 +168,12 @@ public class TimeTable implements Parcelable, Serializable {
         this.studentInfoEng = another.studentInfoEng;
         this.year = another.year;
         this.maxTime = another.maxTime;
+    }
+
+
+    @Override
+    public void afterParsing() {
+        getClassTimeInformation();
     }
 
     @Override
@@ -136,13 +227,13 @@ public class TimeTable implements Parcelable, Serializable {
 
     }
 
-    private Subject[] readParcelables(Parcelable[] parcelables){
+    private Subject[] readParcelables(Parcelable[] parcelables) {
         Subject[] subjects = new Subject[parcelables.length];
 
         int i = 0;
-        for(Parcelable p : parcelables){
+        for (Parcelable p : parcelables) {
             Subject subject = (Subject) p;
-            subjects[i++] = subject.isEqualsTo(Subject.EMPTY) ?  Subject.EMPTY : subject;
+            subjects[i++] = subject.isEqualsTo(Subject.EMPTY) ? Subject.EMPTY : subject;
         }
 
         return subjects;
@@ -159,6 +250,7 @@ public class TimeTable implements Parcelable, Serializable {
             return new TimeTable(source);
         }
     };
+
 
     public static class StudentInfo implements Parcelable, Serializable {
         private static final long serialVersionUID = 5402888948965878265L;

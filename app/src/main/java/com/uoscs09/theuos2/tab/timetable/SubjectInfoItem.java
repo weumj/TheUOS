@@ -14,7 +14,7 @@ public class SubjectInfoItem {
     public String dept;
     public String prof_nm;
 
-    public SubjectItem2 toSubjectItem(TimeTable timeTable) {
+    public SubjectItem2 toSubjectItem(TimeTable timeTable, Subject subject) {
         SubjectItem2 item = new SubjectItem2();
         item.subject_no = subject_no;
         item.subject_nm = subject_nm;
@@ -23,8 +23,12 @@ public class SubjectInfoItem {
         item.credit = credit;
         item.sub_dept = dept;
         item.prof_nm = prof_nm;
+
         item.term = timeTable.semesterCode.code;
         item.year = Integer.toString(timeTable.year);
+
+        item.classInformationList.addAll(timeTable.getClassTimeInformation().get(subject.subjectName.hashCode()));
+
         item.setInfoArray();
 
         return item;

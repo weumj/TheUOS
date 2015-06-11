@@ -31,7 +31,7 @@ import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos2.async.AsyncFragmentJob;
 import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
-import com.uoscs09.theuos2.common.NestedListView;
+import com.uoscs09.theuos2.customview.NestedListView;
 import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.parse.ParseAnnounce;
 import com.uoscs09.theuos2.util.AppUtil;
@@ -134,7 +134,6 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
         View rootView = inflater.inflate(R.layout.tab_announce, container, false);
 
         NestedListView mListView = (NestedListView) rootView.findViewById(R.id.tab_announce_list_announce);
-        registerNestedScrollingChild(mListView);
 
         mEmptyView = rootView.findViewById(R.id.tab_announce_empty_view);
         mEmptyView.setOnClickListener(new View.OnClickListener() {

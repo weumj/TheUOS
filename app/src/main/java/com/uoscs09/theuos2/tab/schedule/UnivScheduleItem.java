@@ -6,12 +6,12 @@ import android.os.Parcelable;
 import android.provider.CalendarContract.Events;
 
 import com.uoscs09.theuos2.annotation.KeepName;
-import com.uoscs09.theuos2.parse.OApiParser2;
+import com.uoscs09.theuos2.parse.IParser;
 
 import java.util.Calendar;
 
 @KeepName
-public class UnivScheduleItem implements Parcelable, OApiParser2.Parsable {
+public class UnivScheduleItem implements Parcelable, IParser.AfterParsable {
     public String content, sch_date, year, month;
 
     /**

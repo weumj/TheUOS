@@ -94,8 +94,8 @@ public class SettingsOrderFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.action_apply:
                 saveTabOrderList();
-                finish();
                 getActivity().setResult(AppUtil.RELAUNCH_ACTIVITY);
+                finish();
                 return true;
 
             case R.id.action_cancel:

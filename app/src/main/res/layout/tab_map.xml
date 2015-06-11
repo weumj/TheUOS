@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:paddingBottom="?actionBarSize">
 
-    <com.uoscs09.theuos2.common.NonLeakingWebView
+    <com.uoscs09.theuos2.customview.NonLeakingWebView
         android:layout_width="fill_parent"
         android:id="@+id/webview"
         android:layout_height="fill_parent" />

@@ -2,8 +2,6 @@ package com.uoscs09.theuos2.base;
 
 
 import android.app.Activity;
-import android.support.v4.view.NestedScrollingChild;
-import android.support.v4.view.ViewCompat;
 import android.view.ViewGroup;
 
 import com.uoscs09.theuos2.UosMainActivity;
@@ -12,8 +10,6 @@ import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 public abstract class BaseTabFragment extends BaseFragment {
     @ReleaseWhenDestroy
     private ViewGroup mTabParent;
-    @ReleaseWhenDestroy
-    private NestedScrollingChild mNestedScrollingChild;
 
     @Override
     public void onAttach(Activity activity) {
@@ -44,23 +40,15 @@ public abstract class BaseTabFragment extends BaseFragment {
         this.mTabParent = tabParent;
     }
 
-
     protected ViewGroup getTabParentView() {
         return mTabParent;
     }
 
+    /*
     public final void resetNestedScrollPosition() {
-        if(mNestedScrollingChild != null){
-            mNestedScrollingChild.startNestedScroll(ViewCompat.SCROLL_AXIS_VERTICAL);
-            mNestedScrollingChild.dispatchNestedPreScroll(0, -Integer.MAX_VALUE, null, null);
-            mNestedScrollingChild.stopNestedScroll();
-        }
+        ((UosMainActivity) getActivity()).resetAppBar();
     }
-
-    protected void registerNestedScrollingChild(NestedScrollingChild child){
-        mNestedScrollingChild = child;
-    }
-
+    */
 
     protected ViewGroup getToolbarParent() {
         return ((UosMainActivity) getActivity()).getToolbarParent();
@@ -71,35 +59,54 @@ public abstract class BaseTabFragment extends BaseFragment {
         super.onResume();
 
         if (mTabParent != null && getUserVisibleHint()) {
-            addOrRemoveTabMenu(true);
+            addTabMenu();
         }
 
     }
+
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
 
-        if (isAdded())
-            addOrRemoveTabMenu(isVisibleToUser);
+        if (isAdded()) {
+            if (isVisibleToUser)
+                addTabMenu();
+            else
+                removeTabMenu();
+        }
 
     }
 
-    private void addOrRemoveTabMenu(boolean visible) {
+
+    public void addTabMenu() {
 
         ViewGroup toolBarParent = getToolbarParent();
 
         if (toolBarParent == null || mTabParent == null)
             return;
 
-        if (visible) {
-            if (mTabParent.getParent() == null)
-                toolBarParent.addView(mTabParent);
+        if (mTabParent.getParent() == null)
+            toolBarParent.addView(mTabParent);
 
-        } else if (toolBarParent.indexOfChild(mTabParent) > 0) {
+    }
+
+
+    public void removeTabMenu() {
+        ViewGroup toolBarParent = getToolbarParent();
+
+        if (toolBarParent == null || mTabParent == null)
+            return;
+
+        if (toolBarParent.getChildCount() > 1) {
+            toolBarParent.removeViews(1, toolBarParent.getChildCount() - 1);
+        }
+        /*
+        if (toolBarParent.indexOfChild(mTabParent) > 0) {
             toolBarParent.removeView(mTabParent);
 
         }
+        */
     }
 
 }

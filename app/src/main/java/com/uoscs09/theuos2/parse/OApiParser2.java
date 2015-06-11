@@ -47,8 +47,8 @@ public abstract class OApiParser2<T> extends XmlParser<T> {
 
             }
 
-            if (item instanceof Parsable) {
-                ((Parsable) item).afterParsing();
+            if (item instanceof AfterParsable) {
+                ((AfterParsable) item).afterParsing();
             }
 
             return item;

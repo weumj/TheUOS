@@ -81,6 +81,7 @@ public class TimeTableAdapter2 extends AbsArrayAdapter<Subject[], TimeTableAdapt
                 R.id.tab_timetable_list_text_sat
         };
 
+        private final int cardBackgroundColor;
         public TimeTableViewHolder(View itemView) {
             super(itemView);
             subjectViews = new SubjectViewHolder[6];
@@ -100,30 +101,27 @@ public class TimeTableAdapter2 extends AbsArrayAdapter<Subject[], TimeTableAdapt
                 i++;
             }
 
+            cardBackgroundColor = AppUtil.getAttrColor(itemView.getContext(), R.attr.cardBackgroundColor);
+
         }
 
         protected void setView(Hashtable<String, Integer> colorTable) {
             setPeriodView();
 
-            Context context = itemView.getContext();
-
             int i = 0;
-            int color;
-            Integer idx;
-            Subject subject;
             for (SubjectViewHolder subjectViewHolder : subjectViews) {
 
                 // 과목 배경색
-                subject = item[i++];
-                idx = colorTable.get(subject.subjectName);
+                Subject subject = item[i++];
+                Integer idx = colorTable.get(subject.subjectName);
                 if (idx != null) {
-                    color = TimetableUtil.getTimeTableColor(context, idx);
+                    int color = TimetableUtil.getTimeTableColor(itemView.getContext(), idx);
                     if (color != 0)
                         subjectViewHolder.view.setBackgroundColor(color);
                     else
-                        subjectViewHolder.view.setBackgroundResource(AppUtil.getAttrValue(context, R.attr.cardBackgroundColor));
+                        subjectViewHolder.view.setBackgroundColor(cardBackgroundColor);
                 } else
-                    subjectViewHolder.view.setBackgroundResource(AppUtil.getAttrValue(context, R.attr.cardBackgroundColor));
+                    subjectViewHolder.view.setBackgroundColor(cardBackgroundColor);
 
                 // 과목 정보
                 subjectViewHolder.setView(subject);

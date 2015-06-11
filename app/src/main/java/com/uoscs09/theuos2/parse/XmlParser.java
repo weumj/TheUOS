@@ -16,10 +16,6 @@ import java.lang.reflect.Field;
 
 public abstract class XmlParser<T> implements IParser<InputStream, T> {
 
-    public interface Parsable {
-        void afterParsing();
-    }
-
     @Override
     public T parse(InputStream is) throws Exception {
         try {
@@ -162,8 +158,8 @@ public abstract class XmlParser<T> implements IParser<InputStream, T> {
     protected static <Data> Data readListAndFillDataUsingReflection(XmlPullParser parser, @NonNull Data newInstance) throws IOException, XmlPullParserException {
         readListAndFillObject(parser, newInstance);
 
-        if (newInstance instanceof Parsable) {
-            ((Parsable) newInstance).afterParsing();
+        if (newInstance instanceof AfterParsable) {
+            ((AfterParsable) newInstance).afterParsing();
         }
 
         return newInstance;

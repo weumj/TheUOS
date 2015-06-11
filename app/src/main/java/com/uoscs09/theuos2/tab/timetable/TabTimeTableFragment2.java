@@ -35,7 +35,7 @@ import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.async.AsyncUtil.OnTaskFinishedListener;
 import com.uoscs09.theuos2.async.ListViewBitmapWriteTask;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
-import com.uoscs09.theuos2.common.NestedListView;
+import com.uoscs09.theuos2.customview.NestedListView;
 import com.uoscs09.theuos2.http.TimeTableHttpRequest;
 import com.uoscs09.theuos2.parse.ParseTimeTable2;
 import com.uoscs09.theuos2.util.AppUtil;
@@ -151,7 +151,6 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
         mTimetableListView = (NestedListView) rootView.findViewById(R.id.time_table_listView1);
         mTimetableListView.setEmptyView(emptyView);
         mTimetableListView.setAdapter(mTimeTableAdapter2);
-        registerNestedScrollingChild(mTimetableListView);
 
         final FloatingActionButton actionButton = (FloatingActionButton) rootView.findViewById(R.id.tab_timetable_action_btn);
         actionButton.setOnClickListener(this);
@@ -173,7 +172,9 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
                 if (timeTable != null) {
                     colorTable.clear();
                     colorTable.putAll(TimetableUtil.readColorTableFromFile(getActivity()));
+                    timeTable.getClassTimeInformation();
                 }
+
                 return timeTable;
             }
 
@@ -296,10 +297,10 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
                 colorTable.clear();
                 colorTable.putAll(newColorTable);
 
+                result.getClassTimeInformation();
                 TimetableUtil.writeTimetable(context, result);
 
             }
-
 
             return result;
         }

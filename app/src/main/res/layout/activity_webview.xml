@@ -10,7 +10,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
 
-        <com.uoscs09.theuos2.common.NonLeakingWebView
+        <com.uoscs09.theuos2.customview.NonLeakingWebView
             android:id="@+id/webview"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent" />

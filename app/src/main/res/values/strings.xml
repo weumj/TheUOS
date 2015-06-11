@@ -162,8 +162,15 @@
 
     <string name="tab_course_plan_title">수업계획서</string>
     <string name="tab_course_plan_prof">담당교수</string>
+    <string name="tab_course_plan_prof_tel">연락처</string>
     <string name="tab_course_plan_eval">평가방법</string>
+    <string name="tab_course_plan_location">강의실</string>
     <string name="tab_course_plan_book">교재</string>
+    <string name="tab_course_week">주</string>
+    <string name="tab_course_week_class_cont">수업내용</string>
+    <string name="tab_course_week_class_meth">수업방법</string>
+    <string name="tab_course_week_book">교재</string>
+    <string name="tab_course_week_prjt_etc">준비물, 과제, 기타</string>
     <string name="tab_course_plan_action_save_image">이미지로 저장</string>
     <string name="tab_course_plan_action_save_text">텍스트로 저장</string>
 

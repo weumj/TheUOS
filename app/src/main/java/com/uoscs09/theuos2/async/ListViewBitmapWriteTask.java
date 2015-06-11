@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.view.View;
 import android.widget.ListAdapter;
@@ -95,7 +94,7 @@ public class ListViewBitmapWriteTask extends AsyncJob.Base<String> implements Di
         ListView listView = listViewRef.get();
         if (listView == null)
             return null;
-        return ImageUtil.getWholeListViewItemsToBitmap(listView, adapter);
+        return ImageUtil.getWholeListViewItemsToBitmap(listView, adapter, AppUtil.getAttrColor(listView.getContext(), R.attr.cardBackgroundColor));
     }
 
     /**
@@ -134,7 +133,7 @@ public class ListViewBitmapWriteTask extends AsyncJob.Base<String> implements Di
                 if (titleBitmap == null)
                     titleBitmap = ImageUtil.createBitmapFromView(title);
 
-                whiteBackgroundTitleBitmap = ImageUtil.drawOnBackground(titleBitmap, Color.WHITE);
+                whiteBackgroundTitleBitmap = ImageUtil.drawOnBackground(titleBitmap, AppUtil.getAttrColor(title.getContext(), R.attr.cardBackgroundColor));
                 bitmap = ImageUtil.merge(whiteBackgroundTitleBitmap, capture);
 
                 return bitmap;

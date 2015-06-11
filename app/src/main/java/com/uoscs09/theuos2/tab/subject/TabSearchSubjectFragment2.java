@@ -25,7 +25,8 @@ import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos2.async.AsyncFragmentJob;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
-import com.uoscs09.theuos2.common.NestedListView;
+import com.uoscs09.theuos2.customview.CustomHorizontalScrollView;
+import com.uoscs09.theuos2.customview.NestedListView;
 import com.uoscs09.theuos2.parse.ParseSubject2;
 import com.uoscs09.theuos2.parse.ParseUtil;
 import com.uoscs09.theuos2.util.AppUtil;
@@ -50,10 +51,13 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
     @ReleaseWhenDestroy
     private Spinner mDialogSpinner1, mDialogSpinner2, mDialogSpinner3, mDialogSpinner4, mDialogTermSpinner, mDialogYearSpinner;
     private final int[] selections = new int[4];
-    @ReleaseWhenDestroy
+    /*@ReleaseWhenDestroy
     private View mTitleLayout;
+    */
     @ReleaseWhenDestroy
     private TextView[] textViews;
+    @ReleaseWhenDestroy
+    private CustomHorizontalScrollView mScrollView;
 
     private final CoursePlanDialogFragment mCoursePlanDialogFragment = new CoursePlanDialogFragment();
 
@@ -64,6 +68,8 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
     private boolean isInverse = false;
     @ReleaseWhenDestroy
     private View mEmptyView;
+
+    private boolean isScrolling = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -101,8 +107,8 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
 
         final View rootView = inflater.inflate(R.layout.tab_search_subj, container, false);
 
-        mTitleLayout = rootView.findViewById(R.id.tab_search_subject_head_layout);
-        mTitleLayout.setVisibility(View.INVISIBLE);
+        //mTitleLayout = rootView.findViewById(R.id.tab_search_subject_head_layout);
+        //mTitleLayout.setVisibility(View.INVISIBLE);
 
         mEmptyView = rootView.findViewById(R.id.tab_search_subject_empty_view);
         mEmptyView.findViewById(R.id.empty1).setOnClickListener(new View.OnClickListener() {
@@ -121,11 +127,40 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
         }
 
         NestedListView mListView = (NestedListView) rootView.findViewById(R.id.tab_search_subject_list_view);
-        registerNestedScrollingChild(mListView);
         mAdapter = new SubjectAdapter2(context, mSubjectList);
         mListView.setAdapter(mAdapter);
         mListView.setOnItemClickListener(this);
         mListView.setEmptyView(mEmptyView);
+
+        mScrollView = (CustomHorizontalScrollView) rootView.findViewById(R.id.tab_search_subject_scrollview);
+        final CustomHorizontalScrollView mTabParent = (CustomHorizontalScrollView) LayoutInflater.from(getActivity()).inflate(R.layout.view_tab_search_subject_toolbar_menu, getToolbarParent(), false);
+        mTabParent.setOnScrollListener(new CustomHorizontalScrollView.OnScrollListener() {
+            @Override
+            public void onScrollChanged(int l, int t, int oldl, int oldt) {
+                if (!isScrolling) {
+                    isScrolling = true;
+
+                    mScrollView.scrollTo(l, 0);
+
+                    isScrolling = false;
+                }
+            }
+        });
+
+        mScrollView.setOnScrollListener(new CustomHorizontalScrollView.OnScrollListener() {
+            @Override
+            public void onScrollChanged(int l, int t, int oldl, int oldt) {
+                if (!isScrolling) {
+                    isScrolling = true;
+
+                    mTabParent.scrollTo(l, 0);
+
+                    isScrolling = false;
+                }
+            }
+        });
+
+        registerTabParentView(mTabParent);
 
         int[] ids = {R.id.tab_search_subject_sub_dept1, R.id.tab_search_subject_sub_div1, R.id.tab_search_subject_no1, R.id.tab_search_subject_class_div1,
                 R.id.tab_search_subject_sub_nm1, R.id.tab_search_subject_yr1, R.id.tab_search_subject_credit1, R.id.tab_search_subject_prof_nm1,
@@ -133,7 +168,7 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
         textViews = new TextView[ids.length];
         int i = 0;
         for (int id : ids) {
-            textViews[i] = (TextView) rootView.findViewById(id);
+            textViews[i] = (TextView) mTabParent.findViewById(id);
             textViews[i++].setOnClickListener(this);
         }
 
@@ -209,12 +244,14 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
         super.onSaveInstanceState(outState);
     }
 
+    /*
     @Override
     public void onResume() {
         super.onResume();
         if (!mSubjectList.isEmpty())
             mTitleLayout.setVisibility(View.VISIBLE);
     }
+    */
 
     @Override
     public void onItemClick(AdapterView<?> ad, View v, int pos, long id) {
@@ -291,16 +328,23 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
             mAdapter.addAll(result);
             mAdapter.notifyDataSetChanged();
 
+            mScrollView.scrollTo(0, 0);
+            getTabParentView().scrollTo(0, 0);
+
+            if (mAdapter.isEmpty()) {
+                mEmptyView.setVisibility(View.VISIBLE);
+            }
+            /*
             if (result.isEmpty()) {
                 mTitleLayout.setVisibility(View.INVISIBLE);
             } else {
                 mTitleLayout.setVisibility(View.VISIBLE);
             }
+            */
 
             AppUtil.showToast(getActivity(), getString(R.string.search_found_amount, result.size()), true);
 
-            mSearchConditionString = mDialogYearSpinner.getSelectedItem()
-                    .toString()
+            mSearchConditionString = mDialogYearSpinner.getSelectedItem().toString()
                     + " / "
                     + mDialogTermSpinner.getSelectedItem().toString();
             setSubtitleWhenVisible(mSearchConditionString);

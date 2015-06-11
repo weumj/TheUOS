@@ -30,6 +30,9 @@ import java.util.ArrayList;
 public class WeekInformationDialogFragment extends DialogFragment {
     static final ParseRestaurantWeek PARSE_RESTAURANT_WEEK = new ParseRestaurantWeek();
 
+    @ReleaseWhenDestroy
+    private Toolbar mToolbar;
+
     private RestWeekAdapter mRestWeekAdapter;
     private int mCurrentSelectionId;
     private AsyncTask<Void, Void, WeekRestItem> mAsyncTask;
@@ -54,8 +57,8 @@ public class WeekInformationDialogFragment extends DialogFragment {
     private View createView() {
         View rootView = View.inflate(getActivity(), R.layout.dialog_tab_rest_week, null);
 
-        Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
-        toolbar.setTitle(mCurrentSelectionId);
+        mToolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
+        mToolbar.setTitle(mCurrentSelectionId);
 
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.tab_rest_week_recyclerview);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
@@ -122,7 +125,7 @@ public class WeekInformationDialogFragment extends DialogFragment {
         if (mProgressWheel != null)
             mProgressWheel.spin();
 
-        mAsyncTask = AsyncUtil.execute(new AsyncJob.Base<WeekRestItem>(){
+        mAsyncTask = AsyncUtil.execute(new AsyncJob.Base<WeekRestItem>() {
             @Override
             public WeekRestItem call() throws Exception {
                 return PARSE_RESTAURANT_WEEK.parse(HttpRequest.getBody("http://www.uos.ac.kr/food/placeList.do?rstcde=" + getCode(mCurrentSelectionId)));
@@ -143,9 +146,17 @@ public class WeekInformationDialogFragment extends DialogFragment {
 
             @Override
             public void onResult(WeekRestItem result) {
+                ArrayList<RestItem> weekList = result.weekList;
                 mRestWeekAdapter.restItemArrayList.clear();
-                mRestWeekAdapter.restItemArrayList.addAll(result.weekList);
+                mRestWeekAdapter.restItemArrayList.addAll(weekList);
                 mRestWeekAdapter.notifyDataSetChanged();
+
+                if (weekList.size() > 2)
+                    mToolbar.setSubtitle(weekList.get(0).title + " ~ " + weekList.get(weekList.size() - 1).title);
+                else if (weekList.size() == 1)
+                    mToolbar.setSubtitle(weekList.get(0).title);
+                else
+                    mToolbar.setSubtitle(null);
             }
 
             @Override

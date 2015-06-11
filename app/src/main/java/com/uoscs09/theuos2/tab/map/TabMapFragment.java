@@ -19,7 +19,7 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos2.base.BaseFragment;
 import com.uoscs09.theuos2.common.CustomWebViewClient;
-import com.uoscs09.theuos2.common.NonLeakingWebView;
+import com.uoscs09.theuos2.customview.NonLeakingWebView;
 import com.uoscs09.theuos2.util.AppUtil;
 
 @SuppressLint("ClickableViewAccessibility")

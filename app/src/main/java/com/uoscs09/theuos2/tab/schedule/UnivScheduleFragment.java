@@ -95,7 +95,6 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
 
         mListView = (ExpandableStickyListHeadersListView) view.findViewById(R.id.list);
         mListView.setNestedScrollingEnabled(true);
-        registerNestedScrollingChild(mListView);
 
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

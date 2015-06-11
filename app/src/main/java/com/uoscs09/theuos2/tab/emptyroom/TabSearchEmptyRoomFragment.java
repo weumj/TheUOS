@@ -19,7 +19,7 @@ import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos2.async.AsyncFragmentJob;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
-import com.uoscs09.theuos2.common.NestedListView;
+import com.uoscs09.theuos2.customview.NestedListView;
 import com.uoscs09.theuos2.parse.ParseEmptyRoom2;
 import com.uoscs09.theuos2.parse.ParseUtil;
 import com.uoscs09.theuos2.util.AppUtil;
@@ -124,7 +124,6 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Em
 
         mAdapter = new SearchEmptyRoomAdapter(getActivity(), mClassRoomList);
         NestedListView mListView = (NestedListView) root.findViewById(R.id.etc_search_list);
-        registerNestedScrollingChild(mListView);
 
         mListView.setAdapter(mAdapter);
 

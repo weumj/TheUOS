@@ -31,7 +31,7 @@ import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos2.async.AsyncFragmentJob;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
-import com.uoscs09.theuos2.common.NestedListView;
+import com.uoscs09.theuos2.customview.NestedListView;
 import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.parse.ParserBook;
 import com.uoscs09.theuos2.util.AppUtil;
@@ -220,7 +220,6 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
                 }
             }
         });
-        registerNestedScrollingChild(mListView);
 
         return rootView;
     }

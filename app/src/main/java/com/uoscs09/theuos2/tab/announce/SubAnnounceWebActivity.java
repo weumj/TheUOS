@@ -10,8 +10,8 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.common.NonLeakingWebView;
 import com.uoscs09.theuos2.common.WebViewActivity;
+import com.uoscs09.theuos2.customview.NonLeakingWebView;
 import com.uoscs09.theuos2.util.AppUtil;
 
 public class SubAnnounceWebActivity extends WebViewActivity {

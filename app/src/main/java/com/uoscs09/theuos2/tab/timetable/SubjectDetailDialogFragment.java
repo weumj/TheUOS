@@ -278,7 +278,7 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
         divListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapter, View arg1, int pos, long arg3) {
-                showCoursePlan(mClassDivSelectAdapter.getItem(pos).toSubjectItem(mTimeTable));
+                showCoursePlan(mClassDivSelectAdapter.getItem(pos).toSubjectItem(mTimeTable, mSubject));
 
                 mClassDivSelectDialog.dismiss();
             }
@@ -312,7 +312,7 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
                 dismiss();
 
             } else if (size == 1) {
-                showCoursePlan(result.get(0).toSubjectItem(mTimeTable));
+                showCoursePlan(result.get(0).toSubjectItem(mTimeTable, mSubject));
                 dismiss();
 
             } else {

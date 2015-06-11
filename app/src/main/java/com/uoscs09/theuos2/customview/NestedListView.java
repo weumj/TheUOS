@@ -1,4 +1,4 @@
-package com.uoscs09.theuos2.common;
+package com.uoscs09.theuos2.customview;
 
 import android.content.Context;
 import android.util.AttributeSet;

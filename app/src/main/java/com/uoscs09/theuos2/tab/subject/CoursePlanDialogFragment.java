@@ -5,8 +5,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -55,7 +53,7 @@ public class CoursePlanDialogFragment extends DialogFragment {
 
     private Toolbar mToolbar;
     private View mCourseTitle;
-    private TextView mCourseName, mCourseCode, mCourseProf, mCourseProfTel, mCourseEval, mCourseBook;
+    private TextView mCourseName, mCourseCode, mCourseProf, mCourseProfTel, mCourseEval, mCourseBook, mCourseLocation;
 
     private ListView mListView;
     private ArrayAdapter<CoursePlanItem> mAdapter;
@@ -69,7 +67,7 @@ public class CoursePlanDialogFragment extends DialogFragment {
 
     private static final ParseCoursePlan COURSE_PLAN_PARSER = new ParseCoursePlan();
 
-    private AsyncTask<Void, Void, ArrayList<CoursePlanItem>> mAsynckTask;
+    private AsyncTask<Void, Void, ArrayList<CoursePlanItem>> mAsyncTask;
 
     public void setSubjectItem(SubjectItem2 item) {
 
@@ -123,6 +121,11 @@ public class CoursePlanDialogFragment extends DialogFragment {
     public void onResume() {
         super.onResume();
 
+        if (mSubject == null) {
+            dismiss();
+            return;
+        }
+
         if (infoList.isEmpty() || isDataInvalid) {
             execute();
         }
@@ -160,6 +163,7 @@ public class CoursePlanDialogFragment extends DialogFragment {
         mCourseCode = (TextView) mCourseTitle.findViewById(R.id.fragment_course_plan_subject_code);
         mCourseProf = (TextView) mCourseTitle.findViewById(R.id.fragment_course_plan_prof_name);
         mCourseProfTel = (TextView) mCourseTitle.findViewById(R.id.fragment_course_plan_prof_tel);
+        mCourseLocation = (TextView) mCourseTitle.findViewById(R.id.fragment_course_plan_location);
         mCourseEval = (TextView) mCourseTitle.findViewById(R.id.fragment_course_plan_eval);
         mCourseBook = (TextView) mCourseTitle.findViewById(R.id.fragment_course_plan_book);
 
@@ -183,6 +187,8 @@ public class CoursePlanDialogFragment extends DialogFragment {
         mCourseEval.setText(course.score_eval_rate);
         mCourseBook.setText(course.book_nm);
 
+        mCourseLocation.setText(mSubject.getClassRoomInformation(getActivity()));
+
         mToolbar.setTitle(course.subject_nm);
         mToolbar.setSubtitle(course.prof_nm);
     }
@@ -196,18 +202,18 @@ public class CoursePlanDialogFragment extends DialogFragment {
     }
 
     void execute() {
-        if (mAsynckTask != null && mAsynckTask.getStatus() != AsyncTask.Status.FINISHED)
-            mAsynckTask.cancel(true);
+        if (mAsyncTask != null && mAsyncTask.getStatus() != AsyncTask.Status.FINISHED)
+            mAsyncTask.cancel(true);
 
         mProgressDialog.setOnCancelListener(mJobCanceler);
         mProgressDialog.show();
-        mAsynckTask = AsyncUtil.execute(JOB);
+        mAsyncTask = AsyncUtil.execute(JOB);
     }
 
     private final DialogInterface.OnCancelListener mJobCanceler = new DialogInterface.OnCancelListener() {
         @Override
         public void onCancel(DialogInterface dialog) {
-            AsyncUtil.cancelTask(mAsynckTask);
+            AsyncUtil.cancelTask(mAsyncTask);
             dismiss();
         }
     };
@@ -215,6 +221,7 @@ public class CoursePlanDialogFragment extends DialogFragment {
     private final AsyncJob.Base<ArrayList<CoursePlanItem>> JOB = new AsyncJob.Base<ArrayList<CoursePlanItem>>() {
         @Override
         public void onResult(ArrayList<CoursePlanItem> coursePlanItems) {
+
             if (coursePlanItems.isEmpty())
                 setCourseTitle(new CoursePlanItem());
             else
@@ -232,6 +239,9 @@ public class CoursePlanDialogFragment extends DialogFragment {
 
         @Override
         public ArrayList<CoursePlanItem> call() throws Exception {
+            if (mSubject.classInformationList.isEmpty())
+                mSubject.afterParsing();
+
             return ParseUtil.parseXml(COURSE_PLAN_PARSER, URL, mOApiParams);
         }
 
@@ -245,7 +255,7 @@ public class CoursePlanDialogFragment extends DialogFragment {
         @Override
         public void onPostExcute() {
             mProgressDialog.dismiss();
-            mAsynckTask = null;
+            mAsyncTask = null;
         }
     };
 
@@ -338,22 +348,31 @@ public class CoursePlanDialogFragment extends DialogFragment {
                 sb.append(StringUtil.NEW_LINE);
                 sb.append(StringUtil.NEW_LINE);
 
-                sb.append("담당 교수 : ");
+                sb.append(getString(R.string.tab_course_plan_prof));
+                sb.append(" : ");
                 sb.append(course.prof_nm);
                 sb.append(StringUtil.NEW_LINE);
 
-                sb.append("전화 번호 : ");
+                sb.append(getString(R.string.tab_course_plan_location));
+                sb.append(" : ");
+                sb.append(mSubject.getClassRoomInformation(getActivity()));
+                sb.append(StringUtil.NEW_LINE);
+
+                sb.append(getString(R.string.tab_course_plan_prof_tel));
+                sb.append(" : ");
                 sb.append(course.tel_no);
                 sb.append(StringUtil.NEW_LINE);
                 sb.append(StringUtil.NEW_LINE);
 
-                sb.append("평가 방법 : ");
+                sb.append(getString(R.string.tab_course_plan_eval));
+                sb.append(" : ");
                 sb.append(StringUtil.NEW_LINE);
                 sb.append(course.score_eval_rate);
                 sb.append(StringUtil.NEW_LINE);
                 sb.append(StringUtil.NEW_LINE);
 
-                sb.append("교재 : ");
+                sb.append(getString(R.string.tab_course_plan_book));
+                sb.append(" : ");
                 sb.append(StringUtil.NEW_LINE);
                 sb.append(course.book_nm);
                 sb.append(StringUtil.NEW_LINE);
@@ -362,29 +381,34 @@ public class CoursePlanDialogFragment extends DialogFragment {
 
             private void writeWeek(StringBuilder sb, CoursePlanItem item) {
                 sb.append(item.week);
-                sb.append(" 주차 ----------------------");
+                sb.append(getString(R.string.tab_course_week));
+                sb.append("  ----------------------");
                 sb.append(StringUtil.NEW_LINE);
                 sb.append(StringUtil.NEW_LINE);
 
-                sb.append("+ 내용");
+                sb.append(" + ");
+                sb.append(getString(R.string.tab_course_week_class_cont));
                 sb.append(StringUtil.NEW_LINE);
                 sb.append(item.class_cont);
                 sb.append(StringUtil.NEW_LINE);
                 sb.append(StringUtil.NEW_LINE);
 
-                sb.append("+ 방법");
+                sb.append(" + ");
+                sb.append(getString(R.string.tab_course_week_class_meth));
                 sb.append(StringUtil.NEW_LINE);
                 sb.append(item.class_meth);
                 sb.append(StringUtil.NEW_LINE);
                 sb.append(StringUtil.NEW_LINE);
 
-                sb.append("+ 교재");
+                sb.append(" + ");
+                sb.append(getString(R.string.tab_course_week_book));
                 sb.append(StringUtil.NEW_LINE);
                 sb.append(item.week_book);
                 sb.append(StringUtil.NEW_LINE);
                 sb.append(StringUtil.NEW_LINE);
 
-                sb.append("+ 기타");
+                sb.append(" + ");
+                sb.append(getString(R.string.tab_course_week_prjt_etc));
                 sb.append(StringUtil.NEW_LINE);
                 sb.append(item.prjt_etc);
                 sb.append(StringUtil.NEW_LINE);
@@ -436,21 +460,6 @@ public class CoursePlanDialogFragment extends DialogFragment {
                 meth = (TextView) view.findViewById(R.id.course_plan_meth);
                 book = (TextView) view.findViewById(R.id.course_plan_book);
                 etc = (TextView) view.findViewById(R.id.course_plan_etc);
-
-                Resources r = view.getResources();
-
-                int size = r.getDimensionPixelSize(R.dimen.univ_schedule_list_drawable_size) / 2;
-
-
-                ColorDrawable d = new ColorDrawable(r.getColor(AppUtil.getAttrValue(view.getContext(), R.attr.colorPrimaryDark)));
-
-                d.setBounds(0, 0, size, size);
-
-                content.setCompoundDrawables(d, null, null, null);
-                meth.setCompoundDrawables(d, null, null, null);
-                book.setCompoundDrawables(d, null, null, null);
-                etc.setCompoundDrawables(d, null, null, null);
-
             }
         }
     }

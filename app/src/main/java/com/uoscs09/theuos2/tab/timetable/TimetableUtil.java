@@ -45,7 +45,7 @@ public class TimetableUtil {
     //*********** color table ***********
 
     /**
-     * 주어진 시간표 컬러 Map을 파일로 저장한다.
+     * 주어진 시간표 컬러 Map 을 파일로 저장한다.
      *
      * @param colorTable color map
      */
@@ -54,7 +54,7 @@ public class TimetableUtil {
     }
 
     /**
-     * color map을 파일로 부터 읽어온다.
+     * color map 을 파일로 부터 읽어온다.
      */
     public static Hashtable<String, Integer> readColorTableFromFile(Context context) {
         return IOUtil.readFromFileSuppressed(context, IOUtil.FILE_COLOR_TABLE);

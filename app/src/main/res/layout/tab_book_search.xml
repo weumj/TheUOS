@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.uoscs09.theuos2.common.NestedListView
+    <com.uoscs09.theuos2.customview.NestedListView
         android:id="@+id/tab_book_list_search"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"

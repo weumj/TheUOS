@@ -4,236 +4,31 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <HorizontalScrollView
+    <com.uoscs09.theuos2.customview.CustomHorizontalScrollView
+        android:id="@+id/tab_search_subject_scrollview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
+        android:clipToPadding="false"
         android:minWidth="1000dp">
 
         <RelativeLayout
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="fill_parent">
 
-            <LinearLayout
-                android:id="@+id/tab_search_subject_head_layout"
-                android:layout_width="1000dp"
-                android:layout_height="wrap_content"
-                android:background="?colorPrimary"
-                android:baselineAligned="false"
-                android:orientation="horizontal"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:weightSum="660">
-
-                <com.balysv.materialripple.MaterialRippleLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="60"
-                    app:mrl_rippleColor="?colorAccent"
-                    app:mrl_rippleDelayClick="true">
-
-                    <TextView
-                        android:id="@+id/tab_search_subject_sub_dept1"
-                        android:layout_width="fill_parent"
-                        android:layout_height="fill_parent"
-                        android:gravity="center"
-                        android:padding="4dp"
-                        android:text="@string/tab_search_subject_sub_dept1"
-                        android:textColor="?color_actionbar_title" />
-
-                </com.balysv.materialripple.MaterialRippleLayout>
-
-                <com.balysv.materialripple.MaterialRippleLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="80"
-                    app:mrl_rippleColor="?colorAccent"
-                    app:mrl_rippleDelayClick="true">
-
-                    <TextView
-                        android:id="@+id/tab_search_subject_sub_div1"
-                        android:layout_width="match_parent"
-                        android:layout_height="fill_parent"
-                        android:gravity="center"
-                        android:padding="4dp"
-                        android:text="@string/tab_search_subject_sub_div1"
-                        android:textColor="?color_actionbar_title" />
-                </com.balysv.materialripple.MaterialRippleLayout>
-
-                <com.balysv.materialripple.MaterialRippleLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="60"
-                    app:mrl_rippleColor="?colorAccent"
-                    app:mrl_rippleDelayClick="true">
-
-                    <TextView
-                        android:id="@+id/tab_search_subject_no1"
-                        android:layout_width="match_parent"
-                        android:layout_height="fill_parent"
-                        android:gravity="center"
-                        android:padding="4dp"
-                        android:text="@string/tab_search_subject_no1"
-                        android:textColor="?color_actionbar_title" />
-                </com.balysv.materialripple.MaterialRippleLayout>
-
-                <com.balysv.materialripple.MaterialRippleLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="40"
-                    app:mrl_rippleColor="?colorAccent"
-                    app:mrl_rippleDelayClick="true">
-
-                    <TextView
-                        android:id="@+id/tab_search_subject_class_div1"
-                        android:layout_width="match_parent"
-                        android:layout_height="fill_parent"
-                        android:gravity="center"
-                        android:padding="4dp"
-                        android:text="@string/tab_search_subject_class_div1"
-                        android:textColor="?color_actionbar_title" />
-                </com.balysv.materialripple.MaterialRippleLayout>
-
-                <com.balysv.materialripple.MaterialRippleLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="80"
-                    app:mrl_rippleColor="?colorAccent"
-                    app:mrl_rippleDelayClick="true">
-
-                    <TextView
-                        android:id="@+id/tab_search_subject_sub_nm1"
-                        android:layout_width="match_parent"
-                        android:layout_height="fill_parent"
-                        android:gravity="center"
-                        android:padding="4dp"
-                        android:text="@string/tab_search_subject_sub_nm1"
-                        android:textColor="?color_actionbar_title" />
-                </com.balysv.materialripple.MaterialRippleLayout>
-
-                <com.balysv.materialripple.MaterialRippleLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="40"
-                    app:mrl_rippleColor="?colorAccent"
-                    app:mrl_rippleDelayClick="true">
-
-                    <TextView
-                        android:id="@+id/tab_search_subject_yr1"
-                        android:layout_width="match_parent"
-                        android:layout_height="fill_parent"
-                        android:gravity="center"
-                        android:padding="4dp"
-                        android:text="@string/tab_search_subject_yr1"
-                        android:textColor="?color_actionbar_title" />
-                </com.balysv.materialripple.MaterialRippleLayout>
-
-                <com.balysv.materialripple.MaterialRippleLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="40"
-                    app:mrl_rippleColor="?colorAccent"
-                    app:mrl_rippleDelayClick="true">
-
-                    <TextView
-                        android:id="@+id/tab_search_subject_credit1"
-                        android:layout_width="match_parent"
-                        android:layout_height="fill_parent"
-                        android:gravity="center"
-                        android:padding="4dp"
-                        android:text="@string/tab_search_subject_credit1"
-                        android:textColor="?color_actionbar_title" />
-                </com.balysv.materialripple.MaterialRippleLayout>
-
-                <com.balysv.materialripple.MaterialRippleLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="80"
-                    app:mrl_rippleColor="?colorAccent"
-                    app:mrl_rippleDelayClick="true">
-
-                    <TextView
-                        android:id="@+id/tab_search_subject_prof_nm1"
-                        android:layout_width="match_parent"
-                        android:layout_height="fill_parent"
-                        android:gravity="center"
-                        android:padding="4dp"
-                        android:text="@string/tab_search_subject_prof_nm1"
-                        android:textColor="?color_actionbar_title" />
-                </com.balysv.materialripple.MaterialRippleLayout>
-
-                <com.balysv.materialripple.MaterialRippleLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="100"
-                    app:mrl_rippleColor="?colorAccent"
-                    app:mrl_rippleDelayClick="true">
-
-                    <TextView
-                        android:id="@+id/tab_search_subject_class_nm1"
-                        android:layout_width="match_parent"
-                        android:layout_height="fill_parent"
-                        android:gravity="center"
-                        android:padding="4dp"
-                        android:text="@string/tab_search_subject_class_nm1"
-                        android:textColor="?color_actionbar_title" />
-                </com.balysv.materialripple.MaterialRippleLayout>
-
-                <com.balysv.materialripple.MaterialRippleLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="40"
-                    app:mrl_rippleColor="?colorAccent"
-                    app:mrl_rippleDelayClick="true">
-
-                    <TextView
-                        android:id="@+id/tab_search_subject_tlsn_cnt1"
-                        android:layout_width="match_parent"
-                        android:layout_height="fill_parent"
-                        android:gravity="center"
-                        android:padding="4dp"
-                        android:text="@string/tab_search_subject_tlsn_cnt1"
-                        android:textColor="?color_actionbar_title" />
-                </com.balysv.materialripple.MaterialRippleLayout>
-
-                <com.balysv.materialripple.MaterialRippleLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="40"
-                    app:mrl_rippleColor="?colorAccent"
-                    app:mrl_rippleDelayClick="true">
-
-                    <TextView
-                        android:id="@+id/tab_search_subject_tlsn_limit1"
-                        android:layout_width="match_parent"
-                        android:layout_height="fill_parent"
-                        android:gravity="center"
-                        android:padding="4dp"
-                        android:text="@string/tab_search_subject_tlsn_limit1"
-                        android:textColor="?color_actionbar_title" />
-                </com.balysv.materialripple.MaterialRippleLayout>
-            </LinearLayout>
-
-            <com.uoscs09.theuos2.common.NestedListView
+            <com.uoscs09.theuos2.customview.NestedListView
                 android:id="@+id/tab_search_subject_list_view"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignLeft="@id/tab_search_subject_head_layout"
-                android:layout_alignRight="@id/tab_search_subject_head_layout"
-                android:layout_below="@id/tab_search_subject_head_layout"
+                android:layout_height="fill_parent"
                 android:clipToPadding="false"
                 android:fastScrollEnabled="true"
                 android:minWidth="1000dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:paddingTop="2dp"
-                android:scrollbarStyle="outsideOverlay"
                 android:scrollingCache="true" />
 
         </RelativeLayout>
 
-    </HorizontalScrollView>
+    </com.uoscs09.theuos2.customview.CustomHorizontalScrollView>
 
     <RelativeLayout
         android:id="@+id/tab_search_subject_empty_view"

@@ -126,7 +126,6 @@ public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>>
         });
 
         mScrollView = (NestedScrollView) mSwipeRefreshLayout.findViewById(R.id.tab_rest_scroll);
-        registerNestedScrollingChild(mScrollView);
 
         mSemesterTimeView = (TextView) mScrollView.findViewById(R.id.tab_rest_text_semester);
         mVacationTimeView = (TextView) mScrollView.findViewById(R.id.tab_rest_text_vacation);
@@ -155,8 +154,6 @@ public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>>
             execute();
         else
             performTabClick(mCurrentSelection);
-
-        super.onResume();
 
         return rootView;
     }
@@ -275,15 +272,20 @@ public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>>
         private final View mStrip;
         public int id;
 
+        private final int mSelectedColor;
+        private final int mNormalColor;
         public Tab(LinearLayout parent) {
             tabView = (FrameLayout) LayoutInflater.from(parent.getContext()).inflate(R.layout.view_tab_rest_tab, parent, false);
             ripple = tabView.findViewById(R.id.ripple);
             mTextView = (TextView) tabView.findViewById(R.id.tab_rest_tab_text);
             mStrip = tabView.findViewById(R.id.tab_rest_tab_strip);
+            mSelectedColor = AppUtil.getAttrColor(parent.getContext(), R.attr.color_actionbar_title);
+            mNormalColor = mSelectedColor | 0xaa << 24;
         }
 
         public void setSelected(boolean selected) {
             mStrip.setVisibility(selected ? View.VISIBLE : View.INVISIBLE);
+            mTextView.setTextColor(selected ? mSelectedColor : mNormalColor);
         }
 
         public void setText(int stringId) {
