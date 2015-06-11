@@ -3,7 +3,6 @@ package com.uoscs09.theuos2.tab.timetable;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.SparseArray;
 
 import com.uoscs09.theuos2.parse.IParser;
 import com.uoscs09.theuos2.tab.subject.SubjectItem2;
@@ -12,6 +11,7 @@ import com.uoscs09.theuos2.util.OApiUtil;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.Locale;
 
 public class TimeTable implements Parcelable, Serializable, IParser.AfterParsable {
@@ -79,14 +79,14 @@ public class TimeTable implements Parcelable, Serializable, IParser.AfterParsabl
     }
 
     // Key - 과목 이름 hashCode, Value - 과목의 시간 & 장소 정보(SubjectItem2.ClassInformation 클래스)의 리스트
-    SparseArray<ArrayList<SubjectItem2.ClassInformation>> classInformationSparseArray;
+    Hashtable<String, ArrayList<SubjectItem2.ClassInformation>> classTimeInformationTable;
 
-    public SparseArray<ArrayList<SubjectItem2.ClassInformation>> getClassTimeInformation() {
-        if (classInformationSparseArray == null) {
-            classInformationSparseArray = new SparseArray<>();
+    public Hashtable<String, ArrayList<SubjectItem2.ClassInformation>> getClassTimeInformationTable() {
+        if (classTimeInformationTable == null) {
+            classTimeInformationTable = new Hashtable<>();
         }
 
-        if (classInformationSparseArray.size() == 0) {
+        if (classTimeInformationTable.size() == 0) {
             setMaxTime();
 
             // 날짜 선택
@@ -102,12 +102,12 @@ public class TimeTable implements Parcelable, Serializable, IParser.AfterParsabl
                     // 요일 - i , 시간 - j
                     Subject subject = subjectArray[i];
                     if (subject != null && !subject.isEqualsTo(Subject.EMPTY)) {
-                        int key = subject.subjectName.hashCode();
+                        String key = subject.subjectName;
 
-                        ArrayList<SubjectItem2.ClassInformation> infoList = classInformationSparseArray.get(key);
+                        ArrayList<SubjectItem2.ClassInformation> infoList = classTimeInformationTable.get(key);
                         if (infoList == null) {
                             infoList = new ArrayList<>();
-                            classInformationSparseArray.put(key, infoList);
+                            classTimeInformationTable.put(key, infoList);
                         }
 
                         SubjectItem2.ClassInformation info;
@@ -139,7 +139,7 @@ public class TimeTable implements Parcelable, Serializable, IParser.AfterParsabl
                         }
 
                         // 모두 검사해서 일치하는 항목이 없으면 새로 추가한다.
-                        if(needAdd) {
+                        if (needAdd) {
                             info = new SubjectItem2.ClassInformation();
                             info.dayInWeek = subject.day;
                             info.buildingAndRoom += subject.building;
@@ -157,7 +157,7 @@ public class TimeTable implements Parcelable, Serializable, IParser.AfterParsabl
 
         }
 
-        return classInformationSparseArray;
+        return classTimeInformationTable;
     }
 
     public void copyFrom(TimeTable another) {
@@ -173,7 +173,7 @@ public class TimeTable implements Parcelable, Serializable, IParser.AfterParsabl
 
     @Override
     public void afterParsing() {
-        getClassTimeInformation();
+        getClassTimeInformationTable();
     }
 
     @Override

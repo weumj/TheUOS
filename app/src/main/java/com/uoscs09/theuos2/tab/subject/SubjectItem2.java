@@ -10,6 +10,7 @@ import com.uoscs09.theuos2.annotation.KeepName;
 import com.uoscs09.theuos2.parse.IParser;
 import com.uoscs09.theuos2.util.StringUtil;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 
@@ -443,7 +444,9 @@ public class SubjectItem2 implements Parcelable, IParser.AfterParsable {
     }
 
 
-    public static class ClassInformation implements Parcelable {
+    public static class ClassInformation implements Parcelable, Serializable{
+
+        private static final long serialVersionUID = 8612642740508029423L;
         public int dayInWeek = -1;
         public ArrayList<Integer> times = new ArrayList<>(7);
         public String buildingAndRoom = "";

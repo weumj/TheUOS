@@ -172,7 +172,7 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
                 if (timeTable != null) {
                     colorTable.clear();
                     colorTable.putAll(TimetableUtil.readColorTableFromFile(getActivity()));
-                    timeTable.getClassTimeInformation();
+                    timeTable.getClassTimeInformationTable();
                 }
 
                 return timeTable;
@@ -297,7 +297,7 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
                 colorTable.clear();
                 colorTable.putAll(newColorTable);
 
-                result.getClassTimeInformation();
+                result.getClassTimeInformationTable();
                 TimetableUtil.writeTimetable(context, result);
 
             }
@@ -329,6 +329,9 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
 
         @Override
         public boolean exceptionOccurred(Exception e) {
+            if(mTimeTableAdapter2.isEmpty())
+                emptyView.setVisibility(View.VISIBLE);
+
             if (e instanceof IOException || e instanceof NullPointerException) {
                 e.printStackTrace();
                 AppUtil.showToast(getActivity(), R.string.tab_timetable_wise_login_warning_fail, isMenuVisible());

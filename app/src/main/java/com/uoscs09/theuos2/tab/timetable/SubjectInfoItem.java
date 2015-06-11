@@ -27,7 +27,7 @@ public class SubjectInfoItem {
         item.term = timeTable.semesterCode.code;
         item.year = Integer.toString(timeTable.year);
 
-        item.classInformationList.addAll(timeTable.getClassTimeInformation().get(subject.subjectName.hashCode()));
+        item.classInformationList.addAll(timeTable.getClassTimeInformationTable().get(subject.subjectName));
 
         item.setInfoArray();
 
