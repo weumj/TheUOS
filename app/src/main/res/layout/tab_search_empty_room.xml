@@ -2,10 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:paddingLeft="5dp"
-    android:paddingRight="5dp"
-    android:paddingTop="5dp">
+    android:layout_height="fill_parent">
 
     <com.uoscs09.theuos2.common.NestedListView
         android:id="@+id/etc_search_list"
@@ -13,8 +10,10 @@
         android:layout_height="wrap_content"
         android:clipToPadding="false"
         android:fastScrollEnabled="true"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
         android:scrollbarStyle="outsideOverlay"
         android:scrollingCache="true" />
 
@@ -24,19 +23,18 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:layout_marginTop="100dp"
-        android:background="?selector_button"
         android:visibility="gone">
 
         <com.balysv.materialripple.MaterialRippleLayout
             android:id="@+id/tab_search_empty_room_empty1_ripple"
-            android:padding="4dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginLeft="20dp"
             android:layout_width="wrap_content"
-            app:mrl_rippleColor="?color_primary_text"
-            app:mrl_rippleDelayClick="false"
+            android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_height="wrap_content">
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:padding="4dp"
+            app:mrl_rippleColor="?color_primary_text"
+            app:mrl_rippleDelayClick="true">
 
             <TextView
                 android:id="@+id/empty1"
@@ -51,16 +49,16 @@
 
         <com.balysv.materialripple.MaterialRippleLayout
             android:id="@+id/tab_search_empty_room_empty2_ripple"
-            android:padding="4dp"
             android:layout_width="wrap_content"
-            app:mrl_rippleColor="?color_primary_text"
-            app:mrl_rippleDelayClick="true"
-            android:layout_below="@id/tab_search_empty_room_empty1_ripple"
-            android:layout_marginTop="10dp"
-            android:layout_alignRight="@id/tab_search_empty_room_empty1_ripple"
+            android:layout_height="wrap_content"
             android:layout_alignLeft="@id/tab_search_empty_room_empty1_ripple"
+            android:layout_alignRight="@id/tab_search_empty_room_empty1_ripple"
+            android:layout_below="@id/tab_search_empty_room_empty1_ripple"
             android:layout_centerHorizontal="true"
-            android:layout_height="wrap_content">
+            android:layout_marginTop="10dp"
+            android:padding="4dp"
+            app:mrl_rippleColor="?color_primary_text"
+            app:mrl_rippleDelayClick="true">
 
             <TextView
                 android:layout_width="wrap_content"

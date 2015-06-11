@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
+import com.uoscs09.theuos2.async.AsyncFragmentJob;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.common.NestedListView;
 import com.uoscs09.theuos2.parse.ParseEmptyRoom2;
@@ -36,11 +37,11 @@ import java.util.Locale;
 /**
  * 빈 강의실을 조회하는 fragment
  */
-public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<ClassRoomItem>> implements DialogInterface.OnClickListener, View.OnClickListener {
+public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<EmptyClassRoomItem>> implements View.OnClickListener {
     @ReleaseWhenDestroy
-    private ArrayAdapter<ClassRoomItem> mAdapter;
+    private ArrayAdapter<EmptyClassRoomItem> mAdapter;
     @AsyncData
-    private ArrayList<ClassRoomItem> mClassRoomList;
+    private ArrayList<EmptyClassRoomItem> mClassRoomList;
     @ReleaseWhenDestroy
     private AlertDialog mSearchDialog;
     private final Hashtable<String, String> params = new Hashtable<>();
@@ -52,16 +53,17 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Cl
     private Spinner mTermSpinner;
     @ReleaseWhenDestroy
     private TextView[] textViews;
-
-    private final ParseEmptyRoom2 mParser = new ParseEmptyRoom2();
+    @ReleaseWhenDestroy
+    private View mEmptyView;
 
     private String mTermString;
     private int sortFocus;
     private boolean isReverse = false;
+
     private static final String BUILDING = "building";
     private static final String URL = "http://wise.uos.ac.kr/uosdoc/api.ApiUcsFromToEmptyRoom.oapi";
-    @ReleaseWhenDestroy
-    private View empty;
+
+    private static final ParseEmptyRoom2 EMPTY_ROOM_PARSER = new ParseEmptyRoom2();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -122,19 +124,19 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Cl
 
         mAdapter = new SearchEmptyRoomAdapter(getActivity(), mClassRoomList);
         NestedListView mListView = (NestedListView) root.findViewById(R.id.etc_search_list);
-        setNestedScrollingChild(mListView);
+        registerNestedScrollingChild(mListView);
 
         mListView.setAdapter(mAdapter);
 
-        empty = root.findViewById(R.id.tab_search_subject_empty_view);
-        empty.findViewById(R.id.empty1).setOnClickListener(new View.OnClickListener() {
+        mEmptyView = root.findViewById(R.id.tab_search_subject_empty_view);
+        mEmptyView.findViewById(R.id.empty1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 sendEmptyViewClickEvent();
                 mSearchDialog.show();
             }
         });
-        mListView.setEmptyView(empty);
+        mListView.setEmptyView(mEmptyView);
 
         registerProgressView(root.findViewById(R.id.progress_layout));
 
@@ -178,16 +180,6 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Cl
         }
     }
 
-    @Override
-    public void onTransactResult(ArrayList<ClassRoomItem> result) {
-        mClassRoomList.clear();
-        mClassRoomList.addAll(result);
-        mAdapter.notifyDataSetChanged();
-        AppUtil.showToast(getActivity(), getString(R.string.search_found_amount, result.size()), true);
-
-        mTermString = mTimeSpinner.getSelectedItem().toString().split(StringUtil.NEW_LINE)[1] + StringUtil.NEW_LINE + mTermSpinner.getSelectedItem();
-        setSubtitleWhenVisible(mTermString);
-    }
 
     private void initParamsTable() {
         String date = new SimpleDateFormat("yyyyMMdd", Locale.KOREAN).format(new Date());
@@ -202,38 +194,54 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Cl
     }
 
     @Override
-    protected void execute() {
-        empty.setVisibility(View.INVISIBLE);
-
-        super.execute();
+    protected void onPreExecute() {
+        super.onPreExecute();
+        mEmptyView.setVisibility(View.INVISIBLE);
     }
 
-
-    @SuppressWarnings("unchecked")
     @Override
-    public ArrayList<ClassRoomItem> call() throws Exception {
-        putParams();
+    protected void onPostExecute() {
+        super.onPostExecute();
 
-        if (params.get(BUILDING).equals("00")) {
-            final String[] buildings = {"01", "02", "03", "04", "05", "06", "08", "09", "10", "11", "13", "14", "15", "16", "17", "18", "19", "20", "23", "24", "25", "33"};
-            ArrayList<ClassRoomItem> list = new ArrayList<>();
+        if(mAdapter.isEmpty())
+            mEmptyView.setVisibility(View.VISIBLE);
+    }
 
-            for (String bd : buildings) {
-                params.put(BUILDING, bd);
-                list.addAll(ParseUtil.parseXml(mParser, URL, params));
-            }
-            return list;
+    void execute() {
+        super.execute(JOB);
+    }
 
-        } else {
-            return ParseUtil.parseXml(mParser, URL, params);
+    private final AsyncFragmentJob.Base<ArrayList<EmptyClassRoomItem>> JOB = new AsyncFragmentJob.Base<ArrayList<EmptyClassRoomItem>>() {
+        @Override
+        public void onResult(ArrayList<EmptyClassRoomItem> result) {
+            mClassRoomList.clear();
+            mClassRoomList.addAll(result);
+            mAdapter.notifyDataSetChanged();
+            AppUtil.showToast(getActivity(), getString(R.string.search_found_amount, result.size()), true);
+
+            mTermString = mTimeSpinner.getSelectedItem().toString().split(StringUtil.NEW_LINE)[1] + StringUtil.NEW_LINE + mTermSpinner.getSelectedItem();
+            setSubtitleWhenVisible(mTermString);
         }
 
-    }
+        @Override
+        public ArrayList<EmptyClassRoomItem> call() throws Exception {
+            putParams();
 
-    @Override
-    public void onClick(DialogInterface dialog, int which) {
-        cancelExecutor();
-    }
+            if (params.get(BUILDING).equals("00")) {
+                final String[] buildings = {"01", "02", "03", "04", "05", "06", "08", "09", "10", "11", "13", "14", "15", "16", "17", "18", "19", "20", "23", "24", "25", "33"};
+                ArrayList<EmptyClassRoomItem> list = new ArrayList<>();
+
+                for (String bd : buildings) {
+                    params.put(BUILDING, bd);
+                    list.addAll(ParseUtil.parseXml(EMPTY_ROOM_PARSER, URL, params));
+                }
+                return list;
+
+            } else {
+                return ParseUtil.parseXml(EMPTY_ROOM_PARSER, URL, params);
+            }
+        }
+    };
 
     @Override
     public void onClick(View v) {
@@ -271,7 +279,7 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Cl
         textViews[field].setCompoundDrawablesWithIntrinsicBounds(
                 AppUtil.getAttrValue(getActivity(), isReverse ? R.attr.menu_theme_ic_action_navigation_arrow_drop_up : R.attr.menu_theme_ic_action_navigation_arrow_drop_down), 0, 0, 0);
 
-        mAdapter.sort(ClassRoomItem.getComparator(field, isReverse));
+        mAdapter.sort(EmptyClassRoomItem.getComparator(field, isReverse));
     }
 
     @Override

@@ -2,7 +2,7 @@ package com.uoscs09.theuos2.parse;
 
 import android.util.Log;
 
-import com.uoscs09.theuos2.common.AsyncLoader;
+import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.tab.booksearch.BookItem;
 import com.uoscs09.theuos2.util.StringUtil;
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 
-public class ParserBook extends JerichoParser<BookItem> {
+public class ParserBook extends JerichoParser<ArrayList<BookItem>> {
     private static final String LOG_TAG = "ParseBook";
 
     private static final String HREF = "href";
@@ -62,8 +62,8 @@ public class ParserBook extends JerichoParser<BookItem> {
         FutureTask<ArrayList<BookItem>> task1 = new FutureTask<>(new TaskCallable(bookHtmlList, 0, halfSize)),
                 task2 = new FutureTask<>(new TaskCallable(bookHtmlList, halfSize, size));
 
-        AsyncLoader.excuteFor(task1);
-        AsyncLoader.excuteFor(task2);
+        AsyncUtil.executeFor(task1);
+        AsyncUtil.executeFor(task2);
 
         ArrayList<BookItem> bookItemList = new ArrayList<>();
 

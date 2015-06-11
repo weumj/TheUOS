@@ -4,7 +4,7 @@ import android.appwidget.AppWidgetManager;
 import android.content.Context;
 
 import com.javacan.asyncexcute.AsyncCallback;
-import com.uoscs09.theuos2.common.AsyncLoader;
+import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.util.AppUtil;
 
 import java.util.concurrent.Callable;
@@ -17,7 +17,7 @@ public abstract class AbsAsyncWidgetProvider<Data> extends AbsAppWidgetProvider 
     @Override
     public void onUpdate(final Context context, final AppWidgetManager appWidgetManager, final int[] appWidgetIds) {
 
-        AsyncLoader.excute(
+        AsyncUtil.execute(
                 new Callable<Data>() {
                     @Override
                     public Data call() throws Exception {

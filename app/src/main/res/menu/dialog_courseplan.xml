@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <item
+        android:id="@+id/action_save_text"
+        android:icon="?menu_theme_ic_action_action_view_list"
+        android:orderInCategory="101"
+        android:title="@string/tab_course_plan_action_save_text"
+        app:showAsAction="ifRoom">
+    </item>
+    <item
+        android:id="@+id/action_save_image"
+        android:icon="?menu_theme_ic_action_image_image"
+        android:orderInCategory="102"
+        android:title="@string/tab_course_plan_action_save_image"
+        app:showAsAction="ifRoom">
+    </item>
+</menu>

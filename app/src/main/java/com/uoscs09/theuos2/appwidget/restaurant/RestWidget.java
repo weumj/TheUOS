@@ -11,7 +11,6 @@ import android.widget.RemoteViews;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsAsyncWidgetProvider;
-import com.uoscs09.theuos2.parse.ParserRest;
 import com.uoscs09.theuos2.tab.restaurant.RestItem;
 import com.uoscs09.theuos2.tab.restaurant.TabRestaurantFragment;
 import com.uoscs09.theuos2.util.IOUtil;
@@ -78,10 +77,10 @@ public class RestWidget extends AbsAsyncWidgetProvider<ArrayList<RestItem>> {
         if (OApiUtil.getDateTime() - PrefUtil.getInstance(context).get(PrefUtil.KEY_REST_DATE_TIME, 0) < 3) {
             ArrayList<RestItem> list = IOUtil.readFromFileSuppressed(context, IOUtil.FILE_REST);
             if (list == null)
-                list = TabRestaurantFragment.getRestListFromWeb(context, new ParserRest());
+                list = TabRestaurantFragment.getRestListFromWeb(context);
             return list;
         } else {
-            return TabRestaurantFragment.getRestListFromWeb(context, new ParserRest());
+            return TabRestaurantFragment.getRestListFromWeb(context);
         }
     }
 

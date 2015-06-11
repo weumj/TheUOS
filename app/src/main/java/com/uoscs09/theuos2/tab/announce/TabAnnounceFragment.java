@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -27,6 +28,8 @@ import android.widget.TextView;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
+import com.uoscs09.theuos2.async.AsyncFragmentJob;
+import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.common.NestedListView;
 import com.uoscs09.theuos2.http.HttpRequest;
@@ -49,23 +52,25 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
      */
     @ReleaseWhenDestroy
     private Spinner mCategorySpinner;
-    @ReleaseWhenDestroy
     private ArrayAdapter<AnnounceItem> mAnnounceAdapter;
+    @ReleaseWhenDestroy
+    private View mListFooterView;
+
+    private AsyncFragmentJob<ArrayList<AnnounceItem>> mOrdinaryJob, mSearchJob, mMoreJob;
+
     private Hashtable<String, String> mQueryTable;
     @AsyncData
     private ArrayList<AnnounceItem> mDataList;
 
-    private final ParseAnnounce mParser = new ParseAnnounce();
+    private AsyncTask<Void, Void, ArrayList<AnnounceItem>> mAsyncTask;
+
+    private static final ParseAnnounce PARSER = new ParseAnnounce();
     /**
      * searchView
      */
     @ReleaseWhenDestroy
     private MenuItem mSearchMenu;
 
-    /**
-     * 현재 공지사항 검색을 시도하는지의 여부를 가리키는 변수
-     */
-    private boolean isSearching;
     /**
      * (검색 메뉴 선택시)검색어를 저장함
      */
@@ -129,7 +134,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
         View rootView = inflater.inflate(R.layout.tab_announce, container, false);
 
         NestedListView mListView = (NestedListView) rootView.findViewById(R.id.tab_announce_list_announce);
-        setNestedScrollingChild(mListView);
+        registerNestedScrollingChild(mListView);
 
         mEmptyView = rootView.findViewById(R.id.tab_announce_empty_view);
         mEmptyView.setOnClickListener(new View.OnClickListener() {
@@ -142,6 +147,17 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
         });
         mEmptyView.setVisibility(mDataList.size() != 0 ? View.INVISIBLE : View.VISIBLE);
 
+        mListFooterView = inflater.inflate(R.layout.view_tab_announce_bottom_more, mListView, false);
+        mListView.addFooterView(mListFooterView);
+        mListFooterView.setVisibility(View.GONE);
+        mListFooterView.findViewById(android.R.id.text1).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendClickEvent("view more page");
+                executeMoreJob();
+            }
+        });
+
         mListView.setEmptyView(mEmptyView);
         mListView.setOnItemClickListener(mListViewOnItemClickListener);
         mListView.setAdapter(mAnnounceAdapter);
@@ -149,6 +165,14 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
         registerProgressView(rootView.findViewById(R.id.progress_layout));
 
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if(!mAnnounceAdapter.isEmpty() && mListFooterView.getVisibility() != View.VISIBLE)
+            mListFooterView.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -161,7 +185,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
                 sendTrackerEvent("forward", "" + mSpinnerSelection);
 
                 setPageValue(pageNum + 1);
-                execute();
+                executeOrdinaryJob();
                 return true;
             }
             case R.id.action_backward: {
@@ -172,7 +196,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
                     sendTrackerEvent("backward", "" + mSpinnerSelection);
 
                     setPageValue(pageNum - 1);
-                    execute();
+                    executeOrdinaryJob();
                 }
                 return true;
             }
@@ -232,7 +256,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
     };
 
     /**
-     * spinner가 선택되면(카테고리 선택) 호출됨
+     * spinner 가 선택되면(카테고리 선택) 호출됨
      */
     private final AdapterView.OnItemSelectedListener mSpinnerOnItemSelectedListener = new AdapterView.OnItemSelectedListener() {
         @Override
@@ -240,7 +264,6 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
             // 카테고리가 변경되었으므로, 기존 검색사항 초기화.
             mSpinnerSelection = position;
             searchQuery = null;
-            isSearching = false;
 
             // Fragment 가 ViewPager 내부에 존재하지만, 사용자에게 보이지 않는 경우
             if (!isMenuVisible()) {
@@ -256,7 +279,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
 
             setPageValue(1);
             mShouldChangeMaxValueOfPage = true;
-            execute();
+            executeOrdinaryJob();
 
             sendTrackerEvent("announce category change", "", mSpinnerSelection);
         }
@@ -283,16 +306,14 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
             mSearchMenu.collapseActionView();
 
             if (mSpinnerSelection == 0) {
-                AppUtil.showToast(getActivity(), R.string.tab_anounce_invaild_category, true);
-                isSearching = false;
+                AppUtil.showToast(getActivity(), R.string.tab_announce_invalid_category, true);
 
             } else {
 
                 searchQuery = query.trim();
                 setPageValue(1);
-                isSearching = true;
                 mShouldChangeMaxValueOfPage = true;
-                execute();
+                executeSearchJob();
 
             }
 
@@ -302,84 +323,200 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
 
 	/* TODO Listener end */
 
-    /* TODO AsyncExcutor Callback */
 
     @Override
-    protected void execute() {
+    protected void onPreExecute() {
+        super.onPreExecute();
         mEmptyView.setVisibility(View.INVISIBLE);
+        mListFooterView.setClickable(false);
+    }
 
-        super.execute();
+
+    private boolean checkAnotherJob() {
+        if (AsyncUtil.isTaskRunning(mAsyncTask)) {
+            AppUtil.showToast(getActivity(), R.string.progress_ongoing_another);
+            return true;
+        } else
+            return false;
+    }
+
+    protected void executeOrdinaryJob() {
+        if (checkAnotherJob()) {
+            return;
+        }
+        if (mOrdinaryJob == null)
+            mOrdinaryJob = new NormalJob();
+        mAsyncTask = super.execute(mOrdinaryJob);
+    }
+
+    void executeSearchJob() {
+        if (checkAnotherJob()) {
+            return;
+        }
+        if (mSearchJob == null)
+            mSearchJob = new SearchJob();
+        mAsyncTask = super.execute(mSearchJob);
+    }
+
+    void executeMoreJob() {
+        if (checkAnotherJob()) {
+            return;
+        }
+        if (mMoreJob == null)
+            mMoreJob = new MoreJob();
+        mAsyncTask = super.execute(mMoreJob);
     }
 
     @Override
-    public ArrayList<AnnounceItem> call() throws Exception {
-        // TODO 최적화 필요, 필요없이 지우고 쓰고 함
-        mQueryTable.clear();
-        final int howTo;
-        final String url;
-        if (mSpinnerSelection == 3) {
-            if (isSearching) {
-                mQueryTable.put("sword", searchQuery);
-                mQueryTable.put("skind", "title");
-            }
+    protected void onPostExecute() {
+        super.onPostExecute();
+        mListFooterView.setClickable(true);
+    }
+
+    /**
+     * 일반적인 공지사항 보기
+     */
+    private class NormalJob extends AsyncFragmentJob.Base<ArrayList<AnnounceItem>> {
+        void initQueryTableNormal() {
+            mQueryTable.put("list_id", mSpinnerSelection == 1 ? "FA1" : "FA2");
+            mQueryTable.put("pageIndex", String.valueOf(pageNum));
+        }
+
+        void initQueryTableScholarship() {
             mQueryTable.put("process", "list");
             mQueryTable.put("brdbbsseq", "1");
             mQueryTable.put("x", "1");
             mQueryTable.put("y", "1");
             mQueryTable.put("w", "3");
             mQueryTable.put("pageNo", String.valueOf(pageNum));
-            howTo = ParseAnnounce.SCHOLAR;
-            url = "http://scholarship.uos.ac.kr/scholarship.do";
-        } else {
-            if (isSearching) {
-                mQueryTable.put("searchCnd", "1");
-                mQueryTable.put("searchWrd", searchQuery);
-            }
-            mQueryTable.put("list_id", mSpinnerSelection == 1 ? "FA1" : "FA2");
-            mQueryTable.put("pageIndex", String.valueOf(pageNum));
-            howTo = 0;
-            url = "http://www.uos.ac.kr/korNotice/list.do";
         }
 
-        String body = HttpRequest.getBodyByPost(url, StringUtil.ENCODE_UTF_8, mQueryTable, StringUtil.ENCODE_UTF_8);
-        mParser.setHowTo(howTo);
-        return mParser.parse(body);
-    }
+        @Override
+        public ArrayList<AnnounceItem> call() throws Exception {
+            // TODO 최적화 필요, 필요없이 지우고 쓰고 함
+            mQueryTable.clear();
+            final int howTo;
+            final String url;
+            if (mSpinnerSelection == 3) {
+                initQueryTableScholarship();
+                howTo = ParseAnnounce.SCHOLAR;
+                url = "http://scholarship.uos.ac.kr/scholarship.do";
+            } else {
+                initQueryTableNormal();
+                howTo = 0;
+                url = "http://www.uos.ac.kr/korNotice/list.do";
+            }
 
-    @Override
-    public void onTransactResult(ArrayList<AnnounceItem> result) {
-        if (result == null || result.size() == 0) {
-            pageNum = prevPageNum;
-            AppUtil.showToast(getActivity(), R.string.search_result_empty, true);
-        } else {
-            mAnnounceAdapter.clear();
-            mAnnounceAdapter.addAll(result);
-            mAnnounceAdapter.notifyDataSetChanged();
+            String body = HttpRequest.getBodyByPost(url, StringUtil.ENCODE_UTF_8, mQueryTable, StringUtil.ENCODE_UTF_8);
+            PARSER.setHowTo(howTo);
+            return PARSER.parse(body);
+        }
 
-            // 페이지 선택에서 이동 가능한 최대 페이지 번호를
-            // 공지사항의 인덱스를 기준으로 설정함
-            if (mShouldChangeMaxValueOfPage) {
-                final int size = result.size();
-                for (int i = 0; i < size; i++) {
-                    AnnounceItem item = result.get(i);
-                    if (item.type.equals("공지"))
-                        continue;
+        @Override
+        public void onResult(ArrayList<AnnounceItem> result) {
+            if (checkResultNotEmpty(result)) {
+                mAnnounceAdapter.clear();
+                mAnnounceAdapter.addAll(result);
+                mAnnounceAdapter.notifyDataSetChanged();
 
-                    try {
-                        int maxPageNumber = Integer.parseInt(item.type);
-                        mPageNumberPicker.setMaxValue(maxPageNumber / 10 + 1);
-                        break;
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                // 페이지 선택에서 이동 가능한 최대 페이지 번호를
+                // 공지사항의 인덱스를 기준으로 설정함
+                if (mShouldChangeMaxValueOfPage) {
+                    final int size = result.size();
+                    for (int i = 0; i < size; i++) {
+                        AnnounceItem item = result.get(i);
+                        if (item.type.equals("공지"))
+                            continue;
+
+                        try {
+                            int maxPageNumber = Integer.parseInt(item.type);
+                            mPageNumberPicker.setMaxValue(maxPageNumber / 10 + 1);
+                            break;
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
+                    mShouldChangeMaxValueOfPage = false;
                 }
-                mShouldChangeMaxValueOfPage = false;
+
+                mListFooterView.setVisibility(mAnnounceAdapter.isEmpty() ? View.GONE : View.VISIBLE);
+
             }
+            updatePageNumber();
+
         }
-        updatePageNumber();
+
+        boolean checkResultNotEmpty(ArrayList<AnnounceItem> result) {
+            if (result == null || result.size() == 0) {
+                pageNum = prevPageNum;
+                AppUtil.showToast(getActivity(), R.string.search_result_empty, true);
+
+                mListFooterView.setVisibility(View.GONE);
+                return false;
+            } else
+                return true;
+        }
+
+        @Override
+        public void onPostExcute() {
+            super.onPostExcute();
+
+            mAsyncTask = null;
+        }
     }
 
-	/* TODO AsyncExcutor Callback end */
+    /**
+     * 검색
+     */
+    private class SearchJob extends NormalJob {
+        @Override
+        void initQueryTableNormal() {
+            super.initQueryTableNormal();
+            mQueryTable.put("searchCnd", "1");
+            mQueryTable.put("searchWrd", searchQuery);
+        }
+
+        @Override
+        void initQueryTableScholarship() {
+            super.initQueryTableScholarship();
+            mQueryTable.put("sword", searchQuery);
+            mQueryTable.put("skind", "title");
+        }
+
+    }
+
+    /**
+     * '더 보기' 를 선택하면 수행됨
+     */
+    private class MoreJob extends NormalJob {
+        @Override
+        public ArrayList<AnnounceItem> call() throws Exception {
+            setPageValue(pageNum + 1);
+            ArrayList<AnnounceItem> result = super.call();
+
+            int size = result.size();
+            for (int i = size - 1; i >= 0; i--) {
+                AnnounceItem item = result.get(i);
+                if (item.type.equals("공지"))
+                    result.remove(i);
+            }
+
+            return result;
+        }
+
+        @Override
+        public void onResult(ArrayList<AnnounceItem> result) {
+            if (checkResultNotEmpty(result)) {
+                mAnnounceAdapter.addAll(result);
+                mAnnounceAdapter.notifyDataSetChanged();
+            }
+            updatePageNumber();
+        }
+
+    }
+
+
+	/* TODO AsyncJob end */
 
     /**
      * Toolbar 에 붙일 Tab (카테고리 Spinner & PageIndexView) 을 초기화 한다.
@@ -403,7 +540,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
             @Override
             public void onClick(View v) {
                 if (mSpinnerSelection == 0) {
-                    AppUtil.showToast(getActivity(), R.string.tab_anounce_invaild_category, true);
+                    AppUtil.showToast(getActivity(), R.string.tab_announce_invalid_category, true);
                 } else {
                     mPageSelectDialog.show();
                 }
@@ -432,14 +569,14 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
         mPageNumberPicker.setMaxValue(999);
 
         mPageSelectDialog = new android.support.v7.app.AlertDialog.Builder(context)
-                .setTitle(R.string.tab_anounce_plz_select_page)
+                .setTitle(R.string.tab_announce_plz_select_page)
                 .setView(mPageNumberPicker)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         sendTrackerEvent("page change", "" + mSpinnerSelection, mPageNumberPicker.getValue());
                         setPageValue(mPageNumberPicker.getValue());
-                        execute();
+                        executeOrdinaryJob();
                     }
                 })
                 .setNegativeButton(android.R.string.no, null)

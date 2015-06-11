@@ -9,15 +9,15 @@ import com.uoscs09.theuos2.base.AbsArrayAdapter;
 
 import java.util.List;
 
-public class SearchEmptyRoomAdapter extends AbsArrayAdapter<ClassRoomItem, SearchEmptyRoomAdapter.Holder> {
+public class SearchEmptyRoomAdapter extends AbsArrayAdapter<EmptyClassRoomItem, SearchEmptyRoomAdapter.Holder> {
 
-    public SearchEmptyRoomAdapter(Context context, List<ClassRoomItem> list) {
+    public SearchEmptyRoomAdapter(Context context, List<EmptyClassRoomItem> list) {
         super(context, R.layout.list_layout_empty_room,  list);
     }
 
     @Override
     public void onBindViewHolder(int position, Holder holder) {
-        ClassRoomItem item = getItem(position);
+        EmptyClassRoomItem item = getItem(position);
 
         holder.building.setText(item.building);
         holder.room_no.setText(item.room_no);

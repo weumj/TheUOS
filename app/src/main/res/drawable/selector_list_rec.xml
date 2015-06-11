@@ -1,8 +1,0 @@
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <item android:drawable="@drawable/rectangle_box_light_gray" android:state_pressed="true"/>
-    <item android:drawable="@drawable/rectangle_box_light_gray" android:state_checked="true"/>
-    <item android:drawable="@drawable/rectangle_box_light_gray" android:state_selected="true"/>
-    <item android:drawable="@drawable/rectangle_box_light"/>
-
-</selector>

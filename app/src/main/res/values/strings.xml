@@ -12,6 +12,7 @@
     <string name="cancel">취소</string>
     <string name="success">성공하였습니다.</string>
     <string name="saved">에 저장되었습니다.</string>
+    <string name="save">저장되었습니다.</string>
     <string name="deleted">삭제되었습니다.</string>
     <string name="failed">실패하였습니다.</string>
     <string name="error_occur">에러!</string>
@@ -24,6 +25,7 @@
     <string name="progress_ongoing">처리 중…</string>
     <string name="progress_wait">잠시 후에 시도하세요.</string>
     <string name="progress_fail">로딩 실패</string>
+    <string name="progress_ongoing_another">다른 작업이 진행중입니다.</string>
     <string name="before_finish">\'뒤로\'버튼을 한번 더 누르시면 종료됩니다.</string>
 
     <string name="title_section0_home">The UOS</string>
@@ -60,12 +62,14 @@
     <string name="action_copy">복사</string>
     <string name="action_save">저장</string>
     <string name="action_delete">삭제</string>
-    <string name="action_dissmiss_info">좌석 해지 예상 시간표</string>
+    <string name="action_dismiss_info">좌석 해지 예상 시간표</string>
     <string name="action_location_direction">경로 검색</string>
+    <string name="action_open">열기</string>
 
-    <string name="tab_anounce_empty_view_desc"> 공지사항을 선택해 주세요.</string>
-    <string name="tab_anounce_invaild_category">카테고리를 선택해 주세요.</string>
-    <string name="tab_anounce_plz_select_page">이동할 페이지를 선택해 주세요.</string>
+    <string name="tab_announce_empty_view_desc"> 공지사항을 선택해 주세요.</string>
+    <string name="tab_announce_invalid_category">카테고리를 선택해 주세요.</string>
+    <string name="tab_announce_plz_select_page">이동할 페이지를 선택해 주세요.</string>
+    <string name="tab_announce_show_next_page">다음 페이지 보기</string>
 
     <string name="tab_book_book_opt">도서 검색 옵션</string>
     <string name="tab_book_book_opt_sub">분류와 정렬 방식을 선택해 주세요</string>
@@ -95,6 +99,8 @@
     <string name="tab_rest_lunch">중식</string>
     <string name="tab_rest_dinner">석식</string>
     <string name="tab_rest_no_info">정보가 없습니다.\n</string>
+    <string name="tab_rest_operation_time">운영시간</string>
+    <string name="tab_rest_show_menu_in_week">일주일간 메뉴 보기</string>
 
     <string name="tab_phone_call">전화</string>
     <string name="tab_phone_search_hint">검색할 장소를 입력하세요.</string>
@@ -158,6 +164,8 @@
     <string name="tab_course_plan_prof">담당교수</string>
     <string name="tab_course_plan_eval">평가방법</string>
     <string name="tab_course_plan_book">교재</string>
+    <string name="tab_course_plan_action_save_image">이미지로 저장</string>
+    <string name="tab_course_plan_action_save_text">텍스트로 저장</string>
 
     <string name="tab_transport_empty">버튼을 눌러 정보를 불러오세요.</string>
 

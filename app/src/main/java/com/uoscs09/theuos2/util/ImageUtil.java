@@ -16,7 +16,6 @@ import android.view.View.MeasureSpec;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
-import com.nhaarman.listviewanimations.appearance.AnimationAdapter;
 import com.uoscs09.theuos2.R;
 
 import java.io.FileOutputStream;
@@ -29,28 +28,28 @@ public class ImageUtil {
     /**
      * 주어진 리스트뷰의 전체 아이템들을 하나의 통합된 비트맵으로 만든다.
      */
-    public static Bitmap getWholeListViewItemsToBitmap(ListView listview) {
-        ListAdapter adapter = listview.getAdapter();
-        if (adapter instanceof AnimationAdapter) {
-            adapter = ((AnimationAdapter) adapter).getDecoratedBaseAdapter();
-        }
+    public static Bitmap getWholeListViewItemsToBitmap(ListView listView, ListAdapter adapter) {
 
         int itemscount = adapter.getCount();
         int allitemsheight = 0;
         List<Bitmap> bmps = new ArrayList<>();
 
         for (int i = 0; i < itemscount; i++) {
-            View childView = adapter.getView(i, null, listview);
-            childView.measure(MeasureSpec.makeMeasureSpec(listview.getWidth(), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+            View childView = adapter.getView(i, null, listView);
 
-            childView.layout(0, 0, childView.getMeasuredWidth(), childView.getMeasuredHeight());
-            childView.setDrawingCacheEnabled(true);
-            childView.buildDrawingCache();
-            bmps.add(childView.getDrawingCache());
+            Bitmap bitmap = childView.getDrawingCache(true);
+            if (bitmap == null) {
+                childView.measure(MeasureSpec.makeMeasureSpec(listView.getWidth(), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+                childView.layout(0, 0, childView.getMeasuredWidth(), childView.getMeasuredHeight());
+                childView.setDrawingCacheEnabled(true);
+                childView.buildDrawingCache();
+                bitmap = childView.getDrawingCache();
+            }
+            bmps.add(bitmap);
             allitemsheight += childView.getMeasuredHeight();
         }
 
-        Bitmap bigbitmap = Bitmap.createBitmap(listview.getMeasuredWidth(), allitemsheight + itemscount, Bitmap.Config.ARGB_8888);
+        Bitmap bigbitmap = Bitmap.createBitmap(listView.getMeasuredWidth(), allitemsheight + itemscount, Bitmap.Config.ARGB_8888);
         bigbitmap.eraseColor(Color.WHITE);
         Canvas bigcanvas = new Canvas(bigbitmap);
 
@@ -59,7 +58,7 @@ public class ImageUtil {
 
         int size = bmps.size();
         Bitmap bmp, line;
-        line = Bitmap.createBitmap(listview.getWidth(), 1, Bitmap.Config.ARGB_8888);
+        line = Bitmap.createBitmap(listView.getWidth(), 1, Bitmap.Config.ARGB_8888);
         line.eraseColor(Color.DKGRAY);
         for (int i = 0; i < size; i++) {
             bmp = bmps.get(i);
@@ -104,6 +103,16 @@ public class ImageUtil {
         return b;
     }
 
+    public static Bitmap drawOnBackground(Bitmap bitmap, int color){
+        Bitmap processed = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        processed.eraseColor(color);
+        Canvas canvas = new Canvas(processed);
+
+        canvas.drawBitmap(bitmap, 0 ,0 ,new Paint());
+
+        return processed;
+    }
+
     /**
      * 두개의 비트맵을 합친다. bmp1이 위에 위치한다.
      */
@@ -142,7 +151,7 @@ public class ImageUtil {
         return getTintDrawable(drawable, context.getResources().getColor(AppUtil.getAttrValue(context, R.attr.color_actionbar_title)));
     }
 
-    public static Drawable getTintDrawableForMenu(Context context, @DrawableRes int id){
+    public static Drawable getTintDrawableForMenu(Context context, @DrawableRes int id) {
         return getTintDrawableForMenu(context, getDrawable(context, id));
     }
 

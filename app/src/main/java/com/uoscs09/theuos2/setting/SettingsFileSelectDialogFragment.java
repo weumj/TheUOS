@@ -5,13 +5,14 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
@@ -33,20 +34,31 @@ import java.util.List;
  * <br>
  * <br>
  * <p/>
- * 디렉토리 선택버튼을 눌렀을 시 디렉토리 경로가 preference에 <br>
- * {@code PrefUtil.KEY_IMAGE_SAVE_PATH}를 키값으로 해서 저장되어야 한다. <br>
+ * 디렉토리 선택버튼을 눌렀을 시 디렉토리 경로가 preference 에 <br>
+ * {@code PrefUtil.KEY_***_SAVE_PATH}를 키값으로 해서 저장되어야 한다. <br>
  * <br>
  * <p/>
- * 취소한 경우 preference의 값은 바뀌지 않는다.
+ * 취소한 경우 preference 의 값은 바뀌지 않는다.
  */
 public class SettingsFileSelectDialogFragment extends DialogFragment {
-    private TextView pathTextView;
     private String path;
     private ArrayList<File> mFileList;
     private ArrayAdapter<File> mFileArrayAdapter;
     private final String ROOT = "/";
+    private String PATH_KEY;
+    private int titleId;
+    private Toolbar mToolbar;
+
+    public void setSavePathKey(String path) {
+        this.PATH_KEY = path;
+    }
+
+    public void setTitleId(int id) {
+        this.titleId = id;
+    }
 
     private static final String TAG = "SettingsFileSelectDialogFragment";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,37 +70,45 @@ public class SettingsFileSelectDialogFragment extends DialogFragment {
     }
 
     /**
-     * Dialog의 View를 생성한다.
+     * Dialog 의 View 를 생성한다.
      */
     private View createView() {
         mFileArrayAdapter = new FileListAdapter(getActivity(), mFileList);
 
         View rootView = View.inflate(getActivity(), R.layout.dialog_setting_save_route, null);
 
-        rootView.findViewById(R.id.dialog_setting_save_route_button_up).setOnClickListener(new View.OnClickListener() {
+        mToolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
+        mToolbar.setTitle(titleId);
+        mToolbar.inflateMenu(R.menu.dialog_file_select);
+        mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
-            public void onClick(View v) {
+            public boolean onMenuItemClick(MenuItem item) {
 
-                if (path.equals(ROOT))
-                    loadFileListToListView(new File(ROOT));
-                else
-                    loadFileListToListView(new File(path).getParentFile());
+                switch (item.getItemId()) {
+                    case R.id.action_up:
 
+                        if (path.equals(ROOT))
+                            loadFileListToListView(new File(ROOT));
+                        else
+                            loadFileListToListView(new File(path).getParentFile());
+
+                        return true;
+                    default:
+                        return false;
+                }
             }
         });
 
         ListView listView = (ListView) rootView.findViewById(R.id.dialog_setting_save_route_listView);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1,
-                                    int position, long arg3) {
+            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
                 loadFileListToListView((File) arg0.getItemAtPosition(position));
             }
         });
         listView.setAdapter(mFileArrayAdapter);
 
-        pathTextView = (TextView) rootView.findViewById(R.id.dialog_setting_save_route_text_path);
-        pathTextView.setText(path);
+        mToolbar.setSubtitle(path);
 
         return rootView;
     }
@@ -121,7 +141,7 @@ public class SettingsFileSelectDialogFragment extends DialogFragment {
             Collections.sort(mFileList, caseIgnoreComparator);
             mFileArrayAdapter.notifyDataSetChanged();
             path = file.getAbsolutePath();
-            pathTextView.setText(path);
+            mToolbar.setSubtitle(path);
         }
     }
 
@@ -135,9 +155,8 @@ public class SettingsFileSelectDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return new AlertDialog.Builder(getActivity())
-                .setTitle(R.string.setting_save_route_sub_title)
                 .setView(createView())
-                .setIconAttribute(R.attr.theme_ic_action_image_image)
+                //.setIconAttribute(R.attr.theme_ic_action_image_image)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -149,12 +168,12 @@ public class SettingsFileSelectDialogFragment extends DialogFragment {
     }
 
     void putPathToPref(Context context, String path) {
-        PrefUtil.getInstance(context).put(PrefUtil.KEY_IMAGE_SAVE_PATH, path);
+        PrefUtil.getInstance(context).put(PATH_KEY, path);
     }
 
     private String getPathFromPref(Context context) {
-        String defaultRoute = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
-        return PrefUtil.getInstance(context).get(PrefUtil.KEY_IMAGE_SAVE_PATH, defaultRoute);
+        String defaultRoute = PrefUtil.getDefaultPath(PATH_KEY);
+        return PrefUtil.getInstance(context).get(PATH_KEY, defaultRoute);
     }
 
 
@@ -167,6 +186,19 @@ public class SettingsFileSelectDialogFragment extends DialogFragment {
         @Override
         public String getTextFromItem(File item) {
             return item.getName();
+        }
+
+        @Override
+        public SimpleViewHolder getViewHolder(View convertView) {
+            return new SettingsFileSelectDialogFragment.ViewHolder(convertView);
+        }
+    }
+
+    private static class ViewHolder extends AbsArrayAdapter.SimpleViewHolder{
+
+        public ViewHolder(View view) {
+            super(view);
+            textView.setGravity(Gravity.CENTER_VERTICAL);
         }
     }
 

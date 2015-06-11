@@ -10,7 +10,7 @@ import net.htmlparser.jericho.Source;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ParserRest extends JerichoParser<RestItem> {
+public class ParserRest extends JerichoParser<ArrayList<RestItem>> {
 
     @Override
     protected ArrayList<RestItem> parseHttpBody(Source source) throws Exception {

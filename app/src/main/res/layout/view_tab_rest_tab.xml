@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         app:mrl_rippleColor="?colorAccent"
         android:duplicateParentState="true"
-        app:mrl_rippleDelayClick="false"
+        app:mrl_rippleDelayClick="true"
         android:layout_height="match_parent">
 
         <FrameLayout

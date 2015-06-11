@@ -8,7 +8,7 @@ import net.htmlparser.jericho.Source;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ParserTransport extends JerichoParser<TransportItem> {
+public class ParserTransport extends JerichoParser<ArrayList<TransportItem>> {
     private static final int BASIC = 0;
     private int howTo;
 

@@ -21,7 +21,6 @@
         android:paddingLeft="2dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:text="location"
         android:layout_marginTop="5dp" />
 
 
@@ -29,7 +28,6 @@
         android:id="@+id/tab_booksearch_bookstate_code"
         android:layout_width="wrap_content"
         android:paddingLeft="2dp"
-        android:text="code"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@id/tab_booksearch_bookstate_location"
         android:layout_below="@id/tab_booksearch_bookstate_location"
@@ -39,7 +37,6 @@
         android:id="@+id/tab_booksearch_bookstate_state"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="state"
         android:paddingLeft="2dp"
         android:layout_alignBaseline="@id/tab_booksearch_bookstate_code"
         android:layout_marginLeft="20dp"

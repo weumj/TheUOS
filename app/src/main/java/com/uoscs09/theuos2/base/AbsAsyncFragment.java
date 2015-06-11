@@ -1,23 +1,19 @@
 package com.uoscs09.theuos2.base;
 
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.v4.app.NotificationCompat;
+import android.support.annotation.NonNull;
 
 import com.javacan.asyncexcute.AsyncCallback;
 import com.javacan.asyncexcute.AsyncExecutor;
-import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
+import com.uoscs09.theuos2.async.AsyncFragmentJob;
 import com.uoscs09.theuos2.util.AppUtil;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -25,11 +21,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * 이 클래스를 상속 받는 클래스는 {@code Callable} 인터페이스를 반드시 구현해야한다.<br>
  * 구현한 {@code Callable} 은 백그라운드 작업이 실행되는 콜백이다.
  */
-public abstract class AbsAsyncFragment<T> extends BaseTabFragment implements AsyncCallback<T>, Callable<T> {
-    private AsyncExecutor<T> executor;
-    private boolean mRunning = false;
+public abstract class AbsAsyncFragment<T> extends BaseTabFragment {
+
     private final static Map<String, Object> sAsyncDataStoreMap = new ConcurrentHashMap<>();
-    private Context mContext;
 
     /**
      * {@code super.onCreate()}를 호출하면, 이전의 비 동기 작업 처리 결과에 따라<br>
@@ -40,7 +34,6 @@ public abstract class AbsAsyncFragment<T> extends BaseTabFragment implements Asy
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        mContext = getActivity().getApplicationContext();
         Object data = getAsyncData(getClass().getName());
         if (data != null) {
             Field[] fs = getClass().getDeclaredFields();
@@ -61,123 +54,122 @@ public abstract class AbsAsyncFragment<T> extends BaseTabFragment implements Asy
     }
 
     /**
-     * 현재 백그라운드 작업이 실행 중 인지 여부를 반환한다.
+     * 비동기 작업이 실행되기 전 호출된다.
      */
-    protected final boolean isRunning() {
-        return mRunning;
+    protected void onPreExecute() {
     }
 
     /**
-     * Main Thread에서 비동기 작업을 설정하고, 실행하는 메소드<br>
-     * 비동기 작업이 실행되기 전에 필요한 작업은 이 메소드를 호출하기 전에 <br>
-     * 처리하거나, 이 메소드를 상속받아 적절히 구현한다.<br>
+     * 주어진 비동기 작업을 실행한다.
      */
-    protected void execute() {
-        if (executor != null && !executor.isCancelled()) {
-            executor.cancel(true);
-        }
-        mRunning = true;
-        setExecutor(true);
-        executor.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    @NonNull
+    public final AsyncTask<Void, Void, T> execute(@NonNull AsyncFragmentJob<T> job) {
+        InnerJob<T> innerJob = new InnerJob<>(this, job);
+
         sAsyncDataStoreMap.remove(getClass().getName());
+
+        onPreExecute();
+
+        return new AsyncExecutor<T>().setCallable(job).setCallback(innerJob).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    /**
-     * 백그라운드 작업을 설정한다.
-     *
-     * @param force 다른 작업이 실행중인것과 관계없이 강제로 설정하는지 여부
-     * @return 설정 여부
-     */
-    public final boolean setExecutor(boolean force) {
-        if (!force && executor.getStatus().equals(AsyncTask.Status.RUNNING))
-            return false;
-        else {
-            executor = new AsyncExecutor<T>().setCallable(this).setCallback(this);
-            return true;
+    protected void onPostExecute(){
+    }
+
+
+    private static class InnerJob<V> implements AsyncCallback<V> {
+        private AsyncFragmentJob<V> mAsyncFragmentJob;
+        private AbsAsyncFragment<V> mFragment;
+
+        private InnerJob(AbsAsyncFragment<V> fragment, AsyncFragmentJob<V> asyncJob) {
+            this.mFragment = fragment;
+            this.mAsyncFragmentJob = asyncJob;
         }
-    }
 
-    /**
-     * 현재 실행되고 있는 백그라운드 작업을 취소한다.
-     *
-     * @return {@code true} - 작업을 성공적으로 취소하였을 때<br>
-     * {@code false} - 작업이 설정되지 않았거나 ({@code null}),<br>
-     * 작업을 취소할 수 없을 때<br>
-     * (대개 이런경우는 작업이 이미 정상적으로 종료된 경우이다.)
-     */
-    protected final boolean cancelExecutor() {
-        if (executor != null) {
-            boolean b = executor.cancel(true);
-            if (b || executor.getStatus().equals(AsyncTask.Status.FINISHED))
-                mRunning = false;
-            return b;
-        } else {
-            mRunning = false;
-            return false;
-        }
-    }
-
-    /**
-     * 작업을 처리하는 AsyncExcutor 객체를 얻는다.
-     */
-    protected final AsyncExecutor<T> getExecutor() {
-        return executor;
-    }
-
-    @Override
-    public final void onPostExcute() {
-        mRunning = false;
-        if (isVisible()) {
-            onTransactPostExecute();
-        }
-    }
-
-    /**
-     * 현재 Fragment가 존재하는 상태에서 비동기 작업이 끝나고 UI Thread로 진입 할 때 호출된다.
-     */
-    protected abstract void onTransactPostExecute();
-
-    @Override
-    public final void onResult(T result) {
-        if (isVisible())
-            onTransactResult(result);
-        else {
-            putAsyncData(getClass().getName(), result);
-            notifyFinishWhenBackground(mContext, result);
-            mContext = null;
-        }
-    }
-
-    @Override
-    public void exceptionOccured(Exception e) {
-        e.printStackTrace();
-        if (isVisible()) {
-            if (e instanceof IOException) {
-                AppUtil.showInternetConnectionErrorToast(getActivity(), isMenuVisible());
-            } else {
-                AppUtil.showErrorToast(getActivity(), e, isMenuVisible());
+        @Override
+        public void onResult(V v) {
+            if (mFragment.isVisible())
+                mAsyncFragmentJob.onResult(v);
+            else {
+                mFragment.putAsyncData(mFragment.getClass().getName(), v);
+                mAsyncFragmentJob.onResultBackground(v);
             }
-        } else {
-            notifyFinishWhenBackground(mContext, e);
-            mContext = null;
+
+            releaseResource();
+        }
+
+        @Override
+        public void exceptionOccured(Exception e) {
+            e.printStackTrace();
+            Context context = mFragment.getActivity();
+            if (mFragment.isVisible()) {
+                if(!mAsyncFragmentJob.exceptionOccurred(e)) {
+                    if (e instanceof IOException) {
+                        AppUtil.showInternetConnectionErrorToast(context, mFragment.isMenuVisible());
+                    } else {
+                        AppUtil.showErrorToast(context, e, mFragment.isMenuVisible());
+                    }
+                }
+
+            } else {
+                mAsyncFragmentJob.errorOnBackground(e);
+            }
+
+            releaseResource();
+        }
+
+        @Override
+        public void cancelled() {
+            if (mFragment.isVisible()) {
+                mAsyncFragmentJob.cancelled();
+            }
+
+            releaseResource();
+        }
+
+        @Override
+        public void onPostExcute() {
+            if (mFragment.isVisible()) {
+                mFragment.onPostExecute();
+            }
+            mAsyncFragmentJob.onPostExcute();
+        }
+
+        private void releaseResource() {
+            mAsyncFragmentJob = null;
+            mFragment = null;
         }
     }
 
-    @Override
-    public void cancelled() {
-        AppUtil.showCanceledToast(getActivity(), isMenuVisible());
+    /**
+     * 비동기 작업이 끝난 후, Fragment가 이미 파괴되었을 때 호출되어 <br>
+     * 전역적인 Map에 데이터를 보관한다.
+     *
+     * @param key 보관할 데이터의 key, 어플리케이션에서 전역적인 데이터이므로 겹치지 않게 주의하여야 한다.
+     * @param obj 보관할 데이터
+     * @return 저장 성공 여부, 해당 key가 존재했다면 저장되지 않고 false를 반환한다.
+     */
+    protected boolean putAsyncData(String key, T obj) {
+        if (!sAsyncDataStoreMap.containsKey(key)) {
+            sAsyncDataStoreMap.put(key, obj);
+            return true;
+        } else
+            return false;
     }
 
     /**
-     * 비동기 작업이 끝났지만, Fragment가 파괴되었을 때, 호출된다. <br>
-     * <br>
-     * 기본적으로 구현된 작업은 notification을 띄우는 것이다.
+     * 비동기 작업으로 인해 저장된 data를 가져온다. 가져온 data는 Map에서 삭제된다.
      *
-     * @param context Fragment의 Activity
-     * @param result  작업이 성공했을 시 - 'T' 객체<br>
-     *                작업이 실패하였을 때 - Exception 객체
+     * @param key 저장된 data를 가져올 key
+     * @return 저장된 data, 저장된 data가 없다면 null을 반환한다.
      */
-    protected void notifyFinishWhenBackground(Context context, Object result) {
+    protected static Object getAsyncData(String key) {
+        return sAsyncDataStoreMap.remove(key);
+    }
+
+
+   /*
+    protected void errorOnBackground(Context context, T result) {
         final NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         Notification noti;
         CharSequence resultMesage;
@@ -206,7 +198,6 @@ public abstract class AbsAsyncFragment<T> extends BaseTabFragment implements Asy
         final int notiId = AppUtil.titleResIdToOrder(titleRes);
         nm.notify(notiId, noti);
 
-        //FIXME
         HANDLER.postDelayed(new Runnable() {
 
             @Override
@@ -214,47 +205,6 @@ public abstract class AbsAsyncFragment<T> extends BaseTabFragment implements Asy
                 nm.cancel(notiId);
             }
         }, 2000);
-        mContext = null;
     }
-
-    protected static Handler HANDLER  = new Handler();
-
-    @Override
-    public void onDetach() {
-        if (!mRunning) {
-            mContext = null;
-        }
-        super.onDetach();
-    }
-
-    /**
-     * 현재 Fragment가 존재하고, 비동기 작업이 성공적으로 끝났을 때 호출된다.
-     */
-    protected abstract void onTransactResult(T result);
-
-    /**
-     * 비동기 작업이 끝난 후, Fragment가 이미 파괴되었을 때 호출되어 <br>
-     * 전역적인 Map에 데이터를 보관한다.
-     *
-     * @param key 보관할 데이터의 key, 어플리케이션에서 전역적인 데이터이므로 겹치지 않게 주의하여야 한다.
-     * @param obj 보관할 데이터
-     * @return 저장 성공 여부, 해당 key가 존재했다면 저장되지 않고 false를 반환한다.
-     */
-    protected boolean putAsyncData(String key, T obj) {
-        if (!sAsyncDataStoreMap.containsKey(key)) {
-            sAsyncDataStoreMap.put(key, obj);
-            return true;
-        } else
-            return false;
-    }
-
-    /**
-     * 비동기 작업으로 인해 저장된 data를 가져온다. 가져온 data는 Map에서 삭제된다.
-     *
-     * @param key 저장된 data를 가져올 key
-     * @return 저장된 data, 저장된 data가 없다면 null을 반환한다.
-     */
-    protected static Object getAsyncData(String key) {
-        return sAsyncDataStoreMap.remove(key);
-    }
+    */
 }

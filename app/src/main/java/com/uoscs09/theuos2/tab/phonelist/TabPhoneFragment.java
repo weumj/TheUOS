@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
@@ -25,6 +26,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
+import com.uoscs09.theuos2.async.AsyncFragmentJob;
 import com.uoscs09.theuos2.base.AbsAsyncFragment;
 import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.parse.ParserPhone;
@@ -132,7 +134,7 @@ public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>> {
             searchView.setSubmitButtonEnabled(true);
             searchView.setQueryHint(getText(R.string.tab_phone_search_hint));
         } else {
-            AppUtil.showToast(getActivity(), "compactibility error");
+            AppUtil.showToast(getActivity(), "compatibility error");
         }
 
         super.onCreateOptionsMenu(menu, inflater);
@@ -147,66 +149,94 @@ public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>> {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public ArrayList<PhoneItem> call() throws Exception {
+    private AsyncTask<Void, Void, ArrayList<PhoneItem>> mAsyncTask;
 
-        ArrayList<PhoneItem> phoneNumberList = new ArrayList<>();
-        if (mIsInit) {
-            PhoneNumberDB telDB = PhoneNumberDB.getInstance(getActivity());
-            phoneNumberList = (ArrayList<PhoneItem>) telDB.readAll(StringUtil.NULL);
-        } else {
-            ArrayList<String> urlList = getUrlList();
+    private void execute() {
+        mAsyncTask = super.execute(new Job());
+    }
 
-            final int progressNumber = 100 / urlList.size();
-            int howTo;
-            String body;
-            int size = urlList.size();
-            for (int i = 0; i < size; i++) {
-                if (getExecutor().isCancelled()) {
-                    return null;
-                }
-                try {
-                    body = HttpRequest.getBody(urlList.get(i));
-                    if (i < 7) {
-                        howTo = ParserPhone.SUBJECT;
-                    } else if (i < 8) {
-                        howTo = ParserPhone.CULTURE;
-                    } else if (i < 12) {
-                        howTo = ParserPhone.BOTTOM;
-                    } else {
-                        howTo = ParserPhone.BODY;
+    private class Job extends AsyncFragmentJob.Base<ArrayList<PhoneItem>> {
+        @Override
+        public ArrayList<PhoneItem> call() throws Exception {
+
+            ArrayList<PhoneItem> phoneNumberList = new ArrayList<>();
+            if (mIsInit) {
+                PhoneNumberDB telDB = PhoneNumberDB.getInstance(getActivity());
+                phoneNumberList = (ArrayList<PhoneItem>) telDB.readAll(StringUtil.NULL);
+            } else {
+                ArrayList<String> urlList = getUrlList();
+
+                final int progressNumber = 100 / urlList.size();
+                int howTo;
+                String body;
+                int size = urlList.size();
+                for (int i = 0; i < size; i++) {
+                    if (isJobCancelled()) {
+                        return null;
+                    }
+                    try {
+                        body = HttpRequest.getBody(urlList.get(i));
+                        if (i < 7) {
+                            howTo = ParserPhone.SUBJECT;
+                        } else if (i < 8) {
+                            howTo = ParserPhone.CULTURE;
+                        } else if (i < 12) {
+                            howTo = ParserPhone.BOTTOM;
+                        } else {
+                            howTo = ParserPhone.BODY;
+                        }
+
+                        mParser.setHowTo(howTo);
+                        phoneNumberList.addAll(mParser.parse(body));
+
+                    } catch (UnknownHostException e) {
+                        throw e;
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
 
-                    mParser.setHowTo(howTo);
-                    phoneNumberList.addAll(mParser.parse(body));
-
-                } catch (UnknownHostException e) {
-                    throw e;
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    mProgressDialog.setProgress(progressNumber * i - 1);
                 }
-
-                mProgressDialog.setProgress(progressNumber * i - 1);
+                // DB 에 데이터 등록
+                PhoneNumberDB telDB = PhoneNumberDB.getInstance(getActivity());
+                for (PhoneItem item : phoneNumberList) {
+                    telDB.insertOrUpdate(item);
+                }
+                phoneNumberList = (ArrayList<PhoneItem>) telDB.readAll(StringUtil.NULL);
+                mProgressDialog.setProgress(100);
             }
-            // DB 에 데이터 등록
-            PhoneNumberDB telDB = PhoneNumberDB.getInstance(getActivity());
-            for (PhoneItem item : phoneNumberList) {
-                telDB.insertOrUpdate(item);
-            }
-            phoneNumberList = (ArrayList<PhoneItem>) telDB
-                    .readAll(StringUtil.NULL);
-            mProgressDialog.setProgress(100);
+            return phoneNumberList;
         }
-        return phoneNumberList;
+
+        @Override
+        public void onResult(ArrayList<PhoneItem> result) {
+            phoneAdapter.clear();
+            phoneAdapter.addAll(result);
+            phoneAdapter.notifyDataSetChanged();
+            if (mIsInit) {
+                mIsInit = false;
+            } else {
+                AppUtil.showToast(getActivity(), R.string.finish_update, isMenuVisible());
+            }
+        }
     }
+
+    private boolean isJobCancelled() {
+        return mAsyncTask == null || mAsyncTask.isCancelled();
+    }
+
+    private void cancelJob(){
+        if(mAsyncTask != null)
+            mAsyncTask.cancel(true);
+    }
+
 
     private void initProgress() {
         if (mProgressDialog == null)
             mProgressDialog = AppUtil.getProgressDialog(getActivity(), true, new OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    cancelExecutor();
+                    cancelJob();
                 }
             });
     }
@@ -226,23 +256,10 @@ public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>> {
     }
 
     @Override
-    protected void onTransactPostExecute() {
+    protected void onPostExecute() {
         // super.onTransactPostExecute();
         if (mProgressDialog != null)
             mProgressDialog.dismiss();
-    }
-
-    @Override
-    public void onTransactResult(ArrayList<PhoneItem> result) {
-        phoneAdapter.clear();
-        phoneAdapter.addAll(result);
-        phoneAdapter.notifyDataSetChanged();
-        if (mIsInit) {
-            mIsInit = false;
-        } else {
-            AppUtil.showToast(getActivity(), R.string.finish_update,
-                    isMenuVisible());
-        }
     }
 
     private ArrayList<String> getUrlList() {

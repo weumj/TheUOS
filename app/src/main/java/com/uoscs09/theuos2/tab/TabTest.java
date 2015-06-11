@@ -10,11 +10,12 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.javacan.asyncexcute.AsyncCallback;
-import com.uoscs09.theuos2.common.AsyncLoader;
-import com.uoscs09.theuos2.parse.ParseUosRSS;
-import com.uoscs09.theuos2.parse.ParseUtil;
+import com.uoscs09.theuos2.async.AsyncUtil;
+import com.uoscs09.theuos2.http.HttpRequest;
+import com.uoscs09.theuos2.parse.ParseRestaurantWeek;
+import com.uoscs09.theuos2.tab.restaurant.RestItem;
+import com.uoscs09.theuos2.tab.restaurant.WeekRestItem;
 
-import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
 
@@ -29,8 +30,35 @@ public class TabTest extends Fragment {
         ScrollView scrollView = new ScrollView(getActivity());
         scrollView.addView(textView);
 
+        AsyncUtil.execute(
+                new Callable<WeekRestItem>() {
+                    @Override
+                    public WeekRestItem call() throws Exception {
+                        return new ParseRestaurantWeek().parse(HttpRequest.getBody("http://www.uos.ac.kr/food/placeList.do?rstcde=020"));
+                    }
+                },
+                new AsyncCallback.Base<WeekRestItem>() {
+                    @Override
+                    public void onResult(WeekRestItem result) {
+                        StringBuilder sb = new StringBuilder();
+                        for (RestItem item : result.weekList) {
+                            sb.append(item.title)
+                                    .append("\n\n")
+                                    .append(item.breakfast)
+                                    .append("\n\n")
+                                    .append(item.lunch)
+                                    .append("\n\n")
+                                    .append(item.supper)
+                                    .append("\n\n")
+                                    .append("-------------------------------------")
+                                    .append("\n\n\n");
+                        }
+                        textView.setText(sb.toString());
+                    }
+                });
 
-        AsyncLoader.excute(
+/*
+        AsyncUtil.execute(
                 new Callable<ArrayList<ParseUosRSS.Item>>() {
                     @Override
                     public ArrayList<ParseUosRSS.Item> call() throws Exception {
@@ -58,7 +86,7 @@ public class TabTest extends Fragment {
                         textView.setText(sb.toString());
                     }
                 });
-
+*/
         return scrollView;
     }
 

@@ -3,13 +3,10 @@ package com.uoscs09.theuos2.util;
 import android.content.Context;
 import android.support.annotation.Nullable;
 
-import com.uoscs09.theuos2.common.AsyncLoader;
-import com.uoscs09.theuos2.common.AsyncLoader.OnTaskFinishedListener;
+import com.uoscs09.theuos2.async.AsyncUtil;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,9 +14,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.io.StreamCorruptedException;
-import java.util.concurrent.Callable;
 
 public class IOUtil {
     public static final String FILE_TIMETABLE = "timetable_file";
@@ -70,7 +65,8 @@ public class IOUtil {
 
     public static boolean writeObjectToFileSuppressed(Context context, String fileName, Object obj) {
         try {
-            return writeObjectToFile(context, fileName, obj);
+            writeObjectToFile(context, fileName, obj);
+            return true;
         } catch (IOException e) {
             e.printStackTrace();
             return false;
@@ -78,14 +74,12 @@ public class IOUtil {
     }
 
     /**
-     * 주어진 이름으로 파일을 저장한다.
+     * 내부 저장소에 주어진 이름으로 파일을 저장한다.
      *
      * @param obj 저장할 객체
-     * @return 성공 여부
      * @throws IOException
      */
-    public static boolean writeObjectToFile(Context context, String fileName, Object obj) throws IOException {
-        boolean state = false;
+    public static void writeObjectToFile(Context context, String fileName, Object obj) throws IOException {
         FileOutputStream fos = null;
         BufferedOutputStream bos = null;
         ObjectOutputStream oos = null;
@@ -94,13 +88,12 @@ public class IOUtil {
             bos = new BufferedOutputStream(fos);
             oos = new ObjectOutputStream(bos);
             oos.writeObject(obj);
-            state = true;
         } finally {
             closeStream(oos);
             closeStream(bos);
             closeStream(fos);
         }
-        return state;
+
     }
 
     private static void closeStream(Closeable close) {
@@ -113,37 +106,65 @@ public class IOUtil {
     }
 
     /**
+     * 외부 저장소 (ex : storage)에 주어진 이름으로 파일을 저장한다.
+     *
+     * @param obj 저장할 객체
+     * @throws IOException
+     */
+    public static void writeObjectToExternalFile(String fileName, Object obj) throws IOException {
+        FileOutputStream fos = null;
+        BufferedOutputStream bos = null;
+        ObjectOutputStream oos = null;
+        try {
+            fos = new FileOutputStream(fileName);
+            bos = new BufferedOutputStream(fos);
+            oos = new ObjectOutputStream(bos);
+            oos.writeObject(obj);
+        } finally {
+            closeStream(oos);
+            closeStream(bos);
+            closeStream(fos);
+        }
+    }
+
+    /*
+    /**
      * 파일을 비 동기적으로 읽는다. <br>
      * 리스너의 result에 exception 발생 여부가 전달되고, <br>
      * data에 성공 할 경우 원하는 data, 실패 했을 경우 exception이 전달된다.
-     */
+
     public static <T> void readFromFileAsync(final Context context, final String fileName, OnTaskFinishedListener<T> l) {
-        AsyncLoader.excute(new Callable<T>() {
+        AsyncUtil.execute(new Callable<T>() {
             @Override
             public T call() throws Exception {
                 return readFromFile(context, fileName);
             }
         }, l);
     }
+    */
 
-    /**
+    /*
+       /**
      * 파일을 비 동기적으로 저장한다. <br>
      * 리스너의 result에 exception 발생 여부가 전달되고, <br>
      * data에 성공 할 경우 성공 여부, 실패 했을 경우 exception이 전달된다.
-     */
+
     public static void writeObjectToFileAsync(Context context, final String fileName, final Object obj, OnTaskFinishedListener<Boolean> l) {
         final Context appContext = context.getApplicationContext();
-        AsyncLoader.excute(new Callable<Boolean>() {
+        AsyncUtil.execute(new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
-                return writeObjectToFile(appContext, fileName, obj);
+                writeObjectToFile(appContext, fileName, obj);
+                return true;
             }
         }, l);
     }
+    */
+
 
     public static void writeObjectToFileAsync(Context context, final String fileName, final Object obj) {
         final Context appContext = context.getApplicationContext();
-        AsyncLoader.excute(new Runnable() {
+        AsyncUtil.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -166,25 +187,28 @@ public class IOUtil {
             for (File file : children) {
                 if (file.isDirectory())
                     clearApplicationFile(file);
-                else
+                else {
+                    //noinspection ResultOfMethodCallIgnored
                     file.delete();
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    /*
     public static byte[] toByteArray(Serializable obj) throws IOException {
-        ObjectOutputStream objectOuput = null;
+        ObjectOutputStream objectOutput = null;
         ByteArrayOutputStream output = new ByteArrayOutputStream();
 
         try {
-            objectOuput = new ObjectOutputStream(output);
-            objectOuput.writeObject(obj);
+            objectOutput = new ObjectOutputStream(output);
+            objectOutput.writeObject(obj);
             return output.toByteArray();
         } finally {
             closeStream(output);
-            closeStream(objectOuput);
+            closeStream(objectOutput);
         }
     }
 
@@ -205,4 +229,5 @@ public class IOUtil {
         }
     }
 
+*/
 }

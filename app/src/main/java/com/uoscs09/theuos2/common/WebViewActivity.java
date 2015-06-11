@@ -59,7 +59,7 @@ public abstract class WebViewActivity extends BaseActivity {
             mWebView.clearCache(true);
             mWebView.loadUrl("about:blank");
             AppUtil.unbindDrawables(mWebView);
-            mWebView.destroy();
+            //mWebView.destroy();
             mWebView = null;
             System.gc();
         }

@@ -19,12 +19,13 @@ public class ParseUtil {
     }
 
     public static <T> T parseXml(XmlParser<T> parser, String url, Map<? extends CharSequence, ? extends CharSequence> params) throws Exception {
-        return parseXml(parser, url,StringUtil.ENCODE_EUC_KR, params);
+        return parseXml(parser, url, StringUtil.ENCODE_EUC_KR, params);
 
     }
 
     public static <T> T parseXml(XmlParser<T> parser, String url) throws Exception {
-        return parseXml(parser, url,StringUtil.ENCODE_EUC_KR, null);
+        return parseXml(parser, url, StringUtil.ENCODE_EUC_KR, null);
 
     }
+
 }

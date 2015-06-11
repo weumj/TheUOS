@@ -2,7 +2,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/left_drawer"
-    android:background="?cardBackgroundColor"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -15,6 +14,7 @@
         android:src="@drawable/univ_img_main_gate" />
 
     <LinearLayout
+        android:background="?cardBackgroundColor"
         android:id="@+id/drawer_bottom"
         android:layout_width="fill_parent"
         android:layout_height="50dp"
@@ -73,6 +73,7 @@
         android:background="?color_primary_text" />
 
     <android.support.v7.widget.RecyclerView
+        android:background="?cardBackgroundColor"
         android:id="@+id/drawer_listview"
         android:layout_width="fill_parent"
         android:layout_below="@id/drawer_top_image"

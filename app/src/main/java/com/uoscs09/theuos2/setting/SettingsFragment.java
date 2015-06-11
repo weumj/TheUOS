@@ -21,10 +21,10 @@ import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
 
-import com.javacan.asyncexcute.AsyncCallback;
 import com.uoscs09.theuos2.R;
+import com.uoscs09.theuos2.async.AsyncJob;
+import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
-import com.uoscs09.theuos2.common.AsyncLoader;
 import com.uoscs09.theuos2.common.PieProgressDrawable;
 import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.util.AppUtil;
@@ -103,8 +103,12 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
                 changeFragment(SettingsTimetableFragment.class);
                 return true;
 
-            case R.string.setting_save_route_sub_title:
-                new SettingsFileSelectDialogFragment().show(getFragmentManager(), null);
+            case R.string.setting_save_image_sub_title:
+            case R.string.setting_save_text_sub_title:
+                SettingsFileSelectDialogFragment f = new SettingsFileSelectDialogFragment();
+                f.setSavePathKey(preference.getKey());
+                f.setTitleId(preference.getTitleRes());
+                f.show(getFragmentManager(), null);
                 return true;
 
             case R.string.setting_web_page:
@@ -125,8 +129,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         final Dialog progress = AppUtil.getProgressDialog(getActivity(), false, getText(R.string.progress_while_updating), null);
         progress.show();
 
-        AsyncLoader.excute(new Callable<String>() {
-
+        AsyncUtil.execute(new AsyncJob.Base<String>() {
             @Override
             public String call() throws Exception {
                 String body = HttpRequest.getBody(URL);
@@ -137,7 +140,6 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
                 return e.getTextExtractor().toString().trim();
 
             }
-        }, new AsyncCallback.Base<String>() {
             @Override
             public void onResult(String result) {
                 String thisVersion = getString(R.string.setting_app_version_name);
@@ -284,13 +286,13 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
      * 어플리케이션의 모든 캐쉬를 삭제한다.
      */
     private void deleteCache() {
-        AsyncLoader.excute(new Callable<Void>() {
+        AsyncUtil.execute(new Callable<Void>() {
             @Override
             public Void call() throws Exception {
                 AppUtil.clearCache(getActivity());
                 return null;
             }
-        }, new AsyncLoader.OnTaskFinishedListener<Void>() {
+        }, new AsyncUtil.OnTaskFinishedListener<Void>() {
             @Override
             public void onTaskFinished(boolean isExceptionOccurred, Void data, Exception e) {
                 if (isExceptionOccurred) {
@@ -343,7 +345,9 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         SharedPreferences pref = getPreferenceScreen().getSharedPreferences();
         pref.registerOnSharedPreferenceChangeListener(this);
 
-        String[] keys = {PrefUtil.KEY_CHECK_BORROW, PrefUtil.KEY_CHECK_SEAT, PrefUtil.KEY_LIB_WIDGET_SEAT_SHOW_ALL, PrefUtil.KEY_IMAGE_SAVE_PATH, PrefUtil.KEY_THEME};
+        String[] keys = {PrefUtil.KEY_CHECK_BORROW, PrefUtil.KEY_CHECK_SEAT,
+                PrefUtil.KEY_LIB_WIDGET_SEAT_SHOW_ALL, PrefUtil.KEY_THEME,
+                PrefUtil.KEY_IMAGE_SAVE_PATH, PrefUtil.KEY_TXT_SAVE_PATH};
         for (String key : keys) {
             onSharedPreferenceChanged(pref, key);
         }
@@ -371,7 +375,11 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
                 break;
 
             case PrefUtil.KEY_IMAGE_SAVE_PATH:
-                findPreference(key).setSummary(PrefUtil.getPictureSavedPath(getActivity()));
+                findPreference(key).setSummary(PrefUtil.getPicturePath(getActivity()));
+                break;
+
+            case PrefUtil.KEY_TXT_SAVE_PATH:
+                findPreference(key).setSummary(PrefUtil.getDocumentPath(getActivity()));
                 break;
 
             case PrefUtil.KEY_THEME:

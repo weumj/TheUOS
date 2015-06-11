@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ParserSeat extends JerichoParser<SeatItem> {
+public class ParserSeat extends JerichoParser<ArrayList<SeatItem>> {
     private List<Element> trList;
 
 	@Override

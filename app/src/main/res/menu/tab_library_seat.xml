@@ -16,7 +16,7 @@
         android:icon="?menu_theme_ic_action_action_about"
         android:orderInCategory="102"
         android:showAsAction="ifRoom"
-        android:title="@string/action_dissmiss_info"
+        android:title="@string/action_dismiss_info"
         app:showAsAction="ifRoom">
     </item>
 

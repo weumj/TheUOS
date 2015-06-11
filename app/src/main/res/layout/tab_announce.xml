@@ -35,7 +35,7 @@
             android:drawableLeft="?theme_ic_action_navigation_check"
             android:gravity="center_vertical"
             android:layout_gravity="center"
-            android:text="@string/tab_anounce_empty_view_desc"
+            android:text="@string/tab_announce_empty_view_desc"
             android:visibility="invisible" />
     </com.balysv.materialripple.MaterialRippleLayout>
 

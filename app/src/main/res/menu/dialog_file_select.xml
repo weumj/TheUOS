@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_up"
+        android:icon="?menu_theme_ic_action_navigation_arrow_drop_up"
+        android:orderInCategory="102"
+        android:title="@string/setting_save_route_up"
+        app:showAsAction="ifRoom">
+    </item>
+</menu>

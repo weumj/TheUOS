@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.view.NestedScrollingChild;
-import android.support.v4.view.NestedScrollingChildHelper;
 import android.util.AttributeSet;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -41,12 +40,9 @@ public class NonLeakingWebView extends WebView implements NestedScrollingChild {
 
     public NonLeakingWebView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        setWebViewClient(new MyWebViewClient((Activity) context));
-        mScrollingChildHelper = new NestedScrollingChildHelper(this);
-        setNestedScrollingEnabled(true);
+        setWebViewClient(new NonLeakingWebViewClient((Activity) context));
     }
 
-    private final NestedScrollingChildHelper mScrollingChildHelper;
 
     @Override
     public void destroy() {
@@ -59,55 +55,10 @@ public class NonLeakingWebView extends WebView implements NestedScrollingChild {
         }
     }
 
-    @Override
-    public void setNestedScrollingEnabled(boolean enabled) {
-        mScrollingChildHelper.setNestedScrollingEnabled(enabled);
-    }
-
-    @Override
-    public boolean isNestedScrollingEnabled() {
-        return mScrollingChildHelper.isNestedScrollingEnabled();
-    }
-
-    @Override
-    public boolean startNestedScroll(int axes) {
-        return mScrollingChildHelper.startNestedScroll(axes);
-    }
-
-    @Override
-    public void stopNestedScroll() {
-        mScrollingChildHelper.stopNestedScroll();
-    }
-
-    @Override
-    public boolean hasNestedScrollingParent() {
-        return mScrollingChildHelper.hasNestedScrollingParent();
-    }
-
-    @Override
-    public boolean dispatchNestedScroll(int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, int[] offsetInWindow) {
-        return mScrollingChildHelper.dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, offsetInWindow);
-    }
-
-    @Override
-    public boolean dispatchNestedPreScroll(int dx, int dy, int[] consumed, int[] offsetInWindow) {
-        return mScrollingChildHelper.dispatchNestedPreScroll(dx, dy, consumed, offsetInWindow);
-    }
-
-    @Override
-    public boolean dispatchNestedFling(float velocityX, float velocityY, boolean consumed) {
-        return mScrollingChildHelper.dispatchNestedFling(velocityX, velocityY, consumed);
-    }
-
-    @Override
-    public boolean dispatchNestedPreFling(float velocityX, float velocityY) {
-        return mScrollingChildHelper.dispatchNestedPreFling(velocityX, velocityY);
-    }
-
-    protected static class MyWebViewClient extends WebViewClient {
+    public static class NonLeakingWebViewClient extends WebViewClient {
         protected final WeakReference<Activity> activityRef;
 
-        public MyWebViewClient(Activity activity) {
+        public NonLeakingWebViewClient(Activity activity) {
             this.activityRef = new WeakReference<>(activity);
         }
 

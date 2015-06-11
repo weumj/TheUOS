@@ -1,100 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:divider="?attr/colorPrimaryDark"
-    android:dividerPadding="1dp"
-    android:minWidth="1000dp"
-    android:minHeight="60dp"
-    android:orientation="horizontal"
-    android:weightSum="660" >
+<com.balysv.materialripple.MaterialRippleLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/ripple"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:mrl_rippleColor="?colorPrimaryDark"
+    app:mrl_rippleInAdapter="true">
 
-    <TextView
-        android:id="@+id/list_subject_text_sub_dept"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_weight="60"
-        android:gravity="center"
-        android:padding="4dp" />
+        android:divider="?attr/colorPrimaryDark"
+        android:dividerPadding="1dp"
+        android:minHeight="60dp"
+        android:minWidth="1000dp"
+        android:orientation="horizontal"
+        android:weightSum="660">
 
-    <TextView
-        android:id="@+id/list_subject_text_sub_div"
-        android:layout_width="0dp"
-        android:layout_height="fill_parent"
-        android:layout_weight="80"
-        android:gravity="center"
-        android:padding="4dp" />
+        <TextView
+            android:id="@+id/list_subject_text_sub_dept"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="60"
+            android:gravity="center"
+            android:padding="4dp" />
 
-    <TextView
-        android:id="@+id/list_subject_text_no"
-        android:layout_width="0dp"
-        android:layout_height="fill_parent"
-        android:layout_weight="60"
-        android:gravity="center"
-        android:padding="4dp" />
+        <TextView
+            android:id="@+id/list_subject_text_sub_div"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="80"
+            android:gravity="center"
+            android:padding="4dp" />
 
-    <TextView
-        android:id="@+id/list_subject_text_class_div"
-        android:layout_width="0dp"
-        android:layout_height="fill_parent"
-        android:layout_weight="40"
-        android:gravity="center"
-        android:padding="4dp" />
+        <TextView
+            android:id="@+id/list_subject_text_no"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="60"
+            android:gravity="center"
+            android:padding="4dp" />
 
-    <TextView
-        android:id="@+id/list_subject_text_sub_nm"
-        android:layout_width="0dp"
-        android:layout_height="fill_parent"
-        android:layout_weight="80"
-        android:gravity="center"
-        android:padding="4dp" />
+        <TextView
+            android:id="@+id/list_subject_text_class_div"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="40"
+            android:gravity="center"
+            android:padding="4dp" />
 
-    <TextView
-        android:id="@+id/list_subject_text_yr"
-        android:layout_width="0dp"
-        android:layout_height="fill_parent"
-        android:layout_weight="40"
-        android:gravity="center"
-        android:padding="4dp" />
+        <TextView
+            android:id="@+id/list_subject_text_sub_nm"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="80"
+            android:gravity="center"
+            android:padding="4dp" />
 
-    <TextView
-        android:id="@+id/list_subject_text_credit"
-        android:layout_width="0dp"
-        android:layout_height="fill_parent"
-        android:layout_weight="40"
-        android:gravity="center"
-        android:padding="4dp" />
+        <TextView
+            android:id="@+id/list_subject_text_yr"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="40"
+            android:gravity="center"
+            android:padding="4dp" />
 
-    <TextView
-        android:id="@+id/list_subject_text_prof_nm"
-        android:layout_width="0dp"
-        android:layout_height="fill_parent"
-        android:layout_weight="80"
-        android:gravity="center"
-        android:padding="4dp" />
+        <TextView
+            android:id="@+id/list_subject_text_credit"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="40"
+            android:gravity="center"
+            android:padding="4dp" />
 
-    <TextView
-        android:id="@+id/list_subject_text_class_nm"
-        android:layout_width="0dp"
-        android:layout_height="fill_parent"
-        android:layout_weight="100"
-        android:gravity="center"
-        android:padding="4dp" />
+        <TextView
+            android:id="@+id/list_subject_text_prof_nm"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="80"
+            android:gravity="center"
+            android:padding="4dp" />
 
-    <TextView
-        android:id="@+id/list_subject_text_tlsn_cnt"
-        android:layout_width="0dp"
-        android:layout_height="fill_parent"
-        android:layout_weight="40"
-        android:gravity="center"
-        android:padding="4dp" />
+        <TextView
+            android:id="@+id/list_subject_text_class_nm"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="100"
+            android:gravity="center"
+            android:padding="4dp" />
 
-    <TextView
-        android:id="@+id/list_subject_text_tlsn_limit"
-        android:layout_width="0dp"
-        android:layout_height="fill_parent"
-        android:layout_weight="40"
-        android:gravity="center"
-        android:padding="4dp" />
+        <TextView
+            android:id="@+id/list_subject_text_tlsn_cnt"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="40"
+            android:gravity="center"
+            android:padding="4dp" />
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/list_subject_text_tlsn_limit"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="40"
+            android:gravity="center"
+            android:padding="4dp" />
+
+    </LinearLayout>
+</com.balysv.materialripple.MaterialRippleLayout>

@@ -5,7 +5,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <include layout="@layout/activity_uosmain_main" />
+        <include layout="@layout/activity_uosmain_toolbar_and_pager" />
 
         <include
             layout="@layout/view_left_drawer"

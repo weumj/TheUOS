@@ -23,7 +23,7 @@
     <string name="setting_home">홈 화면</string>
     <string name="setting_home_desc">어플리케이션의 초기 화면에 메뉴 선택 화면을 띄웁니다. </string>
 
-   <string name="setting_data">데이터</string>
+    <string name="setting_data">데이터</string>
     <string name="setting_delete_cache">임시파일 삭제</string>
     <string name="setting_delete_cache_desc">임시파일을 삭제합니다.</string>
 
@@ -68,7 +68,8 @@
     <string name="setting_check_announce_service_desc_disable">공지사항 알리미가 작동하지 않습니다.</string>
     <string name="setting_check_announce_service">공지사항 알리미 사용</string>
 
-    <string name="setting_save_route_sub_title">이미지 저장 위치</string>
+    <string name="setting_save_image_sub_title">이미지 저장 위치</string>
+    <string name="setting_save_text_sub_title">텍스트 저장 위치</string>
     <string name="setting_save_route_up">상위 폴더로</string>
     <string name="setting_save_route_error_parent">현재 폴더의 상위 폴더를 불러올 수 없습니다.</string>
 
@@ -103,7 +104,9 @@
     <!-- 홈 화면을 보여줄 것인지 여부, boolean -->
     <string name="pref_key_home" translatable="false">SCREEN_HOME</string>
     <!-- 이미지가 저장되는 경로, String -->
-    <string name="pref_key_save_route" translatable="false">IMAGE_SAVE_ROUTE</string>
+    <string name="pref_key_save_image_route" translatable="false">IMAGE_SAVE_ROUTE</string>
+    <!-- 텍스트가 저장되는 경로, String -->
+    <string name="pref_key_save_txt_route" translatable="false">TXT_SAVE_ROUTE</string>
 
 
     <string name="setting_web_page">웹 사이트</string>

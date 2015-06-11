@@ -1,13 +1,16 @@
 package com.uoscs09.theuos2.tab.announce;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebSettings;
+import android.webkit.WebView;
 
 import com.uoscs09.theuos2.R;
+import com.uoscs09.theuos2.common.NonLeakingWebView;
 import com.uoscs09.theuos2.common.WebViewActivity;
 import com.uoscs09.theuos2.util.AppUtil;
 
@@ -47,6 +50,9 @@ public class SubAnnounceWebActivity extends WebViewActivity {
         settings.setLoadWithOverviewMode(true);
         settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
         mWebView.setInitialScale(100);
+
+        settings.setJavaScriptEnabled(true);
+        mWebView.setWebViewClient(new AnnounceWebViewClient(this, selection));
         mWebView.loadUrl(url);
 
     }
@@ -87,6 +93,43 @@ public class SubAnnounceWebActivity extends WebViewActivity {
 
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private class AnnounceWebViewClient extends NonLeakingWebView.NonLeakingWebViewClient {
+
+        private final int selection;
+        private boolean firstLoading = true;
+        public AnnounceWebViewClient(Activity activity, int selection) {
+            super(activity);
+            this.selection = selection;
+        }
+
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            if(firstLoading) {
+                if (selection != 3) {
+                    view.loadUrl(" javascript:(function() { " +
+                            "var viewType = document.getElementsByClassName('viewType01')[0]; " +
+                            "document.body.removeChild(document.getElementById('container'));" +
+                            "document.body.removeChild(document.getElementById('footer'));" +
+                            "document.body.style.backgroundImage = '';" +
+                            "document.clear();" +
+                            "document.body.appendChild(viewType);" +
+                            "})()");
+                } else {
+                    view.loadUrl(" javascript:(function() { " +
+                            "var viewType = document.getElementsByClassName('notice_tb')[0]; " +
+                            "document.body.removeChild(document.getElementById('all_wrap'));" +
+                            "document.body.style.backgroundImage = '';" +
+                            "document.clear();" +
+                            "document.body.appendChild(viewType);" +
+                            "})()");
+                    view.setInitialScale(100);
+                }
+                firstLoading = false;
+            }
+
         }
     }
 }

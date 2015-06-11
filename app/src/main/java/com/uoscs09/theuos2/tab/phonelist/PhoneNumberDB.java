@@ -5,7 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.uoscs09.theuos2.common.AsyncLoader;
+import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
 import com.uoscs09.theuos2.util.StringUtil;
@@ -126,7 +126,7 @@ public class PhoneNumberDB implements Runnable {
     }
 
     public synchronized void close() {
-        AsyncLoader.excute(this);
+        AsyncUtil.execute(this);
     }
 
     @Override

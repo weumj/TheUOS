@@ -11,7 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.common.AsyncLoader;
+import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.tab.timetable.TimetableAlarmUtil;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
@@ -46,7 +46,7 @@ public class SettingsTimetableFragment extends PreferenceFragment implements OnS
 
                 TrackerUtil.getInstance(this).sendEvent(TAG, "clear timetable alarm");
 
-                TimetableAlarmUtil.clearAllAlarmWithResult(getActivity(), new AsyncLoader.OnTaskFinishedListener<Boolean>() {
+                TimetableAlarmUtil.clearAllAlarmWithResult(getActivity(), new AsyncUtil.OnTaskFinishedListener<Boolean>() {
                     @Override
                     public void onTaskFinished(boolean isExceptionOccurred, Boolean data, Exception e) {
                         if (isExceptionOccurred || !data)

@@ -21,10 +21,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.gc.materialdesign.widgets.ColorSelector;
-import com.javacan.asyncexcute.AsyncCallback;
 import com.uoscs09.theuos2.R;
+import com.uoscs09.theuos2.async.AsyncJob;
+import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
-import com.uoscs09.theuos2.common.AsyncLoader;
 import com.uoscs09.theuos2.common.PieProgressDrawable;
 import com.uoscs09.theuos2.parse.ParseSubjectList2;
 import com.uoscs09.theuos2.parse.ParseUtil;
@@ -39,10 +39,9 @@ import com.uoscs09.theuos2.util.TrackerUtil;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 
-public class SubjectDetailDialogFragment extends DialogFragment implements View.OnClickListener, Callable<ArrayList<SubjectInfoItem>>, ColorSelector.OnColorSelectedListener {
+public class SubjectDetailDialogFragment extends DialogFragment implements View.OnClickListener, ColorSelector.OnColorSelectedListener {
     private static final String TAG = "SubjectDetailDialogFragment";
     private static final String URL = "http://wise.uos.ac.kr/uosdoc/api.ApiApiSubjectList.oapi";
 
@@ -246,7 +245,7 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
         if (mSubject != null && !mSubject.subjectName.equals(StringUtil.NULL)) {
 
             TrackerUtil.getInstance(this).sendClickEvent(TAG, "course plan");
-            AsyncLoader.excute(this, CALLBACK);
+            AsyncUtil.execute(JOB);
             mProgress.show();
 
         } else {
@@ -293,7 +292,18 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
         }
     }
 
-    private final AsyncCallback<ArrayList<SubjectInfoItem>> CALLBACK = new AsyncCallback<ArrayList<SubjectInfoItem>>() {
+    private final AsyncJob.Base<ArrayList<SubjectInfoItem>> JOB = new AsyncJob.Base<ArrayList<SubjectInfoItem>>() {
+
+        @Override
+        public ArrayList<SubjectInfoItem> call() throws Exception {
+            params.put(OApiUtil.SUBJECT_NAME, mSubject.subjectName);
+            params.put(OApiUtil.YEAR, Integer.toString(mTimeTable.year));
+            params.put(OApiUtil.TERM, mTimeTable.semesterCode.code);
+
+            return ParseUtil.parseXml(mParser, URL, params);
+
+        }
+
         @Override
         public void onResult(ArrayList<SubjectInfoItem> result) {
             int size;
@@ -322,24 +332,10 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
         }
 
         @Override
-        public void cancelled() {
-        }
-
-        @Override
         public void onPostExcute() {
             mProgress.dismiss();
         }
     };
-
-    @Override
-    public ArrayList<SubjectInfoItem> call() throws Exception {
-        params.put(OApiUtil.SUBJECT_NAME, mSubject.subjectName);
-        params.put(OApiUtil.YEAR, Integer.toString(mTimeTable.year));
-        params.put(OApiUtil.TERM, mTimeTable.semesterCode.code);
-
-        return ParseUtil.parseXml(mParser, URL, params);
-
-    }
 
 
     private static class ClassDivAdapter extends AbsArrayAdapter<SubjectInfoItem, ViewHolder> {

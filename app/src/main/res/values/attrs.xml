@@ -79,15 +79,6 @@
         <attr name="theme_ic_action_timetable" format="reference" />
     </declare-styleable>
 
-    <declare-styleable name="ThemeDrawable.Selector">
-        <attr name="selector_list" format="reference|color" />
-        <attr name="selector_list_shadow" format="reference|color" />
-        <attr name="selector_list_circle" format="reference|color" />
-        <attr name="selector_list_rec" format="reference|color" />
-        <attr name="selector_button" format="reference|color" />
-        <attr name="selector_text" format="reference|color" />
-    </declare-styleable>
-
     <declare-styleable name="ThemeDrawable.Color">
         <!-- actionbar title color -->
         <attr name="color_actionbar_title" format="reference|color" />
@@ -95,7 +86,6 @@
         <attr name="color_primary_text" format="reference|color" />
         <!-- 일반적인 아이콘 tint color-->
         <attr name="color_tint_normal" format="reference|color" />
-        <attr name="color_sidemenu_listview_text" format="reference|color" />
     </declare-styleable>
     <declare-styleable name="MyStyle">
         <attr name="toolbar_actionbar_title" format="reference" />

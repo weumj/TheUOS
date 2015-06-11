@@ -27,8 +27,6 @@
                 android:id="@+id/dialog_wise_spinner_year"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignBaseline="@+id/dialog_wise_year_text"
-                android:layout_centerInParent="true"
                 android:layout_gravity="center"
                 android:layout_marginLeft="30dp" />
         </LinearLayout>

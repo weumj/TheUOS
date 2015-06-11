@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- 배경색을 지정하지 않으면 시간표 저장시 메뉴 색이 나오지 않음.-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/tab_timetable_title"
+    android:background="?colorPrimary"
     android:layout_width="fill_parent"
     android:layout_height="36dp"
     android:layout_marginRight="8dp"
     android:layout_marginLeft="8dp"
     android:divider="@null"
-    android:background="?colorPrimary"
     android:dividerPadding="1dp"
     android:orientation="horizontal"
     android:weightSum="360">

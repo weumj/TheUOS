@@ -31,7 +31,6 @@
         android:layout_alignParentRight="true"
         android:layout_centerInParent="true"
         android:layout_marginRight="10dp"
-        android:background="?selector_button"
         android:contentDescription="@string/tab_phone_call"
         android:src="@android:drawable/ic_menu_call" />
 

@@ -14,6 +14,7 @@ import android.widget.ExpandableListView;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
+import com.uoscs09.theuos2.async.AsyncFragmentJob;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.parse.ParserTransport;
@@ -76,53 +77,57 @@ public class TabTransportFragment extends AbsProgressFragment<Map<String, ArrayL
         }
     }
 
-    @Override
     protected void execute() {
         empty.setVisibility(View.INVISIBLE);
 
-        super.execute();
+        super.execute(JOB);
     }
 
-    @Override
-    public void onTransactResult(Map<String, ArrayList<TransportItem>> result) {
-        boolean empty = true;
-        for (ArrayList<TransportItem> item : result.values()) {
-            if (!item.isEmpty()) {
-                empty = false;
-                break;
+
+    private final AsyncFragmentJob.Base<Map<String, ArrayList<TransportItem>>> JOB = new AsyncFragmentJob.Base<Map<String, ArrayList<TransportItem>>>() {
+
+        @Override
+        public Map<String, ArrayList<TransportItem>> call() throws Exception {
+            Map<String, ArrayList<TransportItem>> map = new Hashtable<>();
+            for (String s : SeoulOApiUtil.Metro.getValues()) {
+                ArrayList<TransportItem> up = new ArrayList<>();
+                up.addAll(mParser.parse(HttpRequest.getBody(getMetroUrl(s, 1))));
+
+                for (int i = 0; i < up.size(); i++) {
+                    TransportItem item = up.get(i);
+                    item.isUpperLine = true;
+                    up.set(i, item);
+                }
+
+                up.addAll(mParser.parse(HttpRequest.getBody(getMetroUrl(s, 2))));
+                map.put(s, up);
+            }
+            return map;
+        }
+
+        @Override
+        public void onResult(Map<String, ArrayList<TransportItem>> result) {
+            boolean empty = true;
+            for (ArrayList<TransportItem> item : result.values()) {
+                if (!item.isEmpty()) {
+                    empty = false;
+                    break;
+                }
+            }
+            if (empty) {
+                AppUtil.showToast(getActivity(), R.string.tab_rest_no_info,
+                        isMenuVisible());
+            } else {
+                data.clear();
+                data.putAll(result);
+                adapter.notifyDataSetChanged();
             }
         }
-        if (empty) {
-            AppUtil.showToast(getActivity(), R.string.tab_rest_no_info,
-                    isMenuVisible());
-        } else {
-            data.clear();
-            data.putAll(result);
-            adapter.notifyDataSetChanged();
-        }
-    }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public Map<String, ArrayList<TransportItem>> call() throws Exception {
-        Map<String, ArrayList<TransportItem>> map = new Hashtable<>();
-        for (String s : SeoulOApiUtil.Metro.getValues()) {
-            ArrayList<TransportItem> up = new ArrayList<>();
-            up.addAll(mParser.parse(HttpRequest.getBody(getMetroUrl(s, 1))));
+    };
 
-            for (int i = 0; i < up.size(); i++) {
-                TransportItem item = up.get(i);
-                item.isUpperLine = true;
-                up.set(i, item);
-            }
 
-            up.addAll(mParser.parse(HttpRequest.getBody(getMetroUrl(s, 2))));
-            map.put(s, up);
-        }
-        return map;
-    }
-
-    private String getMetroUrl(String where, int inOut) {
+    static String getMetroUrl(String where, int inOut) {
         return SeoulOApiUtil.HOST + "sample" + "/" + SeoulOApiUtil.TYPE_XML + "/" + SeoulOApiUtil.METRO_ARRIVAL + "/" + "1" + "/" + "3" + "/" + where + "/" + inOut + "/" + SeoulOApiUtil.getWeekTag() + "/";
     }
 

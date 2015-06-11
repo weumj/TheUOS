@@ -116,7 +116,7 @@ public class TimeTable implements Parcelable, Serializable {
     }
 
     private TimeTable(Parcel source) {
-        semesterCode = OApiUtil.Semester.getSemesterFromCode(source.readInt());
+        semesterCode = OApiUtil.Semester.getSemesterByCode(source.readInt());
         year = source.readInt();
         studentInfoKor = source.readParcelable(StudentInfo.class.getClassLoader());
         studentInfoEng = source.readParcelable(StudentInfo.class.getClassLoader());

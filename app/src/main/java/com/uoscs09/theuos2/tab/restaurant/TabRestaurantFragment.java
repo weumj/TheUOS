@@ -16,6 +16,7 @@ import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
+import com.uoscs09.theuos2.async.AsyncFragmentJob;
 import com.uoscs09.theuos2.base.AbsAsyncFragment;
 import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.parse.ParserRest;
@@ -35,12 +36,12 @@ public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>>
     private TextView mSemesterTimeView, mVacationTimeView,
             mContentBreakfastView, mContentLunchView, mContentSupperView;
     @ReleaseWhenDestroy
-    private SwipeRefreshLayout swipeRefreshLayout;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
     private int mCurrentSelection;
     @AsyncData
     private ArrayList<RestItem> mRestList;
 
-    private final ParserRest mParser = new ParserRest();
+    private static final ParserRest PARSER = new ParserRest();
 
     //private String mCurrentRestName;
     private final ArrayList<Tab> mTabList = new ArrayList<>();
@@ -95,7 +96,7 @@ public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>>
                 public void onClick(View v) {
                     mTabList.get(mCurrentSelection).setSelected(false);
                     mCurrentSelection = mTabList.indexOf(tab);
-                    performClick(mCurrentSelection);
+                    performTabClick(mCurrentSelection);
                 }
             });
             mTabParent.addView(tab.tabView);
@@ -107,20 +108,16 @@ public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>>
     }
 
     @Override
-    protected void onTransactPostExecute() {
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.tab_restaurant, container, false);
 
-        swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.tab_rest_swipe_layout);
-        swipeRefreshLayout.setColorSchemeResources(
+        mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.tab_rest_swipe_layout);
+        mSwipeRefreshLayout.setColorSchemeResources(
                 AppUtil.getAttrValue(getActivity(), R.attr.color_actionbar_title),
                 AppUtil.getAttrValue(getActivity(), R.attr.colorAccent)
         );
-        swipeRefreshLayout.setProgressBackgroundColorSchemeResource(AppUtil.getAttrValue(getActivity(), R.attr.colorPrimary));
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        mSwipeRefreshLayout.setProgressBackgroundColorSchemeResource(AppUtil.getAttrValue(getActivity(), R.attr.colorPrimary));
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 sendTrackerEvent("swipe", "SwipeRefreshView");
@@ -128,8 +125,8 @@ public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>>
             }
         });
 
-        mScrollView = (NestedScrollView) swipeRefreshLayout.findViewById(R.id.tab_rest_scroll);
-        setNestedScrollingChild(mScrollView);
+        mScrollView = (NestedScrollView) mSwipeRefreshLayout.findViewById(R.id.tab_rest_scroll);
+        registerNestedScrollingChild(mScrollView);
 
         mSemesterTimeView = (TextView) mScrollView.findViewById(R.id.tab_rest_text_semester);
         mVacationTimeView = (TextView) mScrollView.findViewById(R.id.tab_rest_text_vacation);
@@ -142,25 +139,30 @@ public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>>
             @Override
             public void onClick(View v) {
                 sendClickEvent("actionButton");
-                swipeRefreshLayout.setRefreshing(true);
+                mSwipeRefreshLayout.setRefreshing(true);
                 execute();
             }
         });
 
-        return rootView;
-    }
+        rootView.findViewById(R.id.tab_rest_show_week).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showWeekDialog();
+            }
+        });
 
-    @Override
-    public void onResume() {
         if (mRestList.isEmpty())
             execute();
         else
-            performClick(mCurrentSelection);
+            performTabClick(mCurrentSelection);
 
         super.onResume();
+
+        return rootView;
     }
 
-    private void performClick(int position) {
+
+    private void performTabClick(int position) {
         setSemesterAndVacationText(position);
         setBody(REST_TAB_MENU_STRING_KOR[position]);
         mScrollView.scrollTo(0, 0);
@@ -201,43 +203,57 @@ public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>>
         }
     }
 
-    @Override
-    public ArrayList<RestItem> call() throws Exception {
-        Context context = getActivity();
-        if (OApiUtil.getDateTime() - PrefUtil.getInstance(context).get(PrefUtil.KEY_REST_DATE_TIME, 0) < 3) {
-            try {
-                ArrayList<RestItem> list = IOUtil.readFromFile(context, IOUtil.FILE_REST);
-                if (list != null)
-                    return list;
-            } catch (Exception e) {
-                e.printStackTrace();
+    private final AsyncFragmentJob.Base<ArrayList<RestItem>> JOB = new AsyncFragmentJob.Base<ArrayList<RestItem>>(){
+        @Override
+        public ArrayList<RestItem> call() throws Exception {
+            Context context = getActivity();
+            if (OApiUtil.getDateTime() - PrefUtil.getInstance(context).get(PrefUtil.KEY_REST_DATE_TIME, 0) < 3) {
+                try {
+                    ArrayList<RestItem> list = IOUtil.readFromFile(context, IOUtil.FILE_REST);
+                    if (list != null)
+                        return list;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
+            // web 에서 읽어온지 오래되었거나, 파일이 존재하지 않은경우 web 에서 읽어옴
+            return getRestListFromWeb(context);
         }
-        // web에서 읽어온지 오래되었거나, 파일이 존재하지 않은경우
-        // wer에서 읽어옴
-        return getRestListFromWeb(context, mParser);
+
+        @Override
+        public void onResult(ArrayList<RestItem> result) {
+            mRestList.clear();
+            mRestList.addAll(result);
+
+            mSwipeRefreshLayout.setRefreshing(false);
+
+            performTabClick(mCurrentSelection);
+        }
+
+    };
+
+    private void execute(){
+        super.execute(JOB);
     }
+
 
     /**
      * web에서 식단표을 읽어온다.
      */
-    public static ArrayList<RestItem> getRestListFromWeb(Context context, ParserRest parser) throws Exception {
+    public static ArrayList<RestItem> getRestListFromWeb(Context context) throws Exception {
         String body = HttpRequest.getBody("http://m.uos.ac.kr/mkor/food/list.do");
-        ArrayList<RestItem> list = parser.parse(body);
+        ArrayList<RestItem> list = PARSER.parse(body);
 
         IOUtil.writeObjectToFile(context, IOUtil.FILE_REST, list);
         PrefUtil.getInstance(context).put(PrefUtil.KEY_REST_DATE_TIME, OApiUtil.getDate());
         return list;
     }
 
-    @Override
-    public void onTransactResult(ArrayList<RestItem> result) {
-        mRestList.clear();
-        mRestList.addAll(result);
+    void showWeekDialog() {
+        WeekInformationDialogFragment dialogFragment = new WeekInformationDialogFragment();
+        dialogFragment.setSelection(REST_TAB_MENU_STRING_ID[mCurrentSelection]);
 
-        swipeRefreshLayout.setRefreshing(false);
-
-        performClick(mCurrentSelection);
+        dialogFragment.show(getFragmentManager(), "week");
     }
 
     @NonNull
@@ -252,7 +268,7 @@ public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>>
         return mCurrentRestName;
     }
 */
-    static class Tab {
+    private static class Tab {
         public final FrameLayout tabView;
         public final TextView mTextView;
         public final View ripple;

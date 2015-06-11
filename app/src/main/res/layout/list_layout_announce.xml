@@ -11,7 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:mrl_rippleInAdapter="true"
-        app:mrl_rippleDelayClick="false"
+        app:mrl_rippleDelayClick="true"
+        app:mrl_rippleFadeDuration="50"
         app:mrl_rippleColor="?color_primary_text">
 
         <RelativeLayout

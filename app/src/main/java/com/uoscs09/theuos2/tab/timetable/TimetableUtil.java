@@ -37,8 +37,8 @@ public class TimetableUtil {
         return IOUtil.readFromFileSuppressed(context, IOUtil.FILE_TIMETABLE);
     }
 
-    public static boolean writeTimetable(Context context, TimeTable timeTable) throws IOException {
-        return IOUtil.writeObjectToFile(context, IOUtil.FILE_TIMETABLE, timeTable);
+    public static void writeTimetable(Context context, TimeTable timeTable) throws IOException {
+        IOUtil.writeObjectToFile(context, IOUtil.FILE_TIMETABLE, timeTable);
     }
 
 

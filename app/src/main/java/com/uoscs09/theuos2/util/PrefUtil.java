@@ -58,9 +58,16 @@ public class PrefUtil {
     /**
      * 이미지가 저장되는 경로, {@code String}
      *
-     * @see R.string#pref_key_save_route
+     * @see R.string#pref_key_save_image_route
      */
     public static final String KEY_IMAGE_SAVE_PATH = "IMAGE_SAVE_ROUTE";
+
+    /**
+     * 텍스트가 저장되는 경로, {@code String}
+     *
+     * @see R.string#pref_key_save_txt_route
+     */
+    public static final String KEY_TXT_SAVE_PATH = "TXT_SAVE_ROUTE";
     /**
      * 어플리케이션의 테마, {@code int}
      *
@@ -188,7 +195,21 @@ public class PrefUtil {
     /**
      * 그림파일이 저장되는 경로를 얻는다.
      */
-    public static String getPictureSavedPath(Context context) {
+    public static String getPicturePath(Context context) {
         return getInstance(context).get(KEY_IMAGE_SAVE_PATH, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString() + "/");
+    }
+
+    public static String getDocumentPath(Context context) {
+        return getInstance(context).get(KEY_TXT_SAVE_PATH, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + "/");
+    }
+
+    public static String getDefaultPath(final String key){
+        switch (key){
+            default:
+            case KEY_IMAGE_SAVE_PATH:
+                return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
+            case KEY_TXT_SAVE_PATH:
+                return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
+        }
     }
 }

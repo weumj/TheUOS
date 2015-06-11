@@ -4,6 +4,8 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/TheUOS.iml" filepath="$PROJECT_DIR$/TheUOS.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/compatlibrary/compatlibrary.iml" filepath="$PROJECT_DIR$/compatlibrary/compatlibrary.iml" />
+      <module fileurl="file://$PROJECT_DIR$/stickylistheaders/stickylistheaders.iml" filepath="$PROJECT_DIR$/stickylistheaders/stickylistheaders.iml" />
     </modules>
   </component>
 </project>

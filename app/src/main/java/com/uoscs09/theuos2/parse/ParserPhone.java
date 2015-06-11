@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 //FIXME
 
 @Deprecated
-public class ParserPhone extends JerichoParser<PhoneItem> {
+public class ParserPhone extends JerichoParser<ArrayList<PhoneItem>> {
     public static final int BODY = 1;
     public static final int SUBJECT = 2;
     public static final int CULTURE = 3;

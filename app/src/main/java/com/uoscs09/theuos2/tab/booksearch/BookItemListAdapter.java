@@ -18,8 +18,8 @@ import android.widget.TextView;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.uoscs09.theuos2.R;
+import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
-import com.uoscs09.theuos2.common.AsyncLoader;
 import com.uoscs09.theuos2.common.UOSApplication;
 import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.parse.JerichoParser;
@@ -105,14 +105,14 @@ public class BookItemListAdapter extends AbsArrayAdapter<BookItem, GroupHolder> 
                 // 설정된 데이터가 없다면
                 // 해당 아이템을 처음 터치하는 것 이므로 데이터를 불러옴
                 if (item.bookStateInfoList == null) {
-                    AsyncLoader.excute(new Callable<ArrayList<BookStateInfo>>() {
+                    AsyncUtil.execute(new Callable<ArrayList<BookStateInfo>>() {
 
                         @Override
                         public ArrayList<BookStateInfo> call() throws Exception {
                             return item.infoUrl.equals(StringUtil.NULL) ? null : mParser.parse(HttpRequest.getBody(item.infoUrl));
 
                         }
-                    }, new AsyncLoader.OnTaskFinishedListener<ArrayList<BookStateInfo>>() {
+                    }, new AsyncUtil.OnTaskFinishedListener<ArrayList<BookStateInfo>>() {
 
                         @Override
                         public void onTaskFinished(boolean isExceptionOccurred, ArrayList<BookStateInfo> data, Exception e) {
@@ -208,7 +208,7 @@ public class BookItemListAdapter extends AbsArrayAdapter<BookItem, GroupHolder> 
     }
 }
 
-class ParserBookInfo extends JerichoParser<BookStateInfo> {
+class ParserBookInfo extends JerichoParser<ArrayList<BookStateInfo>> {
     private static final String[] BOOK_STATE_XML_TAGS = {"call_no", "place_name", "book_state"};
 
     @Override

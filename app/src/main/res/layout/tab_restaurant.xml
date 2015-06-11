@@ -5,17 +5,17 @@
     android:layout_height="match_parent">
 
     <android.support.v4.widget.SwipeRefreshLayout
-        android:layout_width="fill_parent"
-        android:layout_gravity="top"
         android:id="@+id/tab_rest_swipe_layout"
-        android:layout_height="fill_parent">
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_gravity="top">
 
         <android.support.v4.widget.NestedScrollView
             android:id="@+id/tab_rest_scroll"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
-            android:paddingBottom="96dp"
+            android:paddingBottom="4dp"
             android:paddingLeft="4dp"
             android:paddingRight="4dp"
             android:paddingTop="4dp"
@@ -29,11 +29,11 @@
                 android:orientation="vertical">
 
                 <android.support.v7.widget.CardView
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="10dp"
                     app:cardBackgroundColor="?attr/cardBackgroundColor"
                     app:cardCornerRadius="4dp">
 
@@ -59,8 +59,7 @@
                             android:layout_marginBottom="5dp"
                             android:layout_marginLeft="25dp"
                             android:layout_marginRight="25dp"
-                            android:layout_marginTop="7dp"
-                            android:textIsSelectable="true" />
+                            android:layout_marginTop="7dp" />
                     </LinearLayout>
                 </android.support.v7.widget.CardView>
 
@@ -68,8 +67,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginTop="10dp"
                     android:layout_marginBottom="10dp"
+                    android:layout_marginTop="10dp"
                     app:cardBackgroundColor="?attr/cardBackgroundColor"
                     app:cardCornerRadius="4dp">
 
@@ -95,8 +94,7 @@
                             android:layout_marginBottom="5dp"
                             android:layout_marginLeft="25dp"
                             android:layout_marginRight="25dp"
-                            android:layout_marginTop="7dp"
-                            android:textIsSelectable="true" />
+                            android:layout_marginTop="7dp" />
                     </LinearLayout>
                 </android.support.v7.widget.CardView>
 
@@ -104,8 +102,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginTop="10dp"
                     android:layout_marginBottom="10dp"
+                    android:layout_marginTop="10dp"
                     app:cardBackgroundColor="?attr/cardBackgroundColor"
                     app:cardCornerRadius="4dp">
 
@@ -131,8 +129,7 @@
                             android:layout_marginBottom="5dp"
                             android:layout_marginLeft="25dp"
                             android:layout_marginRight="25dp"
-                            android:layout_marginTop="7dp"
-                            android:textIsSelectable="true" />
+                            android:layout_marginTop="7dp" />
                     </LinearLayout>
                 </android.support.v7.widget.CardView>
 
@@ -140,8 +137,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginTop="10dp"
                     android:layout_marginBottom="10dp"
+                    android:layout_marginTop="10dp"
                     app:cardBackgroundColor="?attr/cardBackgroundColor"
                     app:cardCornerRadius="4dp">
 
@@ -155,7 +152,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="15dp"
                             android:layout_marginTop="3dp"
-                            android:text="운영시간"
+                            android:text="@string/tab_rest_operation_time"
                             android:textColor="?color_primary_text"
                             android:textSize="15sp"
                             android:textStyle="bold" />
@@ -175,7 +172,7 @@
                                 android:layout_marginRight="15dp"
                                 android:layout_marginTop="5dp"
                                 android:layout_weight="1"
-                                android:gravity="right" />
+                                android:gravity="left" />
 
                             <TextView
                                 android:id="@+id/tab_rest_text_vacation"
@@ -186,9 +183,40 @@
                                 android:layout_marginRight="15dp"
                                 android:layout_marginTop="5dp"
                                 android:layout_weight="1"
-                                android:gravity="right" />
+                                android:gravity="left" />
                         </LinearLayout>
                     </LinearLayout>
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="10dp"
+                    android:clickable="true"
+                    app:cardBackgroundColor="?attr/cardBackgroundColor"
+                    app:cardCornerRadius="4dp">
+
+                    <com.balysv.materialripple.MaterialRippleLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="fill"
+                        android:clickable="true"
+                        app:mrl_rippleColor="?colorAccent"
+                        app:mrl_rippleDelayClick="true">
+
+                        <TextView
+                            android:id="@+id/tab_rest_show_week"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:clickable="true"
+                            android:gravity="center"
+                            android:padding="16dp"
+                            android:text="@string/tab_rest_show_menu_in_week"
+                            android:textColor="?color_primary_text" />
+                    </com.balysv.materialripple.MaterialRippleLayout>
+
                 </android.support.v7.widget.CardView>
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>
@@ -198,11 +226,11 @@
         android:id="@+id/action_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:fab_colorNormal="?colorPrimary"
-        app:fab_icon="?menu_theme_ic_action_navigation_refresh"
-        app:fab_colorPressed="?colorPrimaryDark"
-        app:layout_scrollFlags="scroll|enterAlways"
         android:layout_gravity="bottom|right"
-        android:layout_margin="16dp"
-        app:fab_title="@string/action_refresh" />
+        android:layout_margin="@dimen/fab_margin"
+        app:fab_colorNormal="?colorPrimary"
+        app:fab_colorPressed="?colorPrimaryDark"
+        app:fab_icon="?menu_theme_ic_action_navigation_refresh"
+        app:fab_title="@string/action_refresh"
+        app:layout_scrollFlags="scroll|enterAlways" />
 </FrameLayout>

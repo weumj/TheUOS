@@ -21,7 +21,7 @@
             android:id="@+id/tab_timetable_list_period_ripple"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            app:mrl_rippleDelayClick="false"
+            app:mrl_rippleDelayClick="true"
             app:mrl_rippleColor="?colorPrimaryDark">
 
             <TextView

@@ -9,7 +9,7 @@ import android.content.Intent;
 import android.os.Parcelable;
 import android.util.Log;
 
-import com.uoscs09.theuos2.common.AsyncLoader;
+import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
@@ -55,6 +55,8 @@ public class TimetableAlarmUtil {
     }
 
     private static ComponentName startService(Context context, Intent intent) {
+        Log.i(TAG, "Timetable Alarm Service is not implemented");
+        /*
         ComponentName name = context.startService(intent);
 
         if (name != null) {
@@ -65,6 +67,8 @@ public class TimetableAlarmUtil {
         }
 
         return name;
+        */
+        return null;
     }
 
     // ************ ALARM **************
@@ -75,7 +79,7 @@ public class TimetableAlarmUtil {
     public static void clearAllAlarm(Context context) {
         final Context appContext = context.getApplicationContext();
 
-        AsyncLoader.excuteFor(new Runnable() {
+        AsyncUtil.executeFor(new Runnable() {
             @Override
             public void run() {
                 clearAllAlarmInner(appContext);
@@ -87,10 +91,10 @@ public class TimetableAlarmUtil {
     /**
      * 현재 설정된 시간표 알림을 모두 취소한다.
      */
-    public static void clearAllAlarmWithResult(Context context, AsyncLoader.OnTaskFinishedListener<Boolean> finishedListener) {
+    public static void clearAllAlarmWithResult(Context context, AsyncUtil.OnTaskFinishedListener<Boolean> finishedListener) {
         final Context appContext = context.getApplicationContext();
 
-        AsyncLoader.excute(new Callable<Boolean>() {
+        AsyncUtil.execute(new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
                 return clearAllAlarmInner(appContext);

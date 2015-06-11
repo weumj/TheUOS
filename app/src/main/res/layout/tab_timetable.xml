@@ -28,7 +28,7 @@
         app:fab_colorPressed="?colorPrimaryDark"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_margin="16dp"
+        android:layout_margin="@dimen/fab_margin"
         app:fab_title="@string/tab_timetable_wise_login_title" />
 
     <RelativeLayout
@@ -48,7 +48,7 @@
             android:layout_marginLeft="20dp"
             android:layout_width="wrap_content"
             app:mrl_rippleColor="?colorAccent"
-            app:mrl_rippleDelayClick="false"
+            app:mrl_rippleDelayClick="true"
             android:layout_centerHorizontal="true"
             android:layout_height="wrap_content">
 
@@ -66,7 +66,7 @@
             android:padding="4dp"
             android:layout_width="wrap_content"
             app:mrl_rippleColor="?colorAccent"
-            app:mrl_rippleDelayClick="false"
+            app:mrl_rippleDelayClick="true"
             android:layout_marginTop="20dp"
             android:layout_alignLeft="@id/tab_timetable_empty_text_ripple"
             android:layout_alignRight="@id/tab_timetable_empty_text_ripple"

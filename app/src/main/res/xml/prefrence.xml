@@ -58,8 +58,13 @@
     <PreferenceCategory android:title="@string/setting_data" >
         <PreferenceScreen
             android:icon="?theme_ic_action_image_image"
-            android:key="@string/pref_key_save_route"
-            android:title="@string/setting_save_route_sub_title" >
+            android:key="@string/pref_key_save_image_route"
+            android:title="@string/setting_save_image_sub_title" >
+        </PreferenceScreen>
+        <PreferenceScreen
+            android:icon="?theme_ic_action_action_view_list"
+            android:key="@string/pref_key_save_txt_route"
+            android:title="@string/setting_save_text_sub_title" >
         </PreferenceScreen>
         <PreferenceScreen
             android:icon="?theme_ic_action_action_delete"

@@ -25,12 +25,12 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.TextView;
 
-import com.javacan.asyncexcute.AsyncCallback;
 import com.uoscs09.theuos2.R;
+import com.uoscs09.theuos2.async.AsyncFragmentJob;
+import com.uoscs09.theuos2.async.AsyncJob;
+import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
-import com.uoscs09.theuos2.common.AsyncLoader;
-import com.uoscs09.theuos2.common.ExpandableStickyListHeaderNestedListView;
 import com.uoscs09.theuos2.common.PieProgressDrawable;
 import com.uoscs09.theuos2.parse.ParseUnivSchedule;
 import com.uoscs09.theuos2.parse.ParseUtil;
@@ -43,8 +43,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.Callable;
 
+import se.emilsjolander.stickylistheaders.ExpandableStickyListHeadersListView;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
@@ -52,11 +52,11 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivScheduleItem>> {
     private static final String URL = OApiUtil.URL_API_MAIN_DB + '?' + OApiUtil.API_KEY + '=' + OApiUtil.UOS_API_KEY;
 
-    private final ParseUnivSchedule mParser = new ParseUnivSchedule();
+    private static final ParseUnivSchedule UNIV_SCHEDULE_PARSER = new ParseUnivSchedule();
 
     private ArrayList<UnivScheduleItem> mList = new ArrayList<>();
 
-    private ExpandableStickyListHeaderNestedListView mListView;
+    private ExpandableStickyListHeadersListView mListView;
 
     Adapter mAdapter;
 
@@ -93,8 +93,9 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
 
         mAdapter = new Adapter(getActivity(), mList);
 
-        mListView = (ExpandableStickyListHeaderNestedListView) view.findViewById(R.id.list);
-        setNestedScrollingChild(mListView);
+        mListView = (ExpandableStickyListHeadersListView) view.findViewById(R.id.list);
+        mListView.setNestedScrollingEnabled(true);
+        registerNestedScrollingChild(mListView);
 
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -152,90 +153,99 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
     void addUnivScheduleToCalender() {
         mProgressDialog.show();
 
-        AsyncLoader.excute(mCalendarQueryCallable, mCalendarQueryCallback);
-    }
+        AsyncUtil.execute(new AsyncJob.Base<Uri>() {
+            private static final String SELECTION = "((" + CalendarContract.Calendars.ACCOUNT_NAME + " = ?) AND ("
+                    + CalendarContract.Calendars.ACCOUNT_TYPE + " = ?) AND ("
+                    + CalendarContract.Calendars.OWNER_ACCOUNT + " = ?))";
+            private String[] selectionArgs;
 
+            @Override
+            public Uri call() throws Exception {
+                if (mAccount == null) {
+                    AccountManager accountManager = AccountManager.get(getActivity());
+                    Account[] accounts = accountManager.getAccountsByType("com.google");
 
-    private final Callable<Uri> mCalendarQueryCallable = new Callable<Uri>() {
+                    if (accounts.length < 1) {
+                        throw new Exception(getString(R.string.tab_univ_schedule_google_account_not_exist));
+                    }
 
-        private final String SELECTION = "((" + CalendarContract.Calendars.ACCOUNT_NAME + " = ?) AND ("
-                + CalendarContract.Calendars.ACCOUNT_TYPE + " = ?) AND ("
-                + CalendarContract.Calendars.OWNER_ACCOUNT + " = ?))";
-        private String[] selectionArgs;
+                    mAccount = accounts[0].name;
 
+                    selectionArgs = new String[]{mAccount, "com.google", mAccount};
 
-        @Override
-        public Uri call() throws Exception {
-
-            if (mAccount == null) {
-                AccountManager accountManager = AccountManager.get(getActivity());
-                Account[] accounts = accountManager.getAccountsByType("com.google");
-
-                if (accounts.length < 1) {
-                    throw new Exception(getString(R.string.tab_univ_schedule_google_account_not_exist));
                 }
 
-                mAccount = accounts[0].name;
+                ContentResolver cr = getActivity().getContentResolver();
 
-                selectionArgs = new String[]{mAccount, "com.google", mAccount};
+                Cursor c = cr.query(CalendarContract.Calendars.CONTENT_URI, EVENT_PROJECTION, SELECTION, selectionArgs, null);
 
-            }
+                if (c == null) {
+                    throw new Exception(getString(R.string.tab_univ_schedule_calendar_not_exist));
 
-            ContentResolver cr = getActivity().getContentResolver();
+                } else if (!c.moveToFirst()) {
 
-            Cursor c = cr.query(CalendarContract.Calendars.CONTENT_URI, EVENT_PROJECTION, SELECTION, selectionArgs, null);
+                    c.close();
+                    throw new Exception(getString(R.string.tab_univ_schedule_calendar_not_exist));
+                }
 
-            if (c == null) {
-                throw new Exception(getString(R.string.tab_univ_schedule_calendar_not_exist));
 
-            } else if (!c.moveToFirst()) {
+                long calendarId = c.getLong(0);
+
+                ContentValues cv = mSelectedItem.toContentValues(calendarId);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
+                    cv.put(CalendarContract.Events.EVENT_COLOR, getResources().getColor(AppUtil.getColor(mList.indexOf(mSelectedItem))));
+
+                Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, cv);
 
                 c.close();
-                throw new Exception(getString(R.string.tab_univ_schedule_calendar_not_exist));
+
+                return uri;
             }
 
+            @Override
+            public void onResult(Uri result) {
+                if (result != null)
+                    AppUtil.showToast(getActivity(), R.string.tab_univ_schedule_add_to_calendar_success, isMenuVisible());
+                else
+                    AppUtil.showToast(getActivity(), R.string.tab_univ_schedule_add_to_calendar_fail, isMenuVisible());
+            }
 
-            long calendarId = c.getLong(0);
+            @Override
+            public void exceptionOccured(Exception e) {
+                e.printStackTrace();
 
-            ContentValues cv = mSelectedItem.toContentValues(calendarId);
+                AppUtil.showErrorToast(getActivity(), e, isMenuVisible());
+            }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
-                cv.put(CalendarContract.Events.EVENT_COLOR, getResources().getColor(AppUtil.getColor(mList.indexOf(mSelectedItem))));
-
-            Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, cv);
-
-            c.close();
-
-            return uri;
-        }
-    };
-
-    private final AsyncCallback<Uri> mCalendarQueryCallback = new AsyncCallback.Base<Uri>() {
-        @Override
-        public void onResult(Uri result) {
-            if (result != null)
-                AppUtil.showToast(getActivity(), R.string.tab_univ_schedule_add_to_calendar_success, isMenuVisible());
-            else
-                AppUtil.showToast(getActivity(), R.string.tab_univ_schedule_add_to_calendar_fail, isMenuVisible());
-        }
-
-        @Override
-        public void exceptionOccured(Exception e) {
-            e.printStackTrace();
-
-            AppUtil.showErrorToast(getActivity(), e, isMenuVisible());
-        }
-
-        @Override
-        public void onPostExcute() {
-            mProgressDialog.dismiss();
-        }
-    };
-
-    @Override
-    public ArrayList<UnivScheduleItem> call() throws Exception {
-        return ParseUtil.parseXml(mParser, URL);
+            @Override
+            public void onPostExcute() {
+                mProgressDialog.dismiss();
+            }
+        });
     }
+
+    private final AsyncFragmentJob.Base<ArrayList<UnivScheduleItem>> JOB = new AsyncFragmentJob.Base<ArrayList<UnivScheduleItem>>() {
+        @Override
+        public ArrayList<UnivScheduleItem> call() throws Exception {
+            return ParseUtil.parseXml(UNIV_SCHEDULE_PARSER, URL);
+        }
+
+        @Override
+        public void onResult(ArrayList<UnivScheduleItem> result) {
+            mList.clear();
+            mList.addAll(result);
+            mAdapter.notifyDataSetChanged();
+
+            setSubtitleWhenVisible(mSubTitle = mDateFormat.format(mList.get(0).getDate(true).getTime()));
+        }
+
+    };
+
+    private void execute(){
+        super.execute(JOB);
+    }
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -255,15 +265,6 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
         }
     }
 
-    @Override
-    protected void onTransactResult(ArrayList<UnivScheduleItem> result) {
-
-        mList.clear();
-        mList.addAll(result);
-        mAdapter.notifyDataSetChanged();
-
-        setSubtitleWhenVisible(mSubTitle = mDateFormat.format(mList.get(0).getDate(true).getTime()));
-    }
 
     @Nullable
     @Override

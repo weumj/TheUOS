@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:gravity="center"
         android:layout_height="fill_parent"
-        app:mrl_rippleDelayClick="false"
+        app:mrl_rippleDelayClick="true"
         app:mrl_rippleInAdapter="false"
         app:mrl_rippleColor="?colorPrimaryDark">
 

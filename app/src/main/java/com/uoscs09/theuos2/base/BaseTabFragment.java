@@ -2,21 +2,12 @@ package com.uoscs09.theuos2.base;
 
 
 import android.app.Activity;
-import android.graphics.ColorFilter;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
-import android.os.Build;
 import android.support.v4.view.NestedScrollingChild;
 import android.support.v4.view.ViewCompat;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.ViewGroup;
 
-import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.UosMainActivity;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
-import com.uoscs09.theuos2.util.AppUtil;
 
 public abstract class BaseTabFragment extends BaseFragment {
     @ReleaseWhenDestroy
@@ -33,6 +24,7 @@ public abstract class BaseTabFragment extends BaseFragment {
     }
 
 
+    /*
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
@@ -46,6 +38,7 @@ public abstract class BaseTabFragment extends BaseFragment {
         }
 
     }
+    */
 
     protected void registerTabParentView(ViewGroup tabParent) {
         this.mTabParent = tabParent;
@@ -64,7 +57,7 @@ public abstract class BaseTabFragment extends BaseFragment {
         }
     }
 
-    protected void setNestedScrollingChild(NestedScrollingChild child){
+    protected void registerNestedScrollingChild(NestedScrollingChild child){
         mNestedScrollingChild = child;
     }
 

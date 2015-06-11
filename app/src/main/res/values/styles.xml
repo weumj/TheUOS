@@ -98,13 +98,6 @@
         <item name="toolbar_actionbar_subtitle">@style/AppWidget.ActionBar.SubTitleTextStyle</item>
 
         <item name="theme_inverse">@style/AppWidget.Inverse.Light</item>
-        <!-- for selector -->
-        <item name="selector_list">@drawable/selector_list</item>
-        <item name="selector_list_shadow">@drawable/selector_list_shadow</item>
-        <item name="selector_list_circle">@drawable/selector_list_circle</item>
-        <item name="selector_list_rec">@drawable/selector_list_rec</item>
-        <item name="selector_button">@drawable/selector_button</item>
-        <item name="selector_text">@drawable/selector_text</item>
 
         <item name="color_primary_text">?color_actionbar_title</item>
         <item name="color_tint_normal">@color/tint_gray</item>
@@ -252,14 +245,6 @@
         <item name="toolbar_actionbar_subtitle">@style/AppWidget.ActionBar.SubTitleTextStyle</item>
 
         <item name="theme_inverse">@style/AppWidget.Inverse</item>
-
-        <!-- for selector -->
-        <item name="selector_list">@drawable/selector_list_dark</item>
-        <item name="selector_list_shadow">@drawable/selector_list_dark</item>
-        <item name="selector_list_circle">@drawable/selector_list_circle_dark</item>
-        <item name="selector_list_rec">@drawable/selector_list_rec_dark</item>
-        <item name="selector_button">@drawable/selector_button_dark</item>
-        <item name="selector_text">@drawable/selector_text_dark</item>
 
         <item name="color_primary_text">@android:color/white</item>
         <item name="color_tint_normal">@color/tint_white</item>

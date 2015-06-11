@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
+import com.uoscs09.theuos2.async.AsyncFragmentJob;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.common.NestedListView;
 import com.uoscs09.theuos2.parse.ParseSubject2;
@@ -120,7 +121,7 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
         }
 
         NestedListView mListView = (NestedListView) rootView.findViewById(R.id.tab_search_subject_list_view);
-        setNestedScrollingChild(mListView);
+        registerNestedScrollingChild(mListView);
         mAdapter = new SubjectAdapter2(context, mSubjectList);
         mListView.setAdapter(mAdapter);
         mListView.setOnItemClickListener(this);
@@ -239,71 +240,72 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
                 .create();
     }
 
-    @Override
-    protected void execute() {
+    void execute() {
         mEmptyView.setVisibility(View.INVISIBLE);
 
-        super.execute();
+        super.execute(JOB);
     }
 
-    @Override
-    public void onTransactResult(ArrayList<SubjectItem2> result) {
-        mAdapter.clear();
-        mAdapter.addAll(result);
-        mAdapter.notifyDataSetChanged();
 
-        if (result.isEmpty()) {
-            mTitleLayout.setVisibility(View.INVISIBLE);
-        } else {
-            mTitleLayout.setVisibility(View.VISIBLE);
+    private AsyncFragmentJob.Base<ArrayList<SubjectItem2>> JOB = new AsyncFragmentJob.Base<ArrayList<SubjectItem2>>() {
+
+        @Override
+        public ArrayList<SubjectItem2> call() throws Exception {
+            String query;
+            mOApiParams.clear();
+            mOApiParams.put(OApiUtil.API_KEY, OApiUtil.UOS_API_KEY);
+            mOApiParams.put(OApiUtil.YEAR, mDialogYearSpinner.getSelectedItem().toString());
+            mOApiParams.put(OApiUtil.TERM, OApiUtil.Semester.values()[mDialogTermSpinner.getSelectedItemPosition()].code);
+
+            switch (mDialogSpinner1.getSelectedItemPosition()) {
+
+                default:
+                case 0:// 교양
+                    query = "http://wise.uos.ac.kr/uosdoc/api.ApiUcrCultTimeInq.oapi";
+                    mOApiParams.put("subjectDiv", getCultSubjectDiv(mDialogSpinner2.getSelectedItemPosition()));
+                    break;
+
+                case 1:// 전공
+                    query = "http://wise.uos.ac.kr/uosdoc/api.ApiUcrMjTimeInq.oapi";
+                    switch (selections[1]) {
+                        case R.array.search_subj_major_2_0_0:
+                            mOApiParams.putAll(getMajorDeptDiv(mDialogSpinner3.getSelectedItemPosition(), mDialogSpinner4.getSelectedItemPosition()));
+                            break;
+
+                        default:
+                            mOApiParams.putAll(getMajorDeptDiv2(selections[1], mDialogSpinner4.getSelectedItemPosition()));
+                            break;
+
+                    }
+                    break;
+            }
+
+            mOApiParams.put("subjectNm", URLEncoder.encode(mSearchEditText.getText().toString(), StringUtil.ENCODE_EUC_KR));
+
+            return ParseUtil.parseXml(mParser, query, mOApiParams);
         }
 
-        AppUtil.showToast(getActivity(), getString(R.string.search_found_amount, result.size()), true);
+        @Override
+        public void onResult(ArrayList<SubjectItem2> result) {
+            mAdapter.clear();
+            mAdapter.addAll(result);
+            mAdapter.notifyDataSetChanged();
 
-        mSearchConditionString = mDialogYearSpinner.getSelectedItem()
-                .toString()
-                + " / "
-                + mDialogTermSpinner.getSelectedItem().toString();
-        setSubtitleWhenVisible(mSearchConditionString);
-    }
+            if (result.isEmpty()) {
+                mTitleLayout.setVisibility(View.INVISIBLE);
+            } else {
+                mTitleLayout.setVisibility(View.VISIBLE);
+            }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public ArrayList<SubjectItem2> call() throws Exception {
-        String query;
-        mOApiParams.clear();
-        mOApiParams.put(OApiUtil.API_KEY, OApiUtil.UOS_API_KEY);
-        mOApiParams.put(OApiUtil.YEAR, mDialogYearSpinner.getSelectedItem().toString());
-        mOApiParams.put(OApiUtil.TERM, OApiUtil.Semester.values()[mDialogTermSpinner.getSelectedItemPosition()].code);
+            AppUtil.showToast(getActivity(), getString(R.string.search_found_amount, result.size()), true);
 
-        switch (mDialogSpinner1.getSelectedItemPosition()) {
-
-            default:
-            case 0:// 교양
-                query = "http://wise.uos.ac.kr/uosdoc/api.ApiUcrCultTimeInq.oapi";
-                mOApiParams.put("subjectDiv", getCultSubjectDiv(mDialogSpinner2.getSelectedItemPosition()));
-                break;
-
-            case 1:// 전공
-                query = "http://wise.uos.ac.kr/uosdoc/api.ApiUcrMjTimeInq.oapi";
-                switch (selections[1]) {
-                    case R.array.search_subj_major_2_0_0:
-                        mOApiParams.putAll(getMajorDeptDiv(mDialogSpinner3.getSelectedItemPosition(), mDialogSpinner4.getSelectedItemPosition()));
-                        break;
-
-                    default:
-                        mOApiParams.putAll(getMajorDeptDiv2(selections[1], mDialogSpinner4.getSelectedItemPosition()));
-                        break;
-
-                }
-                break;
+            mSearchConditionString = mDialogYearSpinner.getSelectedItem()
+                    .toString()
+                    + " / "
+                    + mDialogTermSpinner.getSelectedItem().toString();
+            setSubtitleWhenVisible(mSearchConditionString);
         }
-
-        mOApiParams.put("subjectNm", URLEncoder.encode(mSearchEditText.getText().toString(), StringUtil.ENCODE_EUC_KR));
-
-        return ParseUtil.parseXml(mParser, query, mOApiParams);
-
-    }
+    };
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -391,6 +393,7 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
                         case 9: // "국제도시과학대학원"
                             array = R.array.search_subj_major_2_0_9;
                             array2 = R.array.search_subj_major_3_0_9_0;
+                            break;
                         default:
                             return;
                     }

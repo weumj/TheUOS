@@ -29,6 +29,7 @@ import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
+import com.uoscs09.theuos2.async.AsyncFragmentJob;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.common.NestedListView;
 import com.uoscs09.theuos2.http.HttpRequest;
@@ -41,11 +42,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
-public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookItem>> implements OnQueryTextListener, AbsListView.OnScrollListener, View.OnClickListener {
-    /**
-     * 리스트 뷰가 스크롤 되는지 여부
-     */
-    private boolean isInvokeScroll = true;
+public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookItem>> implements OnQueryTextListener, View.OnClickListener {
+
     /**
      * 비동기 작업 결과가 비었는지 여부
      */
@@ -94,7 +92,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
     @ReleaseWhenDestroy
     private ActionMode actionMode;
 
-    private final ParserBook mParser = new ParserBook();
+    private static final ParserBook PARSER_BOOK = new ParserBook();
 
     private static final String BUNDLE_LIST = "BookList";
     private static final String BUNDLE_PAGE = "BookPage";
@@ -196,8 +194,33 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
 
         mAnimAdapter.setAbsListView(mListView);
         mListView.setAdapter(mAnimAdapter);
-        mListView.setOnScrollListener(this);
-        setNestedScrollingChild(mListView);
+        mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            /**
+             * 리스트 뷰가 스크롤 되는지 여부
+             */
+            private boolean isInvokeScroll = true;
+
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                // 리스트의 마지막에 도달하였을 경우에
+                // 이 이벤트가 처음 일어났고, 이전에 검색결과가 0이 아닌 경우에만
+                // 새로운 검색을 시도한다.
+                if (totalItemCount > 1 && (firstVisibleItem + visibleItemCount) == totalItemCount - 1) {
+                    if (!isInvokeScroll && !isResultEmpty) {
+                        isInvokeScroll = true;
+                        mCurrentPage++;
+                        execute();
+                    }
+                } else {
+                    isInvokeScroll = false;
+                }
+            }
+        });
+        registerNestedScrollingChild(mListView);
 
         return rootView;
     }
@@ -242,16 +265,15 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
                 }
             });
         } else {
-            AppUtil.showToast(getActivity(), "compactibility error");
+            AppUtil.showToast(getActivity(), "compatibility error");
         }
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
-    protected void execute() {
+    protected void onPreExecute() {
+        super.onPreExecute();
         mEmptyView.setVisibility(View.INVISIBLE);
-
-        super.execute();
     }
 
     @Override
@@ -304,7 +326,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
         return true;
     }
 
-    String getSpinnerItemString(int which, int pos) {
+    static String getSpinnerItemString(int which, int pos) {
         switch (which) {
             case 0:
                 switch (pos) {
@@ -331,53 +353,53 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
         }
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public ArrayList<BookItem> call() throws Exception {
-        String OS = getSpinnerItemString(1, os.getSelectedItemPosition());
-        String OI = getSpinnerItemString(0, oi.getSelectedItemPosition());
-        boolean check = true;
-        StringBuilder sb = new StringBuilder();
-        sb.append(URL).append(mCurrentPage).append("&q=").append(mEncodedQuery);
-        String lastQuery = null;
-
-        String RM = "&websysdiv=tot";
-        if (!OI.equals(StringUtil.NULL)) {
-            sb.append("&oi=").append(OI);
-            lastQuery = StringUtil.remove(sb.toString(), RM);
-            check = false;
-        }
-        if (!OS.equals(StringUtil.NULL)) {
-            sb.append("&os=").append(OS);
-            lastQuery = sb.toString();
-            if (check) {
-                lastQuery = StringUtil.remove(lastQuery, RM);
-                check = false;
-            }
-        }
-
-        if (check) {
-            lastQuery = sb.toString();
-        }
-
-        String body = HttpRequest.getBody(lastQuery);
-
-        ArrayList<BookItem> bookList = new ArrayList<>(mParser.parse(body));
-
-        // 대여 가능 도서만 가져옴
-        if (PrefUtil.getInstance(getActivity()).get(PrefUtil.KEY_CHECK_BORROW, false) && bookList.size() > 0) {
-            bookList = getFilteredList(bookList);
-        }
-
-        return bookList;
+    void execute(){
+        super.execute(JOB);
     }
 
-    @Override
-    public void onTransactResult(ArrayList<BookItem> result) {
-        Context context = getActivity();
-        if (context != null) {
+    private final AsyncFragmentJob.Base<ArrayList<BookItem>> JOB = new AsyncFragmentJob.Base<ArrayList<BookItem>>() {
+        @Override
+        public ArrayList<BookItem> call() throws Exception {
+            String OS = getSpinnerItemString(1, os.getSelectedItemPosition());
+            String OI = getSpinnerItemString(0, oi.getSelectedItemPosition());
+            boolean check = true;
+            StringBuilder sb = new StringBuilder();
+            sb.append(URL).append(mCurrentPage).append("&q=").append(mEncodedQuery);
+            String lastQuery = null;
+
+            String RM = "&websysdiv=tot";
+            if (!OI.equals(StringUtil.NULL)) {
+                sb.append("&oi=").append(OI);
+                lastQuery = StringUtil.remove(sb.toString(), RM);
+                check = false;
+            }
+            if (!OS.equals(StringUtil.NULL)) {
+                sb.append("&os=").append(OS);
+                lastQuery = sb.toString();
+                if (check) {
+                    lastQuery = StringUtil.remove(lastQuery, RM);
+                    check = false;
+                }
+            }
+
+            if (check) {
+                lastQuery = sb.toString();
+            }
+
+            ArrayList<BookItem> bookList = new ArrayList<>(PARSER_BOOK.parse(HttpRequest.getBody(lastQuery)));
+
+            // 대여 가능 도서만 가져옴
+            if (PrefUtil.getInstance(getActivity()).get(PrefUtil.KEY_CHECK_BORROW, false) && bookList.size() > 0) {
+                bookList = getFilteredList(bookList);
+            }
+
+            return bookList;
+        }
+
+        @Override
+        public void onResult(ArrayList<BookItem> result) {
             if (result.size() == 0) {
-                AppUtil.showToast(context, R.string.search_result_empty, isMenuVisible());
+                AppUtil.showToast(getActivity(), R.string.search_result_empty, isMenuVisible());
                 isResultEmpty = true;
 
             } else {
@@ -386,13 +408,13 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
                 mBookListAdapter.notifyDataSetChanged();
             }
         }
-    }
 
-    @Override
-    protected void onTransactPostExecute() {
-        super.onTransactPostExecute();
-        isResultEmpty = false;
-    }
+        @Override
+        public void onPostExcute() {
+            super.onPostExcute();
+            isResultEmpty = false;
+        }
+    };
 
     ArrayList<BookItem> getFilteredList(ArrayList<BookItem> originalList) {
         ArrayList<BookItem> newList = new ArrayList<>();
@@ -411,26 +433,6 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
             newList.add(item);
         }
         return newList;
-    }
-
-    @Override
-    public void onScrollStateChanged(AbsListView view, int scrollState) {
-    }
-
-    @Override
-    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-        // 리스트의 마지막에 도달하였을 경우에
-        // 이 이벤트가 처음 일어났고, 이전에 검색결과가 0이 아닌 경우에만
-        // 새로운 검색을 시도한다.
-        if (totalItemCount > 1 && (firstVisibleItem + visibleItemCount) == totalItemCount - 1) {
-            if (!isInvokeScroll && !isResultEmpty) {
-                isInvokeScroll = true;
-                mCurrentPage++;
-                execute();
-            }
-        } else {
-            isInvokeScroll = false;
-        }
     }
 
     @ReleaseWhenDestroy
