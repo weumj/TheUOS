@@ -1,5 +1,8 @@
 package com.uoscs09.theuos2.http;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 
 import com.uoscs09.theuos2.util.StringUtil;
@@ -18,25 +21,37 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 public class HttpRequest {
-    public static String getBody(String url, String encoding, Map<? extends CharSequence, ? extends CharSequence> params) throws IOException {
-        return getBody(url, encoding, params, encoding);
+    public static boolean checkNetworkUnable(Context context){
+        ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+        return networkInfo == null || !networkInfo.isConnected();
     }
 
-    public static String getBody(String url, String encoding, Map<? extends CharSequence, ? extends CharSequence> params, String paramsEncoding) throws IOException {
+    public static String getBody(Context context, String url, String encoding, Map<? extends CharSequence, ? extends CharSequence> params) throws IOException {
+        return getBody(context, url, encoding, params, encoding);
+    }
+
+    public static String getBody(Context context, String url, String encoding, Map<? extends CharSequence, ? extends CharSequence> params, String paramsEncoding) throws IOException {
+        if(checkNetworkUnable(context))
+            throw new IOException("Failed to access current network.");
+
         StringBuilder sb = new StringBuilder();
         sb.append(url).append('?');
         encodeString(sb, params, paramsEncoding);
         return getBody(sb.toString(), encoding);
     }
 
-    public static String getBodyByPost(String url, String encoding, Map<? extends CharSequence, ? extends CharSequence> params, String paramsEncoding) throws IOException {
+    public static String getBodyByPost(Context context, String url, String encoding, Map<? extends CharSequence, ? extends CharSequence> params, String paramsEncoding) throws IOException {
+        if(checkNetworkUnable(context))
+            throw new IOException("Failed to access current network.");
+
         StringBuilder sb = new StringBuilder();
         encodeString(sb, params, paramsEncoding);
         return getBodyByPost(url, sb.toString(), encoding);
     }
 
-    public static String getBody(String url, Map<? extends CharSequence, ? extends CharSequence> params) throws IOException {
-        return getBody(url, StringUtil.ENCODE_UTF_8, params);
+    public static String getBody(Context context, String url, Map<? extends CharSequence, ? extends CharSequence> params) throws IOException {
+        return getBody(context, url, StringUtil.ENCODE_UTF_8, params);
     }
 
     public static StringBuilder encodeString(StringBuilder b, Map<? extends CharSequence, ? extends CharSequence> table, String encoding) throws UnsupportedEncodingException {
@@ -54,11 +69,14 @@ public class HttpRequest {
         return encodeString(b, params, StringUtil.ENCODE_UTF_8);
     }
 
-    public static HttpURLConnection getConnection(String url, Map<? extends CharSequence, ? extends CharSequence> params) throws IOException {
-        return getConnection(url, StringUtil.ENCODE_UTF_8, params);
+    public static HttpURLConnection getConnection(Context context, String url, Map<? extends CharSequence, ? extends CharSequence> params) throws IOException {
+        return getConnection(context, url, StringUtil.ENCODE_UTF_8, params);
     }
 
-    public static HttpURLConnection getConnection(String url, String paramEncoding, Map<? extends CharSequence, ? extends CharSequence> params) throws IOException {
+    public static HttpURLConnection getConnection(Context context, String url, String paramEncoding, Map<? extends CharSequence, ? extends CharSequence> params) throws IOException {
+        if(checkNetworkUnable(context))
+            throw new IOException("Failed to access current network.");
+
         if(params == null)
             return getConnection(url);
 
@@ -124,7 +142,11 @@ public class HttpRequest {
 
             return readContentFromStream(connection.getInputStream(), encoding);
         } finally {
-            connection.disconnect();
+
+            if (connection != null) {
+                connection.disconnect();
+            }
+
         }
     }
 

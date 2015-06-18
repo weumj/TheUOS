@@ -12,15 +12,28 @@ import com.uoscs09.theuos2.util.TrackerUtil;
 public class UOSApplication extends Application {
     private RequestQueue mRequestQueue;
     private ImageLoader mImageLoader;
+    private TrackerUtil mTrackerUtil;
 
     public static final boolean DEBUG = true;
+
+
+    public TrackerUtil getTrackerUtil(){
+        if(mTrackerUtil == null)
+            mTrackerUtil = TrackerUtil.newInstance(this);
+
+        return mTrackerUtil;
+    }
+
+
 
     @Override
     public void onCreate() {
         super.onCreate();
 
+        mTrackerUtil = TrackerUtil.newInstance(this);
+
         if (!DEBUG) {
-            Tracker t = TrackerUtil.getInstance(this).getTracker();
+            Tracker t = mTrackerUtil.getTracker();
             t.enableAdvertisingIdCollection(true);
             t.enableAutoActivityTracking(true);
             t.enableExceptionReporting(true);

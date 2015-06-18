@@ -2,15 +2,13 @@ package com.uoscs09.theuos2.appwidget.restaurant;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.SparseArray;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.base.AbsListRemoteViewsFactory;
 import com.uoscs09.theuos2.tab.restaurant.RestItem;
-import com.uoscs09.theuos2.util.IOUtil;
-
-import java.util.ArrayList;
+import com.uoscs09.theuos2.tab.restaurant.TabRestaurantFragment;
 
 public class RestListService extends RemoteViewsService {
 
@@ -19,34 +17,32 @@ public class RestListService extends RemoteViewsService {
         return new ListRemoteViewsFactory(this, intent);
     }
 
-    private static class ListRemoteViewsFactory extends AbsListRemoteViewsFactory<RestItem> {
-        private int position;
+    private static class ListRemoteViewsFactory implements RemoteViewsFactory {
+        private int mRestPosition;
+        private SparseArray<RestItem> mTable;
+        private Context context;
 
         public ListRemoteViewsFactory(Context context, Intent intent) {
-            super(context);
-            clear();
-            ArrayList<RestItem> list = intent.getBundleExtra(RestWidget.REST_WIDGET_ITEM).getParcelableArrayList(RestWidget.REST_WIDGET_ITEM);
-
-            addAll(list);
-            this.position = intent.getIntExtra(RestWidget.REST_WIDGET_POSITION, 0);
+            this.context = context;
+            this.mRestPosition = intent.getIntExtra(RestWidget.REST_WIDGET_POSITION, 0);
         }
 
         @Override
-        public int getCount() {
-            return 3;
+        public void onCreate() {
+            onDataSetChanged();
         }
 
         @Override
         public RemoteViews getViewAt(int position) {
-            Context context = getContext();
             RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.list_layout_widget_rest);
-            RestItem item;
-            try {
-                item = getItem(this.position);
-            } catch (Exception e) {
-                this.position = 0;
-                item = getItem(this.position);
+
+            RestItem item = null;
+            if (mTable != null) {
+                item = mTable.get(mRestPosition);
             }
+            if (item == null)
+                item = RestItem.EMPTY;
+
             switch (position) {
                 case 0:
                     rv.setTextViewText(R.id.widget_rest_title, context.getString(R.string.tab_rest_breakfast));
@@ -67,12 +63,43 @@ public class RestListService extends RemoteViewsService {
         }
 
         @Override
-        public void onDataSetChanged() {
-            super.onDataSetChanged();
-            clear();
-            ArrayList<RestItem> list = IOUtil.readFromFileSuppressed(getContext(), IOUtil.FILE_REST);
-            addAll(list);
+        public int getCount() {
+            return 3;
         }
+
+        @Override
+        public RemoteViews getLoadingView() {
+            return null;
+        }
+
+        @Override
+        public int getViewTypeCount() {
+            return 1;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public boolean hasStableIds() {
+            return false;
+        }
+
+        @Override
+        public void onDestroy() {
+            context = null;
+            mTable = null;
+        }
+
+
+        @Override
+        public void onDataSetChanged() {
+            mTable = TabRestaurantFragment.getRestMapFromFile(context);
+        }
+
+
     }
 
 }

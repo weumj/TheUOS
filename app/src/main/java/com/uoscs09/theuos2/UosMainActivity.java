@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -36,7 +35,7 @@ import com.uoscs09.theuos2.util.PrefUtil;
 import java.util.ArrayList;
 
 /**
- * Main Activity, ViewPager가 존재한다.
+ * Main Activity, ViewPager 가 존재한다.
  */
 @SuppressWarnings("ConstantConditions")
 public class UosMainActivity extends BaseActivity {
@@ -59,9 +58,8 @@ public class UosMainActivity extends BaseActivity {
     private ArrayList<Integer> mPageOrderList;
 
     private DrawerLayout mDrawerLayout;
-    /**
-     * Left ListView
-     */
+
+    private View mLeftDrawerLayout;
     private RecyclerView mDrawerListView;
     private DrawerAdapter mDrawerAdapter;
 
@@ -71,12 +69,14 @@ public class UosMainActivity extends BaseActivity {
     private ActionBarDrawerToggle mDrawerToggle;
     private AppBarLayout mToolBarParent;
     private Toolbar mToolbar;
-    private CoordinatorLayout mCoordinatorLayout;
-    private CoordinatorLayout.Behavior mAppBarBehavior;
+    //private CoordinatorLayout mCoordinatorLayout;
+    //private CoordinatorLayout.Behavior mAppBarBehavior;
+
+    private OnBackPressListener onBackPressListener = null;
 
     private static final int START_SETTING = 999;
     private static final String SAVED_TAB_NUM = "saved_tab_num";
-    private View mLeftDrawerLayout;
+
 
     private void initValues() {
         PrefUtil pref = PrefUtil.getInstance(this);
@@ -99,12 +99,12 @@ public class UosMainActivity extends BaseActivity {
 
         setContentView(R.layout.activity_uosmain);
 
-        mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.activity_uos_coordinator);
+        //mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.activity_uos_coordinator);
         mToolBarParent = (AppBarLayout) findViewById(R.id.toolbar_parent);
         mToolbar = (Toolbar) mToolBarParent.findViewById(R.id.toolbar);
 
-        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) mToolBarParent.getLayoutParams();
-        mAppBarBehavior = params.getBehavior();
+        //CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) mToolBarParent.getLayoutParams();
+        //mAppBarBehavior = params.getBehavior();
 
         setSupportActionBar(mToolbar);
 
@@ -145,11 +145,11 @@ public class UosMainActivity extends BaseActivity {
     }
 
     /**
-     * ViewPager를 전환하는 메소드
+     * ViewPager 를 전환하는 메소드
      *
      * @param position    전환될 위치
-     * @param isFromPager 메소드가 ViewPager로 부터 호출되었는지 여부 <br>
-     *                    loop를 방지하는 역할을 한다.
+     * @param isFromPager 메소드가 ViewPager 로 부터 호출되었는지 여부 <br>
+     *                    loop 를 방지하는 역할을 한다.
      */
     protected void navigateItem(int position, boolean isFromPager) {
         if (position < 0) {
@@ -292,7 +292,6 @@ public class UosMainActivity extends BaseActivity {
                 navigateItem(position, true);
             }
         });
-
         //mViewPager.setOffscreenPageLimit(mPageOrderList.size() >= 6 ? 6 : mPageOrderList.size());
         /*
         switch (AppUtil.theme) {
@@ -323,11 +322,11 @@ public class UosMainActivity extends BaseActivity {
 
 
     public void resetAppBar() {
-        mAppBarBehavior.onNestedFling(mCoordinatorLayout, mToolBarParent, null, 0, -1000, true);
+        //mAppBarBehavior.onNestedFling(mCoordinatorLayout, mToolBarParent, null, 0, -1000, true);
     }
 
     /**
-     * SettingActivity를 시작한다.
+     * SettingActivity 를 시작한다.
      */
     protected void startSettingActivity() {
         startActivityForResult(new Intent(this, SettingActivity.class), START_SETTING);
@@ -439,6 +438,9 @@ public class UosMainActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
+        if(onBackPressListener != null && onBackPressListener.onBackPress())
+            return;
+
         if (AppUtil.isScreenSizeSmall(this) && mDrawerLayout.isDrawerOpen(mLeftDrawerLayout)) {
             mDrawerLayout.closeDrawer(mLeftDrawerLayout);
 
@@ -493,8 +495,15 @@ public class UosMainActivity extends BaseActivity {
 
     }
 
-    /*
-    public static class PagerTransformer implements ViewPager.PageTransformer {
+    public interface OnBackPressListener{
+        boolean onBackPress();
+    }
+
+    public void setOnBackPressListener(OnBackPressListener l){
+        this.onBackPressListener = l;
+    }
+/*
+    public class PagerTransformer implements ViewPager.PageTransformer {
         private final int i;
 
         public PagerTransformer(int i) {
@@ -503,6 +512,9 @@ public class UosMainActivity extends BaseActivity {
 
         @Override
         public void transformPage(View arg0, float arg1) {
+            if(getCurrentPageIndex() < 1)
+                transformDepth(arg0, arg1);
+
             switch (i) {
                 case 1:
                     transfromZoom(arg0, arg1);
@@ -516,9 +528,10 @@ public class UosMainActivity extends BaseActivity {
                     arg0.setRotationY(arg1 * -30);
                     break;
             }
+
         }
 
-        private void transfromZoom(View view, float position) {
+        private void transformZoom(View view, float position) {
             final float MIN_SCALE = 0.85f;
             final float MIN_ALPHA = 0.5f;
             int pageWidth = view.getWidth();
@@ -589,6 +602,7 @@ public class UosMainActivity extends BaseActivity {
         }
     }
 */
+
 
     private class DrawerAdapter extends RecyclerView.Adapter<ViewHolder> {
         private final int mDefaultTextColor, mSelectedTextColor;

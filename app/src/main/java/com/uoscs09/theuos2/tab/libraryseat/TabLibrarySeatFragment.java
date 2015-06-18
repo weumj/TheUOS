@@ -38,18 +38,17 @@ import com.uoscs09.theuos2.util.TimeUtil;
 import java.util.ArrayList;
 import java.util.Date;
 
-import jp.wasabeef.recyclerview.animators.FadeInAnimator;
-import jp.wasabeef.recyclerview.animators.adapters.AlphaInAnimationAdapter;
+import jp.wasabeef.recyclerview.animators.SlideInDownAnimator;
+import jp.wasabeef.recyclerview.animators.adapters.SlideInBottomAnimationAdapter;
 
 /**
  * 도서관 좌석 정보 현황을 보여주는 페이지
  */
-public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>> implements OnItemClickListener<SeatListAdapter.ViewHolder> {
-    /**
-     * 좌석 현황 리스트 뷰의 adapter
-     */
+public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>> {
+    /*
     private SeatListAdapter mSeatAdapter;
     private StaggeredGridLayoutManager mLayoutManager;
+    */
     /**
      * 해지 될 좌석 정보 리스트 뷰의 adapter
      */
@@ -63,14 +62,14 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
     /**
      * 해지 될 좌석 정보 리스트
      */
-    private ArrayList<String> mDissmissInfoList;
+    private ArrayList<String> mDismissInfoList;
     /**
-     * 해지 될 좌석 정보 뷰, infoDialog에서 보여진다.
+     * 해지 될 좌석 정보 뷰, infoDialog 에서 보여진다.
      */
     @ReleaseWhenDestroy
     private View mDismissDialogView;
     /**
-     * 상단 액션바에 설정되는 timeTextView에 설정될 Text.<br>
+     * 상단 액션바에 설정되는 timeTextView 에 설정될 Text.<br>
      * <p/>
      * {@code onSaveonSaveInstanceState()} 에서 "COMMIT_TIME"라는 이름으로 저장된다.
      */
@@ -85,8 +84,6 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
     @ReleaseWhenDestroy
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
-
-    private final Job mJob = new Job();
     private AsyncTask<Void, Void, ArrayList<SeatItem>> mAsyncTask;
 
     private static final ParserSeat LIBRARY_SEAR_PARSER = new ParserSeat();
@@ -120,19 +117,14 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
         if (savedInstanceState != null) {
             mSearchTime = savedInstanceState.getString(COMMIT_TIME);
             mSeatList = savedInstanceState.getParcelableArrayList(BUNDLE_LIST);
-            mDissmissInfoList = savedInstanceState.getStringArrayList(INFO_LIST);
+            mDismissInfoList = savedInstanceState.getStringArrayList(INFO_LIST);
 
         } else {
             mSeatList = new ArrayList<>();
-            mDissmissInfoList = new ArrayList<>();
+            mDismissInfoList = new ArrayList<>();
         }
 
-        mInfoAdapter = new SeatDismissInfoListAdapter(getActivity(), mDissmissInfoList);
-        mSeatAdapter = new SeatListAdapter(getActivity(), mSeatList);
-        mSeatAdapter.setOnItemClickListener(this);
-
-        mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-        mLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
+        mInfoAdapter = new SeatDismissInfoListAdapter(getActivity(), mDismissInfoList);
 
         super.onCreate(savedInstanceState);
     }
@@ -155,10 +147,27 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
             }
         });
 
+        SeatListAdapter mSeatAdapter = new SeatListAdapter(getActivity(), mSeatList);
+        mSeatAdapter.setOnItemClickListener(new OnItemClickListener<SeatListAdapter.ViewHolder>() {
+
+            @Override
+            public void onItemClick(SeatListAdapter.ViewHolder viewHolder, View v) {
+                Intent intent = new Intent(getActivity(), SubSeatWebActivity.class);
+                intent.putExtra(TabLibrarySeatFragment.ITEM, (Parcelable) viewHolder.getItem());
+
+                // tracking 은 SubSeatWebActivity 에서 함.
+
+                ActivityCompat.startActivity(getActivity(), intent, ActivityOptionsCompat.makeScaleUpAnimation(v, 0, 0, v.getWidth(), v.getHeight()).toBundle());
+            }
+        });
+
+        StaggeredGridLayoutManager mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        mLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
+
         mSeatListView = (RecyclerView) rootView.findViewById(R.id.tab_library_list_seat);
-        mSeatListView.setAdapter(new AlphaInAnimationAdapter(mSeatAdapter));
+        mSeatListView.setAdapter(new SlideInBottomAnimationAdapter(mSeatAdapter));
         mSeatListView.setLayoutManager(mLayoutManager);
-        mSeatListView.setItemAnimator(new FadeInAnimator());
+        mSeatListView.setItemAnimator(new SlideInDownAnimator());
 
         mDismissDialogView = View.inflate(getActivity(), R.layout.dialog_library_dismiss_info, null);
 
@@ -187,7 +196,7 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
     public void onSaveInstanceState(Bundle outState) {
         outState.putString(COMMIT_TIME, mSearchTime);
         outState.putParcelableArrayList(BUNDLE_LIST, mSeatList);
-        outState.putStringArrayList(INFO_LIST, mDissmissInfoList);
+        outState.putStringArrayList(INFO_LIST, mDismissInfoList);
         super.onSaveInstanceState(outState);
     }
 
@@ -229,17 +238,7 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
     }
 
 
-    @Override
-    public void onItemClick(SeatListAdapter.ViewHolder viewHolder, View v) {
-        Intent intent = new Intent(getActivity(), SubSeatWebActivity.class);
-        intent.putExtra(TabLibrarySeatFragment.ITEM, (Parcelable) viewHolder.item);
-
-        // tracking 은 SubSeatWebActivity 에서 함.
-
-        ActivityCompat.startActivity(getActivity(), intent, ActivityOptionsCompat.makeScaleUpAnimation(v, 0, 0, v.getWidth(), v.getHeight()).toBundle());
-    }
-
-    private class Job extends AsyncFragmentJob.Base<ArrayList<SeatItem>> {
+    private final AsyncFragmentJob.Base<ArrayList<SeatItem>> JOB = new AsyncFragmentJob.Base<ArrayList<SeatItem>> (){
 
         @Override
         public ArrayList<SeatItem> call() throws Exception {
@@ -247,15 +246,15 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
 
             // '해지될 좌석 정보' 정보를 리스트에 추가
             SeatItem dismissInfo = callSeatList.remove(callSeatList.size() - 1);
-            if (mDissmissInfoList != null)
-                mDissmissInfoList.clear();
+            if (mDismissInfoList != null)
+                mDismissInfoList.clear();
 
             if (mInfoAdapter != null)
                 mInfoAdapter.clear();
 
             String[] array = dismissInfo.occupySeat.split(StringUtil.NEW_LINE);
             for (int i = 0; i < array.length - 1; i += 2) {
-                mDissmissInfoList.add(array[i] + "+" + array[i + 1]);
+                mDismissInfoList.add(array[i] + "+" + array[i + 1]);
             }
 
             // 이용률이 50%가 넘는 스터디룸은 보여주지 않음
@@ -281,7 +280,7 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
             super.onPostExcute();
             mAsyncTask = null;
         }
-    }
+    };
 
     @Override
     protected void onPreExecute() {
@@ -300,7 +299,7 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
 
 
     void execute() {
-        mAsyncTask = super.execute(mJob);
+        mAsyncTask = super.execute(JOB);
     }
 
 

@@ -13,6 +13,8 @@ public class RestItem implements Parcelable, Serializable {
     public String lunch;
     public String supper;
 
+    public static final transient RestItem EMPTY = new RestItem();
+
     public RestItem() {
         title = body = breakfast = lunch = supper = "";
     }
@@ -25,7 +27,23 @@ public class RestItem implements Parcelable, Serializable {
         this.supper = supper;
     }
 
-    private RestItem(Parcel source) {
+    public static int findRestNameIndex(String name) {
+        if(name.contains("학생")){
+            return 0;
+        } else if (name.contains("양식당")){
+            return 1;
+        } else if(name.contains("자연")){
+            return 2;
+        } else if(name.contains("본관")){
+            return 3;
+        } else if(name.contains("생활")){
+            return 4;
+        }
+
+        return -1;
+    }
+
+    RestItem(Parcel source) {
         title = source.readString();
         body = source.readString();
         breakfast = source.readString();

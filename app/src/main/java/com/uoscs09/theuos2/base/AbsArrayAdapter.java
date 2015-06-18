@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * View Holder 패턴을 사용하는 ArrayAdapter
  */
-public abstract class AbsArrayAdapter<T, VH extends AbsArrayAdapter.ViewHolderable> extends ArrayAdapter<T> {
+public abstract class AbsArrayAdapter<T, VH extends AbsArrayAdapter.ViewHoldable> extends ArrayAdapter<T> {
     private final int layout;
 
     public AbsArrayAdapter(Context context, int layout, List<T> list) {
@@ -59,21 +59,21 @@ public abstract class AbsArrayAdapter<T, VH extends AbsArrayAdapter.ViewHolderab
 
     /**
      * @param position 리스트의 위치
-     * @param holder   getView에서 설정되는 ViewHolder
+     * @param holder   getView 에서 설정되는 ViewHolder
      */
     public abstract void onBindViewHolder(int position, VH holder);
 
     /**
      * @param convertView ViewHolder 객체를 만드는데 사용될 View
-     * @return AbsArrayAdapter를 상속받은 클래스가 구현한 ViewHolder
+     * @return AbsArrayAdapter 를 상속받은 클래스가 구현한 ViewHolder
      */
     public abstract VH getViewHolder(View convertView);
 
-    public static interface ViewHolderable {
 
+    public static interface ViewHoldable {
     }
 
-    public static class ViewHolder implements ViewHolderable {
+    public static class ViewHolder implements ViewHoldable {
         public final View itemView;
 
         public ViewHolder(View view){
@@ -105,12 +105,12 @@ public abstract class AbsArrayAdapter<T, VH extends AbsArrayAdapter.ViewHolderab
             super(context, layout);
         }
 
-        public SimpleAdapter(Context context, int layout, int textViewID) {
-            super(context, layout, textViewID);
+        public SimpleAdapter(Context context, int layout, int textViewId) {
+            super(context, layout, textViewId);
         }
 
-        public SimpleAdapter(Context context, int layout, int textViewID, List<T> list) {
-            super(context, layout, textViewID, list);
+        public SimpleAdapter(Context context, int layout, int textViewId, List<T> list) {
+            super(context, layout, textViewId, list);
         }
 
         public abstract String getTextFromItem(T item);

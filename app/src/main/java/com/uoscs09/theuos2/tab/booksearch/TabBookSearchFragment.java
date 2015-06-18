@@ -27,6 +27,7 @@ import android.widget.TextView;
 import com.nhaarman.listviewanimations.appearance.AnimationAdapter;
 import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
 import com.uoscs09.theuos2.R;
+import com.uoscs09.theuos2.UosMainActivity;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos2.async.AsyncFragmentJob;
@@ -42,7 +43,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
-public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookItem>> implements OnQueryTextListener, View.OnClickListener {
+public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookItem>> implements OnQueryTextListener, View.OnClickListener, UosMainActivity.OnBackPressListener {
 
     /**
      * 비동기 작업 결과가 비었는지 여부
@@ -270,6 +271,15 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
     }
 
     @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+
+        if (getActivity() != null)
+            getUosMainActivity().setOnBackPressListener(isVisibleToUser ? this : null);
+
+    }
+
+    @Override
     protected void onPreExecute() {
         super.onPreExecute();
         mEmptyView.setVisibility(View.INVISIBLE);
@@ -352,7 +362,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
         }
     }
 
-    void execute(){
+    void execute() {
         super.execute(JOB);
     }
 
@@ -496,7 +506,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
     }
 
     /**
-     * listView 내부의 TextView에서 호출 됨
+     * listView 내부의 TextView 에서 호출 됨
      */
     private final View.OnLongClickListener mLongClickListener = new View.OnLongClickListener() {
 
@@ -534,4 +544,15 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
         return "TabBookSearchFragment";
     }
 
+    @Override
+    public boolean onBackPress() {
+
+        if (actionMode != null) {
+            actionMode.finish();
+            return true;
+
+        } else
+            return false;
+
+    }
 }

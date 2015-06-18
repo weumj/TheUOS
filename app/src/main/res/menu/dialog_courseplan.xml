@@ -5,9 +5,8 @@
 
     <item
         android:id="@+id/action_save_text"
-        android:icon="?menu_theme_ic_action_action_view_list"
         android:orderInCategory="101"
-        android:title="@string/tab_course_plan_action_save_text"
+        android:title="TXT"
         app:showAsAction="ifRoom">
     </item>
     <item

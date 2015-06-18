@@ -12,11 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ParseRestaurantWeek extends JerichoParser<WeekRestItem>{
-    private static final String BR1 = "<br/>", BR2= "<br />", BR = "*br*";
+    private static final String BR = "*br*";
 
     @Override
     public WeekRestItem parse(String param) throws Exception {
-        param = param.replace(BR1, BR).replace(BR2, BR);
+        param =  param.replaceAll("<br*+/>", BR);
         return super.parse(param);
     }
 
@@ -32,18 +32,21 @@ public class ParseRestaurantWeek extends JerichoParser<WeekRestItem>{
 
             List<Element> tdElements = trElement.getChildElements();
 
-            item.title = tdElements.get(0).getTextExtractor().toString().replace(BR, StringUtil.NEW_LINE);
-
-            item.breakfast = tdElements.get(1).getTextExtractor().toString().replace(BR, StringUtil.NEW_LINE);
-
-            item.lunch = tdElements.get(2).getTextExtractor().toString().replace(BR, StringUtil.NEW_LINE);
-
-            item.supper = tdElements.get(3).getTextExtractor().toString().replace(BR, StringUtil.NEW_LINE);
+            item.title = extractContent(tdElements.get(0));
+            item.breakfast = extractContent(tdElements.get(1));
+            item.lunch = extractContent(tdElements.get(2));
+            item.supper = extractContent(tdElements.get(3));
 
             weekList.add(item);
 
         }
+
         return weekRestItem;
+
+    }
+
+    private String extractContent(Element e){
+        return e.getTextExtractor().toString().replace(BR, StringUtil.NEW_LINE).trim();
     }
 
 

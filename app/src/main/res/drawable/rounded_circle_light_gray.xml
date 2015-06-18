@@ -7,12 +7,12 @@
 
             <corners android:radius="5dip" />
 
-            <solid android:color="#55555555" />
+            <solid android:color="@color/light_gray" />
 
             <stroke
                 android:width="2dip"
-                android:color="#aa999999" />
+                android:color="@color/light_gray" />
         </shape>
     </item>
 
-</layer-list>
+</layer-list> <!-- android:color="#00101010" -->

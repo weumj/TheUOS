@@ -31,7 +31,7 @@ public class SearchEmptyRoomAdapter extends AbsArrayAdapter<EmptyClassRoomItem, 
         return new Holder(v);
     }
 
-    static class Holder implements AbsArrayAdapter.ViewHolderable {
+    static class Holder implements AbsArrayAdapter.ViewHoldable {
         public final TextView building, room_no, room_div, person_cnt;
 
         public Holder(View convertView) {

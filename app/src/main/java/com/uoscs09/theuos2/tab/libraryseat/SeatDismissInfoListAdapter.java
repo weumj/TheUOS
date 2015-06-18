@@ -30,7 +30,7 @@ public class SeatDismissInfoListAdapter extends AbsArrayAdapter<String, Holder> 
 
 }
 
-class Holder implements AbsArrayAdapter.ViewHolderable {
+class Holder implements AbsArrayAdapter.ViewHoldable {
     public final TextView[] texts;
 
     public Holder(View v) {

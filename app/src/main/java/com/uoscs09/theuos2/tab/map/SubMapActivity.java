@@ -307,8 +307,15 @@ public class SubMapActivity extends BaseActivity implements LocationListener {
 
     @Override
     protected void onDestroy() {
-        if (googleMap != null)
+        if (googleMap != null) {
             googleMap.clear();
+            googleMap = null;
+        }
+
+        if(locationManager != null){
+            locationManager.removeUpdates(this);
+            locationManager = null;
+        }
         super.onDestroy();
     }
 

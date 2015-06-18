@@ -3,8 +3,10 @@ package com.uoscs09.theuos2.tab.restaurant;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,12 +14,12 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos2.async.AsyncFragmentJob;
 import com.uoscs09.theuos2.base.AbsAsyncFragment;
+import com.uoscs09.theuos2.common.SerializableArrayMap;
 import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.parse.ParserRest;
 import com.uoscs09.theuos2.util.AppUtil;
@@ -29,51 +31,64 @@ import com.uoscs09.theuos2.util.StringUtil;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>> {
-    @ReleaseWhenDestroy
-    private NestedScrollView mScrollView;
-    @ReleaseWhenDestroy
-    private TextView mSemesterTimeView, mVacationTimeView,
-            mContentBreakfastView, mContentLunchView, mContentSupperView;
+import jp.wasabeef.recyclerview.animators.SlideInDownAnimator;
+import jp.wasabeef.recyclerview.animators.adapters.SlideInBottomAnimationAdapter;
+
+public class TabRestaurantFragment extends AbsAsyncFragment<SparseArray<RestItem>> {
+
     @ReleaseWhenDestroy
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private int mCurrentSelection;
+    @ReleaseWhenDestroy
+    private RecyclerView mRecyclerView;
+    private RestItemAdapter mRestItemAdapter;
+    // 리스트의 한 아이템은 식당 정보 (아침 점심 저녁) 를 나타냄
     @AsyncData
-    private ArrayList<RestItem> mRestList;
+    private SparseArray<RestItem> mRestTable;
 
-    private static final ParserRest PARSER = new ParserRest();
+    private int mCurrentSelection;
+    boolean force = false;
+
+    private static final ParserRest REST_PARSER = new ParserRest();
 
     //private String mCurrentRestName;
     private final ArrayList<Tab> mTabList = new ArrayList<>();
+    private Tab mCurrentTab;
 
     private static final String BUTTON = "button";
     private static final String REST = "rest_list";
+
+    //NEEDFIX
     private static final String[] TIME_SEMESTER = {
             "학기중\n조식 : 08:00~10:00\n중식 : 11:00~14:00\n15:00~17:00",
             "학기중\n중식 : 11:30~14:00\n석식 : 15:00~19:00\n토요일 : 휴무",
             "학기중\n중식 : 11:30~13:30\n석식 : 17:00~18:30\n토요일 : 휴무",
             StringUtil.NULL, StringUtil.NULL};
+
+    //NEEDFIX
     private static final String[] TIME_VACATION = {
             "방학중\n조식 : 09:00~10:00\n	08:30~10:00\n(계절학기 기간)\n중식 : 11:00~14:00\n15:00~17:00\n석식 : 17:00~18:30\n토요일 : 휴무",
             "방학중\n중식 : 11:30~14:00\n석식 : 16:00~18:30\n토요일 : 휴무",
             "방학중 : 휴관\n\n\n", StringUtil.NULL, StringUtil.NULL};
 
     private static final int[] REST_TAB_MENU_STRING_ID = {R.string.tab_rest_students_hall, R.string.tab_rest_anekan, R.string.tab_rest_natural, R.string.tab_rest_main_8th, R.string.tab_rest_living};
-    private static final String[] REST_TAB_MENU_STRING_KOR = {"학생회관 1층", "양식당 (아느칸)", "자연과학관", "본관 8층", "생활관"};
+    private static final String[] REST_TAB_MENU_STRING_LABEL = {"학생회관 1층", "양식당 (아느칸)", "자연과학관", "본관 8층", "생활관"};
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putInt(BUTTON, mCurrentSelection);
-        outState.putParcelableArrayList(REST, mRestList);
+        outState.putSparseParcelableArray(REST, mRestTable);
         super.onSaveInstanceState(outState);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             mCurrentSelection = savedInstanceState.getInt(BUTTON);
-            mRestList = savedInstanceState.getParcelableArrayList(REST);
+            mRestTable = savedInstanceState.getSparseParcelableArray(REST);
         } else {
+
+            mRestTable = new SparseArray<>();
 
             int today = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
             if (today == Calendar.SUNDAY || today == Calendar.SATURDAY)
@@ -81,7 +96,6 @@ public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>>
             else
                 mCurrentSelection = 0;
 
-            mRestList = new ArrayList<>();
         }
 
         super.onCreate(savedInstanceState);
@@ -94,9 +108,7 @@ public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>>
             tab.ripple.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mTabList.get(mCurrentSelection).setSelected(false);
-                    mCurrentSelection = mTabList.indexOf(tab);
-                    performTabClick(mCurrentSelection);
+                    performTabClick(mTabList.indexOf(tab));
                 }
             });
             mTabParent.addView(tab.tabView);
@@ -121,132 +133,142 @@ public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>>
             @Override
             public void onRefresh() {
                 sendTrackerEvent("swipe", "SwipeRefreshView");
-                execute();
+                execute(true);
             }
         });
 
-        mScrollView = (NestedScrollView) mSwipeRefreshLayout.findViewById(R.id.tab_rest_scroll);
+        mRecyclerView = (RecyclerView) mSwipeRefreshLayout.findViewById(R.id.tab_rest_recycler_view);
 
-        mSemesterTimeView = (TextView) mScrollView.findViewById(R.id.tab_rest_text_semester);
-        mVacationTimeView = (TextView) mScrollView.findViewById(R.id.tab_rest_text_vacation);
-        mContentBreakfastView = (TextView) mScrollView.findViewById(R.id.tab_rest_text_breakfast);
-        mContentLunchView = (TextView) mScrollView.findViewById(R.id.tab_rest_text_lunch);
-        mContentSupperView = (TextView) mScrollView.findViewById(R.id.tab_rest_text_supper);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        mRecyclerView.setLayoutManager(layoutManager);
 
-        FloatingActionButton actionButton = (FloatingActionButton) rootView.findViewById(R.id.action_btn);
-        actionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendClickEvent("actionButton");
-                mSwipeRefreshLayout.setRefreshing(true);
-                execute();
-            }
-        });
-
-        rootView.findViewById(R.id.tab_rest_show_week).setOnClickListener(new View.OnClickListener() {
+        mRecyclerView.setAdapter(new SlideInBottomAnimationAdapter(mRestItemAdapter = new RestItemAdapter(mRestTable)));
+        mRestItemAdapter.setRestMenu(mCurrentSelection);
+        mRestItemAdapter.setExtraMenuListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showWeekDialog();
             }
         });
 
-        if (mRestList.isEmpty())
-            execute();
+        mRecyclerView.setItemAnimator(new SlideInDownAnimator());
+
+        if (mRestTable.size() == 0)
+            execute(false);
         else
             performTabClick(mCurrentSelection);
 
         return rootView;
     }
 
+    private void performTabClick(int newTabSelection) {
+        if (mCurrentTab == null)
+            mCurrentTab = mTabList.get(mCurrentSelection);
 
-    private void performTabClick(int position) {
-        setSemesterAndVacationText(position);
-        setBody(REST_TAB_MENU_STRING_KOR[position]);
-        mScrollView.scrollTo(0, 0);
-        mTabList.get(mCurrentSelection).setSelected(true);
+        mCurrentTab.setSelected(false);
+
+        mCurrentSelection = newTabSelection;
+        mCurrentTab = mTabList.get(mCurrentSelection);
+        mRestItemAdapter.setRestMenu(mCurrentSelection);
+        mCurrentTab.setSelected(true);
+        mRecyclerView.getAdapter().notifyItemRangeChanged(0, 4);
+        sendClickEvent(REST_TAB_MENU_STRING_LABEL[mCurrentSelection]);
     }
 
-    private void setSemesterAndVacationText(int i) {
-        if (mSemesterTimeView != null)
-            mSemesterTimeView.setText(TIME_SEMESTER[i]);
-        if (mVacationTimeView != null)
-            mVacationTimeView.setText(TIME_VACATION[i]);
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        mRecyclerView.getAdapter().notifyItemRangeRemoved(0, 5);
+        mRestTable.clear();
     }
 
-    void setBody(final String name) {
+    private final AsyncFragmentJob.Base<SparseArray<RestItem>> JOB = new AsyncFragmentJob.Base<SparseArray<RestItem>>() {
 
-        sendClickEvent(name);
-
-        //mCurrentRestName = name;
-        //setSubtitleWhenVisible(name);
-        RestItem item = null;
-        if (mRestList != null) {
-            int size = mRestList.size();
-            for (int i = 0; i < size; i++) {
-                item = mRestList.get(i);
-                if (name.contains(item.title)) {
-                    mContentBreakfastView.setText(item.breakfast);
-                    mContentLunchView.setText(item.lunch);
-                    mContentSupperView.setText(item.supper);
-                    break;
-                }
-                item = null;
-            }
-        }
-        if (item == null) {
-            mContentBreakfastView.setText(R.string.tab_rest_no_info);
-            mContentLunchView.setText(R.string.tab_rest_no_info);
-            mContentSupperView.setText(R.string.tab_rest_no_info);
-        }
-    }
-
-    private final AsyncFragmentJob.Base<ArrayList<RestItem>> JOB = new AsyncFragmentJob.Base<ArrayList<RestItem>>(){
         @Override
-        public ArrayList<RestItem> call() throws Exception {
+        public SparseArray<RestItem> call() throws Exception {
             Context context = getActivity();
-            if (OApiUtil.getDateTime() - PrefUtil.getInstance(context).get(PrefUtil.KEY_REST_DATE_TIME, 0) < 3) {
+            if (!force && OApiUtil.getDateTime() - PrefUtil.getInstance(context).get(PrefUtil.KEY_REST_DATE_TIME, 0) < 3) {
                 try {
-                    ArrayList<RestItem> list = IOUtil.readFromFile(context, IOUtil.FILE_REST);
-                    if (list != null)
-                        return list;
+                    SparseArray<RestItem> result = getRestMapFromFile(context);
+
+                    if (result != null)
+                        return result;
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
             }
             // web 에서 읽어온지 오래되었거나, 파일이 존재하지 않은경우 web 에서 읽어옴
             return getRestListFromWeb(context);
         }
 
         @Override
-        public void onResult(ArrayList<RestItem> result) {
-            mRestList.clear();
-            mRestList.addAll(result);
+        public void onPostExcute() {
+            super.onPostExcute();
+
+            force = false;
+        }
+
+        @Override
+        public void onResult(SparseArray<RestItem> result) {
+            mRestTable = result;
+
+            performTabClick(mCurrentSelection);
+
+            mRestItemAdapter.mItems = mRestTable;
+            mRestItemAdapter.notifyDataSetChanged();
 
             mSwipeRefreshLayout.setRefreshing(false);
 
-            performTabClick(mCurrentSelection);
         }
 
     };
 
-    private void execute(){
+    private void execute(boolean force) {
+        this.force = force;
         super.execute(JOB);
     }
 
 
-    /**
-     * web에서 식단표을 읽어온다.
-     */
-    public static ArrayList<RestItem> getRestListFromWeb(Context context) throws Exception {
+    /*
+    public static SerializableArrayMap<Integer, RestItem> getRestListFromWeb(Context context) throws Exception {
         String body = HttpRequest.getBody("http://m.uos.ac.kr/mkor/food/list.do");
-        ArrayList<RestItem> list = PARSER.parse(body);
 
-        IOUtil.writeObjectToFile(context, IOUtil.FILE_REST, list);
+        SparseArray<RestItem> sparseArray = REST_PARSER.parse(body);
+
+        SerializableArrayMap<Integer, RestItem> result = SerializableArrayMap.fromSparseArray(sparseArray);
+
+        IOUtil.writeObjectToFile(context, IOUtil.FILE_REST, result);
         PrefUtil.getInstance(context).put(PrefUtil.KEY_REST_DATE_TIME, OApiUtil.getDate());
-        return list;
+        return result;
+    }
+    */
+
+    /**
+     * web 에서 식단표을 읽어온다.
+     */
+    public static SparseArray<RestItem> getRestListFromWeb(Context context) throws Exception {
+        String body = HttpRequest.getBody("http://m.uos.ac.kr/mkor/food/list.do");
+
+        SparseArray<RestItem> sparseArray = REST_PARSER.parse(body);
+
+        SerializableArrayMap<Integer, RestItem> result = SerializableArrayMap.fromSparseArray(sparseArray);
+
+        IOUtil.writeObjectToFile(context, IOUtil.FILE_REST, result);
+        PrefUtil.getInstance(context).put(PrefUtil.KEY_REST_DATE_TIME, OApiUtil.getDate());
+
+        return sparseArray;
+    }
+
+
+    public static SparseArray<RestItem> getRestMapFromFile(Context context) {
+        SerializableArrayMap<Integer, RestItem> map = IOUtil.readFromFileSuppressed(context, IOUtil.FILE_REST);
+        return SerializableArrayMap.toSparseArray(map);
     }
 
     void showWeekDialog() {
+        sendClickEvent("show week");
         WeekInformationDialogFragment dialogFragment = new WeekInformationDialogFragment();
         dialogFragment.setSelection(REST_TAB_MENU_STRING_ID[mCurrentSelection]);
 
@@ -258,6 +280,124 @@ public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>>
     protected String getFragmentNameForTracker() {
         return "TabRestaurantFragment";
     }
+
+    private static final int VIEW_TYPE_REST_ITEM = 0;
+    private static final int VIEW_TYPE_TIME = 1;
+    private static final int VIEW_TYPE_EXTRA = 2;
+
+    private static class RestItemAdapter extends RecyclerView.Adapter<ViewHolder> {
+        private static final int[] REST_ITEM_TITLES = new int[]{R.string.tab_rest_breakfast, R.string.tab_rest_lunch, R.string.tab_rest_dinner};
+
+        private int restMenu;
+        SparseArray<RestItem> mItems;
+        private View.OnClickListener l;
+
+
+        public RestItemAdapter(SparseArray<RestItem> items) {
+            this.mItems = items;
+        }
+
+        public void setRestMenu(int menu) {
+            this.restMenu = menu;
+        }
+
+        public void setExtraMenuListener(View.OnClickListener l) {
+            this.l = l;
+        }
+
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(getItemViewRes(viewType), parent, false), viewType);
+        }
+
+        @Override
+        public void onBindViewHolder(ViewHolder holder, int position) {
+            switch (getItemViewType(position)) {
+                default:
+                case VIEW_TYPE_REST_ITEM: {
+                    holder.title.setText(REST_ITEM_TITLES[position]);
+
+                    String s = null;
+                    RestItem item = mItems.get(restMenu);
+
+                    if (item == null)
+                        item = RestItem.EMPTY;
+
+                    switch (position) {
+                        case 0:
+                            s = item.breakfast;
+                            break;
+                        case 1:
+                            s = item.lunch;
+                            break;
+                        case 2:
+                            s = item.supper;
+                            break;
+                    }
+                    holder.content.setText(s);
+
+                    break;
+                }
+
+                case VIEW_TYPE_TIME:
+                    holder.title.setText(TIME_SEMESTER[restMenu]);
+                    holder.content.setText(TIME_VACATION[restMenu]);
+                    break;
+
+                case VIEW_TYPE_EXTRA:
+                    holder.title.setOnClickListener(l);
+                    break;
+            }
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            if (position == 3)
+                return VIEW_TYPE_TIME;
+            else if (position == 4)
+                return VIEW_TYPE_EXTRA;
+            else
+                return VIEW_TYPE_REST_ITEM;
+
+        }
+
+        public int getItemViewRes(int viewType) {
+            if (viewType == VIEW_TYPE_TIME)
+                return R.layout.list_layout_rest_time;
+            else if (viewType == VIEW_TYPE_EXTRA)
+                return R.layout.list_layout_rest_extra;
+            else
+                return R.layout.list_layout_rest;
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return mItems.size() == 0 ? 0 : 5;
+        }
+
+    }
+
+    private static class ViewHolder extends RecyclerView.ViewHolder {
+        public TextView title;
+        public TextView content;
+
+        public ViewHolder(View itemView, int viewType) {
+            super(itemView);
+
+            switch (viewType) {
+                default:
+                    title = (TextView) itemView.findViewById(R.id.tab_rest_list_title);
+                    content = (TextView) itemView.findViewById(R.id.tab_rest_list_content);
+                    break;
+
+                case VIEW_TYPE_EXTRA:
+                    title = (TextView) itemView.findViewById(R.id.tab_rest_show_week);
+                    break;
+            }
+        }
+    }
+
 
     /*
     @Override
@@ -274,6 +414,7 @@ public class TabRestaurantFragment extends AbsAsyncFragment<ArrayList<RestItem>>
 
         private final int mSelectedColor;
         private final int mNormalColor;
+
         public Tab(LinearLayout parent) {
             tabView = (FrameLayout) LayoutInflater.from(parent.getContext()).inflate(R.layout.view_tab_rest_tab, parent, false);
             ripple = tabView.findViewById(R.id.ripple);

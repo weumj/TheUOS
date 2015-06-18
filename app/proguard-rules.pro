@@ -52,6 +52,15 @@
      *;
 }
 
+-keepclassmembers class * implements java.io.Serializable {
+    private static final java.io.ObjectStreamField[] serialPersistentFields;
+    private static final long serialVersionUID;
+    private void writeObject(java.io.ObjectOutputStream);
+    private void readObject(java.io.ObjectInputStream);
+    java.lang.Object writeReplace();
+    java.lang.Object readResolve();
+}
+
 # Library Jars
 #-libraryjars libs/jericho-html-3.3.jar
 #-libraryjars libs/asyncexcutor.jar

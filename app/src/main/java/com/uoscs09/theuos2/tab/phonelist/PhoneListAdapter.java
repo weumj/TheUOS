@@ -85,7 +85,7 @@ public class PhoneListAdapter extends AbsArrayAdapter<PhoneItem, Holder> {
 
 }
 
-class Holder implements AbsArrayAdapter.ViewHolderable {
+class Holder implements AbsArrayAdapter.ViewHoldable {
     public final TextView siteView;
     public final TextView phoneView;
     public final ImageButton imgButton;

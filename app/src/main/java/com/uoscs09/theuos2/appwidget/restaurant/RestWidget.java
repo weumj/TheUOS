@@ -5,25 +5,24 @@ import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.util.SparseArray;
 import android.widget.RemoteViews;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsAsyncWidgetProvider;
 import com.uoscs09.theuos2.tab.restaurant.RestItem;
 import com.uoscs09.theuos2.tab.restaurant.TabRestaurantFragment;
-import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
 
-import java.util.ArrayList;
-
-public class RestWidget extends AbsAsyncWidgetProvider<ArrayList<RestItem>> {
+public class RestWidget extends AbsAsyncWidgetProvider<SparseArray<RestItem>> {
     public static final String REST_WIDGET_NEXT_ACTION = "com.uoscs09.theuos2.widget.restaurant.NEXT";
     public static final String REST_WIDGET_PREV_ACTION = "com.uoscs09.theuos2.widget.restaurant.PREV";
     public static final String REST_WIDGET_POSITION = "REST_WIDGET_POSITION";
     public static final String REST_WIDGET_ITEM = "REST_WIDGET_ITEM";
+
+    private static final String[] REST_TAB_MENU_STRING_LABEL = {"학생회관", "양식당", "자연과학관", "본관 8층", "생활관"};
 
     @Override
     public void onUpdate(final Context context, final AppWidgetManager appWidgetManager, final int[] appWidgetIds) {
@@ -37,6 +36,9 @@ public class RestWidget extends AbsAsyncWidgetProvider<ArrayList<RestItem>> {
 
             case REST_WIDGET_NEXT_ACTION: {
                 int position = intent.getIntExtra(REST_WIDGET_POSITION, 0) + 1;
+                if(position > 4)
+                    position = 0;
+
                 PrefUtil.getInstance(context).put(REST_WIDGET_POSITION, position);
 
                 int[] ids = new int[]{intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)};
@@ -47,7 +49,10 @@ public class RestWidget extends AbsAsyncWidgetProvider<ArrayList<RestItem>> {
             }
 
             case REST_WIDGET_PREV_ACTION: {
-                int position = intent.getIntExtra(REST_WIDGET_POSITION, 0) - 1;
+                int position = intent.getIntExtra(REST_WIDGET_POSITION, 5) - 1;
+                if(position < 0)
+                    position = 4;
+
                 PrefUtil.getInstance(context).put(REST_WIDGET_POSITION, position);
 
                 int[] ids = new int[]{intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)};
@@ -59,11 +64,11 @@ public class RestWidget extends AbsAsyncWidgetProvider<ArrayList<RestItem>> {
 
             case Intent.ACTION_BOOT_COMPLETED:
                 // 처음 부팅시 인터넷 접속이 되지 않으므로, 기존 파일에서 읽어온다.
-                ArrayList<RestItem> list = IOUtil.readFromFileSuppressed(context, IOUtil.FILE_REST);
-                if (list == null)
+                SparseArray<RestItem> map = TabRestaurantFragment.getRestMapFromFile(context);
+                if (map == null)
                     return;
 
-                onBackgroundTaskResult(context, AppWidgetManager.getInstance(context), new int[]{intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)}, list);
+                onBackgroundTaskResult(context, AppWidgetManager.getInstance(context), new int[]{intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)}, map);
                 break;
 
             default:
@@ -73,46 +78,38 @@ public class RestWidget extends AbsAsyncWidgetProvider<ArrayList<RestItem>> {
     }
 
     @Override
-    protected ArrayList<RestItem> doInBackGround(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) throws Exception {
+    protected SparseArray<RestItem> doInBackGround(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) throws Exception {
         if (OApiUtil.getDateTime() - PrefUtil.getInstance(context).get(PrefUtil.KEY_REST_DATE_TIME, 0) < 3) {
-            ArrayList<RestItem> list = IOUtil.readFromFileSuppressed(context, IOUtil.FILE_REST);
-            if (list == null)
-                list = TabRestaurantFragment.getRestListFromWeb(context);
-            return list;
+            SparseArray<RestItem> result = TabRestaurantFragment.getRestMapFromFile(context);
+            if (result == null)
+                result = TabRestaurantFragment.getRestListFromWeb(context);
+            return result;
         } else {
             return TabRestaurantFragment.getRestListFromWeb(context);
         }
     }
 
     @Override
-    protected void onBackgroundTaskResult(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds, ArrayList<RestItem> result) {
+    protected void onBackgroundTaskResult(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds, SparseArray<RestItem> result) {
         RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.widget_rest);
-        RestItem item;
 
         int position = PrefUtil.getInstance(context).get(REST_WIDGET_POSITION, 0);
 
         for (int id : appWidgetIds) {
-            // position은 이미 onReceive()에서 값이 변경되어 기록된다.
-            // 여기서는 값의 범위를 검사한다 (유효성 검사)
-            if (position >= result.size()) {
-                position = 0;
-            } else if (position < 0) {
-                position = result.size() - 1;
-            }
-            PrefUtil.getInstance(context).put(REST_WIDGET_POSITION, position);
-            item = result.get(position);
 
-            Bundle bundle = new Bundle();
-            bundle.putParcelableArrayList(REST_WIDGET_ITEM, result);
+            PrefUtil.getInstance(context).put(REST_WIDGET_POSITION, position);
+
+            //Bundle bundle = new Bundle();
+            //bundle.putParcelableArrayList(REST_WIDGET_ITEM, result);
 
             Intent intent = new Intent(context, RestListService.class)
                     .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id)
-                    .putExtra(REST_WIDGET_POSITION, position)
-                    .putExtra(REST_WIDGET_ITEM, bundle);
+                    .putExtra(REST_WIDGET_POSITION, position);
+                    //.putExtra(REST_WIDGET_ITEM, bundle);
             intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
 
             rv.setRemoteAdapter(R.id.widget_rest_listview, intent);
-            rv.setTextViewText(R.id.widget_rest_main_title, item.title);
+            rv.setTextViewText(R.id.widget_rest_main_title, REST_TAB_MENU_STRING_LABEL[position]);
 
             rv.setOnClickPendingIntent(
                     R.id.widget_rest_btn_next,

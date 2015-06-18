@@ -12,27 +12,27 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="48dp"
         android:entries="@array/tab_anounce_action_spinner"
-        android:theme="?theme_inverse"/>
+        android:theme="?theme_inverse" />
 
     <com.balysv.materialripple.MaterialRippleLayout
         android:id="@+id/tab_anounce_action_textView_ripple"
-        android:paddingTop="4dp"
-        android:paddingBottom="4dp"
-        android:paddingRight="20dp"
-        android:paddingLeft="20dp"
         android:layout_width="wrap_content"
-        app:mrl_rippleColor="?colorAccent"
-        app:mrl_rippleDelayClick="true"
+        android:layout_height="42dp"
         android:layout_alignParentRight="true"
         android:layout_centerInParent="true"
-        android:layout_height="fill_parent">
+        android:paddingBottom="4dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingTop="4dp"
+        app:mrl_rippleColor="?colorAccent"
+        app:mrl_rippleDelayClick="true">
 
         <TextView
             android:id="@+id/tab_anounce_action_textView_page"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:layout_centerVertical="true"
+            android:layout_gravity="center"
             android:gravity="center"
             android:textColor="?color_actionbar_title" />
     </com.balysv.materialripple.MaterialRippleLayout>

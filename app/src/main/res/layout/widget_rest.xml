@@ -2,8 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/rounded_box_widget"
-    android:orientation="vertical" >
+    android:background="#dddddd"
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="fill_parent"
@@ -18,7 +18,7 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="4dp"
-            android:background="@drawable/selector_button"
+            android:background="@drawable/selector_button_widget"
             android:contentDescription="@string/action_forward"
             android:src="@drawable/ic_action_navigation_arrow_forward_white" />
 
@@ -27,8 +27,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:gravity="center"
             android:layout_centerVertical="true"
+            android:gravity="center"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@android:color/white" />
 
@@ -39,18 +39,31 @@
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:layout_marginLeft="4dp"
-            android:background="@drawable/selector_button"
+            android:background="@drawable/selector_button_widget"
             android:contentDescription="@string/action_backward"
             android:src="@drawable/ic_action_navigation_arrow_back_white" />
     </RelativeLayout>
 
-    <ListView
-        android:id="@+id/widget_rest_listview"
+    <FrameLayout
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:clipToPadding="false"
-        android:padding="4dp"
-        android:scrollbarStyle="outsideOverlay" >
-    </ListView>
+        android:layout_height="fill_parent">
+
+        <ListView
+            android:id="@+id/widget_rest_listview"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:clipToPadding="false"
+            android:divider="@null"
+            android:dividerHeight="4dip"
+            android:padding="4dp"
+            android:scrollbarStyle="outsideOverlay" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@drawable/toolbar_shadow">
+
+        </LinearLayout>
+    </FrameLayout>
 
 </LinearLayout>

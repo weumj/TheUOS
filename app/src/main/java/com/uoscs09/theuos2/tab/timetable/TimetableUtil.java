@@ -5,13 +5,14 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 
 import com.uoscs09.theuos2.R;
+import com.uoscs09.theuos2.common.SerializableArrayMap;
 import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.Map;
 
 public class TimetableUtil {
 
@@ -49,25 +50,40 @@ public class TimetableUtil {
      *
      * @param colorTable color map
      */
-    public static void saveColorTable(Context context, Hashtable<String, Integer> colorTable) {
+    public static void saveColorTable(Context context, SerializableArrayMap<String, Integer> colorTable) {
         IOUtil.writeObjectToFileAsync(context, IOUtil.FILE_COLOR_TABLE, colorTable);
     }
 
     /**
      * color map 을 파일로 부터 읽어온다.
      */
-    public static Hashtable<String, Integer> readColorTableFromFile(Context context) {
-        return IOUtil.readFromFileSuppressed(context, IOUtil.FILE_COLOR_TABLE);
+    public static SerializableArrayMap<String, Integer> readColorTableFromFile(Context context) {
+
+        Map<String, Integer> map = IOUtil.readFromFileSuppressed(context, IOUtil.FILE_COLOR_TABLE);
+        if (map == null)
+            return null;
+
+        if (map instanceof SerializableArrayMap)
+            return (SerializableArrayMap<String, Integer>) map;
+
+        else {
+            SerializableArrayMap<String, Integer> newMap = new SerializableArrayMap<>();
+            newMap.putAll(map);
+            saveColorTable(context, newMap);
+
+            return newMap;
+        }
+
     }
 
     /**
-     * 주어진 시간표정보를 통해 시간표 각 과목과 컬러를 mapping하는 Map을 파일에서 읽어오거나 작성한다.
+     * 주어진 시간표정보를 통해 시간표 각 과목과 컬러를 mapping 하는 Map 을 파일에서 읽어오거나 작성한다.
      *
      * @param timeTable 시간표
-     * @return 시간표의 각 과목과 컬러를 mapping하는 Map
+     * @return 시간표의 각 과목과 컬러를 mapping 하는 Map
      */
-    public static Hashtable<String, Integer> getColorTable(TimeTable timeTable, Context context) {
-        Hashtable<String, Integer> table = readColorTableFromFile(context);
+    public static SerializableArrayMap<String, Integer> getColorTable(TimeTable timeTable, Context context) {
+        SerializableArrayMap<String, Integer> table = readColorTableFromFile(context);
 
         if (table == null || table.size() == 0) {
             table = makeColorTable(timeTable);
@@ -81,11 +97,11 @@ public class TimetableUtil {
      * 주어진 시간표정보를 통해 시간표 각 과목과 컬러를 mapping하는 Map을 작성한다.
      *
      * @param timetable 시간표
-     * @return 과목이름이 Key이고, Value가 컬러를 가리키는 Integer인 Map<br>
-     * * 컬러는 단순한 정수이며, AppUtil을 통해 Color integer를 얻어와야 한다.
+     * @return 과목이름이 Key 이고, Value 가 컬러를 가리키는 Integer 인 Map<br>
+     * * 컬러는 단순한 정수이며, AppUtil 을 통해 Color integer 를 얻어와야 한다.
      */
-    public static Hashtable<String, Integer> makeColorTable(TimeTable timetable) {
-        Hashtable<String, Integer> table = new Hashtable<>();
+    public static SerializableArrayMap<String, Integer> makeColorTable(TimeTable timetable) {
+        SerializableArrayMap<String, Integer> table = new SerializableArrayMap<>();
 
         ArrayList<Subject[]> subjects = timetable.subjects;
 

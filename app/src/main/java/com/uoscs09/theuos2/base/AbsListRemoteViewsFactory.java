@@ -11,71 +11,72 @@ import java.util.List;
 
 /**
  * Collection View 를 사용하는 AppWidget을 위한 RemoteViewsFactory를 대략 구현한 것
- * 
+ *
  * @see RemoteViews
  * @see RemoteViewsFactory
  * @see RemoteViewsService
  */
-public abstract class AbsListRemoteViewsFactory<T> implements
-		RemoteViewsFactory {
-	private final Context mContext;
-	private final List<T> mDataList = new ArrayList<>();
+public abstract class AbsListRemoteViewsFactory<T> implements RemoteViewsFactory {
+    private Context mContext;
+    private List<T> mDataList = new ArrayList<>();
 
-	public AbsListRemoteViewsFactory(Context context) {
-		this.mContext = context;
-	}
+    public AbsListRemoteViewsFactory(Context context) {
+        this.mContext = context;
+    }
 
-	protected boolean addAll(Collection<? extends T> collection) {
-		return mDataList.addAll(collection);
-	}
+    protected boolean addAll(Collection<? extends T> collection) {
+        return mDataList.addAll(collection);
+    }
 
-	protected void clear() {
-		mDataList.clear();
-	}
+    protected void clear() {
+        mDataList.clear();
+    }
 
-	protected Context getContext() {
-		return mContext;
-	}
+    protected Context getContext() {
+        return mContext;
+    }
 
-	protected T getItem(int position) {
-		return mDataList.get(position);
-	}
+    protected T getItem(int position) {
+        return mDataList.get(position);
+    }
 
-	@Override
-	public void onCreate() {
-	}
+    @Override
+    public void onCreate() {
+    }
 
-	@Override
-	public void onDataSetChanged() {
-	}
+    @Override
+    public void onDataSetChanged() {
+    }
 
-	@Override
-	public void onDestroy() {
-	}
+    @Override
+    public void onDestroy() {
+        mContext = null;
+        mDataList = null;
+    }
 
-	@Override
-	public int getCount() {
-		return mDataList.size();
-	}
+    @Override
+    public int getCount() {
+        return mDataList.size();
+    }
 
-	@Override
-	public RemoteViews getLoadingView() {
-		return null;
-	}
+    @Override
+    public RemoteViews getLoadingView() {
+        return null;
+    }
 
-	@Override
-	public int getViewTypeCount() {
-		return 1;
-	}
+    @Override
+    public int getViewTypeCount() {
+        return 1;
+    }
 
-	@Override
-	public long getItemId(int position) {
-		return position;
-	}
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
 
-	@Override
-	public boolean hasStableIds() {
-		return false;
-	}
+    @Override
+    public boolean hasStableIds() {
+        return false;
+    }
 
 }

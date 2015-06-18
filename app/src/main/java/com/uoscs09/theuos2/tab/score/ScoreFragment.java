@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.util.ArrayMap;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -28,7 +29,6 @@ import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 
 public class ScoreFragment extends AbsAsyncFragment<ArrayList<ScoreItem>> {
     @ReleaseWhenDestroy
@@ -39,7 +39,7 @@ public class ScoreFragment extends AbsAsyncFragment<ArrayList<ScoreItem>> {
     private NumberPicker datePicker, termPicker;
     @ReleaseWhenDestroy
     private EditText edit;
-    private Hashtable<String, String> table;
+    private ArrayMap<String, String> table;
     @ReleaseWhenDestroy
     private ScoreAdapter adapter;
     @ReleaseWhenDestroy
@@ -128,7 +128,7 @@ public class ScoreFragment extends AbsAsyncFragment<ArrayList<ScoreItem>> {
     }
 
     private void initTable() {
-        table = new Hashtable<>();
+        table = new ArrayMap<>();
         table.put(OApiUtil.API_KEY, OApiUtil.UOS_API_KEY);
     }
 
@@ -150,7 +150,7 @@ public class ScoreFragment extends AbsAsyncFragment<ArrayList<ScoreItem>> {
             table.put(OApiUtil.YEAR, String.valueOf(datePicker.getValue()));
             table.put(OApiUtil.TERM, termPicker.getValue() == 1 ? "A10" : "A20");
 
-            String str = HttpRequest.getBody("http://wise.uos.ac.kr/uosdoc/api.ApiApiSubjectList.oapi", StringUtil.ENCODE_EUC_KR, table, StringUtil.ENCODE_EUC_KR);
+            String str = HttpRequest.getBody(getActivity(), "http://wise.uos.ac.kr/uosdoc/api.ApiApiSubjectList.oapi", StringUtil.ENCODE_EUC_KR, table, StringUtil.ENCODE_EUC_KR);
             ArrayList<ArrayList<String>> numList = mSubjectListParser.parse(str);
 
             ArrayList<String> item;
@@ -161,7 +161,7 @@ public class ScoreFragment extends AbsAsyncFragment<ArrayList<ScoreItem>> {
                 item = numList.get(i);
                 table.put(OApiUtil.SUBJECT_NO, item.get(0));
                 table.put(OApiUtil.SUBJECT_NAME, item.get(1));
-                body = HttpRequest.getBody("http://wise.uos.ac.kr/uosdoc/api.ApiUcsLecturerEstimateResultInq.oapi", StringUtil.ENCODE_EUC_KR, table, StringUtil.ENCODE_EUC_KR);
+                body = HttpRequest.getBody(getActivity(), "http://wise.uos.ac.kr/uosdoc/api.ApiUcsLecturerEstimateResultInq.oapi", StringUtil.ENCODE_EUC_KR, table, StringUtil.ENCODE_EUC_KR);
 
                 list.addAll(mParser.parse(body));
             }

@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-public class BookItemListAdapter extends AbsArrayAdapter<BookItem, GroupHolder> {
+public class BookItemListAdapter extends AbsArrayAdapter<BookItem, BookItemListAdapter.GroupHolder> {
     private final View.OnLongClickListener ll;
     private final ImageLoader imageLoader;
     private final ParserBookInfo mParser = new ParserBookInfo();
@@ -136,7 +136,7 @@ public class BookItemListAdapter extends AbsArrayAdapter<BookItem, GroupHolder> 
 
         //holder.itemView.setOnClickListener(listener);
         //holder.ripple.setOnClickListener(listener);
-        holder.frame.setOnClickListener(listener);
+        holder.infoParentLayout.setOnClickListener(listener);
     }
 
     void setBookStateLayout(LinearLayout layout, List<BookStateInfo> list) {
@@ -166,7 +166,7 @@ public class BookItemListAdapter extends AbsArrayAdapter<BookItem, GroupHolder> 
 
     private void setChildViewContent(View v, BookStateInfo info) {
         ChildHolder h = (ChildHolder) v.getTag();
-        if (h == null || !(h instanceof ChildHolder)) {
+        if (h == null) {
             h = new ChildHolder(v);
             v.setTag(h);
         }
@@ -206,103 +206,107 @@ public class BookItemListAdapter extends AbsArrayAdapter<BookItem, GroupHolder> 
         }
         return styledText;
     }
-}
 
-class ParserBookInfo extends JerichoParser<ArrayList<BookStateInfo>> {
-    private static final String[] BOOK_STATE_XML_TAGS = {"call_no", "place_name", "book_state"};
 
-    @Override
-    protected ArrayList<BookStateInfo> parseHttpBody(Source source) throws Exception {
-        ArrayList<BookStateInfo> bookStateInfoList = new ArrayList<>();
-        List<Element> itemList = source.getAllElements("item");
-        final int size = itemList.size();
+    static class GroupHolder extends AbsArrayAdapter.ViewHolder implements ImageLoader.ImageListener {
 
-        for (int n = 0; n < size; n++) {
-            Element infoItem = itemList.get(n);
-            BookStateInfo stateInfo = new BookStateInfo();
-            for (int i = 0; i < BOOK_STATE_XML_TAGS.length; i++) {
-                Element element = infoItem.getFirstElement(BOOK_STATE_XML_TAGS[i]);
+        public final View infoParentLayout;
+        public final TextView title;
+        public final TextView writer;
+        public final TextView publish_year;
+        public final TextView location;
+        public final TextView bookState;
+        public final ImageView coverImg;
+        public final View ripple;
+        public final LinearLayout stateInfoLayout;
 
-                if (element != null) {
-                    stateInfo.infoArray[i] = removeExtra(element.getContent().toString());
+        ImageLoader.ImageContainer imageContainer;
 
-                } else {
-                    stateInfo.infoArray[i] = StringUtil.NULL;
-                    if (i == 1) {
-                        element = infoItem.getFirstElement("shelf");
-                        if (element != null) {
-                            stateInfo.infoArray[i] = removeExtra(element.getContent().toString());
+        public GroupHolder(View v) {
+            super(v);
+            coverImg = (ImageView) v.findViewById(R.id.tab_booksearch_list_image_book_image);
+
+            infoParentLayout = v.findViewById(R.id.tab_booksearch_list_info_layout);
+
+            bookState = (TextView) infoParentLayout.findViewById(R.id.tab_booksearch_list_text_book_state);
+            location = (TextView) infoParentLayout.findViewById(R.id.tab_booksearch_list_text_book_site);
+            title = (TextView) infoParentLayout.findViewById(R.id.tab_booksearch_list_text_book_title);
+            publish_year = (TextView) infoParentLayout.findViewById(R.id.tab_booksearch_list_text_book_publish_and_year);
+            writer = (TextView) infoParentLayout.findViewById(R.id.tab_booksearch_list_text_book_writer);
+
+            stateInfoLayout = (LinearLayout) infoParentLayout.findViewById(R.id.tab_booksearch_layout_book_state);
+
+            ripple = v.findViewById(R.id.ripple);
+
+        }
+
+        @Override
+        public void onResponse(ImageLoader.ImageContainer imageContainer, boolean b) {
+            if (imageContainer.getBitmap() != null) {
+                coverImg.setImageBitmap(imageContainer.getBitmap());
+            }
+        }
+
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            error.printStackTrace();
+        }
+    }
+
+    static class ChildHolder {
+        public final TextView location;
+        public final TextView code;
+        public final TextView state;
+
+        public ChildHolder(View v) {
+            location = (TextView) v.findViewById(R.id.tab_booksearch_bookstate_location);
+            code = (TextView) v.findViewById(R.id.tab_booksearch_bookstate_code);
+            state = (TextView) v.findViewById(R.id.tab_booksearch_bookstate_state);
+        }
+    }
+
+    static class ParserBookInfo extends JerichoParser<ArrayList<BookStateInfo>> {
+        private static final String[] BOOK_STATE_XML_TAGS = {"call_no", "place_name", "book_state"};
+
+        @Override
+        protected ArrayList<BookStateInfo> parseHttpBody(Source source) throws Exception {
+            ArrayList<BookStateInfo> bookStateInfoList = new ArrayList<>();
+            List<Element> itemList = source.getAllElements("item");
+            final int size = itemList.size();
+
+            for (int n = 0; n < size; n++) {
+                Element infoItem = itemList.get(n);
+                BookStateInfo stateInfo = new BookStateInfo();
+                for (int i = 0; i < BOOK_STATE_XML_TAGS.length; i++) {
+                    Element element = infoItem.getFirstElement(BOOK_STATE_XML_TAGS[i]);
+
+                    if (element != null) {
+                        stateInfo.infoArray[i] = removeExtra(element.getContent().toString());
+
+                    } else {
+                        stateInfo.infoArray[i] = StringUtil.NULL;
+                        if (i == 1) {
+                            element = infoItem.getFirstElement("shelf");
+                            if (element != null) {
+                                stateInfo.infoArray[i] = removeExtra(element.getContent().toString());
+                            }
                         }
                     }
                 }
+
+                bookStateInfoList.add(stateInfo);
             }
 
-            bookStateInfoList.add(stateInfo);
+            return bookStateInfoList;
         }
 
-        return bookStateInfoList;
-    }
-
-    private String removeExtra(String str) {
-        return str.substring(9, str.length() - 3);
-    }
-}
-
-class GroupHolder extends AbsArrayAdapter.ViewHolder implements ImageLoader.ImageListener {
-
-    private final View infoParentLayout;
-    public final TextView title;
-    public final TextView writer;
-    public final TextView publish_year;
-    public final TextView location;
-    public final TextView bookState;
-    public final ImageView coverImg;
-    public final View ripple;
-    public final View frame;
-    public final LinearLayout stateInfoLayout;
-
-    ImageLoader.ImageContainer imageContainer;
-
-    public GroupHolder(View v) {
-        super(v);
-        coverImg = (ImageView) v.findViewById(R.id.tab_booksearch_list_image_book_image);
-
-        infoParentLayout = v.findViewById(R.id.tab_booksearch_list_info_layout);
-
-        bookState = (TextView) infoParentLayout.findViewById(R.id.tab_booksearch_list_text_book_state);
-        location = (TextView) infoParentLayout.findViewById(R.id.tab_booksearch_list_text_book_site);
-        title = (TextView) infoParentLayout.findViewById(R.id.tab_booksearch_list_text_book_title);
-        publish_year = (TextView) infoParentLayout.findViewById(R.id.tab_booksearch_list_text_book_publish_and_year);
-        writer = (TextView) infoParentLayout.findViewById(R.id.tab_booksearch_list_text_book_writer);
-
-        stateInfoLayout = (LinearLayout) infoParentLayout.findViewById(R.id.tab_booksearch_layout_book_state);
-
-        ripple = v.findViewById(R.id.ripple);
-        frame = v.findViewById(R.id.frame);
-
-    }
-
-    @Override
-    public void onResponse(ImageLoader.ImageContainer imageContainer, boolean b) {
-        if (imageContainer.getBitmap() != null) {
-            coverImg.setImageBitmap(imageContainer.getBitmap());
+        private String removeExtra(String str) {
+            return str.substring(9, str.length() - 3);
         }
-    }
 
-    @Override
-    public void onErrorResponse(VolleyError error) {
-        error.printStackTrace();
     }
 }
 
-class ChildHolder {
-    public final TextView location;
-    public final TextView code;
-    public final TextView state;
 
-    public ChildHolder(View v) {
-        location = (TextView) v.findViewById(R.id.tab_booksearch_bookstate_location);
-        code = (TextView) v.findViewById(R.id.tab_booksearch_bookstate_code);
-        state = (TextView) v.findViewById(R.id.tab_booksearch_bookstate_state);
-    }
-}
+
+

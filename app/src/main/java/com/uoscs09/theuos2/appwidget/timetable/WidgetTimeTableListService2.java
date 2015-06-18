@@ -10,6 +10,7 @@ import android.widget.RemoteViewsService;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsListRemoteViewsFactory;
+import com.uoscs09.theuos2.common.SerializableArrayMap;
 import com.uoscs09.theuos2.tab.timetable.Subject;
 import com.uoscs09.theuos2.tab.timetable.TimeTable;
 import com.uoscs09.theuos2.tab.timetable.TimetableUtil;
@@ -17,7 +18,6 @@ import com.uoscs09.theuos2.util.PrefUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import java.util.Calendar;
-import java.util.Hashtable;
 import java.util.Locale;
 
 public abstract class WidgetTimeTableListService2 extends RemoteViewsService {
@@ -32,7 +32,7 @@ public abstract class WidgetTimeTableListService2 extends RemoteViewsService {
     protected static abstract class ListRemoteViewsFactory extends AbsListRemoteViewsFactory<Subject[]> {
         private TimeTable mTimeTable;
         private final int mAppWidgetId;
-        private Hashtable<String, Integer> colorTable;
+        private SerializableArrayMap<String, Integer> colorTable;
         private final int[] viewIds = {
                 R.id.widget_time_table_list_peroid,
                 R.id.widget_time_table_list_mon_frame,

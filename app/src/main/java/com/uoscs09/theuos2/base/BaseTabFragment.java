@@ -19,6 +19,9 @@ public abstract class BaseTabFragment extends BaseFragment {
             throw new RuntimeException("Activity != UosMainActivity");
     }
 
+    protected UosMainActivity getUosMainActivity(){
+        return (UosMainActivity) getActivity();
+    }
 
     /*
     @Override

@@ -227,7 +227,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
     private final AsyncFragmentJob.Base<ArrayList<UnivScheduleItem>> JOB = new AsyncFragmentJob.Base<ArrayList<UnivScheduleItem>>() {
         @Override
         public ArrayList<UnivScheduleItem> call() throws Exception {
-            return ParseUtil.parseXml(UNIV_SCHEDULE_PARSER, URL);
+            return ParseUtil.parseXml(getActivity(), UNIV_SCHEDULE_PARSER, URL);
         }
 
         @Override

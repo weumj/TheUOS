@@ -12,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.util.ArrayMap;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.AdapterView;
@@ -26,6 +27,7 @@ import com.uoscs09.theuos2.async.AsyncJob;
 import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.common.PieProgressDrawable;
+import com.uoscs09.theuos2.common.SerializableArrayMap;
 import com.uoscs09.theuos2.parse.ParseSubjectList2;
 import com.uoscs09.theuos2.parse.ParseUtil;
 import com.uoscs09.theuos2.tab.map.SubMapActivity;
@@ -37,7 +39,6 @@ import com.uoscs09.theuos2.util.StringUtil;
 import com.uoscs09.theuos2.util.TrackerUtil;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
 
 
@@ -45,7 +46,7 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
     private static final String TAG = "SubjectDetailDialogFragment";
     private static final String URL = "http://wise.uos.ac.kr/uosdoc/api.ApiApiSubjectList.oapi";
 
-    private final Hashtable<String, String> params;
+    private final ArrayMap<String, String> params;
     private final ParseSubjectList2 mParser = new ParseSubjectList2();
 
     private TextView mTimeTableDialogTitle;
@@ -63,16 +64,16 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
 
     @Nullable
     private ColorSelector.OnColorSelectedListener mColorSelectedListener;
-    private Hashtable<String, Integer> colorTable;
+    private SerializableArrayMap<String, Integer> colorTable;
 
     public SubjectDetailDialogFragment() {
-        params = new Hashtable<>();
+        params = new ArrayMap<>();
         params.put(OApiUtil.API_KEY, OApiUtil.UOS_API_KEY);
 
         pieProgressDrawable.setLevel(100);
     }
 
-    public void setColorTable(Hashtable<String, Integer> colorTable) {
+    public void setColorTable(SerializableArrayMap<String, Integer> colorTable) {
         this.colorTable = colorTable;
     }
 
@@ -300,7 +301,7 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
             params.put(OApiUtil.YEAR, Integer.toString(mTimeTable.year));
             params.put(OApiUtil.TERM, mTimeTable.semesterCode.code);
 
-            return ParseUtil.parseXml(mParser, URL, params);
+            return ParseUtil.parseXml(getActivity(), mParser, URL, params);
 
         }
 
@@ -355,7 +356,7 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
         }
     }
 
-    private static class ViewHolder implements AbsArrayAdapter.ViewHolderable {
+    private static class ViewHolder implements AbsArrayAdapter.ViewHoldable {
         public final TextView textView;
 
         public ViewHolder(View v) {

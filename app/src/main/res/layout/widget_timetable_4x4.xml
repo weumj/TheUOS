@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:background="@drawable/selector_button"
+            android:background="@drawable/selector_button_widget"
             android:contentDescription="@string/action_refresh"
             android:src="@drawable/ic_action_navigation_refresh_white" />
 
@@ -167,7 +167,7 @@
             android:id="@+id/widget_timetable_empty"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="120dip"
+            android:paddingLeft="90dip"
             android:paddingTop="20dip"
             android:textColor="@color/material_light_blue_700"
             android:text="@string/tab_timetable_not_exist"

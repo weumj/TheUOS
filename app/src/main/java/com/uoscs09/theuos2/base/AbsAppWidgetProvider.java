@@ -13,7 +13,7 @@ public abstract class AbsAppWidgetProvider extends AppWidgetProvider{
         super.onEnabled(context);
 
 
-      TrackerUtil.getInstance(context).sendEvent(getTrackerName(), "onEnabled");
+      TrackerUtil.newInstance(context).sendEvent(getTrackerName(), "onEnabled");
 
     }
 
@@ -21,7 +21,7 @@ public abstract class AbsAppWidgetProvider extends AppWidgetProvider{
     public void onDeleted(Context context, int[] appWidgetIds) {
         super.onDeleted(context, appWidgetIds);
 
-        TrackerUtil.getInstance(context).sendEvent(getTrackerName(), "onDeleted");
+        TrackerUtil.newInstance(context).sendEvent(getTrackerName(), "onDeleted");
     }
 
     @NonNull

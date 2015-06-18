@@ -13,6 +13,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.util.ArrayMap;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -40,7 +41,6 @@ import com.uoscs09.theuos2.util.StringUtil;
 import com.uoscs09.theuos2.util.TrackerUtil;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
 
 public class CoursePlanDialogFragment extends DialogFragment {
@@ -49,7 +49,7 @@ public class CoursePlanDialogFragment extends DialogFragment {
 
     private final static String TAG = "CoursePlanDialogFragment";
 
-    private final Hashtable<String, String> mOApiParams;
+    private final ArrayMap<String, String> mOApiParams;
 
     private Toolbar mToolbar;
     private View mCourseTitle;
@@ -81,7 +81,7 @@ public class CoursePlanDialogFragment extends DialogFragment {
     }
 
     public CoursePlanDialogFragment() {
-        mOApiParams = new Hashtable<>(5);
+        mOApiParams = new ArrayMap<>(5);
         mOApiParams.put(OApiUtil.API_KEY, OApiUtil.UOS_API_KEY);
     }
 
@@ -242,7 +242,7 @@ public class CoursePlanDialogFragment extends DialogFragment {
             if (mSubject.classInformationList.isEmpty())
                 mSubject.afterParsing();
 
-            return ParseUtil.parseXml(COURSE_PLAN_PARSER, URL, mOApiParams);
+            return ParseUtil.parseXml(getActivity(), COURSE_PLAN_PARSER, URL, mOApiParams);
         }
 
         @Override

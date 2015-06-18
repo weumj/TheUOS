@@ -48,7 +48,7 @@ public class AnnounceAdapter extends AbsArrayAdapter<AnnounceItem, AnnounceAdapt
     }
 
 
-    static class Holder implements AbsArrayAdapter.ViewHolderable {
+    static class Holder implements AbsArrayAdapter.ViewHoldable {
         public final TextView[] textArray;
 
         public Holder(View v) {

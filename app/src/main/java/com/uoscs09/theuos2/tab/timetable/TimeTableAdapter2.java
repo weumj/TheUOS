@@ -8,22 +8,22 @@ import android.widget.TextView;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
+import com.uoscs09.theuos2.common.SerializableArrayMap;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 
-import java.util.Hashtable;
 import java.util.Locale;
 
 
 public class TimeTableAdapter2 extends AbsArrayAdapter<Subject[], TimeTableAdapter2.TimeTableViewHolder> {
-    private final Hashtable<String, Integer> colorTable;
+    private final SerializableArrayMap<String, Integer> colorTable;
     private OnItemClickListener onItemClickListener;
     private final SparseBooleanArray mClickedArray = new SparseBooleanArray(15);
     private final String[] periodTimeArray;
     private final TimeTable mTimeTable;
 
-    public TimeTableAdapter2(Context context, TimeTable timeTable, Hashtable<String, Integer> colorTable) {
+    public TimeTableAdapter2(Context context, TimeTable timeTable, SerializableArrayMap<String, Integer> colorTable) {
         super(context, R.layout.list_layout_timetable2, timeTable.subjects);
         this.colorTable = colorTable;
         this.mTimeTable = timeTable;
@@ -105,7 +105,7 @@ public class TimeTableAdapter2 extends AbsArrayAdapter<Subject[], TimeTableAdapt
 
         }
 
-        protected void setView(Hashtable<String, Integer> colorTable) {
+        protected void setView(SerializableArrayMap<String, Integer> colorTable) {
             setPeriodView();
 
             int i = 0;

@@ -1,6 +1,7 @@
 package com.uoscs09.theuos2.util;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 
@@ -22,8 +23,6 @@ public class TrackerUtil {
 
     private final HashMap<TrackerName, Tracker> mTrackers = new HashMap<>();
 
-
-    private static TrackerUtil sInstance;
     private Tracker mTracker;
 
     private static final String APP_VERSION = "App Version";
@@ -36,14 +35,19 @@ public class TrackerUtil {
         appVersion = context.getString(R.string.setting_app_version_name);
     }
 
-    public static TrackerUtil getInstance(Context context){
-        if(sInstance == null)
-            sInstance = new TrackerUtil(context);
-
-        return sInstance;
+    public static TrackerUtil newInstance(Context context){
+        return new TrackerUtil(context);
     }
 
-    public static  TrackerUtil getInstance(Fragment fragment){
+    public static TrackerUtil getInstance(Activity activity){
+        return ((UOSApplication)activity.getApplication()).getTrackerUtil();
+    }
+
+    public static TrackerUtil newInstance(UOSApplication application){
+        return new TrackerUtil(application);
+    }
+
+    public static TrackerUtil getInstance(Fragment fragment){
         return getInstance(fragment.getActivity());
     }
 

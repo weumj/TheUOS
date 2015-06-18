@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.util.ArrayMap;
+import android.support.v4.util.SimpleArrayMap;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,6 +22,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
@@ -35,15 +38,8 @@ import com.uoscs09.theuos2.util.StringUtil;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Hashtable;
 
-public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<SubjectItem2>> implements AdapterView.OnItemClickListener, AdapterView.OnItemSelectedListener, View.OnClickListener {
-    @AsyncData
-    private ArrayList<SubjectItem2> mSubjectList;
-    private Hashtable<String, String> mOApiParams;
-
-    @ReleaseWhenDestroy
-    private SubjectAdapter2 mAdapter;
+public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<SubjectItem2>> implements AdapterView.OnItemClickListener, AdapterView.OnItemSelectedListener {
     @ReleaseWhenDestroy
     private AlertDialog mSearchDialog;
     @ReleaseWhenDestroy
@@ -57,23 +53,33 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
     @ReleaseWhenDestroy
     private TextView[] textViews;
     @ReleaseWhenDestroy
+    private View[] tabStrips;
+
+    @ReleaseWhenDestroy
     private CustomHorizontalScrollView mScrollView;
-
-    private final CoursePlanDialogFragment mCoursePlanDialogFragment = new CoursePlanDialogFragment();
-
-    private final ParseSubject2 mParser = new ParseSubject2();
-
-    private String mSearchConditionString;
-    private int sortFocusViewId;
-    private boolean isInverse = false;
     @ReleaseWhenDestroy
     private View mEmptyView;
 
-    private boolean isScrolling = false;
+    private String mSearchConditionString;
+    private int mTabSelection = 1;
+    private boolean isInverse = false;
+    private boolean mIsScrollViewScrolling = false;
+
+    @AsyncData
+    private ArrayList<SubjectItem2> mSubjectList;
+    private ArrayMap<String, String> mOApiParams;
+
+    private SubjectAdapter2 mSubjectAdapter;
+    private AlphaInAnimationAdapter mAminAdapter;
+
+    private final CoursePlanDialogFragment mCoursePlanDialogFragment = new CoursePlanDialogFragment();
+
+    private static final ParseSubject2 SUBJECT_PARSER = new ParseSubject2();
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        mOApiParams = new Hashtable<>();
+        mOApiParams = new ArrayMap<>();
         Context context = getActivity();
         View dialogView = View.inflate(context, R.layout.dialog_search_subject, null);
         initDialog(dialogView);
@@ -127,8 +133,11 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
         }
 
         NestedListView mListView = (NestedListView) rootView.findViewById(R.id.tab_search_subject_list_view);
-        mAdapter = new SubjectAdapter2(context, mSubjectList);
-        mListView.setAdapter(mAdapter);
+        mSubjectAdapter = new SubjectAdapter2(context, mSubjectList);
+        mAminAdapter = new AlphaInAnimationAdapter(mSubjectAdapter);
+        mAminAdapter.setAbsListView(mListView);
+
+        mListView.setAdapter(mAminAdapter);
         mListView.setOnItemClickListener(this);
         mListView.setEmptyView(mEmptyView);
 
@@ -137,12 +146,12 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
         mTabParent.setOnScrollListener(new CustomHorizontalScrollView.OnScrollListener() {
             @Override
             public void onScrollChanged(int l, int t, int oldl, int oldt) {
-                if (!isScrolling) {
-                    isScrolling = true;
+                if (!mIsScrollViewScrolling) {
+                    mIsScrollViewScrolling = true;
 
                     mScrollView.scrollTo(l, 0);
 
-                    isScrolling = false;
+                    mIsScrollViewScrolling = false;
                 }
             }
         });
@@ -150,12 +159,12 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
         mScrollView.setOnScrollListener(new CustomHorizontalScrollView.OnScrollListener() {
             @Override
             public void onScrollChanged(int l, int t, int oldl, int oldt) {
-                if (!isScrolling) {
-                    isScrolling = true;
+                if (!mIsScrollViewScrolling) {
+                    mIsScrollViewScrolling = true;
 
                     mTabParent.scrollTo(l, 0);
 
-                    isScrolling = false;
+                    mIsScrollViewScrolling = false;
                 }
             }
         });
@@ -166,10 +175,23 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
                 R.id.tab_search_subject_sub_nm1, R.id.tab_search_subject_yr1, R.id.tab_search_subject_credit1, R.id.tab_search_subject_prof_nm1,
                 R.id.tab_search_subject_class_nm1, R.id.tab_search_subject_tlsn_cnt1, R.id.tab_search_subject_tlsn_limit1};
         textViews = new TextView[ids.length];
+        tabStrips = new View[ids.length];
+
         int i = 0;
+        ViewGroup rippleParent = (ViewGroup) mTabParent.findViewById(R.id.tab_search_subject_head_layout);
         for (int id : ids) {
-            textViews[i] = (TextView) mTabParent.findViewById(id);
-            textViews[i++].setOnClickListener(this);
+            final int j = i;
+            View ripple = rippleParent.getChildAt(i);
+            ripple.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onTabClick(j);
+                }
+            });
+
+            textViews[i] = (TextView) ripple.findViewById(id);
+            tabStrips[i++] = ripple.findViewById(R.id.tab_tab_strip);
+
         }
 
         registerProgressView(rootView.findViewById(R.id.progress_layout));
@@ -177,20 +199,18 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
         return rootView;
     }
 
-    // for titles
-    @Override
-    public void onClick(View v) {
+    void onTabClick(int index) {
         if (mSubjectList.isEmpty()) {
             return;
         }
-        int field;
-        int id = v.getId();
-        for (TextView tv : textViews) {
-            tv.setCompoundDrawables(null, null, null, null);
+
+        if (mTabSelection != -1) {
+            textViews[mTabSelection].setCompoundDrawables(null, null, null, null);
+            tabStrips[mTabSelection].setVisibility(View.INVISIBLE);
         }
 
-        isInverse = id == sortFocusViewId && !isInverse;
-        sortFocusViewId = id;
+        /*
+
         switch (id) {
             case R.id.tab_search_subject_sub_dept1:
                 field = 0;
@@ -228,13 +248,20 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
             default:
                 return;
         }
+        */
 
-        sendClickEvent("sort", field);
+        isInverse = index == mTabSelection && !isInverse;
+        mTabSelection = index;
 
-        textViews[field].setCompoundDrawablesWithIntrinsicBounds(
+
+        sendClickEvent("sort", index);
+
+        textViews[index].setCompoundDrawablesWithIntrinsicBounds(
                 AppUtil.getAttrValue(getActivity(), isInverse ? R.attr.menu_theme_ic_action_navigation_arrow_drop_up : R.attr.menu_theme_ic_action_navigation_arrow_drop_down), 0, 0, 0);
+        tabStrips[index].setVisibility(View.VISIBLE);
 
-        mAdapter.sort(SubjectItem2.getComparator(field, isInverse));
+        mSubjectAdapter.sort(SubjectItem2.getComparator(index, isInverse));
+        mAminAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -306,11 +333,13 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
                     query = "http://wise.uos.ac.kr/uosdoc/api.ApiUcrMjTimeInq.oapi";
                     switch (selections[1]) {
                         case R.array.search_subj_major_2_0_0:
-                            mOApiParams.putAll(getMajorDeptDiv(mDialogSpinner3.getSelectedItemPosition(), mDialogSpinner4.getSelectedItemPosition()));
+                            mOApiParams.putAll((SimpleArrayMap<? extends String, ? extends String>) getMajorDeptDiv(mDialogSpinner3.getSelectedItemPosition(), mDialogSpinner4.getSelectedItemPosition()));
                             break;
 
                         default:
-                            mOApiParams.putAll(getMajorDeptDiv2(selections[1], mDialogSpinner4.getSelectedItemPosition()));
+                            SimpleArrayMap<? extends String, ? extends String> map = getMajorDeptDiv2(selections[1], mDialogSpinner4.getSelectedItemPosition());
+                            if (map != null)
+                                mOApiParams.putAll(map);
                             break;
 
                     }
@@ -319,19 +348,22 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
 
             mOApiParams.put("subjectNm", URLEncoder.encode(mSearchEditText.getText().toString(), StringUtil.ENCODE_EUC_KR));
 
-            return ParseUtil.parseXml(mParser, query, mOApiParams);
+            return ParseUtil.parseXml(getActivity(), SUBJECT_PARSER, query, mOApiParams);
         }
 
         @Override
         public void onResult(ArrayList<SubjectItem2> result) {
-            mAdapter.clear();
-            mAdapter.addAll(result);
-            mAdapter.notifyDataSetChanged();
+            mSubjectAdapter.clear();
+            mSubjectAdapter.addAll(result);
+            mAminAdapter.reset();
+            mAminAdapter.notifyDataSetChanged();
+
+            //mSubjectAdapter.notifyDataSetChanged();
 
             mScrollView.scrollTo(0, 0);
             getTabParentView().scrollTo(0, 0);
 
-            if (mAdapter.isEmpty()) {
+            if (mSubjectAdapter.isEmpty()) {
                 mEmptyView.setVisibility(View.VISIBLE);
             }
             /*
@@ -532,8 +564,8 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
         }
     }
 
-    private static Hashtable<String, String> getMajorDeptDiv(int deptDiv, int subDept) {
-        Hashtable<String, String> table = new Hashtable<>(3);
+    private static ArrayMap<String, String> getMajorDeptDiv(int deptDiv, int subDept) {
+        ArrayMap<String, String> table = new ArrayMap<>(3);
         switch (deptDiv) {
             case 0:// 정경대학
                 table.put("deptDiv", "210");
@@ -696,8 +728,8 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
         return table;
     }
 
-    private static Hashtable<String, String> getMajorDeptDiv2(int deptDiv, int subDept) {
-        Hashtable<String, String> table = new Hashtable<>(3);
+    private static ArrayMap<String, String> getMajorDeptDiv2(int deptDiv, int subDept) {
+        ArrayMap<String, String> table = new ArrayMap<>(3);
         switch (deptDiv) {
             case R.array.search_subj_major_2_0_1:// 대학원
                 table.put("deptDiv", "310");

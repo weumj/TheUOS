@@ -51,8 +51,8 @@ public class SubAnnounceWebActivity extends WebViewActivity {
         settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
         mWebView.setInitialScale(100);
 
-        settings.setJavaScriptEnabled(true);
-        mWebView.setWebViewClient(new AnnounceWebViewClient(this, selection));
+        //settings.setJavaScriptEnabled(true);
+        //mWebView.setWebViewClient(new AnnounceWebViewClient(this, selection));
         mWebView.loadUrl(url);
 
     }

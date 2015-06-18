@@ -28,14 +28,30 @@
                 app:mrl_rippleColor="?colorAccent"
                 app:mrl_rippleDelayClick="true">
 
-                <TextView
-                    android:id="@+id/tab_search_subject_sub_dept1"
+                <FrameLayout
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
-                    android:gravity="center"
-                    android:padding="4dp"
-                    android:text="@string/tab_search_subject_sub_dept1"
-                    android:textColor="?color_actionbar_title" />
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tab_search_subject_sub_dept1"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:gravity="center"
+                        android:padding="4dp"
+                        android:text="@string/tab_search_subject_sub_dept1"
+                        android:textColor="?color_actionbar_title"
+                        android:textStyle="bold" />
+
+                    <View
+                        android:id="@id/tab_tab_strip"
+                        android:layout_width="match_parent"
+                        android:layout_height="4dp"
+                        android:layout_gravity="bottom"
+                        android:background="?color_actionbar_title"
+                        android:visibility="invisible" />
+                </FrameLayout>
+
 
             </com.balysv.materialripple.MaterialRippleLayout>
 
@@ -46,14 +62,30 @@
                 app:mrl_rippleColor="?colorAccent"
                 app:mrl_rippleDelayClick="true">
 
-                <TextView
-                    android:id="@+id/tab_search_subject_sub_div1"
-                    android:layout_width="match_parent"
+                <FrameLayout
+                    android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
-                    android:gravity="center"
-                    android:padding="4dp"
-                    android:text="@string/tab_search_subject_sub_div1"
-                    android:textColor="?color_actionbar_title" />
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tab_search_subject_sub_div1"
+                        android:layout_width="match_parent"
+                        android:layout_height="fill_parent"
+                        android:gravity="center"
+                        android:padding="4dp"
+                        android:text="@string/tab_search_subject_sub_div1"
+                        android:textColor="?color_actionbar_title"
+                        android:textStyle="bold" />
+
+                    <View
+                        android:id="@id/tab_tab_strip"
+                        android:layout_width="match_parent"
+                        android:layout_height="4dp"
+                        android:layout_gravity="bottom"
+                        android:background="?color_actionbar_title"
+                        android:visibility="invisible" />
+                </FrameLayout>
+
             </com.balysv.materialripple.MaterialRippleLayout>
 
             <com.balysv.materialripple.MaterialRippleLayout
@@ -63,14 +95,30 @@
                 app:mrl_rippleColor="?colorAccent"
                 app:mrl_rippleDelayClick="true">
 
-                <TextView
-                    android:id="@+id/tab_search_subject_no1"
-                    android:layout_width="match_parent"
+                <FrameLayout
+                    android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
-                    android:gravity="center"
-                    android:padding="4dp"
-                    android:text="@string/tab_search_subject_no1"
-                    android:textColor="?color_actionbar_title" />
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tab_search_subject_no1"
+                        android:layout_width="match_parent"
+                        android:layout_height="fill_parent"
+                        android:gravity="center"
+                        android:padding="4dp"
+                        android:text="@string/tab_search_subject_no1"
+                        android:textColor="?color_actionbar_title"
+                        android:textStyle="bold" />
+
+                    <View
+                        android:id="@id/tab_tab_strip"
+                        android:layout_width="match_parent"
+                        android:layout_height="4dp"
+                        android:layout_gravity="bottom"
+                        android:background="?color_actionbar_title"
+                        android:visibility="invisible" />
+                </FrameLayout>
+
             </com.balysv.materialripple.MaterialRippleLayout>
 
             <com.balysv.materialripple.MaterialRippleLayout
@@ -80,14 +128,30 @@
                 app:mrl_rippleColor="?colorAccent"
                 app:mrl_rippleDelayClick="true">
 
-                <TextView
-                    android:id="@+id/tab_search_subject_class_div1"
-                    android:layout_width="match_parent"
+                <FrameLayout
+                    android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
-                    android:gravity="center"
-                    android:padding="4dp"
-                    android:text="@string/tab_search_subject_class_div1"
-                    android:textColor="?color_actionbar_title" />
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tab_search_subject_class_div1"
+                        android:layout_width="match_parent"
+                        android:layout_height="fill_parent"
+                        android:gravity="center"
+                        android:padding="4dp"
+                        android:text="@string/tab_search_subject_class_div1"
+                        android:textColor="?color_actionbar_title"
+                        android:textStyle="bold" />
+
+                    <View
+                        android:id="@id/tab_tab_strip"
+                        android:layout_width="match_parent"
+                        android:layout_height="4dp"
+                        android:layout_gravity="bottom"
+                        android:background="?color_actionbar_title"
+                        android:visibility="invisible" />
+                </FrameLayout>
+
             </com.balysv.materialripple.MaterialRippleLayout>
 
             <com.balysv.materialripple.MaterialRippleLayout
@@ -97,14 +161,31 @@
                 app:mrl_rippleColor="?colorAccent"
                 app:mrl_rippleDelayClick="true">
 
-                <TextView
-                    android:id="@+id/tab_search_subject_sub_nm1"
-                    android:layout_width="match_parent"
+                <FrameLayout
+                    android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
-                    android:gravity="center"
-                    android:padding="4dp"
-                    android:text="@string/tab_search_subject_sub_nm1"
-                    android:textColor="?color_actionbar_title" />
+                    android:orientation="vertical">
+
+
+                    <TextView
+                        android:id="@+id/tab_search_subject_sub_nm1"
+                        android:layout_width="match_parent"
+                        android:layout_height="fill_parent"
+                        android:gravity="center"
+                        android:padding="4dp"
+                        android:text="@string/tab_search_subject_sub_nm1"
+                        android:textColor="?color_actionbar_title"
+                        android:textStyle="bold" />
+
+                    <View
+                        android:id="@id/tab_tab_strip"
+                        android:layout_width="match_parent"
+                        android:layout_height="4dp"
+                        android:layout_gravity="bottom"
+                        android:background="?color_actionbar_title"
+                        android:visibility="invisible" />
+                </FrameLayout>
+
             </com.balysv.materialripple.MaterialRippleLayout>
 
             <com.balysv.materialripple.MaterialRippleLayout
@@ -114,14 +195,31 @@
                 app:mrl_rippleColor="?colorAccent"
                 app:mrl_rippleDelayClick="true">
 
-                <TextView
-                    android:id="@+id/tab_search_subject_yr1"
-                    android:layout_width="match_parent"
+                <FrameLayout
+                    android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
-                    android:gravity="center"
-                    android:padding="4dp"
-                    android:text="@string/tab_search_subject_yr1"
-                    android:textColor="?color_actionbar_title" />
+                    android:orientation="vertical">
+
+
+                    <TextView
+                        android:id="@+id/tab_search_subject_yr1"
+                        android:layout_width="match_parent"
+                        android:layout_height="fill_parent"
+                        android:gravity="center"
+                        android:padding="4dp"
+                        android:text="@string/tab_search_subject_yr1"
+                        android:textColor="?color_actionbar_title"
+                        android:textStyle="bold" />
+
+                    <View
+                        android:id="@id/tab_tab_strip"
+                        android:layout_width="match_parent"
+                        android:layout_height="4dp"
+                        android:layout_gravity="bottom"
+                        android:background="?color_actionbar_title"
+                        android:visibility="invisible" />
+                </FrameLayout>
+
             </com.balysv.materialripple.MaterialRippleLayout>
 
             <com.balysv.materialripple.MaterialRippleLayout
@@ -131,14 +229,30 @@
                 app:mrl_rippleColor="?colorAccent"
                 app:mrl_rippleDelayClick="true">
 
-                <TextView
-                    android:id="@+id/tab_search_subject_credit1"
-                    android:layout_width="match_parent"
+                <FrameLayout
+                    android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
-                    android:gravity="center"
-                    android:padding="4dp"
-                    android:text="@string/tab_search_subject_credit1"
-                    android:textColor="?color_actionbar_title" />
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tab_search_subject_credit1"
+                        android:layout_width="match_parent"
+                        android:layout_height="fill_parent"
+                        android:gravity="center"
+                        android:padding="4dp"
+                        android:text="@string/tab_search_subject_credit1"
+                        android:textColor="?color_actionbar_title"
+                        android:textStyle="bold" />
+
+                    <View
+                        android:id="@id/tab_tab_strip"
+                        android:layout_width="match_parent"
+                        android:layout_height="4dp"
+                        android:layout_gravity="bottom"
+                        android:background="?color_actionbar_title"
+                        android:visibility="invisible" />
+                </FrameLayout>
+
             </com.balysv.materialripple.MaterialRippleLayout>
 
             <com.balysv.materialripple.MaterialRippleLayout
@@ -148,14 +262,30 @@
                 app:mrl_rippleColor="?colorAccent"
                 app:mrl_rippleDelayClick="true">
 
-                <TextView
-                    android:id="@+id/tab_search_subject_prof_nm1"
-                    android:layout_width="match_parent"
+                <FrameLayout
+                    android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
-                    android:gravity="center"
-                    android:padding="4dp"
-                    android:text="@string/tab_search_subject_prof_nm1"
-                    android:textColor="?color_actionbar_title" />
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tab_search_subject_prof_nm1"
+                        android:layout_width="match_parent"
+                        android:layout_height="fill_parent"
+                        android:gravity="center"
+                        android:padding="4dp"
+                        android:text="@string/tab_search_subject_prof_nm1"
+                        android:textColor="?color_actionbar_title"
+                        android:textStyle="bold" />
+
+                    <View
+                        android:id="@id/tab_tab_strip"
+                        android:layout_width="match_parent"
+                        android:layout_height="4dp"
+                        android:layout_gravity="bottom"
+                        android:background="?color_actionbar_title"
+                        android:visibility="invisible" />
+                </FrameLayout>
+
             </com.balysv.materialripple.MaterialRippleLayout>
 
             <com.balysv.materialripple.MaterialRippleLayout
@@ -165,14 +295,30 @@
                 app:mrl_rippleColor="?colorAccent"
                 app:mrl_rippleDelayClick="true">
 
-                <TextView
-                    android:id="@+id/tab_search_subject_class_nm1"
-                    android:layout_width="match_parent"
+                <FrameLayout
+                    android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
-                    android:gravity="center"
-                    android:padding="4dp"
-                    android:text="@string/tab_search_subject_class_nm1"
-                    android:textColor="?color_actionbar_title" />
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tab_search_subject_class_nm1"
+                        android:layout_width="match_parent"
+                        android:layout_height="fill_parent"
+                        android:gravity="center"
+                        android:padding="4dp"
+                        android:text="@string/tab_search_subject_class_nm1"
+                        android:textColor="?color_actionbar_title"
+                        android:textStyle="bold" />
+
+                    <View
+                        android:id="@id/tab_tab_strip"
+                        android:layout_width="match_parent"
+                        android:layout_height="4dp"
+                        android:layout_gravity="bottom"
+                        android:background="?color_actionbar_title"
+                        android:visibility="invisible" />
+                </FrameLayout>
+
             </com.balysv.materialripple.MaterialRippleLayout>
 
             <com.balysv.materialripple.MaterialRippleLayout
@@ -182,14 +328,30 @@
                 app:mrl_rippleColor="?colorAccent"
                 app:mrl_rippleDelayClick="true">
 
-                <TextView
-                    android:id="@+id/tab_search_subject_tlsn_cnt1"
-                    android:layout_width="match_parent"
+                <FrameLayout
+                    android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
-                    android:gravity="center"
-                    android:padding="4dp"
-                    android:text="@string/tab_search_subject_tlsn_cnt1"
-                    android:textColor="?color_actionbar_title" />
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tab_search_subject_tlsn_cnt1"
+                        android:layout_width="match_parent"
+                        android:layout_height="fill_parent"
+                        android:gravity="center"
+                        android:padding="4dp"
+                        android:text="@string/tab_search_subject_tlsn_cnt1"
+                        android:textColor="?color_actionbar_title"
+                        android:textStyle="bold" />
+
+                    <View
+                        android:id="@id/tab_tab_strip"
+                        android:layout_width="match_parent"
+                        android:layout_height="4dp"
+                        android:layout_gravity="bottom"
+                        android:background="?color_actionbar_title"
+                        android:visibility="invisible" />
+                </FrameLayout>
+
             </com.balysv.materialripple.MaterialRippleLayout>
 
             <com.balysv.materialripple.MaterialRippleLayout
@@ -199,14 +361,30 @@
                 app:mrl_rippleColor="?colorAccent"
                 app:mrl_rippleDelayClick="true">
 
-                <TextView
-                    android:id="@+id/tab_search_subject_tlsn_limit1"
-                    android:layout_width="match_parent"
+                <FrameLayout
+                    android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
-                    android:gravity="center"
-                    android:padding="4dp"
-                    android:text="@string/tab_search_subject_tlsn_limit1"
-                    android:textColor="?color_actionbar_title" />
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tab_search_subject_tlsn_limit1"
+                        android:layout_width="match_parent"
+                        android:layout_height="fill_parent"
+                        android:gravity="center"
+                        android:padding="4dp"
+                        android:text="@string/tab_search_subject_tlsn_limit1"
+                        android:textColor="?color_actionbar_title"
+                        android:textStyle="bold" />
+
+                    <View
+                        android:id="@id/tab_tab_strip"
+                        android:layout_width="match_parent"
+                        android:layout_height="4dp"
+                        android:layout_gravity="bottom"
+                        android:background="?color_actionbar_title"
+                        android:visibility="invisible" />
+                </FrameLayout>
+
             </com.balysv.materialripple.MaterialRippleLayout>
         </LinearLayout>
     </RelativeLayout>

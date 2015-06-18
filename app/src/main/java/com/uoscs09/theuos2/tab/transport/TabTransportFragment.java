@@ -16,13 +16,13 @@ import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos2.async.AsyncFragmentJob;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
+import com.uoscs09.theuos2.common.SerializableArrayMap;
 import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.parse.ParserTransport;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.SeoulOApiUtil;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.Map;
 
 public class TabTransportFragment extends AbsProgressFragment<Map<String, ArrayList<TransportItem>>> {
@@ -41,7 +41,7 @@ public class TabTransportFragment extends AbsProgressFragment<Map<String, ArrayL
         ExpandableListView listview = (ExpandableListView) v.findViewById(R.id.tab_transport_listview);
 
         if (data == null) {
-            data = new Hashtable<>();
+            data = new SerializableArrayMap<>();
         }
 
         adapter = new TransportAdapter(getActivity(), android.R.layout.simple_expandable_list_item_1, data);
@@ -88,7 +88,7 @@ public class TabTransportFragment extends AbsProgressFragment<Map<String, ArrayL
 
         @Override
         public Map<String, ArrayList<TransportItem>> call() throws Exception {
-            Map<String, ArrayList<TransportItem>> map = new Hashtable<>();
+            Map<String, ArrayList<TransportItem>> map = new SerializableArrayMap<>();
             for (String s : SeoulOApiUtil.Metro.getValues()) {
                 ArrayList<TransportItem> up = new ArrayList<>();
                 up.addAll(mParser.parse(HttpRequest.getBody(getMetroUrl(s, 1))));

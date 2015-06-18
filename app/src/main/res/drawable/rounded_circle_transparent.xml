@@ -5,8 +5,11 @@
         <shape android:shape="oval" >
             <corners android:radius="5dip" />
 
-            <solid android:color="#77333333" />
+            <solid android:color="#204f5f7f" />
 
+            <stroke
+                android:width="1dip"
+                android:color="@android:color/white" />
         </shape>
     </item>
 

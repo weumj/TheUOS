@@ -4,6 +4,7 @@ package com.uoscs09.theuos2.tab.timetable;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.uoscs09.theuos2.common.SerializableArrayMap;
 import com.uoscs09.theuos2.parse.IParser;
 import com.uoscs09.theuos2.tab.subject.SubjectItem2;
 import com.uoscs09.theuos2.util.OApiUtil;
@@ -11,7 +12,6 @@ import com.uoscs09.theuos2.util.OApiUtil;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.Locale;
 
 public class TimeTable implements Parcelable, Serializable, IParser.AfterParsable {
@@ -28,6 +28,10 @@ public class TimeTable implements Parcelable, Serializable, IParser.AfterParsabl
     public int year;
 
     public int maxTime = 0;
+
+    // Key - 과목 이름 hashCode, Value - 과목의 시간 & 장소 정보(SubjectItem2.ClassInformation 클래스)의 리스트
+    SerializableArrayMap<String, ArrayList<SubjectItem2.ClassInformation>> mClassInformationTable;
+
 
     public TimeTable() {
     }
@@ -78,15 +82,12 @@ public class TimeTable implements Parcelable, Serializable, IParser.AfterParsabl
         return 1;
     }
 
-    // Key - 과목 이름 hashCode, Value - 과목의 시간 & 장소 정보(SubjectItem2.ClassInformation 클래스)의 리스트
-    Hashtable<String, ArrayList<SubjectItem2.ClassInformation>> classTimeInformationTable;
-
-    public Hashtable<String, ArrayList<SubjectItem2.ClassInformation>> getClassTimeInformationTable() {
-        if (classTimeInformationTable == null) {
-            classTimeInformationTable = new Hashtable<>();
+    public SerializableArrayMap<String, ArrayList<SubjectItem2.ClassInformation>> getClassTimeInformationTable() {
+        if (mClassInformationTable == null) {
+            mClassInformationTable = new SerializableArrayMap<>();
         }
 
-        if (classTimeInformationTable.size() == 0) {
+        if (mClassInformationTable.size() == 0) {
             setMaxTime();
 
             // 날짜 선택
@@ -104,10 +105,10 @@ public class TimeTable implements Parcelable, Serializable, IParser.AfterParsabl
                     if (subject != null && !subject.isEqualsTo(Subject.EMPTY)) {
                         String key = subject.subjectName;
 
-                        ArrayList<SubjectItem2.ClassInformation> infoList = classTimeInformationTable.get(key);
+                        ArrayList<SubjectItem2.ClassInformation> infoList = mClassInformationTable.get(key);
                         if (infoList == null) {
                             infoList = new ArrayList<>();
-                            classTimeInformationTable.put(key, infoList);
+                            mClassInformationTable.put(key, infoList);
                         }
 
                         SubjectItem2.ClassInformation info;
@@ -157,7 +158,7 @@ public class TimeTable implements Parcelable, Serializable, IParser.AfterParsabl
 
         }
 
-        return classTimeInformationTable;
+        return mClassInformationTable;
     }
 
     public void copyFrom(TimeTable another) {
@@ -204,6 +205,9 @@ public class TimeTable implements Parcelable, Serializable, IParser.AfterParsabl
             }
 
         }
+
+        dest.writeMap(mClassInformationTable);
+
     }
 
     private TimeTable(Parcel source) {
@@ -224,6 +228,14 @@ public class TimeTable implements Parcelable, Serializable, IParser.AfterParsabl
             } else
                 subjects.add(new Subject[SUBJECT_AMOUNT_PER_WEEK]);
         }
+
+        if (mClassInformationTable == null) {
+            mClassInformationTable = new SerializableArrayMap<>();
+
+        } else if(!mClassInformationTable.isEmpty())
+            mClassInformationTable.clear();
+
+        source.readMap(mClassInformationTable, SubjectItem2.ClassInformation.class.getClassLoader());
 
     }
 

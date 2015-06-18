@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.ArrayMap;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
@@ -38,7 +39,6 @@ import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 
 public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceItem>> {
     /**
@@ -58,7 +58,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
 
     private AsyncFragmentJob<ArrayList<AnnounceItem>> mOrdinaryJob, mSearchJob, mMoreJob;
 
-    private Hashtable<String, String> mQueryTable;
+    private ArrayMap<String, String> mQueryTable;
     @AsyncData
     private ArrayList<AnnounceItem> mDataList;
 
@@ -117,7 +117,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
             mDataList = new ArrayList<>();
         }
 
-        mQueryTable = new Hashtable<>();
+        mQueryTable = new ArrayMap<>();
 
         initDialog();
 
@@ -406,7 +406,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
                 url = "http://www.uos.ac.kr/korNotice/list.do";
             }
 
-            String body = HttpRequest.getBodyByPost(url, StringUtil.ENCODE_UTF_8, mQueryTable, StringUtil.ENCODE_UTF_8);
+            String body = HttpRequest.getBodyByPost(getActivity(), url, StringUtil.ENCODE_UTF_8, mQueryTable, StringUtil.ENCODE_UTF_8);
             PARSER.setHowTo(howTo);
             return PARSER.parse(body);
         }

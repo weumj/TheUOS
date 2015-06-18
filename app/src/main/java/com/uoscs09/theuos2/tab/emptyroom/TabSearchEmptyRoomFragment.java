@@ -3,6 +3,7 @@ package com.uoscs09.theuos2.tab.emptyroom;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.util.ArrayMap;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -31,20 +32,19 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.Locale;
 
 /**
  * 빈 강의실을 조회하는 fragment
  */
-public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<EmptyClassRoomItem>> implements View.OnClickListener {
+public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<EmptyClassRoomItem>> {
     @ReleaseWhenDestroy
     private ArrayAdapter<EmptyClassRoomItem> mAdapter;
     @AsyncData
     private ArrayList<EmptyClassRoomItem> mClassRoomList;
     @ReleaseWhenDestroy
     private AlertDialog mSearchDialog;
-    private final Hashtable<String, String> params = new Hashtable<>();
+    private final ArrayMap<String, String> params = new ArrayMap<>(9);
     @ReleaseWhenDestroy
     private Spinner mBuildingSpinner;
     @ReleaseWhenDestroy
@@ -54,11 +54,13 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Em
     @ReleaseWhenDestroy
     private TextView[] textViews;
     @ReleaseWhenDestroy
+    private View[] tabStrips;
+    @ReleaseWhenDestroy
     private View mEmptyView;
 
     private String mTermString;
-    private int sortFocus;
     private boolean isReverse = false;
+    private int mTabSelection = -1;
 
     private static final String BUILDING = "building";
     private static final String URL = "http://wise.uos.ac.kr/uosdoc/api.ApiUcsFromToEmptyRoom.oapi";
@@ -80,6 +82,7 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Em
 
         ViewGroup mTabParent = (ViewGroup) LayoutInflater.from(getActivity()).inflate(R.layout.view_tab_emptyroom_toobar_menu, getToolbarParent(), false);
         textViews = new TextView[4];
+        tabStrips = new View[4];
         int[] ids = {
                 R.id.tab_search_empty_room_text_building_name,
                 R.id.tab_search_empty_room_text_room_no,
@@ -88,10 +91,18 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Em
 
         int i = 0;
         for (int id : ids) {
+            final int j = i;
             View ripple = mTabParent.findViewById(id);
-            ripple.setOnClickListener(this);
+            ripple.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onTabClick(j);
+                }
+            });
+
             textViews[i] = (TextView) ripple.findViewById(android.R.id.title);
-            textViews[i++].setTag(id);
+            tabStrips[i++] = ripple.findViewById(R.id.tab_tab_strip);
+
         }
         registerTabParentView(mTabParent);
 
@@ -202,7 +213,7 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Em
     protected void onPostExecute() {
         super.onPostExecute();
 
-        if(mAdapter.isEmpty())
+        if (mAdapter.isEmpty())
             mEmptyView.setVisibility(View.VISIBLE);
     }
 
@@ -232,29 +243,31 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Em
 
                 for (String bd : buildings) {
                     params.put(BUILDING, bd);
-                    list.addAll(ParseUtil.parseXml(EMPTY_ROOM_PARSER, URL, params));
+                    list.addAll(ParseUtil.parseXml(getActivity(), EMPTY_ROOM_PARSER, URL, params));
                 }
                 return list;
 
             } else {
-                return ParseUtil.parseXml(EMPTY_ROOM_PARSER, URL, params);
+                return ParseUtil.parseXml(getActivity(), EMPTY_ROOM_PARSER, URL, params);
             }
         }
     };
 
-    @Override
-    public void onClick(View v) {
+
+    void onTabClick(int field) {
         if (mClassRoomList.isEmpty()) {
             return;
         }
-        int field;
-        int id = (int) v.getTag();
-        for (TextView tv : textViews) {
-            tv.setCompoundDrawables(null, null, null, null);
-        }
-        isReverse = id == sortFocus && !isReverse;
-        sortFocus = id;
 
+        if (mTabSelection != -1) {
+            textViews[mTabSelection].setCompoundDrawables(null, null, null, null);
+            tabStrips[mTabSelection].setVisibility(View.INVISIBLE);
+        }
+
+        isReverse = field == mTabSelection && !isReverse;
+        mTabSelection = field;
+
+        /*
         switch (id) {
             case R.id.tab_search_empty_room_text_building_name:
                 field = 0;
@@ -271,12 +284,14 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Em
             default:
                 return;
         }
+        */
 
         sendClickEvent("sort", field);
 
 
         textViews[field].setCompoundDrawablesWithIntrinsicBounds(
                 AppUtil.getAttrValue(getActivity(), isReverse ? R.attr.menu_theme_ic_action_navigation_arrow_drop_up : R.attr.menu_theme_ic_action_navigation_arrow_drop_down), 0, 0, 0);
+        tabStrips[field].setVisibility(View.VISIBLE);
 
         mAdapter.sort(EmptyClassRoomItem.getComparator(field, isReverse));
     }

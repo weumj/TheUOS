@@ -85,27 +85,29 @@ public class SubjectItem2 implements Parcelable, IParser.AfterParsable {
      */
     public String sec_permit_yn = "";
 
-
     public String year;
     public String term;
 
     public ArrayList<ClassInformation> classInformationList = new ArrayList<>();
 
-    private String classRoomInformation;
+    private String classRoomInformation = StringUtil.NULL;
 
     public String getClassRoomInformation(Context context) {
-        if (classRoomInformation == null) {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < classInformationList.size(); i++) {
-                sb.append(classInformationList.get(i).toString(context)).append('\n');
-            }
-            if (!classInformationList.isEmpty())
-                sb.deleteCharAt(sb.length() - 1);
-            classRoomInformation = sb.toString();
-
+        if (classRoomInformation.equals(StringUtil.NULL)) {
+            buildClassRoomInfoString(context);
         }
 
         return classRoomInformation;
+    }
+
+    private void buildClassRoomInfoString(Context context){
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < classInformationList.size(); i++) {
+            sb.append(classInformationList.get(i).toString(context)).append('\n');
+        }
+        if (!classInformationList.isEmpty())
+            sb.deleteCharAt(sb.length() - 1);
+        classRoomInformation = sb.toString();
     }
 
     public SubjectItem2() {
@@ -139,6 +141,7 @@ public class SubjectItem2 implements Parcelable, IParser.AfterParsable {
             classInformationList.add(information);
         }
 
+        classRoomInformation = in.readString();
     }
 
     @Override
@@ -170,10 +173,13 @@ public class SubjectItem2 implements Parcelable, IParser.AfterParsable {
         dest.writeString(term);
 
         int size = classInformationList.size();
+        dest.writeInt(size);
         for (int i = 0; i < size; i++) {
             ClassInformation information = classInformationList.get(i);
             dest.writeParcelable(information, information.describeContents());
         }
+
+        dest.writeString(classRoomInformation);
 
     }
 

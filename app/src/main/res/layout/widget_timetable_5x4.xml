@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:background="@drawable/selector_button"
+            android:background="@drawable/selector_button_widget"
             android:contentDescription="@string/action_refresh"
             android:src="@drawable/ic_action_navigation_refresh_white" />
 
