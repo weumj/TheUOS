@@ -32,9 +32,10 @@ import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos2.async.AsyncFragmentJob;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
+import com.uoscs09.theuos2.common.UOSApplication;
 import com.uoscs09.theuos2.customview.NestedListView;
 import com.uoscs09.theuos2.http.HttpRequest;
-import com.uoscs09.theuos2.parse.ParserBook;
+import com.uoscs09.theuos2.parse.ParseBook;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
 import com.uoscs09.theuos2.util.StringUtil;
@@ -93,7 +94,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
     @ReleaseWhenDestroy
     private ActionMode actionMode;
 
-    private static final ParserBook PARSER_BOOK = new ParserBook();
+    private static final ParseBook PARSER_BOOK = new ParseBook();
 
     private static final String BUNDLE_LIST = "BookList";
     private static final String BUNDLE_PAGE = "BookPage";
@@ -119,41 +120,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
             mCurrentPage = 1;
         }
 
-        Context context = getActivity();
-
-        View dialogLayout = View.inflate(context, R.layout.dialog_tab_book_spinners, null);
-        oi = (Spinner) dialogLayout.findViewById(R.id.tab_book_action_spinner_oi);
-        os = (Spinner) dialogLayout.findViewById(R.id.tab_book_action_spinner_os);
-        oi.setSelection(oiSelect);
-        os.setSelection(osSelect);
-
-        DialogInterface.OnClickListener l = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case DialogInterface.BUTTON_POSITIVE:
-                        if (!mBookList.isEmpty()) {
-                            mBookList.clear();
-                            mCurrentPage = 1;
-                            execute();
-                        }
-                        break;
-
-                    case DialogInterface.BUTTON_NEGATIVE:
-                        oi.setSelection(0);
-                        os.setSelection(0);
-                        break;
-                }
-            }
-        };
-        optionDialog = new AlertDialog.Builder(context)
-                .setView(dialogLayout)
-                .setTitle(R.string.tab_book_book_opt)
-                .setMessage(R.string.tab_book_book_opt_sub)
-                .setIconAttribute(R.attr.theme_ic_action_action_help)
-                .setPositiveButton(R.string.confirm, l)
-                .setNegativeButton(android.R.string.cancel, l)
-                .create();
+        initOptionDialog(oiSelect, osSelect);
 
         super.onCreate(savedInstanceState);
     }
@@ -186,7 +153,45 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
         // 리스트 뷰
         NestedListView mListView = (NestedListView) rootView.findViewById(R.id.tab_book_list_search);
 
-        mBookListAdapter = new BookItemListAdapter(getActivity(), mBookList, mLongClickListener);
+        mBookListAdapter = new BookItemListAdapter(getActivity(), mBookList, ((UOSApplication) getActivity().getApplication()).getImageLoader(),
+                new BookItemListAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(final BookItemListAdapter.BookItemViewHolder holder, final View v) {
+                        final BookItem item = holder.getItem();
+                        switch (v.getId()) {
+                            case R.id.tab_booksearch_list_book_image: {
+                                Intent i = AppUtil.setWebPageIntent("http://mlibrary.uos.ac.kr" + item.url);
+                                AppUtil.startActivityWithScaleUp(getActivity(), i, v);
+                                break;
+                            }
+                            case R.id.tab_booksearch_list_book_site:
+                                if (item.bookStateInt == BookItem.BOOK_STATE_ONLINE) {
+                                    Intent i = AppUtil.setWebPageIntent(item.site);
+                                    AppUtil.startActivityWithScaleUp(getActivity(), i, v);
+                                }
+                                break;
+                        }
+                    }
+
+                    @Override
+                    public boolean onItemLongClick(BookItemListAdapter.BookItemViewHolder holder, View v) {
+                        if (actionMode == null)
+                            actionMode = getAppCompatActivity().startSupportActionMode(mActionModeCallback);
+
+                        // View prevView = (View) actionMode.getTag();
+                        // if (prevView != null)
+                        // prevView.setSelected(false);
+                        // v.setSelected(true);
+                        if (actionMode != null) {
+                            actionMode.setTag(v);
+                            actionMode.setTitle(((TextView) v).getText());
+                        }
+                        return true;
+                    }
+
+                }
+        );
+
         mAnimAdapter = new AlphaInAnimationAdapter(mBookListAdapter);
 
         View progressLayout = inflater.inflate(R.layout.view_loading_layout, mListView, false);
@@ -335,6 +340,71 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
         return true;
     }
 
+    void execute() {
+        super.execute(JOB);
+    }
+
+    private final AsyncFragmentJob.Base<ArrayList<BookItem>> JOB = new AsyncFragmentJob.Base<ArrayList<BookItem>>() {
+        @Override
+        public ArrayList<BookItem> call() throws Exception {
+            String OS = getSpinnerItemString(1, os.getSelectedItemPosition());
+            String OI = getSpinnerItemString(0, oi.getSelectedItemPosition());
+
+            StringBuilder sb = new StringBuilder();
+            sb.append(URL).append(mCurrentPage).append("&q=").append(mEncodedQuery);
+            String lastQuery = null;
+
+            String RM = "&websysdiv=tot";
+            boolean check = true;
+            if (!OI.equals(StringUtil.NULL)) {
+                sb.append("&oi=").append(OI);
+                lastQuery = StringUtil.remove(sb.toString(), RM);
+                check = false;
+            }
+            if (!OS.equals(StringUtil.NULL)) {
+                sb.append("&os=").append(OS);
+                lastQuery = sb.toString();
+                if (check) {
+                    lastQuery = StringUtil.remove(lastQuery, RM);
+                    check = false;
+                }
+            }
+
+            if (check) {
+                lastQuery = sb.toString();
+            }
+
+            ArrayList<BookItem> bookList = new ArrayList<>(PARSER_BOOK.parse(HttpRequest.getBody(lastQuery)));
+
+            // 대여 가능 도서만 가져옴
+            if (PrefUtil.getInstance(getActivity()).get(PrefUtil.KEY_CHECK_BORROW, false) && bookList.size() > 0) {
+                bookList = getFilteredList(bookList, getString(R.string.tab_book_not_found));
+            }
+
+            return bookList;
+        }
+
+        @Override
+        public void onResult(ArrayList<BookItem> result) {
+            if (result.size() == 0) {
+                AppUtil.showToast(getActivity(), R.string.search_result_empty, isMenuVisible());
+                isResultEmpty = true;
+
+            } else {
+                AppUtil.showToast(getActivity(), getString(R.string.search_found_amount, result.size()), isMenuVisible());
+                mBookList.addAll(result);
+                mBookListAdapter.notifyDataSetChanged();
+            }
+        }
+
+        @Override
+        public void onPostExcute() {
+            super.onPostExcute();
+            isResultEmpty = false;
+        }
+
+    };
+
     static String getSpinnerItemString(int which, int pos) {
         switch (which) {
             case 0:
@@ -362,85 +432,23 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
         }
     }
 
-    void execute() {
-        super.execute(JOB);
-    }
-
-    private final AsyncFragmentJob.Base<ArrayList<BookItem>> JOB = new AsyncFragmentJob.Base<ArrayList<BookItem>>() {
-        @Override
-        public ArrayList<BookItem> call() throws Exception {
-            String OS = getSpinnerItemString(1, os.getSelectedItemPosition());
-            String OI = getSpinnerItemString(0, oi.getSelectedItemPosition());
-            boolean check = true;
-            StringBuilder sb = new StringBuilder();
-            sb.append(URL).append(mCurrentPage).append("&q=").append(mEncodedQuery);
-            String lastQuery = null;
-
-            String RM = "&websysdiv=tot";
-            if (!OI.equals(StringUtil.NULL)) {
-                sb.append("&oi=").append(OI);
-                lastQuery = StringUtil.remove(sb.toString(), RM);
-                check = false;
-            }
-            if (!OS.equals(StringUtil.NULL)) {
-                sb.append("&os=").append(OS);
-                lastQuery = sb.toString();
-                if (check) {
-                    lastQuery = StringUtil.remove(lastQuery, RM);
-                    check = false;
-                }
-            }
-
-            if (check) {
-                lastQuery = sb.toString();
-            }
-
-            ArrayList<BookItem> bookList = new ArrayList<>(PARSER_BOOK.parse(HttpRequest.getBody(lastQuery)));
-
-            // 대여 가능 도서만 가져옴
-            if (PrefUtil.getInstance(getActivity()).get(PrefUtil.KEY_CHECK_BORROW, false) && bookList.size() > 0) {
-                bookList = getFilteredList(bookList);
-            }
-
-            return bookList;
-        }
-
-        @Override
-        public void onResult(ArrayList<BookItem> result) {
-            if (result.size() == 0) {
-                AppUtil.showToast(getActivity(), R.string.search_result_empty, isMenuVisible());
-                isResultEmpty = true;
-
-            } else {
-                AppUtil.showToast(getActivity(), getString(R.string.search_found_amount, result.size()), isMenuVisible());
-                mBookList.addAll(result);
-                mBookListAdapter.notifyDataSetChanged();
-            }
-        }
-
-        @Override
-        public void onPostExcute() {
-            super.onPostExcute();
-            isResultEmpty = false;
-        }
-    };
-
-    ArrayList<BookItem> getFilteredList(ArrayList<BookItem> originalList) {
+    static ArrayList<BookItem> getFilteredList(ArrayList<BookItem> originalList, String emptyMsg) {
         ArrayList<BookItem> newList = new ArrayList<>();
-        BookItem item;
-        final String cando = "가능";
-        int size = originalList.size();
-        for (int i = 0; i < size; i++) {
-            item = originalList.get(i);
-            if (item.bookState.contains(cando)) {
+
+        final int N = originalList.size();
+        for (int i = 0; i < N; i++) {
+            BookItem item = originalList.get(i);
+            if (item.isBookAvailable()) {
                 newList.add(item);
             }
         }
+
         if (newList.size() == 0) {
-            item = new BookItem();
-            item.bookInfo = getString(R.string.tab_book_not_found);
+            BookItem item = new BookItem();
+            item.bookInfo = emptyMsg;
             newList.add(item);
         }
+
         return newList;
     }
 
@@ -505,27 +513,41 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
         startActivity(intent);
     }
 
-    /**
-     * listView 내부의 TextView 에서 호출 됨
-     */
-    private final View.OnLongClickListener mLongClickListener = new View.OnLongClickListener() {
+    private void initOptionDialog(int oiSelect , int osSelect ){
+        View dialogLayout = View.inflate(getActivity(), R.layout.dialog_tab_book_spinners, null);
+        oi = (Spinner) dialogLayout.findViewById(R.id.tab_book_action_spinner_oi);
+        os = (Spinner) dialogLayout.findViewById(R.id.tab_book_action_spinner_os);
+        oi.setSelection(oiSelect);
+        os.setSelection(osSelect);
 
-        @Override
-        public boolean onLongClick(View v) {
-            if (actionMode == null)
-                actionMode = getAppCompatActivity().startSupportActionMode(mActionModeCallback);
+        DialogInterface.OnClickListener l = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case DialogInterface.BUTTON_POSITIVE:
+                        if (!mBookList.isEmpty()) {
+                            mBookList.clear();
+                            mCurrentPage = 1;
+                            execute();
+                        }
+                        break;
 
-            // View prevView = (View) actionMode.getTag();
-            // if (prevView != null)
-            // prevView.setSelected(false);
-            // v.setSelected(true);
-            if (actionMode != null) {
-                actionMode.setTag(v);
-                actionMode.setTitle(((TextView) v).getText());
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        oi.setSelection(0);
+                        os.setSelection(0);
+                        break;
+                }
             }
-            return true;
-        }
-    };
+        };
+        optionDialog = new AlertDialog.Builder(getActivity())
+                .setView(dialogLayout)
+                .setTitle(R.string.tab_book_book_opt)
+                .setMessage(R.string.tab_book_book_opt_sub)
+                .setIconAttribute(R.attr.theme_ic_action_action_help)
+                .setPositiveButton(R.string.confirm, l)
+                .setNegativeButton(android.R.string.cancel, l)
+                .create();
+    }
 
     @Override
     protected boolean putAsyncData(String key, ArrayList<BookItem> obj) {
@@ -555,4 +577,5 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
             return false;
 
     }
+
 }

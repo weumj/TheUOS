@@ -225,7 +225,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         }
 
         @Override
-        public SettingsFragment.ViewHolder getViewHolder(View convertView) {
+        public SettingsFragment.ViewHolder onCreateViewHolder(View convertView, int viewType) {
             return new SettingsFragment.ViewHolder(convertView);
         }
     }

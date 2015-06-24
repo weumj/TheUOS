@@ -1,7 +1,10 @@
 package com.uoscs09.theuos2.util;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.uoscs09.theuos2.parse.XmlParser;
+import com.uoscs09.theuos2.tab.schedule.UnivScheduleItem;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -9,6 +12,21 @@ import java.util.Locale;
  * WISE OPEN API 관련 변수와 메소드를 가지는 클래스
  */
 public class OApiUtil {
+
+    //********** Parser *******************
+
+    public static XmlParser<ArrayList<UnivScheduleItem>> getUnivScheduleParser() {
+        return XmlParser.newReflectionParser(UnivScheduleItem.class, "root", "schList", "list");
+    }
+
+    /**
+     * for CoursePlan, EmptyClassRoomItem, SubjectItem2, SubjectInfoItem,
+     */
+    public static <T> XmlParser<ArrayList<T>> getParser(Class<? extends T> clazz) {
+        return XmlParser.newReflectionParser(clazz, "root", "mainlist", "list");
+    }
+
+    //********** Parser end *******************
 
     private static String sThisYear;
     private static String[] sYears;
@@ -23,8 +41,8 @@ public class OApiUtil {
     public static final String URL_API_MAIN_DB = "http://wise.uos.ac.kr/uosdoc/api.ApiApiMainBd.oapi";
 
     public enum Semester {
-        SPRING(10, "1학기", "Spring"), AUTUMN(20 ,"2학기", "Autumn"),
-        SUMMER(11, "여름계절학기" , "Summer"), WINTER(21, "겨울계절학기", "Winter");
+        SPRING(10, "1학기", "Spring"), AUTUMN(20, "2학기", "Autumn"),
+        SUMMER(11, "여름계절학기", "Summer"), WINTER(21, "겨울계절학기", "Winter");
 
         public final String code;
         public final int intCode;

@@ -89,6 +89,10 @@ public class PrefUtil {
      * 식단표를 웹에서 받아온 시각, {@code int}
      */
     public static final String KEY_REST_DATE_TIME = "REST_DATE_TIME";
+    /** 학사일정을 가져온 달. {@code int}, 0~11 : 정상, -1 : 없음*/
+    public static final String KEY_SCHEDULE_FETCH_MONTH = "UNIV_SCHEDULE_FETCH_MONTH";
+    public static final String KEY_REST_WEEK_FETCH_TIME = "REST_WEEK_FETCH_TIME";
+
     private static PrefUtil instance;
     private SharedPreferences pref;
 
@@ -203,8 +207,8 @@ public class PrefUtil {
         return getInstance(context).get(KEY_TXT_SAVE_PATH, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + "/");
     }
 
-    public static String getDefaultPath(final String key){
-        switch (key){
+    public static String getDefaultPath(final String key) {
+        switch (key) {
             default:
             case KEY_IMAGE_SAVE_PATH:
                 return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();

@@ -9,8 +9,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.util.ArrayMap;
 import android.support.v7.app.AlertDialog;
@@ -28,8 +26,8 @@ import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.common.PieProgressDrawable;
 import com.uoscs09.theuos2.common.SerializableArrayMap;
-import com.uoscs09.theuos2.parse.ParseSubjectList2;
 import com.uoscs09.theuos2.parse.ParseUtil;
+import com.uoscs09.theuos2.parse.XmlParser;
 import com.uoscs09.theuos2.tab.map.SubMapActivity;
 import com.uoscs09.theuos2.tab.subject.CoursePlanDialogFragment;
 import com.uoscs09.theuos2.tab.subject.SubjectItem2;
@@ -47,7 +45,7 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
     private static final String URL = "http://wise.uos.ac.kr/uosdoc/api.ApiApiSubjectList.oapi";
 
     private final ArrayMap<String, String> params;
-    private final ParseSubjectList2 mParser = new ParseSubjectList2();
+    private static final XmlParser<ArrayList<SubjectInfoItem>> SUBJECT_INFO_PARSER = OApiUtil.getParser(SubjectInfoItem.class);
 
     private TextView mTimeTableDialogTitle;
     private Dialog mProgress;
@@ -233,7 +231,7 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
             intent.putExtra("building", mSubject.univBuilding.code);
 
             TrackerUtil.getInstance(this).sendClickEvent(TAG, "map");
-            ActivityCompat.startActivity(getActivity(), intent, ActivityOptionsCompat.makeScaleUpAnimation(v, 0, 0, v.getWidth(), v.getHeight()).toBundle());
+            AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
             dismiss();
 
         } else {
@@ -254,8 +252,9 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
         }
     }
 
+
     void setOrCancelAlarm(Subject subject, int spinnerSelection) {
-        TimetableAlarmUtil.startService(getActivity(), subject, spinnerSelection);
+        TimetableAlarmUtil.setOrCancelAlarm(getActivity(), subject, spinnerSelection);
     }
 
 
@@ -301,7 +300,7 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
             params.put(OApiUtil.YEAR, Integer.toString(mTimeTable.year));
             params.put(OApiUtil.TERM, mTimeTable.semesterCode.code);
 
-            return ParseUtil.parseXml(getActivity(), mParser, URL, params);
+            return ParseUtil.parseXml(getActivity(), SUBJECT_INFO_PARSER, URL, params);
 
         }
 
@@ -351,7 +350,7 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
         }
 
         @Override
-        public SubjectDetailDialogFragment.ViewHolder getViewHolder(View convertView) {
+        public SubjectDetailDialogFragment.ViewHolder onCreateViewHolder(View convertView, int viewType) {
             return new SubjectDetailDialogFragment.ViewHolder(convertView);
         }
     }

@@ -8,8 +8,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.ArrayMap;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
@@ -250,7 +248,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
             intent.putExtra(ITEM, mAnnounceAdapter.getItem(pos));
             intent.putExtra(PAGE_NUM, mSpinnerSelection);
 
-            ActivityCompat.startActivity(activity, intent, ActivityOptionsCompat.makeScaleUpAnimation(view, 0, 0, view.getWidth(), view.getHeight()).toBundle());
+            AppUtil.startActivityWithScaleUp(activity, intent, view);
         }
     };
 

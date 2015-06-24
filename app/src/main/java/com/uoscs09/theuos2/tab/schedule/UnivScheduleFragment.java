@@ -32,11 +32,14 @@ import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.common.PieProgressDrawable;
-import com.uoscs09.theuos2.parse.ParseUnivSchedule;
 import com.uoscs09.theuos2.parse.ParseUtil;
+import com.uoscs09.theuos2.parse.XmlParser;
 import com.uoscs09.theuos2.util.AppUtil;
+import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
+import com.uoscs09.theuos2.util.PrefUtil;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -51,8 +54,8 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivScheduleItem>> {
     private static final String URL = OApiUtil.URL_API_MAIN_DB + '?' + OApiUtil.API_KEY + '=' + OApiUtil.UOS_API_KEY;
-
-    private static final ParseUnivSchedule UNIV_SCHEDULE_PARSER = new ParseUnivSchedule();
+    private static final String FILE_NAME = "file_univ_schedule";
+    private static final XmlParser<ArrayList<UnivScheduleItem>> UNIV_SCHEDULE_PARSER = OApiUtil.getUnivScheduleParser();
 
     private ArrayList<UnivScheduleItem> mList = new ArrayList<>();
 
@@ -224,10 +227,42 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
         });
     }
 
+    static void writeFile(Context context, ArrayList<UnivScheduleItem> object) throws IOException {
+        IOUtil.writeObjectToFile(context, FILE_NAME, object);
+    }
+
+    static ArrayList<UnivScheduleItem> readFile(Context context) throws IOException, ClassNotFoundException {
+        return IOUtil.readFromFile(context, FILE_NAME);
+    }
+
+    static ArrayList<UnivScheduleItem> readFromInternet(Context context) throws Exception {
+
+        ArrayList<UnivScheduleItem> result = ParseUtil.parseXml(context, UNIV_SCHEDULE_PARSER, URL);
+        writeFile(context, result);
+
+        PrefUtil pref = PrefUtil.getInstance(context);
+        pref.put(PrefUtil.KEY_SCHEDULE_FETCH_MONTH, result.get(0).getDate(true).get(Calendar.MONTH));
+
+        return result;
+    }
+
     private final AsyncFragmentJob.Base<ArrayList<UnivScheduleItem>> JOB = new AsyncFragmentJob.Base<ArrayList<UnivScheduleItem>>() {
         @Override
         public ArrayList<UnivScheduleItem> call() throws Exception {
-            return ParseUtil.parseXml(getActivity(), UNIV_SCHEDULE_PARSER, URL);
+            Context context = getActivity();
+            PrefUtil pref = PrefUtil.getInstance(context);
+
+            // 이번 달의 일정이 기록된 파일이 있으면, 인터넷에서 가져오지 않고 그 파일을 읽음
+            if (pref.get(PrefUtil.KEY_SCHEDULE_FETCH_MONTH, -1) == Calendar.getInstance().get(Calendar.MONTH)) {
+                ArrayList<UnivScheduleItem> result = readFile(context);
+
+                if (result != null)
+                    return result;
+
+            }
+
+            return readFromInternet(context);
+
         }
 
         @Override
@@ -241,7 +276,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
 
     };
 
-    private void execute(){
+    private void execute() {
         super.execute(JOB);
     }
 
@@ -301,7 +336,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
         }
 
         @Override
-        public UnivScheduleFragment.ViewHolder getViewHolder(View convertView) {
+        public UnivScheduleFragment.ViewHolder onCreateViewHolder(View convertView, int viewType) {
             return new UnivScheduleFragment.ViewHolder(convertView);
         }
 

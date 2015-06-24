@@ -71,10 +71,6 @@
         <activity android:name="com.uoscs09.theuos2.TestActivity" />
 
         <service
-            android:name=".tab.timetable.TimeTableAlarmService"
-            android:label="@string/tab_timetable_callback_noti_service" />
-
-        <service
             android:name="com.uoscs09.theuos2.appwidget.timetable.Widget5x4ListService"
             android:exported="true"
             android:label="@string/widget_timetable"
@@ -98,12 +94,19 @@
             android:label="@string/widget_library_seat"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
+        <!--
         <service
             android:name="com.uoscs09.theuos2.tab.announce.ServiceForAnnounce"
             android:label="@string/setting_announce_noti" />
+        -->
 
-        <receiver android:name="com.uoscs09.theuos2.service.BReceiver">
+        <receiver
+            android:name=".tab.timetable.TimeTableNotificationReceiver"
+            android:exported="false"
+            android:enabled="false">
             <intent-filter>
+                <action android:name="com.uoscs09.theuos2.tab.timetable.set_alarm" />
+
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.PACKAGE_ADDED" />
                 <action android:name="android.intent.action.PACKAGE_REMOVED" />
@@ -114,16 +117,9 @@
         </receiver>
 
         <receiver
-            android:name="com.uoscs09.theuos2.tab.timetable.TimeTableNotiReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.uoscs09.theuos2.tab.timetable.set_alarm" />
-            </intent-filter>
-        </receiver>
-
-        <receiver
             android:name="com.uoscs09.theuos2.appwidget.timetable.TimeTableWidget4x4"
-            android:label="@string/widget_timetable4x4">
+            android:label="@string/widget_timetable4x4"
+            android:exported="false">
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_conf_timetable_4x4" />
@@ -138,7 +134,8 @@
 
         <receiver
             android:name="com.uoscs09.theuos2.appwidget.timetable.TimeTableWidget5x4"
-            android:label="@string/widget_timetable5x4">
+            android:label="@string/widget_timetable5x4"
+            android:exported="false">
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_conf_timetable_5x4" />
@@ -153,7 +150,8 @@
 
         <receiver
             android:name="com.uoscs09.theuos2.appwidget.restaurant.RestWidget"
-            android:label="@string/widget_rest_desc">
+            android:label="@string/widget_rest_desc"
+            android:exported="false">
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_conf_rest" />
@@ -169,7 +167,8 @@
 
         <receiver
             android:name="com.uoscs09.theuos2.appwidget.libraryseat.LibrarySeatWidget"
-            android:label="@string/widget_library_seat_desc">
+            android:label="@string/widget_library_seat_desc"
+            android:exported="false">
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_conf_library_seat" />

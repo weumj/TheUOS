@@ -22,8 +22,8 @@ import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos2.async.AsyncFragmentJob;
 import com.uoscs09.theuos2.base.AbsAsyncFragment;
 import com.uoscs09.theuos2.http.HttpRequest;
-import com.uoscs09.theuos2.parse.ParserSubjectList;
-import com.uoscs09.theuos2.parse.ParserSubjectScore;
+import com.uoscs09.theuos2.parse.ParseSubjectList;
+import com.uoscs09.theuos2.parse.ParseSubjectScore;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.StringUtil;
@@ -45,8 +45,8 @@ public class ScoreFragment extends AbsAsyncFragment<ArrayList<ScoreItem>> {
     @ReleaseWhenDestroy
     private ExpandableListView listView;
 
-    private final ParserSubjectList mSubjectListParser = new ParserSubjectList();
-    private final ParserSubjectScore mParser = new ParserSubjectScore();
+    private final ParseSubjectList mSubjectListParser = new ParseSubjectList();
+    private final ParseSubjectScore mParser = new ParseSubjectScore();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

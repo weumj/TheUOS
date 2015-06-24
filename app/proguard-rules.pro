@@ -52,6 +52,10 @@
      *;
 }
 
+-keepclassmembers @com.uoscs09.theuos2.annotation.KeepName class * {
+   public <init>(...);
+}
+
 -keepclassmembers class * implements java.io.Serializable {
     private static final java.io.ObjectStreamField[] serialPersistentFields;
     private static final long serialVersionUID;

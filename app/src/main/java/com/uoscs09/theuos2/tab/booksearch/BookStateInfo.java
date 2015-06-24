@@ -3,42 +3,87 @@ package com.uoscs09.theuos2.tab.booksearch;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class BookStateInfo implements Parcelable {
-	/** bookCode, placeName, state */
-	public String[] infoArray = new String[3];
+import com.uoscs09.theuos2.annotation.KeepName;
+import com.uoscs09.theuos2.parse.IParser;
 
-	public BookStateInfo() {
-	}
+@KeepName
+public class BookStateInfo implements Parcelable, IParser.AfterParsable{
 
-	public BookStateInfo(String placeName, String state, String bookCode) {
-		infoArray[0] = bookCode;
-		infoArray[1] = placeName;
-		infoArray[2] = state;
-	}
 
-	BookStateInfo(Parcel source) {
-		source.readStringArray(infoArray);
-	}
+    /** 도서 코드*/
+    public String call_no;
+    /** 장소*/
+    public String place_name;
+    /** 상태*/
+    public String book_state;
+    int bookStateInt;
 
-	@Override
-	public int describeContents() {
-		return 0;
-	}
+    // 반납일
+    //public String return_plan_date;
+    // 예약가능여부
+    //public String reservation; // Y or N
+    // 예약 횟수
+    //public String reservation_count;
+    // 예약 가능 횟수
+    //public String can_reserve_count;
 
-	@Override
-	public void writeToParcel(Parcel dest, int flags) {
-		dest.writeStringArray(infoArray);
-	}
+    public BookStateInfo() {
+    }
 
-	public static final Parcelable.Creator<BookStateInfo> CREATOR = new Parcelable.Creator<BookStateInfo>() {
-		@Override
-		public BookStateInfo[] newArray(int size) {
-			return new BookStateInfo[size];
-		}
+    @Override
+    public void afterParsing() {
+        /*switch (book_state){
+            case "대출가능":
+                bookStateInt = BookItem.BOOK_STATE_AVAILABLE;
+                break;
 
-		@Override
-		public BookStateInfo createFromParcel(Parcel source) {
-			return new BookStateInfo(source);
-		}
-	};
+            case ""
+        }*/
+        bookStateInt = book_state.contains("가능")? BookItem.BOOK_STATE_AVAILABLE : BookItem.BOOK_STATE_NOT_AVAILABLE;
+    }
+
+    public boolean isBookAvailable(){
+        return (bookStateInt & BookItem.BOOK_STATE_AVAILABLE) == BookItem.BOOK_STATE_AVAILABLE;
+    }
+
+    /*
+    public BookStateInfo(String placeName, String state, String bookCode) {
+        infoArray[0] = bookCode;
+        infoArray[1] = placeName;
+        infoArray[2] = state;
+    }
+    */
+
+    BookStateInfo(Parcel source) {
+        call_no =  source.readString();
+        place_name = source.readString();
+        book_state = source.readString();
+        bookStateInt = source.readInt();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(call_no);
+        dest.writeString(place_name);
+        dest.writeString(book_state);
+        dest.writeInt(bookStateInt);
+    }
+
+    public static final Parcelable.Creator<BookStateInfo> CREATOR = new Parcelable.Creator<BookStateInfo>() {
+        @Override
+        public BookStateInfo[] newArray(int size) {
+            return new BookStateInfo[size];
+        }
+
+        @Override
+        public BookStateInfo createFromParcel(Parcel source) {
+            return new BookStateInfo(source);
+        }
+    };
+
 }

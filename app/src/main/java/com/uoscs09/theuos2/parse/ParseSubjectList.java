@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 @Deprecated
-public class ParserSubjectList extends OApiParser<ArrayList<String>, ArrayList<String>> {
+public class ParseSubjectList extends OApiParser<ArrayList<String>, ArrayList<String>> {
     private final String[] PTN = {"subject_no", "subject_nm", "class_div"};
 
     @Override

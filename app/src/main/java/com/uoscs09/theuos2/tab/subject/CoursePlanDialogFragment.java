@@ -10,8 +10,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.util.ArrayMap;
 import android.support.v7.app.AlertDialog;
@@ -31,8 +29,8 @@ import com.uoscs09.theuos2.async.AsyncJob;
 import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.async.ListViewBitmapWriteTask;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
-import com.uoscs09.theuos2.parse.ParseCoursePlan;
 import com.uoscs09.theuos2.parse.ParseUtil;
+import com.uoscs09.theuos2.parse.XmlParser;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
@@ -65,7 +63,7 @@ public class CoursePlanDialogFragment extends DialogFragment {
     private boolean isDataInvalid = false;
     private SubjectItem2 mSubject;
 
-    private static final ParseCoursePlan COURSE_PLAN_PARSER = new ParseCoursePlan();
+    private static final XmlParser<ArrayList<CoursePlanItem>> COURSE_PLAN_PARSER = OApiUtil.getParser(CoursePlanItem.class);
 
     private AsyncTask<Void, Void, ArrayList<CoursePlanItem>> mAsyncTask;
 
@@ -273,7 +271,7 @@ public class CoursePlanDialogFragment extends DialogFragment {
                                 Intent intent = new Intent();
                                 intent.setAction(Intent.ACTION_VIEW);
                                 intent.setDataAndType(Uri.parse("file://" + result), "image/*");
-                                ActivityCompat.startActivity(getActivity(), intent, ActivityOptionsCompat.makeScaleUpAnimation(v, 0, 0, v.getWidth(), v.getHeight()).toBundle());
+                                AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
                             }
                         })
                         .show();
@@ -304,7 +302,7 @@ public class CoursePlanDialogFragment extends DialogFragment {
                                 Intent intent = new Intent();
                                 intent.setAction(Intent.ACTION_VIEW);
                                 intent.setDataAndType(Uri.parse("file://" + result), "text/*");
-                                ActivityCompat.startActivity(getActivity(), intent, ActivityOptionsCompat.makeScaleUpAnimation(v, 0, 0, v.getWidth(), v.getHeight()).toBundle());
+                                AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
                             }
                         })
                         .show();
@@ -442,7 +440,7 @@ public class CoursePlanDialogFragment extends DialogFragment {
         }
 
         @Override
-        public ViewHolder getViewHolder(View convertView) {
+        public ViewHolder onCreateViewHolder(View convertView, int viewType) {
             return new ViewHolder(convertView);
         }
 

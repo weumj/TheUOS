@@ -21,8 +21,8 @@ import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos2.async.AsyncFragmentJob;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.customview.NestedListView;
-import com.uoscs09.theuos2.parse.ParseEmptyRoom2;
 import com.uoscs09.theuos2.parse.ParseUtil;
+import com.uoscs09.theuos2.parse.XmlParser;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.OApiUtil.Semester;
@@ -65,7 +65,7 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Em
     private static final String BUILDING = "building";
     private static final String URL = "http://wise.uos.ac.kr/uosdoc/api.ApiUcsFromToEmptyRoom.oapi";
 
-    private static final ParseEmptyRoom2 EMPTY_ROOM_PARSER = new ParseEmptyRoom2();
+    private static final XmlParser<ArrayList<EmptyClassRoomItem>> EMPTY_ROOM_PARSER = OApiUtil.getParser(EmptyClassRoomItem.class);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

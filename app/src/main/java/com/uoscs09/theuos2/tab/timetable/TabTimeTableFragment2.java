@@ -10,8 +10,6 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.SimpleArrayMap;
 import android.support.v7.app.AlertDialog;
 import android.text.method.TextKeyListener;
@@ -279,7 +277,7 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
                                 Intent intent = new Intent();
                                 intent.setAction(Intent.ACTION_VIEW);
                                 intent.setDataAndType(Uri.parse("file://" + result), "image/*");
-                                ActivityCompat.startActivity(getActivity(), intent, ActivityOptionsCompat.makeScaleUpAnimation(v, 0, 0, v.getWidth(), v.getHeight()).toBundle());
+                                AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
                             }
                         })
                         .show();

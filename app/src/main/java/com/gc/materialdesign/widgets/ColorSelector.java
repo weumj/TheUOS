@@ -18,7 +18,7 @@ import com.gc.materialdesign.views.Slider;
 import com.gc.materialdesign.views.Slider.OnValueChangedListener;
 import com.uoscs09.theuos2.R;
 
-public class ColorSelector extends android.app.Dialog implements OnValueChangedListener{
+public class ColorSelector extends android.app.Dialog implements OnValueChangedListener {
 
     int color = Color.BLACK;
     Context context;
@@ -29,22 +29,21 @@ public class ColorSelector extends android.app.Dialog implements OnValueChangedL
     Slider red, green, blue;
 
 
-    public ColorSelector(Context context,Integer color, OnColorSelectedListener onColorSelectedListener) {
+    public ColorSelector(Context context, Integer color, OnColorSelectedListener onColorSelectedListener) {
         super(context, android.R.style.Theme_Translucent);
         this.context = context;
         this.onColorSelectedListener = onColorSelectedListener;
-        if(color != null)
+        if (color != null)
             this.color = color;
         setOnDismissListener(new OnDismissListener() {
 
             @Override
             public void onDismiss(DialogInterface dialog) {
-                if(ColorSelector.this.onColorSelectedListener != null)
+                if (ColorSelector.this.onColorSelectedListener != null)
                     ColorSelector.this.onColorSelectedListener.onColorSelected(ColorSelector.this.color);
             }
         });
     }
-
 
 
     @Override
@@ -59,7 +58,7 @@ public class ColorSelector extends android.app.Dialog implements OnValueChangedL
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (event.getX() < view.getLeft() || event.getX() >view.getRight()
+                if (event.getX() < view.getLeft() || event.getX() > view.getRight()
                         || event.getY() > view.getBottom() || event.getY() < view.getTop()) {
                     dismiss();
                 }
@@ -88,7 +87,8 @@ public class ColorSelector extends android.app.Dialog implements OnValueChangedL
 
         int r = (this.color >> 16) & 0xFF;
         int g = (this.color >> 8) & 0xFF;
-        int b = (this.color >> 0) & 0xFF;
+        //int b = (this.color >> 0) & 0xFF;
+        int b = this.color & 0xFF;
 
         red.setValue(r);
         green.setValue(g);
@@ -114,7 +114,7 @@ public class ColorSelector extends android.app.Dialog implements OnValueChangedL
 
 
     // Event that execute when color selector is closed
-    public interface OnColorSelectedListener{
+    public interface OnColorSelectedListener {
         void onColorSelected(int color);
     }
 

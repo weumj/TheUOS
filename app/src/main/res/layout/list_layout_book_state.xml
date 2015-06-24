@@ -1,45 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingLeft="5dp"
-    android:paddingBottom="5dp">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_marginRight="50dp"
-        android:layout_height="1dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_marginBottom="2dp"
-        android:background="?colorAccent" />
+    android:orientation="vertical"
+    android:paddingBottom="4dp"
+    android:paddingLeft="4dp"
+    android:paddingRight="4dp">
 
     <TextView
         android:id="@+id/tab_booksearch_bookstate_location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="2dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="5dp" />
+        android:layout_marginRight="4dp"
+        android:layout_marginTop="4dp"
+        android:drawablePadding="6dp" />
 
-
-    <TextView
-        android:id="@+id/tab_booksearch_bookstate_code"
-        android:layout_width="wrap_content"
-        android:paddingLeft="2dp"
+    <LinearLayout
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@id/tab_booksearch_bookstate_location"
-        android:layout_below="@id/tab_booksearch_bookstate_location"
-        android:layout_marginTop="5dp" />
+        android:layout_marginLeft="14dp"
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/tab_booksearch_bookstate_state"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingLeft="2dp"
-        android:layout_alignBaseline="@id/tab_booksearch_bookstate_code"
-        android:layout_marginLeft="20dp"
-        android:layout_toRightOf="@id/tab_booksearch_bookstate_code" />
+        <TextView
+            android:id="@+id/tab_booksearch_bookstate_code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
-</RelativeLayout>
+        <TextView
+            android:id="@+id/tab_booksearch_bookstate_state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:paddingLeft="2dp" />
+    </LinearLayout>
+</LinearLayout>

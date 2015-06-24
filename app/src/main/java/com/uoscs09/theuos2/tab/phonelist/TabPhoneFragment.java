@@ -29,7 +29,7 @@ import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos2.async.AsyncFragmentJob;
 import com.uoscs09.theuos2.base.AbsAsyncFragment;
 import com.uoscs09.theuos2.http.HttpRequest;
-import com.uoscs09.theuos2.parse.ParserPhone;
+import com.uoscs09.theuos2.parse.ParsePhone;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 
@@ -48,7 +48,7 @@ public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>> {
     @AsyncData
     private List<PhoneItem> mPhoneList;
 
-    private final ParserPhone mParser = new ParserPhone();
+    private final ParsePhone mParser = new ParsePhone();
 
     private boolean mIsInit;
 
@@ -177,13 +177,13 @@ public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>> {
                     try {
                         body = HttpRequest.getBody(urlList.get(i));
                         if (i < 7) {
-                            howTo = ParserPhone.SUBJECT;
+                            howTo = ParsePhone.SUBJECT;
                         } else if (i < 8) {
-                            howTo = ParserPhone.CULTURE;
+                            howTo = ParsePhone.CULTURE;
                         } else if (i < 12) {
-                            howTo = ParserPhone.BOTTOM;
+                            howTo = ParsePhone.BOTTOM;
                         } else {
-                            howTo = ParserPhone.BODY;
+                            howTo = ParsePhone.BODY;
                         }
 
                         mParser.setHowTo(howTo);

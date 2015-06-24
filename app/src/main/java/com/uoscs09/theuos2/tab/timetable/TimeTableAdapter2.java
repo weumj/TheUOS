@@ -16,7 +16,7 @@ import com.uoscs09.theuos2.util.StringUtil;
 import java.util.Locale;
 
 
-public class TimeTableAdapter2 extends AbsArrayAdapter<Subject[], TimeTableAdapter2.TimeTableViewHolder> {
+class TimeTableAdapter2 extends AbsArrayAdapter<Subject[], TimeTableAdapter2.TimeTableViewHolder> {
     private final SerializableArrayMap<String, Integer> colorTable;
     private OnItemClickListener onItemClickListener;
     private final SparseBooleanArray mClickedArray = new SparseBooleanArray(15);
@@ -48,7 +48,7 @@ public class TimeTableAdapter2 extends AbsArrayAdapter<Subject[], TimeTableAdapt
     }
 
     @Override
-    public TimeTableViewHolder getViewHolder(View convertView) {
+    public TimeTableViewHolder onCreateViewHolder(View convertView, int viewType) {
         return new TimeTableViewHolder(convertView);
     }
 
@@ -57,8 +57,8 @@ public class TimeTableAdapter2 extends AbsArrayAdapter<Subject[], TimeTableAdapt
     }
 
 
-    public static interface OnItemClickListener {
-        public void onItemClick(TimeTableViewHolder vh, View v, Subject subject);
+    public interface OnItemClickListener {
+        void onItemClick(TimeTableViewHolder vh, View v, Subject subject);
     }
 
 

@@ -18,6 +18,7 @@ public class SubAnnounceWebActivity extends WebViewActivity {
     private String url;
     private AnnounceItem mItem;
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

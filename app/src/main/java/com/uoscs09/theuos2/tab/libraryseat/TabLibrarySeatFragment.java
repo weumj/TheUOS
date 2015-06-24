@@ -5,8 +5,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
@@ -29,7 +27,7 @@ import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.base.AbsAsyncFragment;
 import com.uoscs09.theuos2.base.OnItemClickListener;
 import com.uoscs09.theuos2.http.HttpRequest;
-import com.uoscs09.theuos2.parse.ParserSeat;
+import com.uoscs09.theuos2.parse.ParseSeat;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
 import com.uoscs09.theuos2.util.StringUtil;
@@ -86,7 +84,7 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
 
     private AsyncTask<Void, Void, ArrayList<SeatItem>> mAsyncTask;
 
-    private static final ParserSeat LIBRARY_SEAR_PARSER = new ParserSeat();
+    private static final ParseSeat LIBRARY_SEAR_PARSER = new ParseSeat();
 
     /**
      * 중앙 도서관 좌석 정보 확인 페이지
@@ -157,7 +155,7 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
 
                 // tracking 은 SubSeatWebActivity 에서 함.
 
-                ActivityCompat.startActivity(getActivity(), intent, ActivityOptionsCompat.makeScaleUpAnimation(v, 0, 0, v.getWidth(), v.getHeight()).toBundle());
+                AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
             }
         });
 

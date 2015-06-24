@@ -14,7 +14,7 @@ import com.uoscs09.theuos2.util.AppUtil;
 
 import java.util.List;
 
-public class SeatListAdapter extends ListRecyclerAdapter<SeatItem, SeatListAdapter.ViewHolder> {
+class SeatListAdapter extends ListRecyclerAdapter<SeatItem, SeatListAdapter.ViewHolder> {
     private final int textColor;
 
     public SeatListAdapter(Context context, List<SeatItem> list) {
@@ -27,7 +27,7 @@ public class SeatListAdapter extends ListRecyclerAdapter<SeatItem, SeatListAdapt
         return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.list_layout_seat, parent, false), textColor);
     }
 
-    public static class ViewHolder extends ListRecyclerAdapter.ViewHolder<SeatItem> {
+    static class ViewHolder extends ListRecyclerAdapter.ViewHolder<SeatItem> {
         final TextView roomName;
         final View ripple;
         final PieProgressDrawable drawable = new PieProgressDrawable();

@@ -8,10 +8,12 @@ import android.provider.CalendarContract.Events;
 import com.uoscs09.theuos2.annotation.KeepName;
 import com.uoscs09.theuos2.parse.IParser;
 
+import java.io.Serializable;
 import java.util.Calendar;
 
 @KeepName
-public class UnivScheduleItem implements Parcelable, IParser.AfterParsable {
+public class UnivScheduleItem implements Serializable, Parcelable, IParser.AfterParsable {
+    private static final long serialVersionUID = 7439069212336214033L;
     public String content, sch_date, year, month;
 
     /**
@@ -35,7 +37,7 @@ public class UnivScheduleItem implements Parcelable, IParser.AfterParsable {
             dateEnd = new ScheduleDate(array[1]);
 
         } else if (sch_date.contains(" (")) {
-            dateStart = dateEnd =new ScheduleDate(sch_date);
+            dateStart = dateEnd = new ScheduleDate(sch_date);
         }
     }
 
@@ -49,7 +51,7 @@ public class UnivScheduleItem implements Parcelable, IParser.AfterParsable {
 
     }
 
-    public ContentValues toContentValues(long id){
+    public ContentValues toContentValues(long id) {
         ContentValues cv = new ContentValues();
         cv.put(Events.CALENDAR_ID, id);
         cv.put(Events.TITLE, content);
@@ -101,7 +103,8 @@ public class UnivScheduleItem implements Parcelable, IParser.AfterParsable {
 
     };
 
-    public static class ScheduleDate implements Parcelable {
+    public static class ScheduleDate implements Serializable, Parcelable {
+        private static final long serialVersionUID = 8835161151926579336L;
         public int month = -1;
         public int day = -1;
         public int dayInWeek = -1;
@@ -169,7 +172,7 @@ public class UnivScheduleItem implements Parcelable, IParser.AfterParsable {
 
         Calendar getDate(int year, boolean isStart) {
             Calendar c = Calendar.getInstance();
-            c.set(year, month - 1, day, isStart? 9 : 18, 0);
+            c.set(year, month - 1, day, isStart ? 9 : 18, 0);
 
             return c;
         }

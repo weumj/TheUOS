@@ -30,8 +30,8 @@ import com.uoscs09.theuos2.async.AsyncFragmentJob;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.customview.CustomHorizontalScrollView;
 import com.uoscs09.theuos2.customview.NestedListView;
-import com.uoscs09.theuos2.parse.ParseSubject2;
 import com.uoscs09.theuos2.parse.ParseUtil;
+import com.uoscs09.theuos2.parse.XmlParser;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.StringUtil;
@@ -74,7 +74,7 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
 
     private final CoursePlanDialogFragment mCoursePlanDialogFragment = new CoursePlanDialogFragment();
 
-    private static final ParseSubject2 SUBJECT_PARSER = new ParseSubject2();
+    private static final XmlParser<ArrayList<SubjectItem2>> SUBJECT_PARSER = OApiUtil.getParser(SubjectItem2.class);
 
 
     @Override

@@ -1,5 +1,6 @@
 package com.uoscs09.theuos2.util;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -8,6 +9,8 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.support.annotation.AttrRes;
 import android.support.annotation.StringRes;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.internal.widget.AdapterViewCompat;
 import android.util.TypedValue;
@@ -32,7 +35,6 @@ import com.uoscs09.theuos2.tab.schedule.UnivScheduleFragment;
 import com.uoscs09.theuos2.tab.score.ScoreFragment;
 import com.uoscs09.theuos2.tab.subject.TabSearchSubjectFragment2;
 import com.uoscs09.theuos2.tab.timetable.TabTimeTableFragment2;
-import com.uoscs09.theuos2.tab.timetable.TimetableAlarmUtil;
 import com.uoscs09.theuos2.tab.transport.TabTransportFragment;
 
 import java.lang.reflect.Array;
@@ -659,6 +661,10 @@ public class AppUtil {
         return intent;
     }
 
+    public static void startActivityWithScaleUp(Activity activity, Intent intent, View v){
+        ActivityCompat.startActivity(activity, intent, ActivityOptionsCompat.makeScaleUpAnimation(v, 0, 0, v.getWidth(), v.getHeight()).toBundle());
+    }
+
     public static void showInternetConnectionErrorToast(Context context, boolean isVisible) {
         showToast(context, R.string.error_internet, isVisible);
     }
@@ -711,21 +717,9 @@ public class AppUtil {
         return true;
     }
 
-    public static boolean startOrStopServiceTimetableAlarm(Context context) {
-        boolean isServiceEnable = PrefUtil.getInstance(context).get(PrefUtil.KEY_CHECK_TIMETABLE_NOTIFY_SERVICE, false);
-
-        if (isServiceEnable)
-            TimetableAlarmUtil.startService(context);
-        else
-            TimetableAlarmUtil.stopService(context);
-
-        return isServiceEnable;
-    }
-
-
     /**
      * 기본 메시지가 <b>R.string.progress_while_updating</b>인 <br>
-     * ProgressDialog를 생성한다.
+     * ProgressDialog 를 생성한다.
      *
      * @param isHorizontal         진행바가 막대 모양인지 원 모양인지 결정한다.
      * @param cancelButtonListener 취소 버튼을 눌렀을 때, 불릴 callback
@@ -738,7 +732,7 @@ public class AppUtil {
      * ProgressDialog를 생성한다.
      *
      * @param isHorizontal         진행바가 막대 모양인지 원 모양인지 결정한다.
-     * @param msg                  dialog에 나타날 message
+     * @param msg                  dialog 에 나타날 message
      * @param cancelButtonListener 취소 버튼을 눌렀을 때, 불릴 callback
      */
     public static MaterialDialog getProgressDialog(Context context, boolean isHorizontal, CharSequence msg, final DialogInterface.OnClickListener cancelButtonListener) {

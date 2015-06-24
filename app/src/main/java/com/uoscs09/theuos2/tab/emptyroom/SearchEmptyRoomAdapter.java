@@ -27,7 +27,7 @@ public class SearchEmptyRoomAdapter extends AbsArrayAdapter<EmptyClassRoomItem, 
     }
 
     @Override
-    public Holder getViewHolder(View v) {
+    public Holder onCreateViewHolder(View v, int viewType) {
         return new Holder(v);
     }
 

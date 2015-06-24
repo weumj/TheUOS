@@ -189,7 +189,7 @@ public class SettingsFileSelectDialogFragment extends DialogFragment {
         }
 
         @Override
-        public SimpleViewHolder getViewHolder(View convertView) {
+        public SimpleViewHolder onCreateViewHolder(View convertView, int viewType) {
             return new SettingsFileSelectDialogFragment.ViewHolder(convertView);
         }
     }

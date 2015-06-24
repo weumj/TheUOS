@@ -163,7 +163,7 @@ public class ParseTimeTable2 extends XmlParser<TimeTable> {
             return;
         }
 
-        String rawText = OApiParser2.removeCDATA(text);
+        String rawText = XmlParser.removeCDATA(text);
 
         if (rawText.length() < 2) {
             array[day] = Subject.EMPTY;

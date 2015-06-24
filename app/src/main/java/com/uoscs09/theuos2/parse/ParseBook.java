@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 
-public class ParserBook extends JerichoParser<ArrayList<BookItem>> {
+public class ParseBook extends JerichoParser<ArrayList<BookItem>> {
     private static final String LOG_TAG = "ParseBook";
 
     private static final String HREF = "href";
@@ -142,9 +142,14 @@ public class ParserBook extends JerichoParser<ArrayList<BookItem>> {
             if (infoList.size() > 2) {
                 Element stateAndLocation = infoList.get(2);
                 String[] stateAndLocations = stateAndLocation.getTextExtractor().toString().split(StringUtil.SPACE);
+                String bookState = stateAndLocations[1];
 
                 item.site = stateAndLocations[0];
-                item.bookState = stateAndLocations[1];
+                item.bookState = bookState;
+                if (bookState.contains("대출가능"))
+                    item.bookStateInt = BookItem.BOOK_STATE_AVAILABLE;
+                else
+                    item.bookStateInt = BookItem.BOOK_STATE_NOT_AVAILABLE;
 
             } else {
                 List<Element> aElements = rawBookElement.getAllElements(HTMLElementName.A);
@@ -153,7 +158,10 @@ public class ParserBook extends JerichoParser<ArrayList<BookItem>> {
 
                     item.site = "http://mlibrary.uos.ac.kr" + onlineUrl.getAttributeValue(HREF);
                     item.bookState = "온라인 이용 가능";
-                }
+                    item.bookStateInt = BookItem.BOOK_STATE_ONLINE;
+
+                } else
+                    item.bookStateInt = BookItem.BOOK_STATE_NOT_AVAILABLE;
 
             }
         }
@@ -196,4 +204,5 @@ public class ParserBook extends JerichoParser<ArrayList<BookItem>> {
 
         return imgSrc;
     }
+
 }

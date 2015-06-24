@@ -6,7 +6,7 @@ import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Parcelable;
+import android.content.pm.PackageManager;
 import android.util.Log;
 
 import com.uoscs09.theuos2.async.AsyncUtil;
@@ -17,61 +17,135 @@ import com.uoscs09.theuos2.util.TimeUtil;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 import java.util.concurrent.Callable;
 
 public class TimetableAlarmUtil {
     private static final String TAG = "TimetableAlarmUtil";
 
-    static final String FILE_PREFIX_SUBJECT = "timetable_alarm_subject_";
-    static final String FILE_PREFIX_TIME = "timetable_alarm_time_";
+    //TODO 파일을 일일히 기록하지 말고, Map 으로 처리하기
+    private static final String FILE_PREFIX_SUBJECT = "timetable_alarm_subject_";
+    private static final String FILE_PREFIX_TIME = "timetable_alarm_time_";
+    private static final String FILE_ALARM_COUNT = "timetable_alarm_count_";
 
     static final String ACTION_SET_ALARM = "com.uoscs09.theuos2.tab.timetable.set_alarm";
     static final String INTENT_TIME = "com.uoscs09.theuos2.tab.timetable.INTENT_TIME";
     static final String INTENT_CODE = "com.uoscs09.theuos2.tab.timetable.INTENT_CODE";
-    static final String EXTRA_SUBJECT = "extra_subject";
-    static final String EXTRA_ALARM_TIME_INT = "extra_alarm_time_int";
+    //static final String EXTRA_SUBJECT = "extra_subject";
+    //static final String EXTRA_ALARM_TIME_INT = "extra_alarm_time_int";
 
-    // ************ SERVICE ************
+    // ************ Component Enable / Disable **************
 
-    public static ComponentName startService(Context context) {
-        return startService(context, new Intent(context, TimeTableAlarmService.class));
+    private static void setNotificationReceiverEnabled(Context context, boolean enable){
+        ComponentName receiver = new ComponentName(context, TimeTableNotificationReceiver.class);
+        PackageManager pm = context.getPackageManager();
+
+        pm.setComponentEnabledSetting(receiver,
+                enable ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED : PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                PackageManager.DONT_KILL_APP);
     }
 
-    static ComponentName startService(Context context, Subject subject, int timeSelection) {
-        Intent service = new Intent(context, TimeTableAlarmService.class);
-        service.putExtra(TimetableAlarmUtil.EXTRA_SUBJECT, (Parcelable) subject);
-        service.putExtra(TimetableAlarmUtil.EXTRA_ALARM_TIME_INT, timeSelection);
-
-        return startService(context, service);
-    }
-
-    public static boolean stopService(Context context) {
-        Log.i(TAG, "Timetable Alarm Service stop...");
-
-        PrefUtil.getInstance(context).put(PrefUtil.KEY_CHECK_TIMETABLE_NOTIFY_SERVICE, false);
-
-        return context.stopService(new Intent(context, TimeTableAlarmService.class));
-    }
-
-    private static ComponentName startService(Context context, Intent intent) {
-        Log.i(TAG, "Timetable Alarm Service is not implemented");
-        /*
-        ComponentName name = context.startService(intent);
-
-        if (name != null) {
-            Log.i(TAG, "Timetable Alarm Service start...");
-            Log.i(TAG, name.toString());
-
-            PrefUtil.getInstance(context).put(PrefUtil.KEY_CHECK_TIMETABLE_NOTIFY_SERVICE, true);
-        }
-
-        return name;
-        */
-        return null;
-    }
 
     // ************ ALARM **************
+    /**
+     * 주어진 과목과 알람 시간 정보로 알람을 설정하거나 취소하고 그 정보를 파일에 기록한다.
+     */
+    static void setOrCancelAlarm(final Context context, final Subject subject, final int alarmType){
+
+        // 알림 없음
+        if (alarmType == 0) {
+            cancelAlarm(context, subject.period, subject.day);
+
+        } else {
+            if (!PrefUtil.getInstance(context).get(PrefUtil.KEY_CHECK_TIMETABLE_NOTIFY_SERVICE, false)){
+                PrefUtil.getInstance(context).put(PrefUtil.KEY_CHECK_TIMETABLE_NOTIFY_SERVICE, true);
+                setNotificationReceiverEnabled(context, true);
+            }
+
+            setAlarm(context, subject, alarmType);
+
+        }
+
+        AsyncUtil.executeFor(new Runnable() {
+            @Override
+            public void run() {
+                recordAlarmInfo(context, subject, alarmType);
+            }
+        });
+    }
+
+
+    /**
+     * 알람 정보를 기록한다.
+     */
+    private static void recordAlarmInfo(Context context, Subject subject, int alarmType) {
+
+        int period = subject.period, day = subject.day;
+        int alarmCount = readAlarmCount(context);
+
+        // 알림 없음
+        if (alarmType == 0) {
+            deleteSubject(context, period, day);
+            deleteTimeSelection(context, period, day);
+
+            if(alarmCount < 2){
+                deleteAlarmCount(context);
+                setNotificationReceiverEnabled(context, false);
+            } else{
+                writeAlarmCount(context, --alarmCount);
+            }
+
+        } else {
+            writeSubject(context, period, day, subject);
+            writeTimeSelection(context, period, day, alarmType);
+
+            writeAlarmCount(context, ++alarmCount);
+
+        }
+    }
+
+
+    /**
+     * 기록되어 있는 모든 알람을 AlarmManager 에 등록한다.
+     */
+    public static void initAllAlarm(Context context) {
+        if (!PrefUtil.getInstance(context).get(PrefUtil.KEY_CHECK_TIMETABLE_NOTIFY_SERVICE, false))
+            return;
+
+        final Context appContext = context.getApplicationContext();
+
+        AsyncUtil.executeFor(new Runnable() {
+            @Override
+            public void run() {
+                for (int period = 0; period < 15; period++) {
+                    for (int day = 0; day < 7; day++) {
+                        registerAlarmFromFileOnStart(appContext, period, day);
+                    }
+                }
+            }
+        });
+
+    }
+
+    private static void registerAlarmFromFileOnStart(Context context, int period, int day) {
+        Subject subject = TimetableAlarmUtil.readSubject(context, period, day);
+        int alarmTimeSelection = TimetableAlarmUtil.readTimeSelection(context, period, day);
+
+        // 파일이 정확히 등록되어 있는 경우만 알람을 설정함.
+        if (subject != null && alarmTimeSelection != 0)
+            setAlarm(context, subject, alarmTimeSelection);
+
+        // 이 메소드는 부팅 시점에 실행되는 것 이므로
+        // 등록되어있지 않은 경우, 취소할 필요는 없음.
+
+        /*
+        // 알림 없음
+        if (subject == null || alarmTimeSelection == 0) {
+            cancelAlarm(context, period, day);
+        } else {
+            setAlarm(context, subject);
+        }
+        */
+    }
 
     /**
      * 현재 설정된 시간표 알림을 모두 취소한다.
@@ -103,12 +177,13 @@ public class TimetableAlarmUtil {
 
     }
 
+    /**
+     * @return 모든 알람이 성공적으로 삭제되었는지 여부
+     * */
     private static boolean clearAllAlarmInner(Context appContext) {
-        boolean stopped = stopService(appContext);
-
         AlarmManager am = (AlarmManager) appContext.getSystemService(Context.ALARM_SERVICE);
 
-        Intent intent = new Intent(appContext.getApplicationContext(), TimeTableNotiReceiver.class)
+        Intent intent = new Intent(appContext.getApplicationContext(), TimeTableNotificationReceiver.class)
                 .setAction(ACTION_SET_ALARM)
                 .putExtra(INTENT_CODE, 0);
 
@@ -124,13 +199,17 @@ public class TimetableAlarmUtil {
                 deleteSubject(appContext, period, day);
             }
         }
-        return stopped;
+
+        deleteAlarmCount(appContext);
+        setNotificationReceiverEnabled(appContext, false);
+
+        return PrefUtil.getInstance(appContext).put(PrefUtil.KEY_CHECK_TIMETABLE_NOTIFY_SERVICE, false);
     }
 
-    static void cancelAlarm(Context context, int period, int day) {
+    private static void cancelAlarm(Context context, int period, int day) {
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
-        Intent intent = new Intent(context, TimeTableNotiReceiver.class)
+        Intent intent = new Intent(context, TimeTableNotificationReceiver.class)
                 .setAction(TimetableAlarmUtil.ACTION_SET_ALARM)
                 .putExtra(TimetableAlarmUtil.INTENT_CODE, 0);
 
@@ -139,19 +218,19 @@ public class TimetableAlarmUtil {
         Log.i(TAG, "cancel alarm : " + " [period : " + period + " / day : " + day + "]");
     }
 
-    static void setAlarm(Context context, Subject subject) {
+    private static void setAlarm(Context context, Subject subject, int alarmType) {
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
         int period = subject.period, day = subject.day;
         int code = getAlarmCode(period, day);
 
-        Intent intent = new Intent(context, TimeTableNotiReceiver.class)
+        Intent intent = new Intent(context, TimeTableNotificationReceiver.class)
                 .setAction(TimetableAlarmUtil.ACTION_SET_ALARM)
                 .putExtra(TimetableAlarmUtil.INTENT_CODE, code)
                 .putExtra(OApiUtil.SUBJECT_NAME, subject.subjectName)
                 .putExtra(TimetableAlarmUtil.INTENT_TIME, readTimeSelection(context, period, day));
 
-        long notiTime = getNotificationTime(context, period, day);
+        long notiTime = getNotificationTime(period, day, alarmType);
         PendingIntent pi = PendingIntent.getBroadcast(context, code, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         if (notiTime == -1) {
@@ -209,7 +288,7 @@ public class TimetableAlarmUtil {
     /**
      * 선택된 시간의 알림 시간을 반환한다.
      */
-    static long getNotificationTime(Context context, int period, int day) {
+    static long getNotificationTime(int period, int day, int alarmType) {
         int hour, minute;
         PeriodTime time = getPeriodTime(period);
 
@@ -219,7 +298,7 @@ public class TimetableAlarmUtil {
         hour = time.hour;
         minute = time.minute;
 
-        int beforeMinute = getTimeSelectionMinute(context, period, day);
+        int beforeMinute = getTimeSelectionMinute(alarmType);
         if (beforeMinute == -1)
             return -1;
 
@@ -229,21 +308,39 @@ public class TimetableAlarmUtil {
             minute += 60;
         }
 
-        Calendar alarmTime = Calendar.getInstance(Locale.KOREA);
-        alarmTime. set(Calendar.HOUR_OF_DAY, hour);
+        int addDate = 0;
+
+        Calendar alarmTime = Calendar.getInstance();
+
+        int today = getToday(alarmTime);
+        if(day > today){
+            addDate = day - today;
+        }
+
+        alarmTime.setTimeInMillis(System.currentTimeMillis());
+
+        alarmTime.add(Calendar.DATE, addDate);
+        alarmTime.set(Calendar.HOUR_OF_DAY, hour);
         alarmTime.set(Calendar.MINUTE, minute);
         alarmTime.set(Calendar.SECOND, 0);
-
-        //FIXME
 
         return alarmTime.getTimeInMillis();
     }
 
     /**
+     * 오늘의 날짜를 반환함. 월 : 0 , 토 : 5, 일 6
+     */
+    private static int getToday(Calendar c) {
+        int today = c.get(Calendar.DAY_OF_WEEK);
+        return today < 2 ? 6 : today - 2;
+    }
+
+
+    /**
      * '몇 분전' 이 선택된 값에 따라 몇 분전의 값을 반환한다. -1의 경우에는 에러
      */
-    static int getTimeSelectionMinute(Context context, int period, int day) {
-        switch (readTimeSelection(context, period, day)) {
+    static int getTimeSelectionMinute(int alarmType) {
+        switch (alarmType) {
 
             case 1:
                 return 10;
@@ -261,81 +358,6 @@ public class TimetableAlarmUtil {
             default:
                 return -1;
         }
-    }
-
-    /**
-     * 현재 시간이 어느 교시인지 반환함.
-     */
-    static int getCurrentPeriod() {
-        Calendar c = Calendar.getInstance();
-        int hour = c.get(Calendar.HOUR_OF_DAY), min = c.get(Calendar.MINUTE);
-        if (hour < 9)
-            return 0;
-
-        if (hour < 18)
-            return hour - 9;
-
-        switch (hour) {
-            case 18:
-                if (min < 45)
-                    return 9;
-                else
-                    return 10;
-
-            case 19:
-                if (min < 35)
-                    return 10;
-                else
-                    return 11;
-
-            case 20:
-                if (min < 20)
-                    return 11;
-                else
-                    return 12;
-
-            case 21:
-                if (min < 5)
-                    return 12;
-                else if (min < 55)
-                    return 13;
-                else
-                    return 14;
-
-            case 22:
-            default:
-                return 14;
-        }
-
-    }
-
-    /**
-     * 오늘의 날짜를 반환함. 월 : 0 , 토 : 5, 일 6
-     */
-    static int getToday() {
-        int today = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
-        return today < 2 ? 6 : today - 2;
-    }
-
-
-    /**
-     * 현재 시간과 다음 알림 등록시간 (새벽 1시) 까지의 남은 시간을 비교함.
-     */
-    static long calculateWaitTimeUntilNextDay() {
-        Calendar alarmTime = Calendar.getInstance(Locale.KOREA);
-
-
-        if (alarmTime.get(Calendar.HOUR_OF_DAY) > 0) {
-            alarmTime.add(Calendar.DATE, 1);
-        }
-
-        alarmTime.set(Calendar.HOUR_OF_DAY, 1);
-        alarmTime.set(Calendar.MINUTE, 0);
-        alarmTime.set(Calendar.SECOND, 0);
-
-        Calendar thisTime = Calendar.getInstance();
-
-        return alarmTime.getTimeInMillis() - thisTime.getTimeInMillis();
     }
 
 
@@ -386,6 +408,28 @@ public class TimetableAlarmUtil {
     static void deleteTimeSelection(Context context, int period, int day) {
         try {
             context.deleteFile(FILE_PREFIX_TIME + getAlarmCodeString(period, day));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    static int readAlarmCount(Context context){
+        Object obj = IOUtil.readFromFileSuppressed(context, FILE_ALARM_COUNT);
+
+        if (obj == null)
+            return 0;
+
+        int count = (int) obj;
+        return count > 0 ? count : 0;
+    }
+
+    static void writeAlarmCount(Context context, int count){
+        IOUtil.writeObjectToFileSuppressed(context, FILE_ALARM_COUNT, count);
+    }
+
+    static void deleteAlarmCount(Context context){
+        try {
+            context.deleteFile(FILE_ALARM_COUNT);
         } catch (Exception e) {
             e.printStackTrace();
         }

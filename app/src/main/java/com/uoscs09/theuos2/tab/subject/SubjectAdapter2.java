@@ -10,7 +10,7 @@ import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import java.util.List;
 
 
-public class SubjectAdapter2 extends AbsArrayAdapter<SubjectItem2, SubjectAdapter2.ViewHolder> {
+class SubjectAdapter2 extends AbsArrayAdapter<SubjectItem2, SubjectAdapter2.ViewHolder> {
 
     public SubjectAdapter2(Context context, List<SubjectItem2> list) {
         super(context, R.layout.list_layout_subject, list);
@@ -46,11 +46,11 @@ public class SubjectAdapter2 extends AbsArrayAdapter<SubjectItem2, SubjectAdapte
     }
 
     @Override
-    public ViewHolder getViewHolder(View convertView) {
+    public ViewHolder onCreateViewHolder(View convertView, int viewType) {
         return new ViewHolder(convertView);
     }
 
-    public static class ViewHolder extends AbsArrayAdapter.ViewHolder {
+    static class ViewHolder extends AbsArrayAdapter.ViewHolder {
         public final TextView[] tvArray;
         private static final int[] ID_ARRAY = {
                 R.id.list_subject_text_sub_dept,

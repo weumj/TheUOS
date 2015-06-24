@@ -11,7 +11,7 @@ import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class AnnounceAdapter extends AbsArrayAdapter<AnnounceItem, AnnounceAdapter.Holder> {
+class AnnounceAdapter extends AbsArrayAdapter<AnnounceItem, AnnounceAdapter.Holder> {
 
     public AnnounceAdapter(Context context, List<AnnounceItem> list) {
         super(context, R.layout.list_layout_announce, list);
@@ -43,7 +43,7 @@ public class AnnounceAdapter extends AbsArrayAdapter<AnnounceItem, AnnounceAdapt
     }
 
     @Override
-    public Holder getViewHolder(View v) {
+    public Holder onCreateViewHolder(View v, int viewType) {
         return new Holder(v);
     }
 

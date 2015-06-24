@@ -18,7 +18,7 @@ import com.uoscs09.theuos2.async.AsyncFragmentJob;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.common.SerializableArrayMap;
 import com.uoscs09.theuos2.http.HttpRequest;
-import com.uoscs09.theuos2.parse.ParserTransport;
+import com.uoscs09.theuos2.parse.ParseTransport;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.SeoulOApiUtil;
 
@@ -31,7 +31,7 @@ public class TabTransportFragment extends AbsProgressFragment<Map<String, ArrayL
     @AsyncData
     private Map<String, ArrayList<TransportItem>> data;
 
-    private final ParserTransport mParser = new ParserTransport();
+    private final ParseTransport mParser = new ParseTransport();
     @ReleaseWhenDestroy
     private View empty;
 

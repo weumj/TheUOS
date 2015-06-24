@@ -46,7 +46,7 @@ public abstract class AbsArrayAdapter<T, VH extends AbsArrayAdapter.ViewHoldable
         VH holder;
         if (view == null) {
             view = LayoutInflater.from(parent.getContext()).inflate(layout, parent, false);
-            holder = getViewHolder(view);
+            holder = onCreateViewHolder(view, getItemViewType(position));
             view.setTag(holder);
         } else {
             holder = (VH) view.getTag();
@@ -65,12 +65,13 @@ public abstract class AbsArrayAdapter<T, VH extends AbsArrayAdapter.ViewHoldable
 
     /**
      * @param convertView ViewHolder 객체를 만드는데 사용될 View
+     * @param viewType viewType
      * @return AbsArrayAdapter 를 상속받은 클래스가 구현한 ViewHolder
      */
-    public abstract VH getViewHolder(View convertView);
+    public abstract VH onCreateViewHolder(View convertView, int viewType);
 
 
-    public static interface ViewHoldable {
+    public interface ViewHoldable {
     }
 
     public static class ViewHolder implements ViewHoldable {
@@ -121,7 +122,7 @@ public abstract class AbsArrayAdapter<T, VH extends AbsArrayAdapter.ViewHoldable
         }
 
         @Override
-        public SimpleViewHolder getViewHolder(View convertView) {
+        public SimpleViewHolder onCreateViewHolder(View convertView, int viewType) {
             return new SimpleViewHolder(convertView);
         }
     }

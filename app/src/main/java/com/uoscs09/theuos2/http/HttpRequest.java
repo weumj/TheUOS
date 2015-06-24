@@ -8,11 +8,10 @@ import android.util.Log;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -21,7 +20,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 public class HttpRequest {
-    public static boolean checkNetworkUnable(Context context){
+    public static boolean checkNetworkUnable(Context context) {
         ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = manager.getActiveNetworkInfo();
         return networkInfo == null || !networkInfo.isConnected();
@@ -32,7 +31,7 @@ public class HttpRequest {
     }
 
     public static String getBody(Context context, String url, String encoding, Map<? extends CharSequence, ? extends CharSequence> params, String paramsEncoding) throws IOException {
-        if(checkNetworkUnable(context))
+        if (checkNetworkUnable(context))
             throw new IOException("Failed to access current network.");
 
         StringBuilder sb = new StringBuilder();
@@ -42,7 +41,7 @@ public class HttpRequest {
     }
 
     public static String getBodyByPost(Context context, String url, String encoding, Map<? extends CharSequence, ? extends CharSequence> params, String paramsEncoding) throws IOException {
-        if(checkNetworkUnable(context))
+        if (checkNetworkUnable(context))
             throw new IOException("Failed to access current network.");
 
         StringBuilder sb = new StringBuilder();
@@ -74,13 +73,13 @@ public class HttpRequest {
     }
 
     public static HttpURLConnection getConnection(Context context, String url, String paramEncoding, Map<? extends CharSequence, ? extends CharSequence> params) throws IOException {
-        if(checkNetworkUnable(context))
+        if (checkNetworkUnable(context))
             throw new IOException("Failed to access current network.");
 
-        if(params == null)
+        if (params == null)
             return getConnection(url);
 
-        if(paramEncoding == null)
+        if (paramEncoding == null)
             paramEncoding = StringUtil.ENCODE_UTF_8;
 
         StringBuilder sb = new StringBuilder();
@@ -134,9 +133,9 @@ public class HttpRequest {
             connection.setRequestMethod("POST");
             connection.setRequestProperty("content-type", "application/x-www-form-urlencoded");
 
-            PrintWriter pw = new PrintWriter(new OutputStreamWriter(connection.getOutputStream()));
-            pw.write(params);
-            pw.flush();
+            DataOutputStream out = new DataOutputStream(connection.getOutputStream());
+            out.write(params.getBytes());
+            out.close();
 
             checkResponseAndThrowException(connection);
 
@@ -163,11 +162,10 @@ public class HttpRequest {
         try {
             StringBuilder builder = new StringBuilder();
             String line;
-            final char c = '\n';
+
             while ((line = reader.readLine()) != null) {
-                builder.append(line).append(c);
+                builder.append(line).append('\n');
             }
-            reader.close();
             return builder.toString();
         } finally {
             reader.close();

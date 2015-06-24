@@ -14,7 +14,7 @@ import com.uoscs09.theuos2.util.StringUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PhoneListAdapter extends AbsArrayAdapter<PhoneItem, Holder> {
+class PhoneListAdapter extends AbsArrayAdapter<PhoneItem, PhoneListAdapter.Holder> {
     private Filter filter;
     private final View.OnClickListener l;
 
@@ -78,21 +78,20 @@ public class PhoneListAdapter extends AbsArrayAdapter<PhoneItem, Holder> {
     }
 
     @Override
-    public Holder getViewHolder(View view) {
+    public Holder onCreateViewHolder(View view, int viewType) {
         return new Holder(view);
     }
 
+    static class Holder implements AbsArrayAdapter.ViewHoldable {
+        public final TextView siteView;
+        public final TextView phoneView;
+        public final ImageButton imgButton;
 
-}
-
-class Holder implements AbsArrayAdapter.ViewHoldable {
-    public final TextView siteView;
-    public final TextView phoneView;
-    public final ImageButton imgButton;
-
-    public Holder(View convertView) {
-        phoneView = (TextView) convertView.findViewById(R.id.tab_phone_list_text_site_tel_number);
-        siteView = (TextView) convertView.findViewById(R.id.tab_phone_list_text_site_name);
-        imgButton = (ImageButton) convertView.findViewById(R.id.tab_phone_list_button_site_call);
+        public Holder(View convertView) {
+            phoneView = (TextView) convertView.findViewById(R.id.tab_phone_list_text_site_tel_number);
+            siteView = (TextView) convertView.findViewById(R.id.tab_phone_list_text_site_name);
+            imgButton = (ImageButton) convertView.findViewById(R.id.tab_phone_list_button_site_call);
+        }
     }
 }
+

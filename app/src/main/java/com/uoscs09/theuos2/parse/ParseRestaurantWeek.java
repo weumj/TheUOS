@@ -32,6 +32,7 @@ public class ParseRestaurantWeek extends JerichoParser<WeekRestItem>{
 
             List<Element> tdElements = trElement.getChildElements();
 
+            // date
             item.title = extractContent(tdElements.get(0));
             item.breakfast = extractContent(tdElements.get(1));
             item.lunch = extractContent(tdElements.get(2));
@@ -41,11 +42,13 @@ public class ParseRestaurantWeek extends JerichoParser<WeekRestItem>{
 
         }
 
+        weekRestItem.afterParsing();
+
         return weekRestItem;
 
     }
 
-    private String extractContent(Element e){
+    private static String extractContent(Element e){
         return e.getTextExtractor().toString().replace(BR, StringUtil.NEW_LINE).trim();
     }
 

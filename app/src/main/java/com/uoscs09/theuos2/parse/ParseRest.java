@@ -11,7 +11,7 @@ import net.htmlparser.jericho.Source;
 
 import java.util.List;
 
-public class ParserRest extends JerichoParser<SparseArray<RestItem>> {
+public class ParseRest extends JerichoParser<SparseArray<RestItem>> {
     //private static final String BR = "*br*";
 
     @Override

@@ -13,6 +13,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 
 public abstract class XmlParser<T> implements IParser<InputStream, T> {
 
@@ -163,6 +164,109 @@ public abstract class XmlParser<T> implements IParser<InputStream, T> {
         }
 
         return newInstance;
+    }
+
+    public static <T> XmlParser<ArrayList<T>> newReflectionParser(Class<? extends T> clazz, String docRootTag, String listParentTag, String listItemTag){
+        return new SimpleReflectionParser<>(clazz, docRootTag, listParentTag, listItemTag);
+    }
+
+    abstract static class SimpleListParser<T> extends XmlParser<T> {
+        private final String TAG_LIST_PARENT, TAG_LIST_ITEM, TAG_DOC_ROOT;
+
+        public SimpleListParser(String docRootTag, String listParentTag, String listItemTag) {
+            TAG_DOC_ROOT = docRootTag;
+            TAG_LIST_PARENT = listParentTag;
+            TAG_LIST_ITEM = listItemTag;
+        }
+
+        protected abstract T initItem();
+
+        @Override
+        protected T parseContent(XmlPullParser parser) throws IOException, XmlPullParserException {
+
+            parser.require(XmlPullParser.START_TAG, null, TAG_DOC_ROOT);
+
+            T item = initItem();
+
+            while (parser.next() != XmlPullParser.END_TAG) {
+                if (parser.getEventType() != XmlPullParser.START_TAG) {
+                    continue;
+                }
+
+                String name = parser.getName();
+                if (name.equals(TAG_LIST_PARENT)) {
+                    readListContentTag(parser, item);
+
+                } else {
+                    skip(parser);
+
+                }
+
+            }
+
+            if (item instanceof AfterParsable) {
+                ((AfterParsable) item).afterParsing();
+            }
+
+            return item;
+        }
+
+
+        protected void readListContentTag(XmlPullParser parser, T item) throws IOException, XmlPullParserException {
+            int count = 0;
+            while (parser.next() != XmlPullParser.END_TAG) {
+                if (parser.getEventType() != XmlPullParser.START_TAG) {
+                    continue;
+                }
+
+                String name = parser.getName();
+                if (name.equals(TAG_LIST_ITEM)) {
+                    parser.require(XmlPullParser.START_TAG, null, TAG_LIST_ITEM);
+                    readList(parser, count, item);
+                    count++;
+
+                } else {
+                    skip(parser);
+
+                }
+
+            }
+
+        }
+
+        protected abstract void readList(XmlPullParser parser, int count, T item) throws IOException, XmlPullParserException;
+
+    }
+
+
+    static class SimpleReflectionParser<T> extends SimpleListParser<ArrayList<T>> {
+
+        private final Class<? extends T> clazz;
+
+        public SimpleReflectionParser(Class<? extends T> clazz, String docRootTag, String listParentTag, String listItemTag) {
+            super(docRootTag, listParentTag, listItemTag);
+            this.clazz = clazz;
+        }
+
+        @Override
+        protected ArrayList<T> initItem() {
+            return new ArrayList<>();
+        }
+
+        @NonNull
+        protected T newInstance() {
+            try {
+                return clazz.newInstance();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        @Override
+        protected void readList(XmlPullParser parser, int count, ArrayList<T> item) throws IOException, XmlPullParserException {
+            item.add(readListAndFillDataUsingReflection(parser, newInstance()));
+        }
+
     }
 
 }

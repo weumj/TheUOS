@@ -12,7 +12,7 @@ import com.uoscs09.theuos2.R;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
-public class ScoreAdapter extends BaseExpandableListAdapter {
+class ScoreAdapter extends BaseExpandableListAdapter {
     private final List<ScoreItem> list;
     private final WeakReference<Context> contextRef;
 

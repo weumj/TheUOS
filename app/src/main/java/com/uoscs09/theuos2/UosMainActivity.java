@@ -124,8 +124,7 @@ public class UosMainActivity extends BaseActivity {
 
         }
 
-        AppUtil.startOrStopServiceAnnounce(getApplicationContext());
-        AppUtil.startOrStopServiceTimetableAlarm(getApplicationContext());
+        //AppUtil.startOrStopServiceAnnounce(getApplicationContext());
         mBackCloseHandler = new BackPressCloseHandler();
         System.gc();
 

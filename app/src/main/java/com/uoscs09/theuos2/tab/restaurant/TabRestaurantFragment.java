@@ -21,7 +21,7 @@ import com.uoscs09.theuos2.async.AsyncFragmentJob;
 import com.uoscs09.theuos2.base.AbsAsyncFragment;
 import com.uoscs09.theuos2.common.SerializableArrayMap;
 import com.uoscs09.theuos2.http.HttpRequest;
-import com.uoscs09.theuos2.parse.ParserRest;
+import com.uoscs09.theuos2.parse.ParseRest;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
@@ -48,7 +48,7 @@ public class TabRestaurantFragment extends AbsAsyncFragment<SparseArray<RestItem
     private int mCurrentSelection;
     boolean force = false;
 
-    private static final ParserRest REST_PARSER = new ParserRest();
+    private static final ParseRest REST_PARSER = new ParseRest();
 
     //private String mCurrentRestName;
     private final ArrayList<Tab> mTabList = new ArrayList<>();

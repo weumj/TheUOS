@@ -143,7 +143,7 @@ public class SettingsOrderFragment extends Fragment {
         }
 
         @Override
-        public SettingsOrderFragment.ViewHolder getViewHolder(View convertView) {
+        public SettingsOrderFragment.ViewHolder onCreateViewHolder(View convertView, int viewType) {
             return new SettingsOrderFragment.ViewHolder(convertView);
         }
 
