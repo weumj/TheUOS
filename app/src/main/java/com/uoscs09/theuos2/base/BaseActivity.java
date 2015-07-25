@@ -52,7 +52,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onDestroy() {
         AppUtil.unbindDrawables(getWindow().getDecorView());
         super.onDestroy();
-        System.gc();
     }
 
     @Override

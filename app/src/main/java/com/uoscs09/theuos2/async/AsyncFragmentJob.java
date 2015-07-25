@@ -1,5 +1,6 @@
 package com.uoscs09.theuos2.async;
 
+@Deprecated
 public interface AsyncFragmentJob<V> extends AsyncJob<V> {
     /**
      * 비동기 작업이 끝났지만, Fragment 가 파괴되었을 때, 호출된다.
@@ -16,7 +17,8 @@ public interface AsyncFragmentJob<V> extends AsyncJob<V> {
      * */
     boolean exceptionOccurred(Exception e);
 
-    public static abstract class Base<V> extends AsyncJob.Base<V> implements AsyncFragmentJob<V> {
+    @Deprecated
+    abstract class Base<V> extends AsyncJob.Base<V> implements AsyncFragmentJob<V> {
 
         @Override
         public void errorOnBackground(Throwable error) {

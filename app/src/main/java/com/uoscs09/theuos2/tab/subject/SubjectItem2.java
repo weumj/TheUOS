@@ -221,8 +221,8 @@ public class SubjectItem2 implements Parcelable, IParser.AfterParsable {
                     public int compare(SubjectItem2 lhs, SubjectItem2 rhs) {
                         lhs.setInfoArray();
                         rhs.setInfoArray();
-                        int result = lhs.infoArray[field].compareTo(rhs.infoArray[field]);
-                        return isInverse ? -result : result;
+                        return isInverse ? rhs.infoArray[field].compareTo(lhs.infoArray[field])
+                                : lhs.infoArray[field].compareTo(rhs.infoArray[field]);
                     }
                 };
             case 2:
@@ -238,7 +238,7 @@ public class SubjectItem2 implements Parcelable, IParser.AfterParsable {
                         rhs.setInfoArray();
                         int r, l;
                         try {
-                            r = Integer.valueOf(rhs.infoArray[field]);
+                            r = Integer.parseInt(rhs.infoArray[field]);
                         } catch (Exception e) {
                             r = Integer.MAX_VALUE;
                         }
@@ -278,7 +278,7 @@ public class SubjectItem2 implements Parcelable, IParser.AfterParsable {
 
     }
 
-    private static class ClassInfoParser implements IParser<String, ArrayList<ClassInformation>> {
+    private static class ClassInfoParser extends IParser.Base<String, ArrayList<ClassInformation>> {
 
         private int i;
         private String class_nm;
@@ -325,6 +325,9 @@ public class SubjectItem2 implements Parcelable, IParser.AfterParsable {
 
                                 break;
 
+                            default:
+                                break;
+
                         }
                         break;
 
@@ -343,6 +346,9 @@ public class SubjectItem2 implements Parcelable, IParser.AfterParsable {
 
                                 list.add(information);
 
+                                break;
+
+                            default:
                                 break;
                         }
 
@@ -407,7 +413,7 @@ public class SubjectItem2 implements Parcelable, IParser.AfterParsable {
          * 시작지점부터 2글자 읽어서 강의 시간을 반환
          */
         private int getTimeInt() {
-            int result = Integer.valueOf(class_nm.substring(i, i + 2));
+            int result = Integer.parseInt(class_nm.substring(i, i + 2));
             i += 2;
             return result;
         }

@@ -43,7 +43,7 @@ public class UnivScheduleItem implements Serializable, Parcelable, IParser.After
 
     public Calendar getDate(boolean isStart) {
         try {
-            int y = Integer.valueOf(year.substring(0, 4));
+            int y = Integer.parseInt(year.substring(0, 4));
             return isStart ? dateStart.getDate(y, true) : dateEnd.getDate(y, false);
         } catch (Exception e) {
             return null;
@@ -145,13 +145,15 @@ public class UnivScheduleItem implements Serializable, Parcelable, IParser.After
                         dayInWeek = 6;
                         break;
 
+                    default:
+                        break;
                 }
 
                 array = array[0].split("\\.");
 
                 if (array.length > 1) {
-                    month = Integer.valueOf(array[0]);
-                    day = Integer.valueOf(array[1]);
+                    month = Integer.parseInt(array[0]);
+                    day = Integer.parseInt(array[1]);
                 }
 
             }

@@ -296,17 +296,21 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
     }
 
 
-    void execute() {
+    private void execute() {
         mAsyncTask = super.execute(JOB);
     }
 
 
     public static ArrayList<SeatItem> parseLibrarySeat() throws Exception {
-        return LIBRARY_SEAR_PARSER.parse(HttpRequest.getBody(URL, StringUtil.ENCODE_EUC_KR));
+        return HttpRequest.Builder.newStringRequestBuilder(URL)
+                .setResultEncoding(StringUtil.ENCODE_EUC_KR)
+                .build()
+                .wrap(LIBRARY_SEAR_PARSER)
+                .get();
     }
 
 
-    static void filterSeatList(ArrayList<SeatItem> originalList) {
+    private static void filterSeatList(ArrayList<SeatItem> originalList) {
         SeatItem item;
 
         // 스터디룸 인덱스
@@ -322,7 +326,7 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
     }
 
     private void updateTimeView() {
-        mSearchTime = TimeUtil.sFormat_am_hms.format(new Date());
+        mSearchTime = TimeUtil.getFormat_am_hms().format(new Date());
         setSubtitleWhenVisible(mSearchTime);
     }
 

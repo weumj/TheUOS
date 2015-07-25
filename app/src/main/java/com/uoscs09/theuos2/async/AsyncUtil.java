@@ -21,7 +21,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class AsyncUtil {
 
-    private AsyncUtil(){}
+    private AsyncUtil() {
+    }
 
     private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
     private static final int CORE_POOL_SIZE = CPU_COUNT + 1;
@@ -40,26 +41,31 @@ public class AsyncUtil {
     private static final Executor sEXECUTOR = new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE, TimeUnit.SECONDS, sPoolWorkQueue, sThreadFactory);
 
 
-    public static boolean isTaskRunning(@Nullable AsyncTask<? ,? ,?> task){
+    public static boolean isTaskRunning(@Nullable AsyncTask<?, ?, ?> task) {
         return task != null && task.getStatus() == AsyncTask.Status.RUNNING;
     }
 
-    public static boolean isTaskCanceled(@Nullable AsyncTask<? ,? ,?> task){
+    public static boolean isTaskCanceled(@Nullable AsyncTask<?, ?, ?> task) {
         return task == null || task.isCancelled();
     }
 
-    public static boolean cancelTask(@Nullable AsyncTask<? ,? ,?> task) {
+    public static boolean cancelTask(@Nullable AsyncTask<?, ?, ?> task) {
         return task == null || task.cancel(true);
 
     }
+
     /**
      * 비동기 작업을 실행한다.
      *
      * @param task 비동기 작업이 실시될 {@link Callable}
      * @param l    작업 종료후 호출될 callback
      */
-    public static <Data> AsyncTask<Void, Void, Data> execute(@NonNull Callable<Data> task, OnTaskFinishedListener<Data> l) {
+    public static <Data> AsyncTask<Void, ?, Data> execute(@NonNull Callable<Data> task, OnTaskFinishedListener<Data> l) {
         return executeAsyncTask(getExecutor(task, l));
+    }
+
+    public static <Progress, V> AsyncTask<Void, Progress, V> execute(@NonNull AsyncTask<Void, Progress, V> task) {
+        return executeAsyncTask(task);
     }
 
     /**
@@ -68,15 +74,15 @@ public class AsyncUtil {
      * @param task     비동기 작업이 실시될 {@link Callable}
      * @param callback 작업 종료후 호출될 callback
      */
-    public static <Data> AsyncTask<Void, Void, Data> execute(Callable<Data> task, AsyncCallback<Data> callback) {
+    public static <Data> AsyncTask<Void, ?, Data> execute(Callable<Data> task, AsyncCallback<Data> callback) {
         return executeAsyncTask(new AsyncExecutor<Data>().setCallable(task).setCallback(callback));
     }
 
-    public static <Data> AsyncTask<Void, Void, Data> execute(AsyncJob<Data> job) {
+    public static <Data> AsyncTask<Void, ?, Data> execute(AsyncJob<Data> job) {
         return executeAsyncTask(new AsyncExecutor<Data>().setCallable(job).setCallback(job));
     }
 
-    private static <Data> AsyncTask<Void, Void, Data> executeAsyncTask(AsyncTask<Void, Void, Data> task){
+    private static <Progress, Data> AsyncTask<Void, Progress, Data> executeAsyncTask(AsyncTask<Void, Progress, Data> task) {
         return task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
@@ -101,7 +107,7 @@ public class AsyncUtil {
         sEXECUTOR.execute(r);
     }
 
-    private static <Data> AsyncTask<Void, Void, Data> getExecutor(@NonNull Callable<Data> task, final OnTaskFinishedListener<Data> l) {
+    private static <Data> AsyncTask<Void, ?, Data> getExecutor(@NonNull Callable<Data> task, final OnTaskFinishedListener<Data> l) {
         return new AsyncExecutor<Data>().setCallable(task).setCallback(
                 new AsyncCallback.Base<Data>() {
                     public void onResult(Data result) {
@@ -121,7 +127,7 @@ public class AsyncUtil {
     /**
      * 비 동기 작업 후 호출될 listener
      */
-    public static interface OnTaskFinishedListener<T> {
+    public interface OnTaskFinishedListener<T> {
         /**
          * 비 동기 작업 후 호출되는 메소드
          *
@@ -129,7 +135,7 @@ public class AsyncUtil {
          * @param e                   Exception이 발생한 경우 : {@link Exception}객체, 아니면 null
          * @param data                Exception이 발생하지 않은 경우 : 작업한 결과 , 아니면 null
          */
-        public void onTaskFinished(boolean isExceptionOccurred, T data, Exception e);
+        void onTaskFinished(boolean isExceptionOccurred, T data, Exception e);
     }
 
 }

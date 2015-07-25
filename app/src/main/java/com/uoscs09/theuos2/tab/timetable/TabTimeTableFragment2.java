@@ -1,13 +1,12 @@
 package com.uoscs09.theuos2.tab.timetable;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.util.SimpleArrayMap;
@@ -32,7 +31,9 @@ import com.uoscs09.theuos2.async.AsyncFragmentJob;
 import com.uoscs09.theuos2.async.AsyncJob;
 import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.async.AsyncUtil.OnTaskFinishedListener;
-import com.uoscs09.theuos2.async.ListViewBitmapWriteTask;
+import com.uoscs09.theuos2.async.ImageWriteProcessor;
+import com.uoscs09.theuos2.async.ListViewBitmapRequest;
+import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.common.SerializableArrayMap;
 import com.uoscs09.theuos2.customview.NestedListView;
@@ -65,6 +66,7 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
     protected NestedListView mTimetableListView;
     @ReleaseWhenDestroy
     private View emptyView;
+    private Dialog mProgressDialog;
 
     @AsyncData
     private TimeTable mTimeTable;
@@ -246,6 +248,10 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
         }
     }
 
+    private void dismissProgressDialog(){
+        mProgressDialog.dismiss();
+        mProgressDialog.setOnCancelListener(null);
+    }
 
     private void saveTimetableImage() {
         if (mTimeTableAdapter2.isEmpty()) {
@@ -253,40 +259,55 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
             return;
         }
 
+        if (mProgressDialog == null)
+            mProgressDialog = AppUtil.getProgressDialog(getActivity(), false, getText(R.string.progress_ongoing), null);
+
+
         String dir = PrefUtil.getPicturePath(getActivity()) + "timetable_" + mTimeTable.year + '_' + mTimeTable.semesterCode + '_' + String.valueOf(System.currentTimeMillis()) + ".png";
 
-        final ListViewBitmapWriteTask.TitleListViewBitmapWriteTask task = new ListViewBitmapWriteTask.TitleListViewBitmapWriteTask(mTimetableListView, mTimeTableAdapter2, dir, getTabParentView()) {
-            @Override
-            public Bitmap getBitmap() {
-                try {
-                    Looper.prepare();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                return super.getBitmap();
-
-            }
-
-            @Override
-            public void onResult(final String result) {
-                Snackbar.make(getView(), getText(R.string.save), Snackbar.LENGTH_LONG)
-                        .setAction(R.string.action_open, new View.OnClickListener() {
+        final AsyncTask<Void, ?, String> task = new ListViewBitmapRequest.Builder(mTimetableListView, mTimeTableAdapter2)
+                .setHeaderView(getTabParentView())
+                .build()
+                .wrap(new ImageWriteProcessor(dir))
+                .getAsync(
+                        new Request.ResultListener<String>() {
                             @Override
-                            public void onClick(View v) {
-                                Intent intent = new Intent();
-                                intent.setAction(Intent.ACTION_VIEW);
-                                intent.setDataAndType(Uri.parse("file://" + result), "image/*");
-                                AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
+                            public void onResult(final String result) {
+                                dismissProgressDialog();
+
+                                Snackbar.make(getView(), getText(R.string.save), Snackbar.LENGTH_LONG)
+                                        .setAction(R.string.action_open, new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                Intent intent = new Intent();
+                                                intent.setAction(Intent.ACTION_VIEW);
+                                                intent.setDataAndType(Uri.parse("file://" + result), "image/*");
+                                                AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
+                                            }
+                                        })
+                                        .show();
                             }
-                        })
-                        .show();
+                        },
+                        new Request.ErrorListener() {
+                            @Override
+                            public void onError(Exception e) {
+                                dismissProgressDialog();
+
+                                AppUtil.showErrorToast(getActivity(), e, true);
+                            }
+                        }
+                );
+        mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                AsyncUtil.cancelTask(task);
             }
-        };
-        task.execute();
+        });
+        mProgressDialog.show();
+
     }
 
-    private AsyncFragmentJob.Base<TimeTable> JOB = new AsyncFragmentJob.Base<TimeTable>() {
+    private final AsyncFragmentJob.Base<TimeTable> JOB = new AsyncFragmentJob.Base<TimeTable>() {
 
         @Override
         public TimeTable call() throws Exception {
@@ -396,6 +417,7 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
                     sendClickEvent("actionButton");
                     mLoginDialog.show();
                 }
+                break;
 
             default:
                 break;
@@ -424,6 +446,9 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
 
                     case DialogInterface.BUTTON_NEGATIVE:
                         clearPassWd();
+                        break;
+
+                    default:
                         break;
                 }
             }

@@ -116,11 +116,13 @@ public class TimetableAlarmUtil {
         AsyncUtil.executeFor(new Runnable() {
             @Override
             public void run() {
+
                 for (int period = 0; period < 15; period++) {
                     for (int day = 0; day < 7; day++) {
                         registerAlarmFromFileOnStart(appContext, period, day);
                     }
                 }
+
             }
         });
 
@@ -237,7 +239,7 @@ public class TimetableAlarmUtil {
             am.cancel(pi);
 
         } else {
-            Log.i(TAG, "set alarm : " + subject.subjectName + " [period : " + period + " / day : " + day + " / time : " + TimeUtil.sFormat_yMd_kms.format(new Date(notiTime)) + "]");
+            Log.i(TAG, "set alarm : " + subject.subjectName + " [period : " + period + " / day : " + day + " / time : " + TimeUtil.getFormat_yMd_kms().format(new Date(notiTime)) + "]");
             am.setRepeating(AlarmManager.RTC_WAKEUP, notiTime, AlarmManager.INTERVAL_DAY * 7, pi);
 
         }

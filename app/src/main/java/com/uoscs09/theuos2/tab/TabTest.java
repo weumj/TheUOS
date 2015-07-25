@@ -1,26 +1,10 @@
 package com.uoscs09.theuos2.tab;
 
-import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ScrollView;
-import android.widget.TextView;
-
-import com.javacan.asyncexcute.AsyncCallback;
-import com.uoscs09.theuos2.async.AsyncUtil;
-import com.uoscs09.theuos2.http.HttpRequest;
-import com.uoscs09.theuos2.parse.ParseRestaurantWeek;
-import com.uoscs09.theuos2.tab.restaurant.RestItem;
-import com.uoscs09.theuos2.tab.restaurant.WeekRestItem;
-
-import java.util.concurrent.Callable;
 
 
 public class TabTest extends Fragment {
-
+/*
     private TextView textView;
 
     @Nullable
@@ -86,9 +70,9 @@ public class TabTest extends Fragment {
                         textView.setText(sb.toString());
                     }
                 });
-*/
+
         return scrollView;
     }
-
+*/
 
 }

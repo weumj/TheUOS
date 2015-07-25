@@ -10,14 +10,14 @@ import com.uoscs09.theuos2.R;
 import java.util.Map;
 import java.util.Set;
 
-//FIXME 모든 설정값에 default preference를 쓰지 말고, 설정에 따라 분리할 필요가 있음
+//FIXME 모든 설정값에 default preference 를 쓰지 말고, 설정에 따라 분리할 필요가 있음
 public class PrefUtil {
     /**
      * 공지사항 알리미를 사용 할 것인지 여부, {@code boolean}
      *
      * @see R.string#pref_key_check_anounce_service
      */
-    public static final String KEY_CHECK_ANOUNCE_SERVICE = "ACTIVE_SERVICE_ANOUNCE";
+    public static final String KEY_CHECK_ANNOUNCE_SERVICE = "ACTIVE_SERVICE_ANOUNCE";
     // public static final String KEY_ORDER = "ORDER";
     /**
      * 홈 화면을 보여줄 것인지 여부, {@code boolean}
@@ -200,11 +200,11 @@ public class PrefUtil {
      * 그림파일이 저장되는 경로를 얻는다.
      */
     public static String getPicturePath(Context context) {
-        return getInstance(context).get(KEY_IMAGE_SAVE_PATH, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString() + "/");
+        return getInstance(context).get(KEY_IMAGE_SAVE_PATH, getDefaultPath(KEY_IMAGE_SAVE_PATH));
     }
 
     public static String getDocumentPath(Context context) {
-        return getInstance(context).get(KEY_TXT_SAVE_PATH, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + "/");
+        return getInstance(context).get(KEY_TXT_SAVE_PATH, getDefaultPath(KEY_TXT_SAVE_PATH));
     }
 
     public static String getDefaultPath(final String key) {

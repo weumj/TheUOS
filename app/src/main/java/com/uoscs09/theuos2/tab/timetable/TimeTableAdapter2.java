@@ -105,7 +105,7 @@ class TimeTableAdapter2 extends AbsArrayAdapter<Subject[], TimeTableAdapter2.Tim
 
         }
 
-        protected void setView(SerializableArrayMap<String, Integer> colorTable) {
+        void setView(SerializableArrayMap<String, Integer> colorTable) {
             setPeriodView();
 
             int i = 0;
@@ -172,8 +172,10 @@ class TimeTableAdapter2 extends AbsArrayAdapter<Subject[], TimeTableAdapter2.Tim
     }
 
     static class SubjectViewHolder {
-        public View view;
-        public TextView subject, professor, location;
+        public final View view;
+        public final TextView subject;
+        public final TextView professor;
+        public final TextView location;
 
         public SubjectViewHolder(View parent) {
             this.view = parent;

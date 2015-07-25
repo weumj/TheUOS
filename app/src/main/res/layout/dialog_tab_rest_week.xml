@@ -27,6 +27,13 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center" />
 
+        <ViewStub
+            android:id="@+id/tab_rest_week_stub"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout="@layout/view_tab_rest_reload"
+            android:layout_gravity="center" />
+
         <include layout="@layout/view_toolbar_shadow" />
     </FrameLayout>
 </LinearLayout>

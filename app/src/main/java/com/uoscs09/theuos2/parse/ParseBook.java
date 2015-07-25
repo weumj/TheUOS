@@ -13,11 +13,12 @@ import net.htmlparser.jericho.Source;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 
-public class ParseBook extends JerichoParser<ArrayList<BookItem>> {
+public class ParseBook extends JerichoParser<List<BookItem>> {
     private static final String LOG_TAG = "ParseBook";
 
     private static final String HREF = "href";
@@ -26,7 +27,7 @@ public class ParseBook extends JerichoParser<ArrayList<BookItem>> {
     private static final String COVER = "cover";
     private static final String LI = "li";
 
-    private static class TaskCallable implements Callable<ArrayList<BookItem>> {
+    private static class TaskCallable implements Callable<List<BookItem>> {
         final List<Element> bookHtmlList;
         final int start, end;
 
@@ -37,13 +38,13 @@ public class ParseBook extends JerichoParser<ArrayList<BookItem>> {
         }
 
         @Override
-        public ArrayList<BookItem> call() throws Exception {
+        public List<BookItem> call() throws Exception {
             return parseListElement(bookHtmlList, start, end);
         }
     }
 
     @Override
-    protected ArrayList<BookItem> parseHttpBody(Source source) throws IOException {
+    protected List<BookItem> parseHttpBody(Source source) throws IOException {
         List<Element> briefList = source.getAllElementsByClass("briefList");
         List<Element> bookHtmlList = briefList.get(0).getAllElements(LI);
 
@@ -57,9 +58,9 @@ public class ParseBook extends JerichoParser<ArrayList<BookItem>> {
         }
     }
 
-    private static ArrayList<BookItem> parseListElementUsing2Thread(List<Element> bookHtmlList, int size) {
+    private static List<BookItem> parseListElementUsing2Thread(List<Element> bookHtmlList, int size) {
         int halfSize = size / 2;
-        FutureTask<ArrayList<BookItem>> task1 = new FutureTask<>(new TaskCallable(bookHtmlList, 0, halfSize)),
+        FutureTask<List<BookItem>> task1 = new FutureTask<>(new TaskCallable(bookHtmlList, 0, halfSize)),
                 task2 = new FutureTask<>(new TaskCallable(bookHtmlList, halfSize, size));
 
         AsyncUtil.executeFor(task1);
@@ -95,7 +96,10 @@ public class ParseBook extends JerichoParser<ArrayList<BookItem>> {
         return bookItemList;
     }
 
-    static ArrayList<BookItem> parseListElement(List<Element> bookHtmlList, int start, int end) {
+    private static List<BookItem> parseListElement(List<Element> bookHtmlList, int start, int end) {
+        if (start >= end)
+            return Collections.emptyList();
+
         ArrayList<BookItem> bookItemList = new ArrayList<>();
         for (int i = start; i < end; i++) {
             Element rawBookHtml = bookHtmlList.get(i);
@@ -106,7 +110,7 @@ public class ParseBook extends JerichoParser<ArrayList<BookItem>> {
         return bookItemList;
     }
 
-    static BookItem parseElement(Element rawBookElement) {
+    private static BookItem parseElement(Element rawBookElement) {
         BookItem item = new BookItem();
         Element bookUrl = rawBookElement.getFirstElement(HTMLElementName.A);
         if (bookUrl != null) {
@@ -195,8 +199,17 @@ public class ParseBook extends JerichoParser<ArrayList<BookItem>> {
             return imgSrc;
 
         try {
-            Source source = new Source(HttpRequest.getBody(imgUrl));
-            imgSrc = source.getAllElements(HTMLElementName.IMG).get(0).getAttributeValue(SRC);
+            imgSrc = HttpRequest.Builder.newStringRequestBuilder(imgUrl)
+                    .build()
+                    .wrap(new JerichoParser<String>() {
+                        @Override
+                        protected String parseHttpBody(Source source) throws Exception {
+                            return source.getAllElements(HTMLElementName.IMG)
+                                    .get(0)
+                                    .getAttributeValue(SRC);
+                        }
+                    })
+                    .get();
 
         } catch (Exception e) {
             e.printStackTrace();

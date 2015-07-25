@@ -63,7 +63,7 @@ public abstract class AbsAsyncFragment<T> extends BaseTabFragment {
      * 주어진 비동기 작업을 실행한다.
      */
     @NonNull
-    public final AsyncTask<Void, Void, T> execute(@NonNull AsyncFragmentJob<T> job) {
+    protected final AsyncTask<Void, Void, T> execute(@NonNull AsyncFragmentJob<T> job) {
         InnerJob<T> innerJob = new InnerJob<>(this, job);
 
         sAsyncDataStoreMap.remove(getClass().getName());

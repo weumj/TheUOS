@@ -77,7 +77,7 @@ public class TabTransportFragment extends AbsProgressFragment<Map<String, ArrayL
         }
     }
 
-    protected void execute() {
+    private void execute() {
         empty.setVisibility(View.INVISIBLE);
 
         super.execute(JOB);
@@ -89,9 +89,17 @@ public class TabTransportFragment extends AbsProgressFragment<Map<String, ArrayL
         @Override
         public Map<String, ArrayList<TransportItem>> call() throws Exception {
             Map<String, ArrayList<TransportItem>> map = new SerializableArrayMap<>();
+
+
             for (String s : SeoulOApiUtil.Metro.getValues()) {
                 ArrayList<TransportItem> up = new ArrayList<>();
-                up.addAll(mParser.parse(HttpRequest.getBody(getMetroUrl(s, 1))));
+
+                up.addAll(
+                        HttpRequest.Builder.newStringRequestBuilder(getMetroUrl(s, 1))
+                                .build()
+                                .wrap(mParser)
+                                .get()
+                );
 
                 for (int i = 0; i < up.size(); i++) {
                     TransportItem item = up.get(i);
@@ -99,7 +107,12 @@ public class TabTransportFragment extends AbsProgressFragment<Map<String, ArrayL
                     up.set(i, item);
                 }
 
-                up.addAll(mParser.parse(HttpRequest.getBody(getMetroUrl(s, 2))));
+                up.addAll(
+                        HttpRequest.Builder.newStringRequestBuilder(getMetroUrl(s, 2))
+                                .build()
+                                .wrap(mParser)
+                                .get()
+                );
                 map.put(s, up);
             }
             return map;
@@ -127,7 +140,7 @@ public class TabTransportFragment extends AbsProgressFragment<Map<String, ArrayL
     };
 
 
-    static String getMetroUrl(String where, int inOut) {
+    private static String getMetroUrl(String where, int inOut) {
         return SeoulOApiUtil.HOST + "sample" + "/" + SeoulOApiUtil.TYPE_XML + "/" + SeoulOApiUtil.METRO_ARRIVAL + "/" + "1" + "/" + "3" + "/" + where + "/" + inOut + "/" + SeoulOApiUtil.getWeekTag() + "/";
     }
 

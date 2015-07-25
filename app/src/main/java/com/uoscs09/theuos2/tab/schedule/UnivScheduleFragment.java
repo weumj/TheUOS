@@ -32,8 +32,8 @@ import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.common.PieProgressDrawable;
-import com.uoscs09.theuos2.parse.ParseUtil;
-import com.uoscs09.theuos2.parse.XmlParser;
+import com.uoscs09.theuos2.http.HttpRequest;
+import com.uoscs09.theuos2.parse.XmlParserWrapper;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
@@ -55,23 +55,23 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivScheduleItem>> {
     private static final String URL = OApiUtil.URL_API_MAIN_DB + '?' + OApiUtil.API_KEY + '=' + OApiUtil.UOS_API_KEY;
     private static final String FILE_NAME = "file_univ_schedule";
-    private static final XmlParser<ArrayList<UnivScheduleItem>> UNIV_SCHEDULE_PARSER = OApiUtil.getUnivScheduleParser();
+    private static final XmlParserWrapper<ArrayList<UnivScheduleItem>> UNIV_SCHEDULE_PARSER = OApiUtil.getUnivScheduleParser();
 
-    private ArrayList<UnivScheduleItem> mList = new ArrayList<>();
+    private final ArrayList<UnivScheduleItem> mList = new ArrayList<>();
 
     private ExpandableStickyListHeadersListView mListView;
 
-    Adapter mAdapter;
+    private Adapter mAdapter;
 
-    AlertDialog mItemSelectDialog;
+    private AlertDialog mItemSelectDialog;
 
-    UnivScheduleItem mSelectedItem;
+    private UnivScheduleItem mSelectedItem;
 
-    Dialog mProgressDialog;
+    private Dialog mProgressDialog;
 
     private String mSubTitle;
 
-    private SimpleDateFormat mDateFormat = new SimpleDateFormat("MMMM", Locale.getDefault());
+    private final SimpleDateFormat mDateFormat = new SimpleDateFormat("MMMM", Locale.getDefault());
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -152,7 +152,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
 
     private String mAccount;
 
-    void addUnivScheduleToCalender() {
+    private void addUnivScheduleToCalender() {
         mProgressDialog.show();
 
         AsyncUtil.execute(new AsyncJob.Base<Uri>() {
@@ -185,7 +185,6 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
                     throw new Exception(getString(R.string.tab_univ_schedule_calendar_not_exist));
 
                 } else if (!c.moveToFirst()) {
-
                     c.close();
                     throw new Exception(getString(R.string.tab_univ_schedule_calendar_not_exist));
                 }
@@ -227,17 +226,21 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
         });
     }
 
-    static void writeFile(Context context, ArrayList<UnivScheduleItem> object) throws IOException {
+    private static void writeFile(Context context, ArrayList<UnivScheduleItem> object) throws IOException {
         IOUtil.writeObjectToFile(context, FILE_NAME, object);
     }
 
-    static ArrayList<UnivScheduleItem> readFile(Context context) throws IOException, ClassNotFoundException {
+    private static ArrayList<UnivScheduleItem> readFile(Context context) throws IOException, ClassNotFoundException {
         return IOUtil.readFromFile(context, FILE_NAME);
     }
 
-    static ArrayList<UnivScheduleItem> readFromInternet(Context context) throws Exception {
+    private static ArrayList<UnivScheduleItem> readFromInternet(Context context) throws Exception {
+        ArrayList<UnivScheduleItem> result = HttpRequest.Builder.newConnectionRequestBuilder(URL)
+                .build()
+                .checkNetworkState(context)
+                .wrap(UNIV_SCHEDULE_PARSER)
+                .get();
 
-        ArrayList<UnivScheduleItem> result = ParseUtil.parseXml(context, UNIV_SCHEDULE_PARSER, URL);
         writeFile(context, result);
 
         PrefUtil pref = PrefUtil.getInstance(context);
@@ -322,7 +325,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
         public void onBindViewHolder(int position, UnivScheduleFragment.ViewHolder holder) {
             UnivScheduleItem item = getItem(position);
 
-            holder.item = item;
+            //holder.item = item;
 
             holder.textView1.setText(item.content);
             holder.textView2.setText(item.sch_date);
@@ -366,7 +369,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
             return convertView;
         }
 
-        private SimpleDateFormat dateFormat = new SimpleDateFormat("E", Locale.getDefault());
+        private final SimpleDateFormat dateFormat = new SimpleDateFormat("E", Locale.getDefault());
 
         @Override
         public long getHeaderId(int position) {
@@ -379,8 +382,8 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
     static class ViewHolder extends AbsArrayAdapter.ViewHolder {
         final TextView textView1, textView2;
         final CardView cardView;
-        UnivScheduleItem item;
-        PieProgressDrawable drawable = new PieProgressDrawable();
+        //UnivScheduleItem item;
+        final PieProgressDrawable drawable = new PieProgressDrawable();
 
         @SuppressWarnings("deprecation")
         public ViewHolder(View view) {

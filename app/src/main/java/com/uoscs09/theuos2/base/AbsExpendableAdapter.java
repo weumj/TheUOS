@@ -115,7 +115,7 @@ public abstract class AbsExpendableAdapter<K, V, GVH extends AbsExpendableAdapte
         super.notifyDataSetChanged();
     }
 
-    public static interface ViewHolder {
+    public interface ViewHolder {
     }
 
 }

@@ -23,7 +23,6 @@ public abstract class BaseFragment extends Fragment {
     public void onDetach() {
         AppUtil.releaseResource(this);
         super.onDetach();
-        System.gc();
     }
 
     /**

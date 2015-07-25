@@ -10,7 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
 
 /**
- * source from {@linkplain https://gist.github.com/dcow/9493477}
+ * source from {@linkplain 'https://gist.github.com/dcow/9493477'}
  */
 public class PieProgressDrawable extends Drawable {
 
@@ -18,7 +18,7 @@ public class PieProgressDrawable extends Drawable {
     private final Paint mCentorPaint;
     private RectF mBoundsF;
     private RectF mInnerBoundsF;
-    private final float START_ANGLE = 0.f;
+    private static final float START_ANGLE = 0.f;
     private float mDrawTo;
 
     private CharSequence mText;
@@ -113,7 +113,7 @@ public class PieProgressDrawable extends Drawable {
     @Override
     protected boolean onLevelChange(int level) {
         final float drawTo = START_ANGLE + ((float) 360 * level) / 100f;
-        boolean update = drawTo != mDrawTo;
+        boolean update = Math.abs(drawTo - mDrawTo) > 0.1f;
         mDrawTo = drawTo;
         return update;
     }

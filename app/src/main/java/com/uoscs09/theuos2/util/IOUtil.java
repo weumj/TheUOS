@@ -2,6 +2,7 @@ package com.uoscs09.theuos2.util;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.uoscs09.theuos2.async.AsyncUtil;
 
@@ -183,13 +184,17 @@ public class IOUtil {
         if (dir == null || !dir.isDirectory())
             return;
         File[] children = dir.listFiles();
+
+        if(children == null)
+            return;
+
         try {
             for (File file : children) {
                 if (file.isDirectory())
                     clearApplicationFile(file);
                 else {
-                    //noinspection ResultOfMethodCallIgnored
-                    file.delete();
+                    if(!file.delete())
+                        Log.e("IOUtil", "Deleting file [" + file + "] has failed.");
                 }
             }
         } catch (Exception e) {

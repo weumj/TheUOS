@@ -53,7 +53,7 @@ public class LibrarySeatListService extends RemoteViewsService {
                 vacancySeatCount = 0;
             } else {
                 try {
-                    vacancySeatCount = Integer.valueOf(item.vacancySeat.trim());
+                    vacancySeatCount = Integer.parseInt(item.vacancySeat.trim());
                 } catch (Exception e) {
                     vacancySeatCount = 0;
                 }

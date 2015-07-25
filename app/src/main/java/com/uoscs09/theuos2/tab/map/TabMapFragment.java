@@ -85,6 +85,9 @@ public class TabMapFragment extends BaseFragment implements OnTouchListener, Vie
                 sendClickEvent("forward");
                 mWebView.goForward();
                 break;
+
+            default:
+                break;
         }
     }
 
@@ -115,7 +118,6 @@ public class TabMapFragment extends BaseFragment implements OnTouchListener, Vie
             AppUtil.unbindDrawables(mWebView);
             mWebView.destroy();
             mWebView = null;
-            System.gc();
         }
         super.onDestroyView();
     }

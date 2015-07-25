@@ -1,97 +1,173 @@
 package com.uoscs09.theuos2.parse;
 
 import com.uoscs09.theuos2.tab.announce.AnnounceItem;
-import com.uoscs09.theuos2.util.StringUtil;
+
+import net.htmlparser.jericho.Element;
+import net.htmlparser.jericho.HTMLElementName;
+import net.htmlparser.jericho.Source;
 
 import java.util.ArrayList;
-//FIXME
-public class ParseAnnounce implements IParser<String, ArrayList<AnnounceItem>> {
-    public static final int SCHOLAR = 1;
+import java.util.List;
 
-	private final static String TD = "<td";
-	private final static String RM = "(>|</td>|\n|\t)";
-	private final static String RM2 = "')";
-	private final static String RMS = "(</a>|</td>|\n|\t)";
-	private final static String ON_CLCK = "onclick=\"";
-	private final static String HREF = "<a href=\"/";
-	private final static String SPLITA = "\">";
-	private final static String SPLIT = ";\">";
-	private final static String SPLIT2 = ", '";
-	private final static String RMO = "scholarship.do?";
-	private final static String SPLIT3 = "title\">";
-	private final static String SPLIT4 = "\" ";
-    private int howTo;
+public abstract class ParseAnnounce extends JerichoParser<ArrayList<AnnounceItem>> {
 
-    public void setHowTo(int howTo){
-        this.howTo = howTo;
+    public static ParseAnnounce getParser() {
+        return new Normal();
     }
 
-    /**  호출하기전 반드시 setHowTo(int) 를 호출할 것*/
-	@Override
-	public ArrayList<AnnounceItem> parse(String param) {
-		String[] list = param.split("<tbody>")[1].split("<tr>");
-		switch (howTo) {
-		case SCHOLAR:
-			return parseScholarShip(list);
-		default:
-			return parseAnnounce(list);
-		}
-	}
+    public static ParseAnnounce getScholarshipParser() {
+        return new Scholarship();
+    }
 
-	private ArrayList<AnnounceItem> parseAnnounce(String[] list) {
-		ArrayList<AnnounceItem> itemList = new ArrayList<>();
-		String type, onClick, title, date;
-		String[] tempArray, a;
-		for (String temp : list) {
-			try {
-				tempArray = temp.split(TD);
+    @Override
+    protected ArrayList<AnnounceItem> parseHttpBody(Source source) throws Exception {
+        Element noticeTable = source.getFirstElementByClass(getTableClassName());
 
-                if(tempArray .length > 1) {
-                    type = StringUtil.removeRegex(tempArray[1], RM);
+        Element tbody = noticeTable.getFirstElement(HTMLElementName.TBODY);
 
-                    a = tempArray[2].split(SPLIT);
-                    onClick = StringUtil.remove(a[0].split(ON_CLCK)[1].split(SPLIT2)[1], RM2);
+        List<Element> noticeList = tbody.getAllElements(HTMLElementName.TR);
 
-                    title = a[1].substring(0, a[1].length() - 17);
+        ArrayList<AnnounceItem> list = new ArrayList<>();
+        for (Element notice : noticeList) {
+            AnnounceItem item = parseElement(notice);
+            if (item != null)
+                list.add(item);
+        }
 
-                    date = StringUtil.removeRegex(tempArray[4], RM);
+        return list;
+    }
 
-                    itemList.add(new AnnounceItem(type, title, date, onClick));
-                }
+    private AnnounceItem parseElement(Element element) {
+        try {
+            AnnounceItem item = new AnnounceItem();
 
-			} catch (Exception e) {
-                e.printStackTrace();
-			}
-		}
-		return itemList;
-	}
+            List<Element> childElementList = element.getAllElements(HTMLElementName.TD);
+            if (checkElementIsNoticeType(element))
+                item.type = AnnounceItem.TYPE_NOTICE;
+            else
+                item.number = Integer.parseInt(childElementList.get(0).getTextExtractor().toString());
 
-	private ArrayList<AnnounceItem> parseScholarShip(String[] list) {
-		ArrayList<AnnounceItem> itemList = new ArrayList<>();
-		String type, onClick, title, date;
-		String[] tempArray, a;
-		for (String temp : list) {
-			try {
-				tempArray = temp.split(TD);
+            Element titleElement = childElementList.get(1);
+            item.title = titleElement.getTextExtractor().toString();
+            item.pageURL = extractPageURL(titleElement.getFirstElement(HTMLElementName.A)
+                    .getAttributeValue(getPageURLElementAttrName()));
 
-                if(tempArray .length > 1) {
-                    type = StringUtil.removeRegex(tempArray[1].split(SPLITA)[1], RM).trim();
+            item.date = childElementList.get(3).getTextExtractor().toString();
 
-                    a = tempArray[2].split(HREF)[1].split(SPLIT4);
+            Element fileDownElement = childElementList.get(5).getFirstElement(HTMLElementName.A);
+            if (fileDownElement != null) {
+                item.attachedFileUrl = extractFileDownURL(fileDownElement.getAttributeValue("onclick"));
+            }
 
-                    onClick = StringUtil.remove(a[0].replace(StringUtil.CODE_AMP_CODE, StringUtil.AMP), RMO);
+            return item;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
-                    title = StringUtil.removeRegex(a[1].split(SPLIT3)[1], RMS).trim();
+    abstract String getTableClassName();
 
-                    date = StringUtil.removeRegex(tempArray[4].split(SPLITA)[1], RM).trim();
 
-                    itemList.add(new AnnounceItem(type, title, date, onClick));
-                }
+    abstract boolean checkElementIsNoticeType(Element e);
 
-			} catch (Exception e) {
-                e.printStackTrace();
-			}
-		}
-		return itemList;
-	}
+    abstract String getPageURLElementAttrName();
+
+    abstract String extractPageURL(String str);
+
+    abstract String extractFileDownURL(String str);
+
+    private static class Normal extends ParseAnnounce {
+        @Override
+        protected String getTableClassName() {
+            return "listType01";
+        }
+
+        @Override
+        boolean checkElementIsNoticeType(Element e) {
+            return "on".equals(e.getAttributeValue("class"));
+        }
+
+        @Override
+        String getPageURLElementAttrName() {
+            return "onclick";
+        }
+
+        @Override
+        String extractPageURL(String onClick) {
+            int first = onClick.indexOf('\'') + 1;
+            int second = onClick.indexOf('\'', first);
+            int third = onClick.indexOf('\'', second + 1) + 1;
+            int fourth = onClick.indexOf('\'', third);
+
+            return "http://www.uos.ac.kr/korNotice/view.do?sort=" + onClick.substring(first, second) +
+                    "&seq=" + onClick.substring(third, fourth)
+                    + "&viewAuth=Y&writeAuth=N"
+                    + "&list_id=";
+        }
+
+        @Override
+        String extractFileDownURL(String href) {
+            int first = href.indexOf('\'') + 1;
+            int second = href.indexOf('\'', first);
+            int third = href.indexOf('\'', second + 1) + 1;
+            int fourth = href.indexOf('\'', third);
+
+
+            return "http://www.uos.ac.kr/common/FileDown.do?seq=" + href.substring(first, second)
+                    + "&f_seq=" + href.substring(third, fourth)
+                    + "&list_id=";
+        }
+
+
+    }
+
+    private static class Scholarship extends ParseAnnounce {
+
+        @Override
+        protected String getTableClassName() {
+            return "notice_tb ";
+        }
+
+        @Override
+        boolean checkElementIsNoticeType(Element e) {
+            return "left_C fontBold line_h_41".equals(e.getFirstElement(HTMLElementName.TD).getAttributeValue("class"));
+        }
+
+        @Override
+        String getPageURLElementAttrName() {
+            return "href";
+        }
+
+
+        @Override
+        String extractPageURL(String href) {
+            int first = href.indexOf('\'') + 1;
+            int second = href.indexOf('\'', first);
+            int third = href.indexOf('\'', second + 1) + 1;
+            int fourth = href.indexOf('\'', third);
+
+            return "http://scholarship.uos.ac.kr/scholarship/notice/notice/view.do?brdDate=" + href.substring(first, second)
+                    + "&brdSeq=" + href.substring(third, fourth)
+                    + "&brdBbsseq=1";
+
+        }
+
+        @Override
+        String extractFileDownURL(String href) {
+            int first = href.indexOf('\'') + 1;
+            int second = href.indexOf('\'', first);
+            int third = href.indexOf('\'', second + 1) + 1;
+            int fourth = href.indexOf('\'', third);
+            int fifth = href.indexOf('\'', fourth + 1) + 1;
+            int sixth = href.indexOf('\'', fifth);
+
+            return "http://scholarship.uos.ac.kr/scholarship/download.do?brdDate=" + href.substring(first, second)
+                    + "&brdSeq=" + href.substring(third, fourth)
+                    + "&filSeq=" + href.substring(fifth, sixth)
+                    + "&brdBbsseq=1";
+        }
+
+    }
+
 }

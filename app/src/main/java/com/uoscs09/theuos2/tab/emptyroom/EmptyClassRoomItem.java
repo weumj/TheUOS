@@ -101,7 +101,7 @@ public class EmptyClassRoomItem implements Parcelable {
                                 return 0;
                         }
 
-                        return isReverse ? -(l.compareTo(r)) : l.compareTo(r);
+                        return isReverse ? r.compareTo(l) : l.compareTo(r);
                     }
                 };
 

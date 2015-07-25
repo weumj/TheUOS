@@ -11,6 +11,7 @@
     <string name="canceled">취소되었습니다.</string>
     <string name="cancel">취소</string>
     <string name="success">성공하였습니다.</string>
+    <string name="saved_file">이(가) 저장되었습니다.</string>
     <string name="saved">에 저장되었습니다.</string>
     <string name="save">저장되었습니다.</string>
     <string name="deleted">삭제되었습니다.</string>
@@ -20,12 +21,14 @@
 
     <string name="finish_update">업데이트 완료</string>
     <string name="progress_finish">작업 완료</string>
+    <string name="progress_downloading">다운로드 중…</string>
     <string name="progress_while_updating">로딩중…</string>
     <string name="progress_while_loading" translatable="false">Loading…</string>
     <string name="progress_ongoing">처리 중…</string>
     <string name="progress_wait">잠시 후에 시도하세요.</string>
     <string name="progress_fail">로딩 실패</string>
     <string name="progress_ongoing_another">다른 작업이 진행중입니다.</string>
+    <string name="progress_retry">다시시도</string>
     <string name="before_finish">\'뒤로\'버튼을 한번 더 누르시면 종료됩니다.</string>
 
     <string name="title_section0_home">The UOS</string>
@@ -70,6 +73,8 @@
     <string name="tab_announce_invalid_category">카테고리를 선택해 주세요.</string>
     <string name="tab_announce_plz_select_page">이동할 페이지를 선택해 주세요.</string>
     <string name="tab_announce_show_next_page">다음 페이지</string>
+    <string name="tab_announce_type_notice">공지</string>
+    <string name="tab_announce_no_download_link">다운로드 할 파일이 없습니다.</string>
 
     <string name="tab_book_book_opt">도서 검색 옵션</string>
     <string name="tab_book_book_opt_sub">분류와 정렬 방식을 선택해 주세요</string>

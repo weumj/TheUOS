@@ -24,7 +24,7 @@ class AnnounceAdapter extends AbsArrayAdapter<AnnounceItem, AnnounceAdapter.Hold
 
     @Override
     public void onBindViewHolder(int position, Holder holder) {
-        String[] array = getItem(position).toStringArray();
+        String[] array = getItem(position).toStringArray(getContext());
 
         int i = 0;
         for (TextView tv : holder.textArray) {

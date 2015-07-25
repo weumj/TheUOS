@@ -30,7 +30,7 @@ public class TimeTable implements Parcelable, Serializable, IParser.AfterParsabl
     public int maxTime = 0;
 
     // Key - 과목 이름 hashCode, Value - 과목의 시간 & 장소 정보(SubjectItem2.ClassInformation 클래스)의 리스트
-    SerializableArrayMap<String, ArrayList<SubjectItem2.ClassInformation>> mClassInformationTable;
+    private SerializableArrayMap<String, ArrayList<SubjectItem2.ClassInformation>> mClassInformationTable;
 
 
     public TimeTable() {

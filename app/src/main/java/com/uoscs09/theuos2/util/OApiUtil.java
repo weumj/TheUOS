@@ -2,6 +2,7 @@ package com.uoscs09.theuos2.util;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.uoscs09.theuos2.parse.XmlParser;
+import com.uoscs09.theuos2.parse.XmlParserWrapper;
 import com.uoscs09.theuos2.tab.schedule.UnivScheduleItem;
 
 import java.util.ArrayList;
@@ -15,15 +16,15 @@ public class OApiUtil {
 
     //********** Parser *******************
 
-    public static XmlParser<ArrayList<UnivScheduleItem>> getUnivScheduleParser() {
-        return XmlParser.newReflectionParser(UnivScheduleItem.class, "root", "schList", "list");
+    public static XmlParserWrapper<ArrayList<UnivScheduleItem>> getUnivScheduleParser() {
+        return new XmlParserWrapper<>(XmlParser.newReflectionParser(UnivScheduleItem.class, "root", "schList", "list"));
     }
 
     /**
      * for CoursePlan, EmptyClassRoomItem, SubjectItem2, SubjectInfoItem,
      */
-    public static <T> XmlParser<ArrayList<T>> getParser(Class<? extends T> clazz) {
-        return XmlParser.newReflectionParser(clazz, "root", "mainlist", "list");
+    public static <T> XmlParserWrapper<ArrayList<T>> getParser(Class<? extends T> clazz) {
+        return new XmlParserWrapper<>(XmlParser.newReflectionParser(clazz, "root", "mainlist", "list"));
     }
 
     //********** Parser end *******************
@@ -92,7 +93,7 @@ public class OApiUtil {
             getYear();
         }
         if (sYears == null) {
-            int year = Integer.valueOf(sThisYear);
+            int year = Integer.parseInt(sThisYear);
             sYears = new String[]{
                     Integer.toString((year - 2)),
                     Integer.toString((year - 1)),

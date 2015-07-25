@@ -44,7 +44,7 @@ public class SettingsFileSelectDialogFragment extends DialogFragment {
     private String path;
     private ArrayList<File> mFileList;
     private ArrayAdapter<File> mFileArrayAdapter;
-    private final String ROOT = "/";
+    private static final String ROOT = "/";
     private String PATH_KEY;
     private int titleId;
     private Toolbar mToolbar;
@@ -119,7 +119,7 @@ public class SettingsFileSelectDialogFragment extends DialogFragment {
         super.onResume();
     }
 
-    void loadFileListToListView(File file) {
+    private void loadFileListToListView(File file) {
         if (file == null) {
             AppUtil.showToast(getActivity(), R.string.setting_save_route_error_parent, true);
             return;
@@ -167,7 +167,7 @@ public class SettingsFileSelectDialogFragment extends DialogFragment {
                 .create();
     }
 
-    void putPathToPref(Context context, String path) {
+    private void putPathToPref(Context context, String path) {
         PrefUtil.getInstance(context).put(PATH_KEY, path);
     }
 

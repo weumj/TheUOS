@@ -15,7 +15,7 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
-public abstract class XmlParser<T> implements IParser<InputStream, T> {
+public abstract class XmlParser<T> extends IParser.Base<InputStream, T> {
 
     @Override
     public T parse(InputStream is) throws Exception {
@@ -58,6 +58,8 @@ public abstract class XmlParser<T> implements IParser<InputStream, T> {
                     break;
                 case XmlPullParser.START_TAG:
                     depth++;
+                    break;
+                default:
                     break;
             }
         }
@@ -117,11 +119,14 @@ public abstract class XmlParser<T> implements IParser<InputStream, T> {
 
             case "int":
                 try {
-                    f.setInt(object, text == null ? 0 : Integer.valueOf(text));
+                    f.setInt(object, text == null ? 0 : Integer.parseInt(text));
                     return true;
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }
+                break;
+
+            default:
                 break;
         }
 
@@ -166,7 +171,7 @@ public abstract class XmlParser<T> implements IParser<InputStream, T> {
         return newInstance;
     }
 
-    public static <T> XmlParser<ArrayList<T>> newReflectionParser(Class<? extends T> clazz, String docRootTag, String listParentTag, String listItemTag){
+    public static <T> XmlParser<ArrayList<T>> newReflectionParser(Class<? extends T> clazz, String docRootTag, String listParentTag, String listItemTag) {
         return new SimpleReflectionParser<>(clazz, docRootTag, listParentTag, listItemTag);
     }
 

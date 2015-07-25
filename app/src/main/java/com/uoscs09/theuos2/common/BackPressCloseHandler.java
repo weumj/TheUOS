@@ -2,7 +2,7 @@ package com.uoscs09.theuos2.common;
 
 /**
  * source from JavaCan : 
- * {@link http://javacan.tistory.com/entry/close-androidapp-by-successive-back-press}<br>
+ * {@link 'http://javacan.tistory.com/entry/close-androidapp-by-successive-back-press'}<br>
  * 뒤로가기 버튼을 두번 눌러 앱을 종료시키는 일을 처리하는 클래스
  */
 public class BackPressCloseHandler {

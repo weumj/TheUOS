@@ -42,7 +42,7 @@ public class SettingsAnnounceNotificationFragment extends PreferenceFragment imp
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, @NonNull Preference preference) {
         switch (preference.getTitleRes()) {
             case R.string.setting_check_announce_service:
-                AppUtil.startOrStopServiceAnnounce(getActivity());
+               //AppUtil.startOrStopServiceAnnounce(getActivity());
                 return true;
 
             case R.string.setting_noti_time:
@@ -81,7 +81,7 @@ public class SettingsAnnounceNotificationFragment extends PreferenceFragment imp
         SharedPreferences pref = getPreferenceScreen().getSharedPreferences();
         pref.registerOnSharedPreferenceChangeListener(this);
 
-        String[] keys = {PrefUtil.KEY_KEYWORD_ANOUNCE, PrefUtil.KEY_CHECK_ANOUNCE_SERVICE, PrefUtil.KEY_NOTI_TIME};
+        String[] keys = {PrefUtil.KEY_KEYWORD_ANOUNCE, PrefUtil.KEY_CHECK_ANNOUNCE_SERVICE, PrefUtil.KEY_NOTI_TIME};
         for (String key : keys) {
             onSharedPreferenceChanged(pref, key);
         }
@@ -130,7 +130,7 @@ public class SettingsAnnounceNotificationFragment extends PreferenceFragment imp
             break;
 
 
-            case PrefUtil.KEY_CHECK_ANOUNCE_SERVICE: {
+            case PrefUtil.KEY_CHECK_ANNOUNCE_SERVICE: {
 
                 findPreference(key).setSummary(sharedPreferences.getBoolean(key, false) ? R.string.setting_check_announce_service_desc_enable : R.string.setting_check_announce_service_desc_disable);
 
@@ -139,6 +139,8 @@ public class SettingsAnnounceNotificationFragment extends PreferenceFragment imp
             }
             break;
 
+            default:
+                break;
 
         }
     }

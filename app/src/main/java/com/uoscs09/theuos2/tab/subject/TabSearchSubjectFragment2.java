@@ -30,8 +30,8 @@ import com.uoscs09.theuos2.async.AsyncFragmentJob;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.customview.CustomHorizontalScrollView;
 import com.uoscs09.theuos2.customview.NestedListView;
-import com.uoscs09.theuos2.parse.ParseUtil;
-import com.uoscs09.theuos2.parse.XmlParser;
+import com.uoscs09.theuos2.http.HttpRequest;
+import com.uoscs09.theuos2.parse.XmlParserWrapper;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.StringUtil;
@@ -74,7 +74,7 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
 
     private final CoursePlanDialogFragment mCoursePlanDialogFragment = new CoursePlanDialogFragment();
 
-    private static final XmlParser<ArrayList<SubjectItem2>> SUBJECT_PARSER = OApiUtil.getParser(SubjectItem2.class);
+    private static final XmlParserWrapper<ArrayList<SubjectItem2>> SUBJECT_PARSER = OApiUtil.getParser(SubjectItem2.class);
 
 
     @Override
@@ -199,7 +199,7 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
         return rootView;
     }
 
-    void onTabClick(int index) {
+    private void onTabClick(int index) {
         if (mSubjectList.isEmpty()) {
             return;
         }
@@ -304,14 +304,14 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
                 .create();
     }
 
-    void execute() {
+    private void execute() {
         mEmptyView.setVisibility(View.INVISIBLE);
 
         super.execute(JOB);
     }
 
 
-    private AsyncFragmentJob.Base<ArrayList<SubjectItem2>> JOB = new AsyncFragmentJob.Base<ArrayList<SubjectItem2>>() {
+    private final AsyncFragmentJob.Base<ArrayList<SubjectItem2>> JOB = new AsyncFragmentJob.Base<ArrayList<SubjectItem2>>() {
 
         @Override
         public ArrayList<SubjectItem2> call() throws Exception {
@@ -348,7 +348,14 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
 
             mOApiParams.put("subjectNm", URLEncoder.encode(mSearchEditText.getText().toString(), StringUtil.ENCODE_EUC_KR));
 
-            return ParseUtil.parseXml(getActivity(), SUBJECT_PARSER, query, mOApiParams);
+
+            return HttpRequest.Builder.newConnectionRequestBuilder(query)
+                    .setParamsEncoding(StringUtil.ENCODE_EUC_KR)
+                    .setParams(mOApiParams)
+                    .build()
+                    .checkNetworkState(getActivity())
+                    .wrap(SUBJECT_PARSER)
+                    .get();
         }
 
         @Override
@@ -589,6 +596,8 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
                     case 5:// 법학
                         table.put("subDept", "A202200320");
                         break;
+                    default:
+                        break;
                 }
                 break;
             case 1:// 경영대학
@@ -617,6 +626,9 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
                         break;
                     case 5:
                         table.put("subDept", "A200200120");// -컴퓨터과학부
+                        break;
+
+                    default:
                         break;
                 }
                 break;

@@ -54,7 +54,7 @@ public class ScoreFragment extends AbsAsyncFragment<ArrayList<ScoreItem>> {
 
         View dialogView = View.inflate(context, R.layout.dialog_score, null);
         datePicker = (NumberPicker) dialogView.findViewById(R.id.score_datePicker);
-        int currentYear_1 = Integer.valueOf(OApiUtil.getYear());
+        int currentYear_1 = Integer.parseInt(OApiUtil.getYear());
         datePicker.setMaxValue(currentYear_1);
         datePicker.setMinValue(2007);
         datePicker.setValue(currentYear_1);
@@ -150,20 +150,35 @@ public class ScoreFragment extends AbsAsyncFragment<ArrayList<ScoreItem>> {
             table.put(OApiUtil.YEAR, String.valueOf(datePicker.getValue()));
             table.put(OApiUtil.TERM, termPicker.getValue() == 1 ? "A10" : "A20");
 
-            String str = HttpRequest.getBody(getActivity(), "http://wise.uos.ac.kr/uosdoc/api.ApiApiSubjectList.oapi", StringUtil.ENCODE_EUC_KR, table, StringUtil.ENCODE_EUC_KR);
-            ArrayList<ArrayList<String>> numList = mSubjectListParser.parse(str);
+            ArrayList<ArrayList<String>> numList = HttpRequest.Builder
+                    .newStringRequestBuilder("http://wise.uos.ac.kr/uosdoc/api.ApiApiSubjectList.oapi")
+                    .setParams(table)
+                    .setParamsEncoding(StringUtil.ENCODE_EUC_KR)
+                    .setResultEncoding(StringUtil.ENCODE_EUC_KR)
+                    .build()
+                    .wrap(mSubjectListParser)
+                    .get();
 
-            ArrayList<String> item;
-            String body;
+
+            HttpRequest.Builder<String> requestBuilder = HttpRequest.Builder
+                    .newStringRequestBuilder("http://wise.uos.ac.kr/uosdoc/api.ApiUcsLecturerEstimateResultInq.oapi")
+                    .setParams(table)
+                    .setParamsEncoding(StringUtil.ENCODE_EUC_KR)
+                    .setResultEncoding(StringUtil.ENCODE_EUC_KR);
+
             ArrayList<ScoreItem> list = new ArrayList<>();
             int size = numList.size();
             for (int i = 0; i < size; i++) {
-                item = numList.get(i);
+                ArrayList<String> item = numList.get(i);
                 table.put(OApiUtil.SUBJECT_NO, item.get(0));
                 table.put(OApiUtil.SUBJECT_NAME, item.get(1));
-                body = HttpRequest.getBody(getActivity(), "http://wise.uos.ac.kr/uosdoc/api.ApiUcsLecturerEstimateResultInq.oapi", StringUtil.ENCODE_EUC_KR, table, StringUtil.ENCODE_EUC_KR);
 
-                list.addAll(mParser.parse(body));
+                list.addAll(
+                        requestBuilder.build()
+                                .wrap(mParser)
+                                .get()
+                );
+
             }
 
             table.remove(OApiUtil.SUBJECT_NO);
@@ -171,7 +186,6 @@ public class ScoreFragment extends AbsAsyncFragment<ArrayList<ScoreItem>> {
             return list;
         }
     };
-
 
 
     @Override

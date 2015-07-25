@@ -22,11 +22,12 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.async.AsyncJob;
 import com.uoscs09.theuos2.async.AsyncUtil;
+import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.common.PieProgressDrawable;
 import com.uoscs09.theuos2.http.HttpRequest;
+import com.uoscs09.theuos2.parse.JerichoParser;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.AppUtil.AppTheme;
 import com.uoscs09.theuos2.util.PrefUtil;
@@ -45,6 +46,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
     private AlertDialog mThemeSelectorDialog;
 
     private static final String TAG = "SettingsFragment";
+    private static final String APP_URL = "https://play.google.com/store/apps/details?id=com.uoscs09.theuos2";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -125,62 +127,66 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
     }
 
     private void showAppVersionDialog() {
-        final String URL = "https://play.google.com/store/apps/details?id=com.uoscs09.theuos2";
+
         final Dialog progress = AppUtil.getProgressDialog(getActivity(), false, getText(R.string.progress_while_updating), null);
         progress.show();
 
-        AsyncUtil.execute(new AsyncJob.Base<String>() {
-            @Override
-            public String call() throws Exception {
-                String body = HttpRequest.getBody(URL);
-                Source s = new Source(body);
-                Element e = s.getAllElementsByClass("details-section metadata").get(0)
-                        .getAllElementsByClass("details-section-contents").get(0).getAllElementsByClass("meta-info").get(3)
-                        .getAllElementsByClass("content").get(0);
-                return e.getTextExtractor().toString().trim();
+        HttpRequest.Builder.newStringRequestBuilder(APP_URL)
+                .build()
+                //.checkNetworkState(getActivity())
+                .wrap(
+                        new JerichoParser<String>() {
+                            @Override
+                            protected String parseHttpBody(Source source) throws Exception {
+                                Element e = source.getAllElementsByClass("details-section metadata").get(0)
+                                        .getAllElementsByClass("details-section-contents").get(0).getAllElementsByClass("meta-info").get(3)
+                                        .getAllElementsByClass("content").get(0);
+                                return e.getTextExtractor().toString().trim();
+                            }
+                        }
+                )
+                .getAsync(
+                        new Request.ResultListener<String>() {
+                            @Override
+                            public void onResult(String result) {
+                                progress.dismiss();
+                                String thisVersion = getString(R.string.setting_app_version_name);
+                                if (thisVersion.equals(result)) {
+                                    AppUtil.showToast(getActivity(), R.string.setting_app_version_update_this_new, true);
+                                } else {
 
-            }
-            @Override
-            public void onResult(String result) {
-                String thisVersion = getString(R.string.setting_app_version_name);
-                if (thisVersion.equals(result)) {
-                    AppUtil.showToast(getActivity(), R.string.setting_app_version_update_this_new, true);
-                } else {
+                                    TextView tv = new TextView(getActivity());
+                                    tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+                                    tv.setPadding(100, 20, 20, 20);
 
-                    TextView tv = new TextView(getActivity());
-                    tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
-                    tv.setPadding(100, 20, 20, 20);
+                                    Formatter f = new Formatter();
+                                    f.format(getString(R.string.setting_app_version_update_this_old), thisVersion);
+                                    tv.setText(f.toString() + " " + result);
+                                    f.close();
 
-                    Formatter f = new Formatter();
-                    f.format(getString(R.string.setting_app_version_update_this_old), thisVersion);
-                    tv.setText(f.toString() + " " + result);
-                    f.close();
-
-                    AlertDialog d = new AlertDialog.Builder(getActivity())
-                            .setTitle(R.string.setting_app_version_update_require)
-                            .setIcon(R.drawable.theme_ic_action_action_about)
-                            .setPositiveButton(R.string.update, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    startActivity(AppUtil.setWebPageIntent(URL));
+                                    AlertDialog d = new AlertDialog.Builder(getActivity())
+                                            .setTitle(R.string.setting_app_version_update_require)
+                                            .setIcon(R.drawable.theme_ic_action_action_about)
+                                            .setPositiveButton(R.string.update, new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    startActivity(AppUtil.setWebPageIntent(APP_URL));
+                                                }
+                                            })
+                                            .setNegativeButton(R.string.later, null)
+                                            .create();
+                                    d.show();
                                 }
-                            })
-                            .setNegativeButton(R.string.later, null)
-                            .create();
-                    d.show();
-                }
-            }
-
-            @Override
-            public void exceptionOccured(Exception e) {
-                AppUtil.showErrorToast(getActivity(), e, true);
-            }
-
-            @Override
-            public void onPostExcute() {
-                progress.dismiss();
-            }
-        });
+                            }
+                        },
+                        new Request.ErrorListener() {
+                            @Override
+                            public void onError(Exception e) {
+                                progress.dismiss();
+                                AppUtil.showErrorToast(getActivity(), e, true);
+                            }
+                        }
+                );
     }
 
     /**
@@ -236,7 +242,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
      * // ActionBar text, colorPrimary, colorPrimaryDark (또는 비슷한 색)<br>
      * colorText, colorDrawableCentor, colorDrawableBorder
      */
-    static final int[][] THEME_COLORS_RES = {
+    private static final int[][] THEME_COLORS_RES = {
             {R.color.material_deep_teal_500, android.R.color.white, R.color.primary_material_light},
             {R.color.primary_dark_material_dark, android.R.color.white, R.color.primary_dark_material_dark},
             {R.color.primary_dark_material_dark, R.color.primary_material_dark, R.color.primary_dark_material_dark},
@@ -395,6 +401,9 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
                 TrackerUtil.getInstance(this).sendEvent(TAG, "enable home fragment", "" + sharedPreferences.getBoolean(key, true));
 
                 getActivity().setResult(AppUtil.RELAUNCH_ACTIVITY);
+                break;
+
+            default:
                 break;
         }
     }

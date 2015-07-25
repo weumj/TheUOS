@@ -702,7 +702,7 @@ public class AppUtil {
     /**
      * 공지사항 알리미 서비스를 시작/정지한다.
      */
-    public static boolean startOrStopServiceAnnounce(Context context) {
+    public static void startOrStopServiceAnnounce(Context context) {
         /*boolean isServiceEnable = PrefUtil.getInstance(context).get(context.getString(R.string.pref_key_check_anounce_service), true);
         Intent service = new Intent(context, ServiceForAnnounce.class);
 
@@ -714,7 +714,7 @@ public class AppUtil {
 
         return isServiceEnable;
         */
-        return true;
+       // return true;
     }
 
     /**

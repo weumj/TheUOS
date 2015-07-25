@@ -3,44 +3,45 @@ package com.uoscs09.theuos2.tab.score;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ScoreItem implements Parcelable {
-	public String title;
-	public List<DetailScoreItem> list;
+    public String title;
+    public List<DetailScoreItem> list = new ArrayList<>();
 
-	public ScoreItem(String title, List<DetailScoreItem> list) {
-		this.list = list;
-		this.title = title;
-	}
-	
-	private ScoreItem(Parcel p) {
-		title = p.readString();
-		p.readList(list, DetailScoreItem.class.getClassLoader());
-	}
+    public ScoreItem(String title, List<DetailScoreItem> list) {
+        this.list.addAll(list);
+        this.title = title;
+    }
 
-	@Override
-	public int describeContents() {
-		return 0;
-	}
+    private ScoreItem(Parcel p) {
+        title = p.readString();
+        p.readList(list, DetailScoreItem.class.getClassLoader());
+    }
 
-	@Override
-	public void writeToParcel(Parcel dest, int flags) {
-		dest.writeString(title);
-		dest.writeList(list);
-	}
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 
-	public static final Creator<ScoreItem> CREATOR = new Creator<ScoreItem>() {
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(title);
+        dest.writeList(list);
+    }
 
-		@Override
-		public ScoreItem createFromParcel(Parcel source) {
-			return new ScoreItem(source);
-		}
+    public static final Creator<ScoreItem> CREATOR = new Creator<ScoreItem>() {
 
-		@Override
-		public ScoreItem[] newArray(int size) {
-			return new ScoreItem[size];
-		}
+        @Override
+        public ScoreItem createFromParcel(Parcel source) {
+            return new ScoreItem(source);
+        }
 
-	};
+        @Override
+        public ScoreItem[] newArray(int size) {
+            return new ScoreItem[size];
+        }
+
+    };
 }

@@ -1,31 +1,6 @@
 package com.uoscs09.theuos2.tab.announce;
 
-import android.annotation.SuppressLint;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
-import android.content.Intent;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
-import android.os.IBinder;
-import android.support.v4.app.NotificationCompat;
-import android.text.Html;
-import android.util.Log;
-
-import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.http.HttpRequest;
-import com.uoscs09.theuos2.parse.ParseAnnounce;
-import com.uoscs09.theuos2.util.AppUtil;
-import com.uoscs09.theuos2.util.PrefUtil;
-import com.uoscs09.theuos2.util.StringUtil;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
 
 /**
  * 공지사항 알리미가 실행되는 {@code Service}<br>
@@ -33,7 +8,9 @@ import java.util.Locale;
  * 현재 구현 방식은 서버를 사용하지 않는 방식이다. <br>
  * 이를 위해 사용자의 핸드폰에서 특정 시간마다 처리를 하는 방향으로 설정되었다. <br>
  */
-public class ServiceForAnnounce extends Service {
+@Deprecated
+public abstract class ServiceForAnnounce extends Service {
+    /*
     protected static final String TAG = "Service_Announce";
     protected static final long WAIT_TIME = 2 * 60 * 60 * 1000;
     protected static final long WAIT_MIN = 5000;
@@ -44,9 +21,6 @@ public class ServiceForAnnounce extends Service {
     protected PrefUtil mPrefUtil;
     protected boolean isServiceEnabled;
 
-    /**
-     * 접속할 URL
-     */
     protected static final String[] URL_LIST = {
             "http://www.uos.ac.kr/korNotice/list.do?list_id=FA1&pageIndex=1",
             "http://www.uos.ac.kr/korNotice/list.do?list_id=FA2&pageIndex=1",
@@ -61,7 +35,7 @@ public class ServiceForAnnounce extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (mPrefUtil == null)
             mPrefUtil = PrefUtil.getInstance(getApplicationContext());
-        isServiceEnabled = mPrefUtil.get(PrefUtil.KEY_CHECK_ANOUNCE_SERVICE, true);
+        isServiceEnabled = mPrefUtil.get(PrefUtil.KEY_CHECK_ANNOUNCE_SERVICE, true);
         if (!isServiceEnabled) {
             return super.onStartCommand(intent, 0, startId);
         }
@@ -95,7 +69,7 @@ public class ServiceForAnnounce extends Service {
         @Override
         public void run() {
             while (!isThreadFinish) {
-                boolean isServiceEnabled = mPrefUtil.get(PrefUtil.KEY_CHECK_ANOUNCE_SERVICE, true);
+                boolean isServiceEnabled = mPrefUtil.get(PrefUtil.KEY_CHECK_ANNOUNCE_SERVICE, true);
 
                 if (!isServiceEnabled) {
                     break;
@@ -157,15 +131,12 @@ public class ServiceForAnnounce extends Service {
          * 조건에 맞는 공지사항을 {@code NotificationManager}에 등록한다.
          *
          * @param keywords 설정화면에서 설정된 검색 키워드 리스트
-         */
+         *
         private void setNotification(final String[] keywords) throws Exception {
             int notiNum = NOTIFICATION_NUMBER;
             NotificationManager mNotiManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             String date = mDateFormat.format(new Date());
-            AnnounceItem item;
-            String web = StringUtil.NULL;
-            String body;
-            List<AnnounceItem> list;
+
             Context context = getApplicationContext();
             for (String keyword : keywords) {
                 keyword = keyword.trim();
@@ -175,29 +146,30 @@ public class ServiceForAnnounce extends Service {
 
                 for (int j = 0; j < URL_LIST.length; j++) {
                     // TODO 첫페이지 탐색이 아닌 공지사항을 검색하는 방법으로 수정
-                    body = HttpRequest.getBody(URL_LIST[j]);
                     mParser.setHowTo(j == 2 ? ParseAnnounce.SCHOLAR : 0);
-                    list = mParser.parse(body);
+                    List<AnnounceItem> list = new HttpRequest.Builder(URL_LIST[j]).build()
+                            .requestString()
+                            .get(mParser);
 
                     // 설정한 키워드가 제목에 포함된 공지사항을 알림설정함
                     int size = list.size();
                     String type = "공지";
-
+                    String web = StringUtil.NULL;
                     for (int i = 0; i < size; i++) {
-                        item = list.get(i);
-                        if (item.date.contains(date)   && item.title.contains(keyword)        && !item.type.contains(type)) {
+                        AnnounceItem item = list.get(i);
+                        if (item.date.contains(date) && item.title.contains(keyword) && !item.type.contains(type)) {
 
                             switch (j) {
                                 case 0:
-                                    web = "http://www.uos.ac.kr/korNotice/view.do?list_id=FA1&sort=1&seq="  + item.onClickString;
+                                    web = "http://www.uos.ac.kr/korNotice/view.do?list_id=FA1&sort=1&seq=" + item.pageURL;
                                     break;
 
                                 case 1:
-                                    web = "http://www.uos.ac.kr/korNotice/view.do?list_id=FA2&sort=1&seq="   + item.onClickString;
+                                    web = "http://www.uos.ac.kr/korNotice/view.do?list_id=FA2&sort=1&seq=" + item.pageURL;
                                     break;
 
                                 case 2:
-                                    web = "http://scholarship.uos.ac.kr/scholarship.do?process=view&brdBbsseq=1&x=1&y=1&w=3&"  + item.onClickString;
+                                    web = "http://scholarship.uos.ac.kr/scholarship.do?process=view&brdBbsseq=1&x=1&y=1&w=3&" + item.pageURL;
                                     break;
 
                                 default:
@@ -205,8 +177,8 @@ public class ServiceForAnnounce extends Service {
                             }
 
                             Intent intent = AppUtil.setWebPageIntent(web);
-                            PendingIntent pi = PendingIntent.getActivity(     context, 0, intent, 0);
-                            mNotiManager.notify(notiNum++,   notiBuilder(item, pi, context));
+                            PendingIntent pi = PendingIntent.getActivity(context, 0, intent, 0);
+                            mNotiManager.notify(notiNum++, notiBuilder(item, pi, context));
 
                         }
                     }
@@ -234,7 +206,7 @@ public class ServiceForAnnounce extends Service {
 
     @SuppressWarnings("deprecation")
     @SuppressLint("Correctness")
-    protected Notification notiBuilder(AnnounceItem item, PendingIntent pi,  Context context) {
+    protected Notification notiBuilder(AnnounceItem item, PendingIntent pi, Context context) {
 
         long[] PATTERN = {200, 300, 200};
         NotificationCompat.Builder b = new NotificationCompat.Builder(context)
@@ -251,4 +223,5 @@ public class ServiceForAnnounce extends Service {
             return b.build();
         }
     }
+    */
 }

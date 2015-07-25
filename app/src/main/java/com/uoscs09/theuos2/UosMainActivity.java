@@ -126,7 +126,6 @@ public class UosMainActivity extends BaseActivity {
 
         //AppUtil.startOrStopServiceAnnounce(getApplicationContext());
         mBackCloseHandler = new BackPressCloseHandler();
-        System.gc();
 
         //TODO test
         //startActivity(new Intent(this, TestActivity.class));
@@ -150,7 +149,7 @@ public class UosMainActivity extends BaseActivity {
      * @param isFromPager 메소드가 ViewPager 로 부터 호출되었는지 여부 <br>
      *                    loop 를 방지하는 역할을 한다.
      */
-    protected void navigateItem(int position, boolean isFromPager) {
+    void navigateItem(int position, boolean isFromPager) {
         if (position < 0) {
             navigateItem(1, isFromPager);
             return;
@@ -320,14 +319,14 @@ public class UosMainActivity extends BaseActivity {
     }
 
 
-    public void resetAppBar() {
+    private void resetAppBar() {
         //mAppBarBehavior.onNestedFling(mCoordinatorLayout, mToolBarParent, null, 0, -1000, true);
     }
 
     /**
      * SettingActivity 를 시작한다.
      */
-    protected void startSettingActivity() {
+    void startSettingActivity() {
         startActivityForResult(new Intent(this, SettingActivity.class), START_SETTING);
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
@@ -335,14 +334,14 @@ public class UosMainActivity extends BaseActivity {
     /**
      * 현재 페이지의 인덱스를 얻는다.
      */
-    protected int getCurrentPageIndex() {
+    private int getCurrentPageIndex() {
         return mViewPager.getCurrentItem();
     }
 
     /**
      * 현재 페이지의 id를 얻는다.
      */
-    protected int getCurrentPageId() {
+    private int getCurrentPageId() {
         return mPageOrderList.get(getCurrentPageIndex());
     }
 
@@ -655,7 +654,7 @@ public class UosMainActivity extends BaseActivity {
         /**
          * position 의 아이템을 선택된 상태로 만든다.
          */
-        protected void putSelected(int position) {
+        void putSelected(int position) {
             notifyItemChanged(mCurrentSelection);
 
             mCurrentSelection = position;

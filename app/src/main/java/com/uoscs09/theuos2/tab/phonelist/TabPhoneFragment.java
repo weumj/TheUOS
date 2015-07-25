@@ -168,14 +168,12 @@ public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>> {
 
                 final int progressNumber = 100 / urlList.size();
                 int howTo;
-                String body;
                 int size = urlList.size();
                 for (int i = 0; i < size; i++) {
                     if (isJobCancelled()) {
                         return null;
                     }
                     try {
-                        body = HttpRequest.getBody(urlList.get(i));
                         if (i < 7) {
                             howTo = ParsePhone.SUBJECT;
                         } else if (i < 8) {
@@ -187,7 +185,12 @@ public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>> {
                         }
 
                         mParser.setHowTo(howTo);
-                        phoneNumberList.addAll(mParser.parse(body));
+                        phoneNumberList.addAll(
+                                HttpRequest.Builder.newStringRequestBuilder(urlList.get(i))
+                                        .build()
+                                        .wrap(mParser)
+                                        .get()
+                        );
 
                     } catch (UnknownHostException e) {
                         throw e;
@@ -225,8 +228,8 @@ public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>> {
         return mAsyncTask == null || mAsyncTask.isCancelled();
     }
 
-    private void cancelJob(){
-        if(mAsyncTask != null)
+    private void cancelJob() {
+        if (mAsyncTask != null)
             mAsyncTask.cancel(true);
     }
 

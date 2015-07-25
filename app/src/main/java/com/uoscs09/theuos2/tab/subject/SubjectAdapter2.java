@@ -65,7 +65,7 @@ class SubjectAdapter2 extends AbsArrayAdapter<SubjectItem2, SubjectAdapter2.View
                 R.id.list_subject_text_tlsn_cnt,
                 R.id.list_subject_text_tlsn_limit};
 
-        public SubjectItem2 item;
+       // public SubjectItem2 item;
 
         public ViewHolder(View view) {
             super(view);

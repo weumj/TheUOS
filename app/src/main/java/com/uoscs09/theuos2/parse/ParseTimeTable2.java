@@ -30,7 +30,7 @@ public class ParseTimeTable2 extends XmlParser<TimeTable> {
 
             switch (parser.getName()) {
                 case "strSmtCd":
-                    timeTable.semesterCode = OApiUtil.Semester.getSemesterByCode(Integer.valueOf(readText(parser)));
+                    timeTable.semesterCode = OApiUtil.Semester.getSemesterByCode(Integer.parseInt(readText(parser)));
                     break;
 
                 case "strMyEngShreg":

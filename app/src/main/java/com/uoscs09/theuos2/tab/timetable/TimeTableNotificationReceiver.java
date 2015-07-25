@@ -30,7 +30,9 @@ public class TimeTableNotificationReceiver extends BroadcastReceiver {
 
             case Intent.ACTION_PACKAGE_REMOVED:
                 TimetableAlarmUtil.clearAllAlarm(context);
+                break;
 
+            default:
                 break;
         }
 

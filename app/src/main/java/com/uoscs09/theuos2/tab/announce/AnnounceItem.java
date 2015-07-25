@@ -1,41 +1,51 @@
 package com.uoscs09.theuos2.tab.announce;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.util.StringUtil;
 
 public class AnnounceItem implements Parcelable {
-    public String type;
-    public String title;
-    public String date;
-    public String onClickString;
+    public static final int TYPE_NOTICE = -1;
+    public static final int TYPE_NORMAL = 1;
 
-    public AnnounceItem() {
-        type = title = date = onClickString = StringUtil.NULL;
-    }
+    public int type = TYPE_NORMAL;
+    public int number = 0;
+    public String title = StringUtil.NULL;
+    public String date = StringUtil.NULL;
+    public String pageURL = StringUtil.NULL;
+    public String attachedFileUrl = StringUtil.NULL;
 
-    public AnnounceItem(String type, String title, String date, String onClickString) {
-        this.type = type;
-        this.date = date;
-        this.title = title;
-        this.onClickString = onClickString;
+    public AnnounceItem(){
     }
 
     private AnnounceItem(Parcel source) {
-        type = source.readString();
+        type = source.readInt();
+        number = source.readInt();
         title = source.readString();
         date = source.readString();
-        onClickString = source.readString();
+        pageURL = source.readString();
+        attachedFileUrl = source.readString();
     }
 
     /**
-     * type, title, date, onClinkString 순으로 이루어진 StringArray를 반환한다.
-     *
-     * @since 2.31
+     * number / title / date / pageURL / attachedFileUrl
      */
-    public String[] toStringArray() {
-        return new String[]{type, title, date, onClickString};
+    public String[] toStringArray(Context context) {
+        return new String[]{getNumber(context), title, date, pageURL, attachedFileUrl};
+    }
+
+    public String getNumber(Context context) {
+        if (type == TYPE_NOTICE)
+            return context.getString(R.string.tab_announce_type_notice);
+        else
+            return Integer.toString(number);
+    }
+
+    public boolean isTypeNotice(){
+        return type == TYPE_NOTICE;
     }
 
     @Override
@@ -45,10 +55,12 @@ public class AnnounceItem implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(type);
+        dest.writeInt(type);
+        dest.writeInt(number);
         dest.writeString(title);
         dest.writeString(date);
-        dest.writeString(onClickString);
+        dest.writeString(pageURL);
+        dest.writeString(attachedFileUrl);
     }
 
     public static final Parcelable.Creator<AnnounceItem> CREATOR = new Parcelable.Creator<AnnounceItem>() {

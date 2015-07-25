@@ -27,12 +27,14 @@ import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.async.AsyncJob;
 import com.uoscs09.theuos2.async.AsyncUtil;
-import com.uoscs09.theuos2.async.ListViewBitmapWriteTask;
+import com.uoscs09.theuos2.async.FileWriteProcessor;
+import com.uoscs09.theuos2.async.ImageWriteProcessor;
+import com.uoscs09.theuos2.async.ListViewBitmapRequest;
+import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
-import com.uoscs09.theuos2.parse.ParseUtil;
-import com.uoscs09.theuos2.parse.XmlParser;
+import com.uoscs09.theuos2.http.HttpRequest;
+import com.uoscs09.theuos2.parse.XmlParserWrapper;
 import com.uoscs09.theuos2.util.AppUtil;
-import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
 import com.uoscs09.theuos2.util.StringUtil;
@@ -41,7 +43,7 @@ import com.uoscs09.theuos2.util.TrackerUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CoursePlanDialogFragment extends DialogFragment {
+public class CoursePlanDialogFragment extends DialogFragment implements Request.ErrorListener {
     private final static String URL = "http://wise.uos.ac.kr/uosdoc/api.ApiApiCoursePlanView.oapi";
     private final static String INFO = "info";
 
@@ -63,9 +65,9 @@ public class CoursePlanDialogFragment extends DialogFragment {
     private boolean isDataInvalid = false;
     private SubjectItem2 mSubject;
 
-    private static final XmlParser<ArrayList<CoursePlanItem>> COURSE_PLAN_PARSER = OApiUtil.getParser(CoursePlanItem.class);
+    private static final XmlParserWrapper<ArrayList<CoursePlanItem>> COURSE_PLAN_PARSER = OApiUtil.getParser(CoursePlanItem.class);
 
-    private AsyncTask<Void, Void, ArrayList<CoursePlanItem>> mAsyncTask;
+    private AsyncTask<Void, ?, ArrayList<CoursePlanItem>> mAsyncTask;
 
     public void setSubjectItem(SubjectItem2 item) {
 
@@ -240,7 +242,14 @@ public class CoursePlanDialogFragment extends DialogFragment {
             if (mSubject.classInformationList.isEmpty())
                 mSubject.afterParsing();
 
-            return ParseUtil.parseXml(getActivity(), COURSE_PLAN_PARSER, URL, mOApiParams);
+            return HttpRequest.Builder.newConnectionRequestBuilder(URL)
+                    .setParams(mOApiParams)
+                    .setParamsEncoding(StringUtil.ENCODE_EUC_KR)
+                    .build()
+                    .checkNetworkState(getActivity())
+                    .wrap(COURSE_PLAN_PARSER)
+                    .get();
+
         }
 
         @Override
@@ -257,70 +266,65 @@ public class CoursePlanDialogFragment extends DialogFragment {
         }
     };
 
+    private void dismissProgressDialog() {
+        mProgressDialog.dismiss();
+        mProgressDialog.setOnCancelListener(null);
+    }
+
+    @Override
+    public void onError(Exception e) {
+        dismissProgressDialog();
+
+        AppUtil.showErrorToast(getActivity(), e, true);
+    }
+
     void saveCoursePlanToImage() {
         TrackerUtil.getInstance(this).sendClickEvent(TAG, "save course plan to image");
 
         String dir = PrefUtil.getPicturePath(getActivity()) + getString(R.string.tab_course_plan_title) + '_' + mSubject.subject_nm + '_' + mSubject.prof_nm + '_' + mSubject.class_div + ".jpeg";
-        final ListViewBitmapWriteTask.TitleListViewBitmapWriteTask task = new ListViewBitmapWriteTask.TitleListViewBitmapWriteTask(mListView, mAdapter, dir, mCourseTitle, mProgressDialog) {
-            @Override
-            public void onResult(final String result) {
-                Snackbar.make(mListView, getText(R.string.save), Snackbar.LENGTH_LONG)
-                        .setAction(R.string.action_open, new View.OnClickListener() {
+        final AsyncTask<Void, ?, String> task = new ListViewBitmapRequest.Builder(mListView, mAdapter)
+                .setHeaderView(mCourseTitle)
+                .build()
+                .wrap(new ImageWriteProcessor(dir))
+                .getAsync(
+                        new Request.ResultListener<String>() {
                             @Override
-                            public void onClick(View v) {
-                                Intent intent = new Intent();
-                                intent.setAction(Intent.ACTION_VIEW);
-                                intent.setDataAndType(Uri.parse("file://" + result), "image/*");
-                                AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
-                            }
-                        })
-                        .show();
+                            public void onResult(final String result) {
+                                dismissProgressDialog();
 
-            }
-        };
+                                Snackbar.make(mListView, getText(R.string.save), Snackbar.LENGTH_LONG)
+                                        .setAction(R.string.action_open, new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                Intent intent = new Intent();
+                                                intent.setAction(Intent.ACTION_VIEW);
+                                                intent.setDataAndType(Uri.parse("file://" + result), "image/*");
+                                                AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
+                                            }
+                                        })
+                                        .show();
+                            }
+                        },
+                        this
+                );
         mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
-                task.cancel();
+                AsyncUtil.cancelTask(task);
             }
         });
-        task.execute();
+        mProgressDialog.show();
 
     }
 
     void saveCoursePlanToText() {
         TrackerUtil.getInstance(this).sendClickEvent(TAG, "save course plan to text");
 
-        mProgressDialog.show();
-        final AsyncTask<Void, Void, String> task = AsyncUtil.execute(new AsyncJob.Base<String>() {
-            @Override
-            public void onResult(final String result) {
-                Snackbar.make(mListView, getText(R.string.save), Snackbar.LENGTH_LONG)
-                        .setAction(R.string.action_open, new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent intent = new Intent();
-                                intent.setAction(Intent.ACTION_VIEW);
-                                intent.setDataAndType(Uri.parse("file://" + result), "text/*");
-                                AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
-                            }
-                        })
-                        .show();
+        String fileName = PrefUtil.getDocumentPath(getActivity()) + getString(R.string.tab_course_plan_title) + '_' + mSubject.subject_nm + '_' + mSubject.prof_nm + '_' + mSubject.class_div + ".txt";
 
-            }
-
+        final AsyncTask<Void, ?, String> task = new Request.Base<String>() {
             @Override
-            public void exceptionOccured(Exception e) {
-                AppUtil.showErrorToast(getActivity(), e, true);
-            }
-
-            @Override
-            public void onPostExcute() {
-                mProgressDialog.dismiss();
-            }
-
-            @Override
-            public String call() throws Exception {
+            protected String getInner() throws Exception {
                 StringBuilder sb = new StringBuilder();
                 writeHeader(sb);
 
@@ -328,100 +332,118 @@ public class CoursePlanDialogFragment extends DialogFragment {
                 for (int i = 0; i < size; i++) {
                     writeWeek(sb, infoList.get(i));
                 }
-
-                String dir = PrefUtil.getDocumentPath(getActivity()) + getString(R.string.tab_course_plan_title) + '_' + mSubject.subject_nm + '_' + mSubject.prof_nm + '_' + mSubject.class_div + ".txt";
-                IOUtil.writeObjectToExternalFile(dir, sb.toString());
-                return dir;
+                return sb.toString();
             }
-
-
-            private void writeHeader(StringBuilder sb) {
-                CoursePlanItem course = infoList.get(0);
-
-                sb.append(course.subject_nm);
-                sb.append(StringUtil.NEW_LINE);
-                sb.append(StringUtil.NEW_LINE);
-
-                sb.append(course.subject_no);
-                sb.append(StringUtil.NEW_LINE);
-                sb.append(StringUtil.NEW_LINE);
-
-                sb.append(getString(R.string.tab_course_plan_prof));
-                sb.append(" : ");
-                sb.append(course.prof_nm);
-                sb.append(StringUtil.NEW_LINE);
-
-                sb.append(getString(R.string.tab_course_plan_location));
-                sb.append(" : ");
-                sb.append(mSubject.getClassRoomInformation(getActivity()));
-                sb.append(StringUtil.NEW_LINE);
-
-                sb.append(getString(R.string.tab_course_plan_prof_tel));
-                sb.append(" : ");
-                sb.append(course.tel_no);
-                sb.append(StringUtil.NEW_LINE);
-                sb.append(StringUtil.NEW_LINE);
-
-                sb.append(getString(R.string.tab_course_plan_eval));
-                sb.append(" : ");
-                sb.append(StringUtil.NEW_LINE);
-                sb.append(course.score_eval_rate);
-                sb.append(StringUtil.NEW_LINE);
-                sb.append(StringUtil.NEW_LINE);
-
-                sb.append(getString(R.string.tab_course_plan_book));
-                sb.append(" : ");
-                sb.append(StringUtil.NEW_LINE);
-                sb.append(course.book_nm);
-                sb.append(StringUtil.NEW_LINE);
-                sb.append(StringUtil.NEW_LINE);
-            }
-
-            private void writeWeek(StringBuilder sb, CoursePlanItem item) {
-                sb.append(item.week);
-                sb.append(getString(R.string.tab_course_week));
-                sb.append("  ----------------------");
-                sb.append(StringUtil.NEW_LINE);
-                sb.append(StringUtil.NEW_LINE);
-
-                sb.append(" + ");
-                sb.append(getString(R.string.tab_course_week_class_cont));
-                sb.append(StringUtil.NEW_LINE);
-                sb.append(item.class_cont);
-                sb.append(StringUtil.NEW_LINE);
-                sb.append(StringUtil.NEW_LINE);
-
-                sb.append(" + ");
-                sb.append(getString(R.string.tab_course_week_class_meth));
-                sb.append(StringUtil.NEW_LINE);
-                sb.append(item.class_meth);
-                sb.append(StringUtil.NEW_LINE);
-                sb.append(StringUtil.NEW_LINE);
-
-                sb.append(" + ");
-                sb.append(getString(R.string.tab_course_week_book));
-                sb.append(StringUtil.NEW_LINE);
-                sb.append(item.week_book);
-                sb.append(StringUtil.NEW_LINE);
-                sb.append(StringUtil.NEW_LINE);
-
-                sb.append(" + ");
-                sb.append(getString(R.string.tab_course_week_prjt_etc));
-                sb.append(StringUtil.NEW_LINE);
-                sb.append(item.prjt_etc);
-                sb.append(StringUtil.NEW_LINE);
-                sb.append(StringUtil.NEW_LINE);
-            }
-        });
-
+        }
+                .wrap(new FileWriteProcessor<String>(fileName))
+                .getAsync(
+                        new Request.ResultListener<String>() {
+                            @Override
+                            public void onResult(final String result) {
+                                dismissProgressDialog();
+                                Snackbar.make(mListView, getText(R.string.save), Snackbar.LENGTH_LONG)
+                                        .setAction(R.string.action_open, new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                Intent intent = new Intent();
+                                                intent.setAction(Intent.ACTION_VIEW);
+                                                intent.setDataAndType(Uri.parse("file://" + result), "text/*");
+                                                AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
+                                            }
+                                        })
+                                        .show();
+                            }
+                        },
+                        this
+                );
         mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
                 AsyncUtil.cancelTask(task);
             }
         });
+        mProgressDialog.show();
+
     }
 
+
+    private void writeHeader(StringBuilder sb) {
+        CoursePlanItem course = infoList.get(0);
+
+        sb.append(course.subject_nm);
+        sb.append(StringUtil.NEW_LINE);
+        sb.append(StringUtil.NEW_LINE);
+
+        sb.append(course.subject_no);
+        sb.append(StringUtil.NEW_LINE);
+        sb.append(StringUtil.NEW_LINE);
+
+        sb.append(getString(R.string.tab_course_plan_prof));
+        sb.append(" : ");
+        sb.append(course.prof_nm);
+        sb.append(StringUtil.NEW_LINE);
+
+        sb.append(getString(R.string.tab_course_plan_location));
+        sb.append(" : ");
+        sb.append(mSubject.getClassRoomInformation(getActivity()));
+        sb.append(StringUtil.NEW_LINE);
+
+        sb.append(getString(R.string.tab_course_plan_prof_tel));
+        sb.append(" : ");
+        sb.append(course.tel_no);
+        sb.append(StringUtil.NEW_LINE);
+        sb.append(StringUtil.NEW_LINE);
+
+        sb.append(getString(R.string.tab_course_plan_eval));
+        sb.append(" : ");
+        sb.append(StringUtil.NEW_LINE);
+        sb.append(course.score_eval_rate);
+        sb.append(StringUtil.NEW_LINE);
+        sb.append(StringUtil.NEW_LINE);
+
+        sb.append(getString(R.string.tab_course_plan_book));
+        sb.append(" : ");
+        sb.append(StringUtil.NEW_LINE);
+        sb.append(course.book_nm);
+        sb.append(StringUtil.NEW_LINE);
+        sb.append(StringUtil.NEW_LINE);
+    }
+
+    private void writeWeek(StringBuilder sb, CoursePlanItem item) {
+        sb.append(item.week);
+        sb.append(getString(R.string.tab_course_week));
+        sb.append("  ----------------------");
+        sb.append(StringUtil.NEW_LINE);
+        sb.append(StringUtil.NEW_LINE);
+
+        sb.append(" + ");
+        sb.append(getString(R.string.tab_course_week_class_cont));
+        sb.append(StringUtil.NEW_LINE);
+        sb.append(item.class_cont);
+        sb.append(StringUtil.NEW_LINE);
+        sb.append(StringUtil.NEW_LINE);
+
+        sb.append(" + ");
+        sb.append(getString(R.string.tab_course_week_class_meth));
+        sb.append(StringUtil.NEW_LINE);
+        sb.append(item.class_meth);
+        sb.append(StringUtil.NEW_LINE);
+        sb.append(StringUtil.NEW_LINE);
+
+        sb.append(" + ");
+        sb.append(getString(R.string.tab_course_week_book));
+        sb.append(StringUtil.NEW_LINE);
+        sb.append(item.week_book);
+        sb.append(StringUtil.NEW_LINE);
+        sb.append(StringUtil.NEW_LINE);
+
+        sb.append(" + ");
+        sb.append(getString(R.string.tab_course_week_prjt_etc));
+        sb.append(StringUtil.NEW_LINE);
+        sb.append(item.prjt_etc);
+        sb.append(StringUtil.NEW_LINE);
+        sb.append(StringUtil.NEW_LINE);
+    }
 
     private static class CoursePlanAdapter extends AbsArrayAdapter<CoursePlanItem, CoursePlanAdapter.ViewHolder> {
         public CoursePlanAdapter(Context context, List<CoursePlanItem> list) {

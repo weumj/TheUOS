@@ -4,7 +4,9 @@ package com.uoscs09.theuos2.util;
 import android.app.Activity;
 import android.content.Context;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 
+import com.google.android.gms.analytics.ExceptionParser;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -55,7 +57,7 @@ public class TrackerUtil {
         return getInstance(fragment.getActivity());
     }
 
-   synchronized Tracker getTracker(Context context, TrackerName trackerId) {
+   private synchronized Tracker getTracker(Context context, TrackerName trackerId) {
 
         if (!mTrackers.containsKey(trackerId)) {
             GoogleAnalytics analytics = GoogleAnalytics.getInstance(context);
@@ -123,5 +125,17 @@ public class TrackerUtil {
 
     public void sendVisibleEvent(String category){
         sendEvent(category, USER_VISIBLE);
+    }
+
+
+    public static class AnalyticsExceptionParser implements ExceptionParser {
+        /*
+         * (non-Javadoc)
+         * @see com.google.analytics.tracking.android.ExceptionParser#getDescription(java.lang.String, java.lang.Throwable)
+         */
+        @Override
+        public String getDescription(String p_thread, Throwable p_throwable) {
+            return "Thread: " + p_thread + ", Exception: " + Log.getStackTraceString(p_throwable);
+        }
     }
 }

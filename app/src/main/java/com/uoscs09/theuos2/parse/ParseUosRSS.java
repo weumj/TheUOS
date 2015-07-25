@@ -64,7 +64,7 @@ public abstract class ParseUosRSS<T> extends XmlParser<T> {
         return item;
     }
 
-    protected boolean visitTagAndGoChildTag(XmlPullParser parser, String tag) throws IOException, XmlPullParserException {
+    private boolean visitTagAndGoChildTag(XmlPullParser parser, String tag) throws IOException, XmlPullParserException {
         while (parser.next() != XmlPullParser.END_TAG) {
             switch (parser.getEventType()) {
 

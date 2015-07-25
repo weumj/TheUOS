@@ -6,6 +6,7 @@ import android.app.Application;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.analytics.ExceptionReporter;
 import com.google.android.gms.analytics.Tracker;
 import com.uoscs09.theuos2.util.TrackerUtil;
 
@@ -17,13 +18,12 @@ public class UOSApplication extends Application {
     public static final boolean DEBUG = true;
 
 
-    public TrackerUtil getTrackerUtil(){
-        if(mTrackerUtil == null)
+    public TrackerUtil getTrackerUtil() {
+        if (mTrackerUtil == null)
             mTrackerUtil = TrackerUtil.newInstance(this);
 
         return mTrackerUtil;
     }
-
 
 
     @Override
@@ -37,6 +37,13 @@ public class UOSApplication extends Application {
             t.enableAdvertisingIdCollection(true);
             t.enableAutoActivityTracking(true);
             t.enableExceptionReporting(true);
+
+            Thread.UncaughtExceptionHandler uncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
+            if (uncaughtExceptionHandler instanceof ExceptionReporter) {
+                ExceptionReporter exceptionReporter = (ExceptionReporter) uncaughtExceptionHandler;
+                exceptionReporter.setExceptionParser(new TrackerUtil.AnalyticsExceptionParser());
+            }
+
         }
     }
 

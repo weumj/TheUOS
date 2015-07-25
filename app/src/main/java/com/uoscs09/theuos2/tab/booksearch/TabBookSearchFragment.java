@@ -22,7 +22,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import com.nhaarman.listviewanimations.appearance.AnimationAdapter;
 import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
@@ -94,7 +93,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
     @ReleaseWhenDestroy
     private ActionMode actionMode;
 
-    private static final ParseBook PARSER_BOOK = new ParseBook();
+    private static final ParseBook BOOK_PARSER = new ParseBook();
 
     private static final String BUNDLE_LIST = "BookList";
     private static final String BUNDLE_PAGE = "BookPage";
@@ -156,7 +155,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
         mBookListAdapter = new BookItemListAdapter(getActivity(), mBookList, ((UOSApplication) getActivity().getApplication()).getImageLoader(),
                 new BookItemListAdapter.OnItemClickListener() {
                     @Override
-                    public void onItemClick(final BookItemListAdapter.BookItemViewHolder holder, final View v) {
+                    public void onItemClick(final BookItemViewHolder holder, final View v) {
                         final BookItem item = holder.getItem();
                         switch (v.getId()) {
                             case R.id.tab_booksearch_list_book_image: {
@@ -170,11 +169,31 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
                                     AppUtil.startActivityWithScaleUp(getActivity(), i, v);
                                 }
                                 break;
+
+                            default:
+                                break;
                         }
                     }
 
                     @Override
-                    public boolean onItemLongClick(BookItemListAdapter.BookItemViewHolder holder, View v) {
+                    public boolean onItemLongClick(BookItemViewHolder holder, View v) {
+                        String title;
+                        switch (v.getId()) {
+                            case R.id.tab_booksearch_list_book_title:
+                                title = holder.getItem().title;
+                                break;
+
+                            case R.id.tab_booksearch_list_text_publish_and_year:
+                                title = holder.getItem().bookInfo;
+                                break;
+
+                            case R.id.tab_booksearch_list_book_writer:
+                                title = holder.getItem().writer;
+                                break;
+
+                            default:
+                                return false;
+                        }
                         if (actionMode == null)
                             actionMode = getAppCompatActivity().startSupportActionMode(mActionModeCallback);
 
@@ -183,8 +202,8 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
                         // prevView.setSelected(false);
                         // v.setSelected(true);
                         if (actionMode != null) {
-                            actionMode.setTag(v);
-                            actionMode.setTitle(((TextView) v).getText());
+                            //actionMode.setTag(v);
+                            actionMode.setTitle(title);
                         }
                         return true;
                     }
@@ -194,7 +213,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
 
         mAnimAdapter = new AlphaInAnimationAdapter(mBookListAdapter);
 
-        View progressLayout = inflater.inflate(R.layout.view_loading_layout, mListView, false);
+        View progressLayout = inflater.inflate(R.layout.view_tab_book_loading_layout, mListView, false);
         registerProgressView(progressLayout);
         mListView.addFooterView(progressLayout);
 
@@ -261,14 +280,14 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
             searchView.setQueryHint(getText(R.string.search_hint));
             searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
-                public void onFocusChange(View view,
-                                          boolean queryTextFocused) {
+                public void onFocusChange(View view, boolean queryTextFocused) {
                     if (!queryTextFocused) {
                         searchMenu.collapseActionView();
                         searchView.setQuery("", false);
                     }
                 }
             });
+
         } else {
             AppUtil.showToast(getActivity(), "compatibility error");
         }
@@ -282,12 +301,6 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
         if (getActivity() != null)
             getUosMainActivity().setOnBackPressListener(isVisibleToUser ? this : null);
 
-    }
-
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-        mEmptyView.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -327,6 +340,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
             mEncodedQuery = lastQuery;
             mCurrentPage = 1;
             mBookList.clear();
+            mBookListAdapter.notifyDataSetChanged();
             setSubtitleWhenVisible(mRawQuery);
             mAnimAdapter.reset();
             execute();
@@ -340,7 +354,18 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
         return true;
     }
 
-    void execute() {
+    private void showEmptyView() {
+        if (mBookList.isEmpty())
+            mEmptyView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        mEmptyView.setVisibility(View.GONE);
+    }
+
+    private void execute() {
         super.execute(JOB);
     }
 
@@ -352,29 +377,35 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
 
             StringBuilder sb = new StringBuilder();
             sb.append(URL).append(mCurrentPage).append("&q=").append(mEncodedQuery);
-            String lastQuery = null;
+            String finalURL = null;
 
             String RM = "&websysdiv=tot";
             boolean check = true;
             if (!OI.equals(StringUtil.NULL)) {
                 sb.append("&oi=").append(OI);
-                lastQuery = StringUtil.remove(sb.toString(), RM);
+                finalURL = StringUtil.remove(sb.toString(), RM);
                 check = false;
             }
             if (!OS.equals(StringUtil.NULL)) {
                 sb.append("&os=").append(OS);
-                lastQuery = sb.toString();
+                finalURL = sb.toString();
                 if (check) {
-                    lastQuery = StringUtil.remove(lastQuery, RM);
+                    finalURL = StringUtil.remove(finalURL, RM);
                     check = false;
                 }
             }
 
             if (check) {
-                lastQuery = sb.toString();
+                finalURL = sb.toString();
             }
 
-            ArrayList<BookItem> bookList = new ArrayList<>(PARSER_BOOK.parse(HttpRequest.getBody(lastQuery)));
+            ArrayList<BookItem> bookList = new ArrayList<>(
+                    HttpRequest.Builder.newStringRequestBuilder(finalURL)
+                            .build()
+                            .checkNetworkState(getActivity())
+                            .wrap(BOOK_PARSER)
+                            .get()
+            );
 
             // 대여 가능 도서만 가져옴
             if (PrefUtil.getInstance(getActivity()).get(PrefUtil.KEY_CHECK_BORROW, false) && bookList.size() > 0) {
@@ -390,11 +421,14 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
                 AppUtil.showToast(getActivity(), R.string.search_result_empty, isMenuVisible());
                 isResultEmpty = true;
 
+                showEmptyView();
+
             } else {
                 AppUtil.showToast(getActivity(), getString(R.string.search_found_amount, result.size()), isMenuVisible());
                 mBookList.addAll(result);
                 mBookListAdapter.notifyDataSetChanged();
             }
+
         }
 
         @Override
@@ -403,9 +437,14 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
             isResultEmpty = false;
         }
 
+        @Override
+        public boolean exceptionOccurred(Exception e) {
+            showEmptyView();
+            return super.exceptionOccurred(e);
+        }
     };
 
-    static String getSpinnerItemString(int which, int pos) {
+    private static String getSpinnerItemString(int which, int pos) {
         switch (which) {
             case 0:
                 switch (pos) {
@@ -432,7 +471,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
         }
     }
 
-    static ArrayList<BookItem> getFilteredList(ArrayList<BookItem> originalList, String emptyMsg) {
+    private static ArrayList<BookItem> getFilteredList(ArrayList<BookItem> originalList, String emptyMsg) {
         ArrayList<BookItem> newList = new ArrayList<>();
 
         final int N = originalList.size();
@@ -500,20 +539,20 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
             actionMode.finish();
     }
 
-    void copyItem(String text) {
+    private void copyItem(String text) {
         ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText("copy", text);
         clipboard.setPrimaryClip(clip);
     }
 
-    void searchItem(String text) {
+    private void searchItem(String text) {
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_WEB_SEARCH);
         intent.putExtra(SearchManager.QUERY, text);
         startActivity(intent);
     }
 
-    private void initOptionDialog(int oiSelect , int osSelect ){
+    private void initOptionDialog(int oiSelect, int osSelect) {
         View dialogLayout = View.inflate(getActivity(), R.layout.dialog_tab_book_spinners, null);
         oi = (Spinner) dialogLayout.findViewById(R.id.tab_book_action_spinner_oi);
         os = (Spinner) dialogLayout.findViewById(R.id.tab_book_action_spinner_os);
@@ -535,6 +574,9 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
                     case DialogInterface.BUTTON_NEGATIVE:
                         oi.setSelection(0);
                         os.setSelection(0);
+                        break;
+
+                    default:
                         break;
                 }
             }

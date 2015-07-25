@@ -58,7 +58,7 @@ class SeatListAdapter extends ListRecyclerAdapter<SeatItem, SeatListAdapter.View
             SeatItem item = getItem();
             roomName.setText(item.roomName);
             int progress = Math.round(Float.parseFloat(item.utilizationRate));
-            drawable.setText(item.vacancySeat.trim() + " / " + (Integer.valueOf(item.occupySeat.trim()) + Integer.valueOf(item.vacancySeat.trim())));
+            drawable.setText(item.vacancySeat.trim() + " / " + (Integer.parseInt(item.occupySeat.trim()) + Integer.parseInt(item.vacancySeat.trim())));
             drawable.setLevel(progress);
         }
     }

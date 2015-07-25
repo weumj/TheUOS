@@ -21,13 +21,12 @@ import android.widget.TextView;
 
 import com.gc.materialdesign.widgets.ColorSelector;
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.async.AsyncJob;
-import com.uoscs09.theuos2.async.AsyncUtil;
+import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.common.PieProgressDrawable;
 import com.uoscs09.theuos2.common.SerializableArrayMap;
-import com.uoscs09.theuos2.parse.ParseUtil;
-import com.uoscs09.theuos2.parse.XmlParser;
+import com.uoscs09.theuos2.http.HttpRequest;
+import com.uoscs09.theuos2.parse.XmlParserWrapper;
 import com.uoscs09.theuos2.tab.map.SubMapActivity;
 import com.uoscs09.theuos2.tab.subject.CoursePlanDialogFragment;
 import com.uoscs09.theuos2.tab.subject.SubjectItem2;
@@ -40,12 +39,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class SubjectDetailDialogFragment extends DialogFragment implements View.OnClickListener, ColorSelector.OnColorSelectedListener {
+public class SubjectDetailDialogFragment extends DialogFragment implements View.OnClickListener, ColorSelector.OnColorSelectedListener, Request.ErrorListener {
     private static final String TAG = "SubjectDetailDialogFragment";
     private static final String URL = "http://wise.uos.ac.kr/uosdoc/api.ApiApiSubjectList.oapi";
 
     private final ArrayMap<String, String> params;
-    private static final XmlParser<ArrayList<SubjectInfoItem>> SUBJECT_INFO_PARSER = OApiUtil.getParser(SubjectInfoItem.class);
+    private static final XmlParserWrapper<ArrayList<SubjectInfoItem>> SUBJECT_INFO_PARSER = OApiUtil.getParser(SubjectInfoItem.class);
 
     private TextView mTimeTableDialogTitle;
     private Dialog mProgress;
@@ -205,6 +204,8 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
             case R.id.dialog_timetable_button_color:
                 showColorSelector();
                 break;
+            default:
+                break;
 
         }
     }
@@ -244,21 +245,70 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
         if (mSubject != null && !mSubject.subjectName.equals(StringUtil.NULL)) {
 
             TrackerUtil.getInstance(this).sendClickEvent(TAG, "course plan");
-            AsyncUtil.execute(JOB);
+
+            setUpParams();
+
+            HttpRequest.Builder.newConnectionRequestBuilder(URL)
+                    .setParams(params)
+                    .setParamsEncoding(StringUtil.ENCODE_EUC_KR)
+                    .build()
+                            //.checkNetworkState(getActivity())
+                    .wrap(SUBJECT_INFO_PARSER)
+                    .getAsync(
+                            new Request.ResultListener<ArrayList<SubjectInfoItem>>() {
+                                @Override
+                                public void onResult(ArrayList<SubjectInfoItem> result) {
+                                    mProgress.dismiss();
+
+                                    int size;
+                                    if (result == null || (size = result.size()) == 0) {
+                                        AppUtil.showToast(getActivity(), R.string.tab_timetable_error_on_search_subject, true);
+                                        dismiss();
+
+                                    } else if (size == 1) {
+                                        showCoursePlan(result.get(0).toSubjectItem(mTimeTable, mSubject));
+                                        dismiss();
+
+                                    } else {
+                                        mClassDivSelectAdapter.clear();
+                                        mClassDivSelectAdapter.addAll(result);
+                                        mClassDivSelectAdapter.notifyDataSetChanged();
+
+                                        mClassDivSelectDialog.show();
+                                    }
+
+                                }
+                            }, this
+                    );
+
             mProgress.show();
 
         } else {
             AppUtil.showToast(getActivity(), R.string.tab_timetable_no_subject);
         }
+
     }
 
+    private void setUpParams() {
+        params.put(OApiUtil.SUBJECT_NAME, mSubject.subjectName);
+        params.put(OApiUtil.YEAR, Integer.toString(mTimeTable.year));
+        params.put(OApiUtil.TERM, mTimeTable.semesterCode.code);
+    }
 
-    void setOrCancelAlarm(Subject subject, int spinnerSelection) {
+    @Override
+    public void onError(Exception e) {
+        mProgress.dismiss();
+
+        e.printStackTrace();
+        AppUtil.showErrorToast(getActivity(), e, isVisible());
+    }
+
+    private void setOrCancelAlarm(Subject subject, int spinnerSelection) {
         TimetableAlarmUtil.setOrCancelAlarm(getActivity(), subject, spinnerSelection);
     }
 
 
-    void initSelectDialog() {
+    private void initSelectDialog() {
         View dialogView = View.inflate(getActivity(), R.layout.dialog_timecallback, null);
         mClassDivSelectDialog = new AlertDialog.Builder(getActivity())
                 .setTitle(mSubject.getSubjectNameLocal())
@@ -285,58 +335,12 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
         });
     }
 
-    void showCoursePlan(SubjectItem2 subject) {
+    private void showCoursePlan(SubjectItem2 subject) {
         if (!mCoursePlanDialogFragment.isAdded()) {
             mCoursePlanDialogFragment.setSubjectItem(subject);
             mCoursePlanDialogFragment.show(getFragmentManager(), "course");
         }
     }
-
-    private final AsyncJob.Base<ArrayList<SubjectInfoItem>> JOB = new AsyncJob.Base<ArrayList<SubjectInfoItem>>() {
-
-        @Override
-        public ArrayList<SubjectInfoItem> call() throws Exception {
-            params.put(OApiUtil.SUBJECT_NAME, mSubject.subjectName);
-            params.put(OApiUtil.YEAR, Integer.toString(mTimeTable.year));
-            params.put(OApiUtil.TERM, mTimeTable.semesterCode.code);
-
-            return ParseUtil.parseXml(getActivity(), SUBJECT_INFO_PARSER, URL, params);
-
-        }
-
-        @Override
-        public void onResult(ArrayList<SubjectInfoItem> result) {
-            int size;
-            if (result == null || (size = result.size()) == 0) {
-                AppUtil.showToast(getActivity(), R.string.tab_timetable_error_on_search_subject, true);
-                dismiss();
-
-            } else if (size == 1) {
-                showCoursePlan(result.get(0).toSubjectItem(mTimeTable, mSubject));
-                dismiss();
-
-            } else {
-                mClassDivSelectAdapter.clear();
-                mClassDivSelectAdapter.addAll(result);
-                mClassDivSelectAdapter.notifyDataSetChanged();
-
-                mClassDivSelectDialog.show();
-            }
-
-        }
-
-        @Override
-        public void exceptionOccured(Exception e) {
-            e.printStackTrace();
-            AppUtil.showErrorToast(getActivity(), e, isVisible());
-        }
-
-        @Override
-        public void onPostExcute() {
-            mProgress.dismiss();
-        }
-    };
-
 
     private static class ClassDivAdapter extends AbsArrayAdapter<SubjectInfoItem, ViewHolder> {
 

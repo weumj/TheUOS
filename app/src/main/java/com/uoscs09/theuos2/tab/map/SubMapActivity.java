@@ -244,6 +244,9 @@ public class SubMapActivity extends BaseActivity implements LocationListener {
                     initMap();
                 }
                 break;
+
+            default:
+                break;
         }
     }
 
@@ -381,6 +384,8 @@ public class SubMapActivity extends BaseActivity implements LocationListener {
                                 case HEALTH:
                                     setCameraMapMarkerAt(17, locationName);
                                     setCameraMapMarkerAt(22, locationName);
+                                    setCameraMapMarkerAt(32, locationName);
+                                    break;
                                 case TENNIS:
                                     setCameraMapMarkerAt(32, locationName);
                                     break;

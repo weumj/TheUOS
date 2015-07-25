@@ -52,7 +52,7 @@ public abstract class TimeTableWidget extends AbsAppWidgetProvider {
         context.stopService(new Intent(context, getListServiceClass()));
     }
 
-    protected class UpdateThread implements Runnable {
+    class UpdateThread implements Runnable {
         private final Context context;
         private final AppWidgetManager appWidgetManager;
         private final int[] appWidgetIds;
@@ -114,7 +114,7 @@ public abstract class TimeTableWidget extends AbsAppWidgetProvider {
 
     protected abstract Class<? extends TimeTableWidget> getWidgetClass();
 
-    protected Intent getIntent(Context context, String action) {
+    private Intent getIntent(Context context, String action) {
         Intent intent = new Intent(context, getWidgetClass());
         intent.setComponent(getComponentName(context));
         intent.setAction(action);
@@ -159,6 +159,9 @@ public abstract class TimeTableWidget extends AbsAppWidgetProvider {
 
             case Intent.ACTION_BOOT_COMPLETED:
                 context.sendBroadcast(new Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE));
+                break;
+
+            default:
                 break;
         }
 

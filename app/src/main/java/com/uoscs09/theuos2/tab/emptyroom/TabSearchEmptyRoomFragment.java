@@ -21,13 +21,14 @@ import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos2.async.AsyncFragmentJob;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.customview.NestedListView;
-import com.uoscs09.theuos2.parse.ParseUtil;
-import com.uoscs09.theuos2.parse.XmlParser;
+import com.uoscs09.theuos2.http.HttpRequest;
+import com.uoscs09.theuos2.parse.XmlParserWrapper;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.OApiUtil.Semester;
 import com.uoscs09.theuos2.util.StringUtil;
 
+import java.net.HttpURLConnection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -65,7 +66,7 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Em
     private static final String BUILDING = "building";
     private static final String URL = "http://wise.uos.ac.kr/uosdoc/api.ApiUcsFromToEmptyRoom.oapi";
 
-    private static final XmlParser<ArrayList<EmptyClassRoomItem>> EMPTY_ROOM_PARSER = OApiUtil.getParser(EmptyClassRoomItem.class);
+    private static final XmlParserWrapper<ArrayList<EmptyClassRoomItem>> EMPTY_ROOM_PARSER = OApiUtil.getParser(EmptyClassRoomItem.class);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -217,7 +218,7 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Em
             mEmptyView.setVisibility(View.VISIBLE);
     }
 
-    void execute() {
+    private void execute() {
         super.execute(JOB);
     }
 
@@ -237,24 +238,39 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Em
         public ArrayList<EmptyClassRoomItem> call() throws Exception {
             putParams();
 
+            HttpRequest.Builder<HttpURLConnection> requestBuilder = HttpRequest.Builder.newConnectionRequestBuilder(URL)
+                    .setParams(params)
+                    .setParamsEncoding(StringUtil.ENCODE_EUC_KR);
+
             if (params.get(BUILDING).equals("00")) {
                 final String[] buildings = {"01", "02", "03", "04", "05", "06", "08", "09", "10", "11", "13", "14", "15", "16", "17", "18", "19", "20", "23", "24", "25", "33"};
                 ArrayList<EmptyClassRoomItem> list = new ArrayList<>();
 
                 for (String bd : buildings) {
                     params.put(BUILDING, bd);
-                    list.addAll(ParseUtil.parseXml(getActivity(), EMPTY_ROOM_PARSER, URL, params));
+                    list.addAll(
+                            requestBuilder.build()
+                                    .checkNetworkState(getActivity())
+                                    .wrap(EMPTY_ROOM_PARSER)
+                                    .get()
+                    );
                 }
+
                 return list;
 
             } else {
-                return ParseUtil.parseXml(getActivity(), EMPTY_ROOM_PARSER, URL, params);
+                return requestBuilder.build()
+                        .checkNetworkState(getActivity())
+                        .wrap(EMPTY_ROOM_PARSER)
+                        .get();
             }
+
         }
+
     };
 
 
-    void onTabClick(int field) {
+    private void onTabClick(int field) {
         if (mClassRoomList.isEmpty()) {
             return;
         }

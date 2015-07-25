@@ -1,22 +1,36 @@
 package com.uoscs09.theuos2.tab.announce;
 
-import android.app.Activity;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.webkit.WebSettings;
-import android.webkit.WebView;
 
 import com.uoscs09.theuos2.R;
+import com.uoscs09.theuos2.async.AsyncUtil;
+import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.common.WebViewActivity;
-import com.uoscs09.theuos2.customview.NonLeakingWebView;
+import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.util.AppUtil;
+import com.uoscs09.theuos2.util.PrefUtil;
+import com.uoscs09.theuos2.util.StringUtil;
+import com.uoscs09.theuos2.util.TrackerUtil;
+
+import java.io.File;
 
 public class SubAnnounceWebActivity extends WebViewActivity {
     private String url;
     private AnnounceItem mItem;
+    private int category;
+    private Dialog mProgressDialog;
 
     @SuppressWarnings("ConstantConditions")
     @Override
@@ -26,23 +40,21 @@ public class SubAnnounceWebActivity extends WebViewActivity {
         Intent intent = getIntent();
 
         mItem = intent.getParcelableExtra(TabAnnounceFragment.ITEM);
-        int selection = intent.getIntExtra(TabAnnounceFragment.PAGE_NUM, 0);
-        switch (selection) {
+        category = intent.getIntExtra(TabAnnounceFragment.PAGE_NUM, 0);
+        switch (category) {
             case 3:
-                url = "http://scholarship.uos.ac.kr/scholarship.do?process=view&brdBbsseq=1&x=1&y=1&w=3&";
+                url = mItem.pageURL;
                 break;
             case 2:
-                url = "http://www.uos.ac.kr/korNotice/view.do?list_id=FA2&sort=1&seq=";
+                url = mItem.pageURL + "FA2";
                 break;
             case 1:
-                url = "http://www.uos.ac.kr/korNotice/view.do?list_id=FA1&sort=1&seq=";
+                url = mItem.pageURL + "FA1";
                 break;
             default:
                 supportFinishAfterTransition();
                 return;
         }
-
-        url += mItem.onClickString;
 
         settings.setSupportZoom(true);
         settings.setBuiltInZoomControls(true);
@@ -67,7 +79,6 @@ public class SubAnnounceWebActivity extends WebViewActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.tab_anounce_sub, menu);
-
         return true;
     }
 
@@ -92,11 +103,96 @@ public class SubAnnounceWebActivity extends WebViewActivity {
                 startActivity(Intent.createChooser(sharingIntent, getResources().getString(R.string.action_share)));
                 return true;
 
+            case R.id.action_download:
+                downloadFile();
+                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
+    private void dismissProgressDialog() {
+        mProgressDialog.dismiss();
+        mProgressDialog.setOnCancelListener(null);
+    }
+
+    private void downloadFile() {
+        if (mItem.attachedFileUrl.equals(StringUtil.NULL)) {
+            AppUtil.showToast(this, R.string.tab_announce_no_download_link);
+            return;
+        }
+
+        if (mProgressDialog == null)
+            mProgressDialog = AppUtil.getProgressDialog(this, false, getString(R.string.progress_downloading), null);
+
+        String url;
+        switch (category) {
+            case 3:
+                url = mItem.attachedFileUrl;
+                break;
+            case 2:
+                url = mItem.attachedFileUrl + "FA2";
+                break;
+            case 1:
+                url = mItem.attachedFileUrl + "FA1";
+                break;
+            default:
+                return;
+        }
+
+        final AsyncTask<Void, ?, File> task = HttpRequest.Builder.newConnectionRequestBuilder(url)
+                .setHttpMethod(HttpRequest.HTTP_METHOD_POST)
+                .build()
+                .wrap(new HttpRequest.FileDownProcessor(new File(PrefUtil.getDocumentPath(this))))
+                .getAsync(
+                        new Request.ResultListener<File>() {
+                            @Override
+                            public void onResult(final File result) {
+                                dismissProgressDialog();
+
+                                Snackbar.make(mWebView, result.getName() + "\n" + getText(R.string.saved_file), Snackbar.LENGTH_LONG)
+                                        .setAction(R.string.action_open, new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+
+                                                TrackerUtil.getInstance(SubAnnounceWebActivity.this).sendClickEvent(getScreenName(), "open file");
+
+                                                Uri fileUri = Uri.fromFile(result);
+                                                String fileExtension = MimeTypeMap.getFileExtensionFromUrl(fileUri.toString());
+                                                String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension);
+
+                                                Intent intent = new Intent()
+                                                        .setAction(Intent.ACTION_VIEW)
+                                                        .setDataAndType(fileUri, mimeType);
+
+                                                AppUtil.startActivityWithScaleUp(SubAnnounceWebActivity.this, intent, v);
+                                            }
+                                        })
+                                        .show();
+                            }
+                        },
+                        new Request.ErrorListener() {
+                            @Override
+                            public void onError(Exception e) {
+                                dismissProgressDialog();
+                                AppUtil.showErrorToast(SubAnnounceWebActivity.this, e, true);
+                            }
+                        }
+                );
+
+        mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                AsyncUtil.cancelTask(task);
+            }
+        });
+        mProgressDialog.show();
+
+        TrackerUtil.getInstance(this).sendClickEvent(getScreenName(), "download file");
+    }
+
+/*
     private class AnnounceWebViewClient extends NonLeakingWebView.NonLeakingWebViewClient {
 
         private final int selection;
@@ -133,4 +229,5 @@ public class SubAnnounceWebActivity extends WebViewActivity {
 
         }
     }
+    */
 }

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerInParent="true"
+    android:layout_gravity="center"
+    app:cardBackgroundColor="?colorPrimary"
+    app:cardCornerRadius="10dp">
+
+    <com.balysv.materialripple.MaterialRippleLayout
+        android:id="@+id/ripple"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center"
+        app:mrl_rippleColor="?colorPrimaryDark"
+        app:mrl_rippleDelayClick="true"
+        app:mrl_rippleInAdapter="false">
+
+        <FrameLayout
+            android:id="@android:id/content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_gravity="center_vertical"
+                android:contentDescription="@null"
+                android:padding="10dp"
+                android:src="?menu_theme_ic_action_navigation_refresh" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="90dp"
+                android:gravity="center"
+                android:paddingRight="20dp"
+                android:text="@string/progress_retry"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="?color_actionbar_title" />
+        </FrameLayout>
+    </com.balysv.materialripple.MaterialRippleLayout>
+</android.support.v7.widget.CardView>

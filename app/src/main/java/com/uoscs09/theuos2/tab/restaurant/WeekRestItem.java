@@ -39,7 +39,7 @@ public class WeekRestItem implements Parcelable, Serializable, IParser.AfterPars
     private int getDate(RestItem item) {
         try {
             String[] monthAndDay = item.title.split(" ")[0].split("/");
-            return Integer.valueOf(monthAndDay[0]) * 100 + Integer.valueOf(monthAndDay[1]);
+            return Integer.parseInt(monthAndDay[0]) * 100 + Integer.parseInt(monthAndDay[1]);
         } catch (Exception e) {
             e.printStackTrace();
             return 0;

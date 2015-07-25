@@ -65,7 +65,7 @@ public class RestWidget extends AbsAsyncWidgetProvider<SparseArray<RestItem>> {
             case Intent.ACTION_BOOT_COMPLETED:
                 // 처음 부팅시 인터넷 접속이 되지 않으므로, 기존 파일에서 읽어온다.
                 SparseArray<RestItem> map = TabRestaurantFragment.getRestMapFromFile(context);
-                if (map == null)
+                if (map.size() == 0)
                     return;
 
                 onBackgroundTaskResult(context, AppWidgetManager.getInstance(context), new int[]{intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)}, map);
@@ -81,7 +81,7 @@ public class RestWidget extends AbsAsyncWidgetProvider<SparseArray<RestItem>> {
     protected SparseArray<RestItem> doInBackGround(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) throws Exception {
         if (OApiUtil.getDateTime() - PrefUtil.getInstance(context).get(PrefUtil.KEY_REST_DATE_TIME, 0) < 3) {
             SparseArray<RestItem> result = TabRestaurantFragment.getRestMapFromFile(context);
-            if (result == null)
+            if (result.size() == 0)
                 result = TabRestaurantFragment.getRestListFromWeb(context);
             return result;
         } else {

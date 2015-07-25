@@ -16,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.widget.TextView;
 
 import com.pnikosis.materialishprogress.ProgressWheel;
@@ -35,9 +36,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class WeekInformationDialogFragment extends DialogFragment {
-    static final String TAG = "WeekInformationDialogFragment";
+    private static final String TAG = "WeekInformationDialogFragment";
     private static final String FILE_NAME = "FILE_REST_WEEK_ITEM";
-    static final ParseRestaurantWeek RESTAURANT_WEEK_PARSER = new ParseRestaurantWeek();
+    private static final ParseRestaurantWeek RESTAURANT_WEEK_PARSER = new ParseRestaurantWeek();
 
     @ReleaseWhenDestroy
     private Toolbar mToolbar;
@@ -46,12 +47,14 @@ public class WeekInformationDialogFragment extends DialogFragment {
 
     private RestWeekAdapter mRestWeekAdapter;
     private int mCurrentSelectionId;
-    private AsyncTask<Void, Void, WeekRestItem> mAsyncTask;
+    private AsyncTask<Void, ?, WeekRestItem> mAsyncTask;
 
     @ReleaseWhenDestroy
     private View mProgressLayout;
     @ReleaseWhenDestroy
     private ProgressWheel mProgressWheel;
+    @ReleaseWhenDestroy
+    private View mFailView;
 
     public void setSelection(int stringId) {
         this.mCurrentSelectionId = stringId;
@@ -70,14 +73,14 @@ public class WeekInformationDialogFragment extends DialogFragment {
 
         mToolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
         mToolbar.setTitle(mCurrentSelectionId);
-        TrackerUtil.getInstance(getActivity()).sendEvent(TAG, "view", getString(mCurrentSelectionId));
+        TrackerUtil.getInstance(this).sendEvent(TAG, "view", getString(mCurrentSelectionId));
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.tab_rest_week_swipe_layout);
         mSwipeRefreshLayout.setColorSchemeColors(AppUtil.getAttrColor(getActivity(), R.attr.colorPrimaryDark));
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                TrackerUtil.getInstance(getActivity()).sendEvent(TAG, "swipe", "SwipeRefreshView");
+                TrackerUtil.getInstance(WeekInformationDialogFragment.this).sendEvent(TAG, "swipe", "SwipeRefreshView");
                 execute(true);
             }
         });
@@ -96,43 +99,33 @@ public class WeekInformationDialogFragment extends DialogFragment {
         return rootView;
     }
 
-    static WeekRestItem readFile(Context context, int selectionId) throws IOException, ClassNotFoundException {
-        return IOUtil.readFromFile(context, FILE_NAME + getCode(selectionId));
+    private void showReloadView() {
+        if (mFailView == null) {
+            mFailView = ((ViewStub) ((View) mSwipeRefreshLayout.getParent()).findViewById(R.id.tab_rest_week_stub)).inflate();
+            mFailView.findViewById(android.R.id.content).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    TrackerUtil.getInstance(WeekInformationDialogFragment.this).sendClickEvent(TAG, "fail view");
+                    execute(true);
+                }
+            });
+        }
+
     }
 
-    static void writeFile(Context context, int selectionId, WeekRestItem object) throws IOException {
-        IOUtil.writeObjectToFile(context, FILE_NAME + getCode(selectionId), object);
-    }
-
-    static WeekRestItem readFromInternet(Context context, int selectionId) throws Exception {
-
-        WeekRestItem result = RESTAURANT_WEEK_PARSER.parse(HttpRequest.getBody("http://www.uos.ac.kr/food/placeList.do?rstcde=" + getCode(selectionId)));
-        writeFile(context, selectionId, result);
-        putValueIntoPref(PrefUtil.getInstance(context), selectionId, result);
-
-        return result;
-    }
-
-    static int[] getValueFromPref(PrefUtil prefUtil, int selectionId) {
-        int today = OApiUtil.getDate();
-        return new int[]{prefUtil.get(PrefUtil.KEY_REST_WEEK_FETCH_TIME + "_START_" + getCode(selectionId), today + 1),
-                prefUtil.get(PrefUtil.KEY_REST_WEEK_FETCH_TIME + "_END_" + getCode(selectionId), today - 1)};
-    }
-
-    static void putValueIntoPref(PrefUtil prefUtil, int selectionId, WeekRestItem item) {
-        prefUtil.put(PrefUtil.KEY_REST_WEEK_FETCH_TIME + "_START_" + getCode(selectionId), item.startDate);
-        prefUtil.put(PrefUtil.KEY_REST_WEEK_FETCH_TIME + "_END_" + getCode(selectionId), item.endDate);
-    }
 
     private void execute(final boolean shouldUpdateUsingInternet) {
         if (mProgressWheel != null)
             mProgressLayout.setVisibility(View.VISIBLE);
         if (mProgressWheel != null)
             mProgressWheel.spin();
+        if (mFailView != null)
+            mFailView.setVisibility(View.GONE);
 
         mAsyncTask = AsyncUtil.execute(new AsyncJob.Base<WeekRestItem>() {
             @Override
             public WeekRestItem call() throws Exception {
+
                 Context context = getActivity();
                 PrefUtil pref = PrefUtil.getInstance(context);
 
@@ -159,7 +152,11 @@ public class WeekInformationDialogFragment extends DialogFragment {
                     mProgressWheel.stopSpinning();
                 if (mProgressLayout != null)
                     mProgressLayout.setVisibility(View.INVISIBLE);
+                if (mFailView != null)
+                    mFailView.setVisibility(View.VISIBLE);
+
                 mSwipeRefreshLayout.setRefreshing(false);
+
 
                 mAsyncTask = null;
 
@@ -179,12 +176,48 @@ public class WeekInformationDialogFragment extends DialogFragment {
             @Override
             public void exceptionOccured(Exception e) {
                 AppUtil.showErrorToast(getActivity(), e, true);
+                showReloadView();
             }
         });
 
     }
 
-    static String getCode(int selection) {
+
+    private static WeekRestItem readFile(Context context, int selectionId) throws IOException, ClassNotFoundException {
+        return IOUtil.readFromFile(context, FILE_NAME + getCode(selectionId));
+    }
+
+    private static void writeFile(Context context, int selectionId, WeekRestItem object) throws IOException {
+        IOUtil.writeObjectToFile(context, FILE_NAME + getCode(selectionId), object);
+    }
+
+    private static WeekRestItem readFromInternet(Context context, int selectionId) throws Exception {
+
+        WeekRestItem result = HttpRequest.Builder.newStringRequestBuilder("http://www.uos.ac.kr/food/placeList.do?rstcde=" + getCode(selectionId))
+                .build()
+                .checkNetworkState(context)
+                .wrap(RESTAURANT_WEEK_PARSER)
+                .get();
+
+        writeFile(context, selectionId, result);
+        putValueIntoPref(PrefUtil.getInstance(context), selectionId, result);
+
+        return result;
+    }
+
+    private static int[] getValueFromPref(PrefUtil prefUtil, int selectionId) {
+        int today = OApiUtil.getDate();
+        return new int[]{prefUtil.get(PrefUtil.KEY_REST_WEEK_FETCH_TIME + "_START_" + getCode(selectionId), today + 1),
+                prefUtil.get(PrefUtil.KEY_REST_WEEK_FETCH_TIME + "_END_" + getCode(selectionId), today - 1)};
+    }
+
+    private static void putValueIntoPref(PrefUtil prefUtil, int selectionId, WeekRestItem item) {
+        prefUtil.put(PrefUtil.KEY_REST_WEEK_FETCH_TIME + "_START_" + getCode(selectionId), item.startDate);
+        prefUtil.put(PrefUtil.KEY_REST_WEEK_FETCH_TIME + "_END_" + getCode(selectionId), item.endDate);
+    }
+
+
+    private static String getCode(int selection) {
         switch (selection) {
             case R.string.tab_rest_students_hall: // 학생회관
                 return "020";
@@ -204,15 +237,14 @@ public class WeekInformationDialogFragment extends DialogFragment {
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
 
-        if (mAsyncTask != null && mAsyncTask.getStatus() != AsyncTask.Status.FINISHED) {
-            mAsyncTask.cancel(true);
-            mAsyncTask = null;
-        }
+        AsyncUtil.cancelTask(mAsyncTask);
+        mAsyncTask = null;
+
     }
 
 
     private static class RestWeekAdapter extends RecyclerView.Adapter<ViewHolder> {
-        ArrayList<RestItem> restItemArrayList;
+        final ArrayList<RestItem> restItemArrayList;
 
         public RestWeekAdapter(ArrayList<RestItem> arrayList) {
             this.restItemArrayList = arrayList;
@@ -220,7 +252,7 @@ public class WeekInformationDialogFragment extends DialogFragment {
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.list_layout_week_rest, parent, false));
+            return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.list_layout_rest_week, parent, false));
         }
 
         @Override
@@ -241,8 +273,10 @@ public class WeekInformationDialogFragment extends DialogFragment {
     }
 
     private static class ViewHolder extends RecyclerView.ViewHolder {
-        Toolbar toolbar;
-        TextView breakfastContent, lunchContent, dinnerContent;
+        final Toolbar toolbar;
+        final TextView breakfastContent;
+        final TextView lunchContent;
+        final TextView dinnerContent;
 
         public ViewHolder(View itemView) {
             super(itemView);

@@ -46,7 +46,7 @@ public class TabRestaurantFragment extends AbsAsyncFragment<SparseArray<RestItem
     private SparseArray<RestItem> mRestTable;
 
     private int mCurrentSelection;
-    boolean force = false;
+    private boolean force = false;
 
     private static final ParseRest REST_PARSER = new ParseRest();
 
@@ -191,7 +191,7 @@ public class TabRestaurantFragment extends AbsAsyncFragment<SparseArray<RestItem
                 try {
                     SparseArray<RestItem> result = getRestMapFromFile(context);
 
-                    if (result != null)
+                    if (result.size() > 0l)
                         return result;
 
                 } catch (Exception e) {
@@ -249,9 +249,13 @@ public class TabRestaurantFragment extends AbsAsyncFragment<SparseArray<RestItem
      * web 에서 식단표을 읽어온다.
      */
     public static SparseArray<RestItem> getRestListFromWeb(Context context) throws Exception {
-        String body = HttpRequest.getBody("http://m.uos.ac.kr/mkor/food/list.do");
 
-        SparseArray<RestItem> sparseArray = REST_PARSER.parse(body);
+        SparseArray<RestItem> sparseArray = HttpRequest.Builder
+                .newStringRequestBuilder("http://m.uos.ac.kr/mkor/food/list.do")
+                .build()
+                .checkNetworkState(context)
+                .wrap(REST_PARSER)
+                .get();
 
         SerializableArrayMap<Integer, RestItem> result = SerializableArrayMap.fromSparseArray(sparseArray);
 
@@ -262,12 +266,13 @@ public class TabRestaurantFragment extends AbsAsyncFragment<SparseArray<RestItem
     }
 
 
+    @NonNull
     public static SparseArray<RestItem> getRestMapFromFile(Context context) {
         SerializableArrayMap<Integer, RestItem> map = IOUtil.readFromFileSuppressed(context, IOUtil.FILE_REST);
         return SerializableArrayMap.toSparseArray(map);
     }
 
-    void showWeekDialog() {
+    private void showWeekDialog() {
         sendClickEvent("show week");
         WeekInformationDialogFragment dialogFragment = new WeekInformationDialogFragment();
         dialogFragment.setSelection(REST_TAB_MENU_STRING_ID[mCurrentSelection]);
@@ -333,6 +338,8 @@ public class TabRestaurantFragment extends AbsAsyncFragment<SparseArray<RestItem
                         case 2:
                             s = item.supper;
                             break;
+                        default:
+                            break;
                     }
                     holder.content.setText(s);
 
@@ -379,7 +386,7 @@ public class TabRestaurantFragment extends AbsAsyncFragment<SparseArray<RestItem
     }
 
     private static class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView title;
+        public final TextView title;
         public TextView content;
 
         public ViewHolder(View itemView, int viewType) {
@@ -410,7 +417,7 @@ public class TabRestaurantFragment extends AbsAsyncFragment<SparseArray<RestItem
         public final TextView mTextView;
         public final View ripple;
         private final View mStrip;
-        public int id;
+       // public int id;
 
         private final int mSelectedColor;
         private final int mNormalColor;
@@ -431,7 +438,7 @@ public class TabRestaurantFragment extends AbsAsyncFragment<SparseArray<RestItem
 
         public void setText(int stringId) {
             mTextView.setText(stringId);
-            this.id = stringId;
+           // this.id = stringId;
         }
 
 

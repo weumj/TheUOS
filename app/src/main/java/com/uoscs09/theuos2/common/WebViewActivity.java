@@ -62,7 +62,6 @@ public abstract class WebViewActivity extends BaseActivity {
             AppUtil.unbindDrawables(mWebView);
             //mWebView.destroy();
             mWebView = null;
-            System.gc();
         }
         super.onDestroy();
     }

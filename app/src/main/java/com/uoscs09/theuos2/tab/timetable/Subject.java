@@ -92,7 +92,7 @@ public class Subject implements Parcelable, Serializable {
         String[] buildingSplitArray = building.split("-");
 
         if (buildingSplitArray.length > 1) {
-            int buildingCode = Integer.valueOf(buildingSplitArray[0]);
+            int buildingCode = Integer.parseInt(buildingSplitArray[0]);
             univBuilding = OApiUtil.UnivBuilding.fromNumber(buildingCode);
 
             room = buildingSplitArray[1].trim();
