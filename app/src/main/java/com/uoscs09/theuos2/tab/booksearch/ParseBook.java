@@ -1,10 +1,10 @@
-package com.uoscs09.theuos2.parse;
+package com.uoscs09.theuos2.tab.booksearch;
 
 import android.util.Log;
 
 import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.http.HttpRequest;
-import com.uoscs09.theuos2.tab.booksearch.BookItem;
+import com.uoscs09.theuos2.parse.JerichoParser;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import net.htmlparser.jericho.Element;
@@ -44,7 +44,7 @@ public class ParseBook extends JerichoParser<List<BookItem>> {
     }
 
     @Override
-    protected List<BookItem> parseHttpBody(Source source) throws IOException {
+    protected List<BookItem> parseHtmlBody(Source source) throws IOException {
         List<Element> briefList = source.getAllElementsByClass("briefList");
         List<Element> bookHtmlList = briefList.get(0).getAllElements(LI);
 
@@ -203,7 +203,7 @@ public class ParseBook extends JerichoParser<List<BookItem>> {
                     .build()
                     .wrap(new JerichoParser<String>() {
                         @Override
-                        protected String parseHttpBody(Source source) throws Exception {
+                        protected String parseHtmlBody(Source source) throws Exception {
                             return source.getAllElements(HTMLElementName.IMG)
                                     .get(0)
                                     .getAttributeValue(SRC);

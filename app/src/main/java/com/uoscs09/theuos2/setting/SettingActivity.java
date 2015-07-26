@@ -10,7 +10,7 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.BaseActivity;
 
 /**
- * 설정 activity, 주요 내용은 SettingsFragment에 구현되어 있다.
+ * 설정 activity, 주요 내용은 SettingsFragment 에 구현되어 있다.
  */
 public class SettingActivity extends BaseActivity {
 
@@ -59,7 +59,7 @@ public class SettingActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
-        // support v4와 일반 Api와의 호환성을 위해 구현
+        // support v4와 일반 Api 와의 호환성을 위해 구현
         if (!getFragmentManager().popBackStackImmediate()) {
             super.onBackPressed();
         }

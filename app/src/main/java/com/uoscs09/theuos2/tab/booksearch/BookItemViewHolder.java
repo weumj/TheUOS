@@ -3,6 +3,7 @@ package com.uoscs09.theuos2.tab.booksearch;
 
 import android.content.res.Resources;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -106,7 +107,7 @@ class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements ImageLoad
     }
 
     private void cancelBookStateLoadingTask() {
-        if (asyncTask != null && AsyncUtil.isTaskRunning(asyncTask)) {
+        if (AsyncUtil.isTaskRunning(asyncTask)) {
             AsyncUtil.cancelTask(asyncTask);
             asyncTask = null;
         }
@@ -133,23 +134,25 @@ class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements ImageLoad
             } else {
                 asyncTask = HttpRequest.Builder.newConnectionRequestBuilder(item.infoUrl)
                         .build()
-                        //.checkNetworkState(holder.itemView.getContext())
+                                //.checkNetworkState(holder.itemView.getContext())
                         .wrap(BOOK_STATE_INFO_PARSER)
-                        .getAsync(
+                        .getAsyncOnExecutor(
                                 new Request.ResultListener<ArrayList<BookStateInfo>>() {
                                     @Override
                                     public void onResult(ArrayList<BookStateInfo> result) {
                                         item.bookStateInfoList = result;
 
                                         // 처리 후, ViewHolder item 과 결과 item 이 다르다면 무시
-                                        //if(holder.item.)
-                                        drawBookStateLayout(holder);
+                                        if (holder.item.equals(item))
+                                            drawBookStateLayout(holder);
+                                        else
+                                            Log.d("BookItemViewHolder", "request item != current item");
                                     }
                                 },
                                 new Request.ErrorListener() {
                                     @Override
                                     public void onError(Exception e) {
-
+                                        e.printStackTrace();
                                     }
                                 }
 
@@ -193,13 +196,14 @@ class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements ImageLoad
         if (diff > 0) {
             // 홀더 추가 생성
             LayoutInflater inflater = LayoutInflater.from(layout.getContext());
-            for (int i = 0; i < attachingViewsSize; i++) {
+            for (int i = 0; i < diff; i++) {
                 childHolderList.add(new ChildHolder(inflater.inflate(R.layout.list_layout_book_state, layout, false)));
             }
 
-        } else {
+        } else if (diff < 0) {
             // 홀더 삭제
-            childHolderList.removeAll(childHolderList.subList(attachingViewsSize, availableRecyledHolderCount));
+            //TODO  ConcurrentModificationException
+            childHolderList. removeAll(childHolderList.subList(attachingViewsSize, availableRecyledHolderCount));
         }
 
         // 캐쉬된 홀더에 정보 입력

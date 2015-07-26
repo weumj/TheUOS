@@ -5,6 +5,8 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.uoscs09.theuos2.async.AsyncUtil;
+import com.uoscs09.theuos2.async.Processor;
+import com.uoscs09.theuos2.async.Request;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -18,10 +20,13 @@ import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
 
 public class IOUtil {
+    private static final String TAG = "IOUtil";
     public static final String FILE_TIMETABLE = "timetable_file";
     public static final String FILE_COLOR_TABLE = "color_table_file";
     public static final String FILE_REST = "rest_file";
     public static final String FILE_LIBRARY_SEAT = "file_library_seat";
+
+    private IOUtil(){}
 
     /**
      * 주어진 이름의 파일을 읽어온다.
@@ -81,6 +86,11 @@ public class IOUtil {
      * @throws IOException
      */
     public static void writeObjectToFile(Context context, String fileName, Object obj) throws IOException {
+        if (obj == null) {
+            Log.e(TAG, "Cannot write null object.");
+            return;
+        }
+
         FileOutputStream fos = null;
         BufferedOutputStream bos = null;
         ObjectOutputStream oos = null;
@@ -113,6 +123,11 @@ public class IOUtil {
      * @throws IOException
      */
     public static void writeObjectToExternalFile(String fileName, Object obj) throws IOException {
+        if (obj == null) {
+            Log.e(TAG, "Cannot write null object.");
+            return;
+        }
+
         FileOutputStream fos = null;
         BufferedOutputStream bos = null;
         ObjectOutputStream oos = null;
@@ -185,7 +200,7 @@ public class IOUtil {
             return;
         File[] children = dir.listFiles();
 
-        if(children == null)
+        if (children == null)
             return;
 
         try {
@@ -193,12 +208,73 @@ public class IOUtil {
                 if (file.isDirectory())
                     clearApplicationFile(file);
                 else {
-                    if(!file.delete())
+                    if (!file.delete())
                         Log.e("IOUtil", "Deleting file [" + file + "] has failed.");
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public static final class Builder<T> implements Request.Builder<T> {
+        private final String fileName;
+        private Context context;
+
+        public Builder(String fileName) {
+            this.fileName = fileName;
+        }
+
+        public Builder<T> setContext(Context context) {
+            this.context = context.getApplicationContext();
+            return this;
+        }
+
+        @Override
+        public Request<T> build() {
+            return new FileOpenRequest<>(context, fileName);
+        }
+    }
+
+    private static class FileOpenRequest<T> extends Request.Base<T> {
+        private final String fileName;
+        private final Context context;
+
+        public FileOpenRequest(@Nullable Context context, String fileName) {
+            this.fileName = fileName;
+            this.context = context != null ? context.getApplicationContext() : null;
+        }
+
+        @Override
+        public T get() throws Exception {
+            if (context != null)
+                return readFromFile(context, fileName);
+            else
+                return null;
+        }
+    }
+
+
+    public static <T> Processor<T, T> newFileWriteProcessor(@Nullable Context context, String fileName) {
+        return new FileWriteProcessor<>(context, fileName);
+    }
+
+    static class FileWriteProcessor<T> implements Processor<T, T> {
+        private final String fileName;
+        private final Context context;
+
+        public FileWriteProcessor(@Nullable Context context, String fileName) {
+            this.fileName = fileName;
+            this.context = context != null ? context.getApplicationContext() : null;
+        }
+
+        @Override
+        public T process(T t) throws Exception {
+            if (context == null)
+                writeObjectToExternalFile(fileName, t);
+            else
+                writeObjectToFile(context, fileName, t);
+            return t;
         }
     }
 

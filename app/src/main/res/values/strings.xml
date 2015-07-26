@@ -64,6 +64,7 @@
     <string name="action_share">공유</string>
     <string name="action_copy">복사</string>
     <string name="action_save">저장</string>
+    <string name="action_file_download">파일 다운로드</string>
     <string name="action_delete">삭제</string>
     <string name="action_dismiss_info">좌석 해지 예상 시간표</string>
     <string name="action_location_direction">경로 검색</string>
@@ -75,6 +76,7 @@
     <string name="tab_announce_show_next_page">다음 페이지</string>
     <string name="tab_announce_type_notice">공지</string>
     <string name="tab_announce_no_download_link">다운로드 할 파일이 없습니다.</string>
+    <string name="tab_announce_no_activity_found_to_handle_file">해당 파일을 열 수 있는 앱을 찾을 수 없습니다.</string>
 
     <string name="tab_book_book_opt">도서 검색 옵션</string>
     <string name="tab_book_book_opt_sub">분류와 정렬 방식을 선택해 주세요</string>
@@ -86,9 +88,10 @@
     <string name="tab_book_available_in_online">온라인 이용 가능</string>
 
     <string name="tab_library_seat_last_update">최근 조회 시간\n</string>
-    <string name="tab_library_seat_dissmiss_info_not_exist_in_1hr">1시간 내에 해지될 좌석이 없습니다.</string>
     <string name="tab_library_seat_vacancy"> 잔여 좌석수 : </string>
     <string name="tab_library_seat_occupy"> 사용 좌석수 : </string>
+    <string name="tab_library_seat_dismiss_info_not_exist_in_1hr">1시간 내에 해지될 좌석이 없습니다.</string>
+    <string name="tab_library_seat_dismiss_info_time_within">%1$d 분이내</string>
 
     <string name="tab_map_submap_device_without_googlemap">이 기기는 구글 지도를 지원하지 않습니다.</string>
     <string name="tab_map_submap_do_not_locate">현재 위치를 감지하지 못하였습니다. 잠시후에 시도하세요.</string>
@@ -103,7 +106,7 @@
     <string name="tab_rest_breakfast">조식</string>
     <string name="tab_rest_lunch">중식</string>
     <string name="tab_rest_dinner">석식</string>
-    <string name="tab_rest_no_info">정보가 없습니다.\n</string>
+    <string name="tab_rest_no_info">정보가 없습니다.</string>
     <string name="tab_rest_operation_time">운영시간</string>
     <string name="tab_rest_show_menu_in_week">일주일간 메뉴 보기</string>
 
@@ -178,6 +181,8 @@
     <string name="tab_course_week_prjt_etc">준비물, 과제, 기타</string>
     <string name="tab_course_plan_action_save_image">이미지로 저장</string>
     <string name="tab_course_plan_action_save_text">텍스트로 저장</string>
+    <string name="tab_course_plan_action_save_image_completed">수업계획서가 이미지로 저장되었습니다.</string>
+    <string name="tab_course_plan_action_save_text_completed">수업계획서가 텍스트로 저장되었습니다.</string>
 
     <string name="tab_transport_empty">버튼을 눌러 정보를 불러오세요.</string>
 

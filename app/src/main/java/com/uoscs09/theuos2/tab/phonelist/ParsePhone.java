@@ -1,6 +1,6 @@
-package com.uoscs09.theuos2.parse;
+package com.uoscs09.theuos2.tab.phonelist;
 
-import com.uoscs09.theuos2.tab.phonelist.PhoneItem;
+import com.uoscs09.theuos2.parse.JerichoParser;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import net.htmlparser.jericho.Element;
@@ -24,7 +24,7 @@ public class ParsePhone extends JerichoParser<ArrayList<PhoneItem>> {
     public static final int BOTTOM = 0;
 
     @Override
-    protected ArrayList<PhoneItem> parseHttpBody(Source source)   throws IOException {
+    protected ArrayList<PhoneItem> parseHtmlBody(Source source)   throws IOException {
         ArrayList<PhoneItem> itemList = new ArrayList<>();
 
         switch (howTo) {

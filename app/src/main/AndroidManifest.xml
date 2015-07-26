@@ -15,29 +15,34 @@
     <uses-permission android:name="android.permission.READ_CALENDAR" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
 
+    <!--
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    -->
+
     <uses-feature
         android:glEsVersion="0x00020000"
         android:required="true" />
 
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
-        android:name="com.uoscs09.theuos2.common.UOSApplication"
+        android:name=".common.UOSApplication"
         android:label="@string/app_name">
+
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="@string/google_map_v2_api_key" />
+
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+
         <meta-data
             android:name="com.sec.android.support.multiwindow"
             android:value="true" />
 
         <activity
-            android:name="com.uoscs09.theuos2.TitleActivity"
+            android:name=".TitleActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Title">
@@ -50,46 +55,50 @@
         </activity>
 
         <activity
-            android:name="com.uoscs09.theuos2.UosMainActivity"
+            android:name=".UosMainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
 
-        <activity android:name="com.uoscs09.theuos2.tab.phonelist.PhoneListWebActivity" />
+        <!--
+        <activity android:name=".tab.phonelist.PhoneListWebActivity" />
+        -->
 
-        <activity android:name="com.uoscs09.theuos2.tab.map.SubMapActivity" />
+        <activity android:name=".tab.map.SubMapActivity" />
 
         <activity android:name=".tab.announce.SubAnnounceWebActivity" />
 
         <activity
-            android:name="com.uoscs09.theuos2.setting.SettingActivity"
+            android:name=".setting.SettingActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:uiOptions="splitActionBarWhenNarrow" />
 
-        <activity android:name="com.uoscs09.theuos2.tab.libraryseat.SubSeatWebActivity" />
+        <activity android:name=".tab.libraryseat.SubSeatWebActivity" />
 
-        <activity android:name="com.uoscs09.theuos2.TestActivity" />
+        <!--
+        <activity android:name=".TestActivity" />
+        -->
 
         <service
-            android:name="com.uoscs09.theuos2.appwidget.timetable.Widget5x4ListService"
+            android:name=".appwidget.timetable.Widget5x4ListService"
             android:exported="true"
             android:label="@string/widget_timetable"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
         <service
-            android:name="com.uoscs09.theuos2.appwidget.timetable.Widget4x4ListService"
+            android:name=".appwidget.timetable.Widget4x4ListService"
             android:exported="true"
             android:label="@string/widget_timetable"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
         <service
-            android:name="com.uoscs09.theuos2.appwidget.restaurant.RestListService"
+            android:name=".appwidget.restaurant.RestListService"
             android:exported="true"
             android:label="@string/widget_rest"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
         <service
-            android:name="com.uoscs09.theuos2.appwidget.libraryseat.LibrarySeatListService"
+            android:name=".appwidget.libraryseat.LibrarySeatListService"
             android:exported="true"
             android:label="@string/widget_library_seat"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
@@ -100,6 +109,7 @@
             android:label="@string/setting_announce_noti" />
         -->
 
+        <!--
         <receiver
             android:name=".tab.timetable.TimeTableNotificationReceiver"
             android:exported="false"
@@ -115,9 +125,10 @@
                 <data android:scheme="package" />
             </intent-filter>
         </receiver>
+        -->
 
         <receiver
-            android:name="com.uoscs09.theuos2.appwidget.timetable.TimeTableWidget4x4"
+            android:name=".appwidget.timetable.TimeTableWidget4x4"
             android:label="@string/widget_timetable4x4"
             android:exported="false">
             <meta-data
@@ -133,7 +144,7 @@
         </receiver>
 
         <receiver
-            android:name="com.uoscs09.theuos2.appwidget.timetable.TimeTableWidget5x4"
+            android:name=".appwidget.timetable.TimeTableWidget5x4"
             android:label="@string/widget_timetable5x4"
             android:exported="false">
             <meta-data
@@ -149,7 +160,7 @@
         </receiver>
 
         <receiver
-            android:name="com.uoscs09.theuos2.appwidget.restaurant.RestWidget"
+            android:name=".appwidget.restaurant.RestWidget"
             android:label="@string/widget_rest_desc"
             android:exported="false">
             <meta-data
@@ -166,7 +177,7 @@
         </receiver>
 
         <receiver
-            android:name="com.uoscs09.theuos2.appwidget.libraryseat.LibrarySeatWidget"
+            android:name=".appwidget.libraryseat.LibrarySeatWidget"
             android:label="@string/widget_library_seat_desc"
             android:exported="false">
             <meta-data

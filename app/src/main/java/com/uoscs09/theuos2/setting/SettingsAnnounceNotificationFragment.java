@@ -1,29 +1,7 @@
 package com.uoscs09.theuos2.setting;
 
-import android.app.Activity;
-import android.app.TimePickerDialog;
-import android.app.TimePickerDialog.OnTimeSetListener;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceScreen;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
-import android.widget.TimePicker;
-
-import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.util.AppUtil;
-import com.uoscs09.theuos2.util.PrefUtil;
-import com.uoscs09.theuos2.util.StringUtil;
-import com.uoscs09.theuos2.util.TrackerUtil;
-
-import java.util.Calendar;
-
-public class SettingsAnnounceNotificationFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener {
+public class SettingsAnnounceNotificationFragment /*extends PreferenceFragment implements OnSharedPreferenceChangeListener*/ {
+    /*
     private TimePickerDialog timePicker;
     private boolean isAccepted = false;
 
@@ -220,4 +198,5 @@ public class SettingsAnnounceNotificationFragment extends PreferenceFragment imp
         }
         timePicker.show();
     }
+    */
 }

@@ -464,7 +464,7 @@ public class UosMainActivity extends BaseActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        // activity를 재시작함
+        // activity 를 재시작함
         // XXX potential memory leak!!!!!
         if (resultCode == AppUtil.RELAUNCH_ACTIVITY) {
             finish();

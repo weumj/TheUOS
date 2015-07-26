@@ -7,27 +7,26 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.view.ViewStub;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos2.async.AsyncFragmentJob;
 import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.base.AbsAsyncFragment;
 import com.uoscs09.theuos2.base.OnItemClickListener;
 import com.uoscs09.theuos2.http.HttpRequest;
-import com.uoscs09.theuos2.parse.ParseSeat;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
 import com.uoscs09.theuos2.util.StringUtil;
@@ -42,49 +41,7 @@ import jp.wasabeef.recyclerview.animators.adapters.SlideInBottomAnimationAdapter
 /**
  * 도서관 좌석 정보 현황을 보여주는 페이지
  */
-public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>> {
-    /*
-    private SeatListAdapter mSeatAdapter;
-    private StaggeredGridLayoutManager mLayoutManager;
-    */
-    /**
-     * 해지 될 좌석 정보 리스트 뷰의 adapter
-     */
-    @ReleaseWhenDestroy
-    private ArrayAdapter<String> mInfoAdapter;
-    /**
-     * 좌석 정보 리스트
-     */
-    @AsyncData
-    private ArrayList<SeatItem> mSeatList;
-    /**
-     * 해지 될 좌석 정보 리스트
-     */
-    private ArrayList<String> mDismissInfoList;
-    /**
-     * 해지 될 좌석 정보 뷰, infoDialog 에서 보여진다.
-     */
-    @ReleaseWhenDestroy
-    private View mDismissDialogView;
-    /**
-     * 상단 액션바에 설정되는 timeTextView 에 설정될 Text.<br>
-     * <p/>
-     * {@code onSaveonSaveInstanceState()} 에서 "COMMIT_TIME"라는 이름으로 저장된다.
-     */
-    private String mSearchTime = StringUtil.NULL;
-    /**
-     * 해지될 좌석 정보 버튼 ({@code R.id.action_info})을 선택하면 나타나는 AlertDialog<br>
-     * 해지될 좌석 정보를 보여준다.
-     */
-    @ReleaseWhenDestroy
-    private AlertDialog mInfoDialog;
-
-    @ReleaseWhenDestroy
-    private SwipeRefreshLayout mSwipeRefreshLayout;
-
-    private AsyncTask<Void, Void, ArrayList<SeatItem>> mAsyncTask;
-
-    private static final ParseSeat LIBRARY_SEAR_PARSER = new ParseSeat();
+public class TabLibrarySeatFragment extends AbsAsyncFragment<SeatInfo> {
 
     /**
      * 중앙 도서관 좌석 정보 확인 페이지
@@ -94,35 +51,60 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
      * bundle에서 동기화 시간 정보 String을 가리킨다.
      */
     private final static String COMMIT_TIME = "COMMIT_TIME";
-    /**
-     * bundle에서 좌석 정보 List를 가리킨다.
-     */
-    private final static String BUNDLE_LIST = "SeatList";
-    /**
-     * bundle에서 해지될 좌석 정보 List를 가리킨다.
-     */
+
     private final static String INFO_LIST = "InfoList";
     /**
      * {@code SubSeatWebActivity}에 전달할 SeatItem을 가리킨다.
      */
     public final static String ITEM = "item";
+
+    private static final ParseSeat LIBRARY_SEAR_PARSER = new ParseSeat();
+    /*
+    private SeatListAdapter mSeatAdapter;
+    private StaggeredGridLayoutManager mLayoutManager;
+    */
+
+    private SeatInfo mSeatInfo;
+
+    /**
+     * 상단 액션바에 설정되는 timeTextView 에 설정될 Text.<br>
+     * <p/>
+     * {@code onSaveInstanceState()} 에서 "COMMIT_TIME"라는 이름으로 저장된다.
+     */
+    private String mSearchTime = StringUtil.NULL;
+
+    /**
+     * 해지될 좌석 정보 버튼 ({@code R.id.action_info})을 선택하면 나타나는 AlertDialog<br>
+     * 해지될 좌석 정보를 보여준다.
+     */
+    @ReleaseWhenDestroy
+    private AlertDialog mInfoDialog;
+    @ReleaseWhenDestroy
+    private SwipeRefreshLayout mSwipeRefreshLayout;
     @ReleaseWhenDestroy
     private RecyclerView mSeatListView;
+
+    @ReleaseWhenDestroy
+    private View mDismissDialogView, mDismissEmptyView;
+
+    private SeatDismissInfoListAdapter mInfoAdapter;
+    private AsyncTask<Void, Void, SeatInfo> mAsyncTask;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
         if (savedInstanceState != null) {
             mSearchTime = savedInstanceState.getString(COMMIT_TIME);
-            mSeatList = savedInstanceState.getParcelableArrayList(BUNDLE_LIST);
-            mDismissInfoList = savedInstanceState.getStringArrayList(INFO_LIST);
+            mSeatInfo = savedInstanceState.getParcelable(INFO_LIST);
 
         } else {
-            mSeatList = new ArrayList<>();
-            mDismissInfoList = new ArrayList<>();
+            mSeatInfo = new SeatInfo();
+            mSeatInfo.seatItemList = new ArrayList<>();
+            mSeatInfo.seatDismissInfoList = new ArrayList<>();
         }
 
-        mInfoAdapter = new SeatDismissInfoListAdapter(getActivity(), mDismissInfoList);
+        mInfoAdapter = new SeatDismissInfoListAdapter(mSeatInfo.seatDismissInfoList);
 
         super.onCreate(savedInstanceState);
     }
@@ -145,7 +127,7 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
             }
         });
 
-        SeatListAdapter mSeatAdapter = new SeatListAdapter(getActivity(), mSeatList);
+        SeatListAdapter mSeatAdapter = new SeatListAdapter(getActivity(), mSeatInfo.seatItemList);
         mSeatAdapter.setOnItemClickListener(new OnItemClickListener<SeatListAdapter.ViewHolder>() {
 
             @Override
@@ -167,11 +149,7 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
         mSeatListView.setLayoutManager(mLayoutManager);
         mSeatListView.setItemAnimator(new SlideInDownAnimator());
 
-        mDismissDialogView = View.inflate(getActivity(), R.layout.dialog_library_dismiss_info, null);
-
-        ListView mInfoListView = (ListView) mDismissDialogView.findViewById(R.id.tab_library_listview_dismiss);
-        mInfoListView.setEmptyView(mDismissDialogView.findViewById(android.R.id.empty));
-        mInfoListView.setAdapter(mInfoAdapter);
+        initDismissDialog();
 
         FloatingActionButton actionButton = (FloatingActionButton) rootView.findViewById(R.id.action_btn);
         actionButton.setOnClickListener(new View.OnClickListener() {
@@ -183,7 +161,7 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
             }
         });
 
-        if (mSeatList.isEmpty()) {
+        if (mSeatInfo.seatItemList.isEmpty()) {
             execute();
         }
 
@@ -193,8 +171,7 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putString(COMMIT_TIME, mSearchTime);
-        outState.putParcelableArrayList(BUNDLE_LIST, mSeatList);
-        outState.putStringArrayList(INFO_LIST, mDismissInfoList);
+        outState.putParcelable(INFO_LIST, mSeatInfo);
         super.onSaveInstanceState(outState);
     }
 
@@ -218,13 +195,6 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
                     return true;
                 }
 
-                if (mInfoDialog == null) {
-                    mInfoDialog = new AlertDialog.Builder(getActivity())
-                            .setTitle(R.string.action_dismiss_info)
-                            .setView(mDismissDialogView)
-                            .create();
-                }
-
                 sendClickEvent("dismiss info");
                 mInfoDialog.show();
 
@@ -236,41 +206,33 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
     }
 
 
-    private final AsyncFragmentJob.Base<ArrayList<SeatItem>> JOB = new AsyncFragmentJob.Base<ArrayList<SeatItem>> (){
+    private final AsyncFragmentJob.Base<SeatInfo> JOB = new AsyncFragmentJob.Base<SeatInfo>() {
 
         @Override
-        public ArrayList<SeatItem> call() throws Exception {
-            ArrayList<SeatItem> callSeatList = parseLibrarySeat();
-
-            // '해지될 좌석 정보' 정보를 리스트에 추가
-            SeatItem dismissInfo = callSeatList.remove(callSeatList.size() - 1);
-            if (mDismissInfoList != null)
-                mDismissInfoList.clear();
-
-            if (mInfoAdapter != null)
-                mInfoAdapter.clear();
-
-            String[] array = dismissInfo.occupySeat.split(StringUtil.NEW_LINE);
-            for (int i = 0; i < array.length - 1; i += 2) {
-                mDismissInfoList.add(array[i] + "+" + array[i + 1]);
-            }
+        public SeatInfo call() throws Exception {
+            SeatInfo info = parseLibrarySeat();
+            ArrayList<SeatItem> callSeatList = info.seatItemList;
 
             // 이용률이 50%가 넘는 스터디룸은 보여주지 않음
             if (PrefUtil.getInstance(getActivity()).get(PrefUtil.KEY_CHECK_SEAT, false)) {
                 filterSeatList(callSeatList);
             }
-            return callSeatList;
+            return info;
         }
 
         @Override
-        public void onResult(ArrayList<SeatItem> result) {
+        public void onResult(SeatInfo result) {
             updateTimeView();
 
-            mSeatList.clear();
-            mSeatList.addAll(result);
+            mSeatInfo.clearAndAddAll(result);
 
-            mSeatListView.getAdapter().notifyItemRangeInserted(0, result.size());
+            mSeatListView.getAdapter().notifyItemRangeInserted(0, result.seatItemList.size());
             mInfoAdapter.notifyDataSetChanged();
+
+            if (mSeatInfo.seatDismissInfoList.isEmpty())
+                showDismissInfoEmptyView();
+            else
+                mDismissEmptyView.setVisibility(View.GONE);
         }
 
         @Override
@@ -284,8 +246,8 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
     protected void onPreExecute() {
         super.onPreExecute();
 
-        mSeatListView.getAdapter().notifyItemRangeRemoved(0, mSeatList.size());
-        mSeatList.clear();
+        mSeatListView.getAdapter().notifyItemRangeRemoved(0, mSeatInfo.seatItemList.size());
+        mSeatInfo.seatItemList.clear();
     }
 
     @Override
@@ -295,13 +257,20 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
             mSwipeRefreshLayout.setRefreshing(false);
     }
 
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+
+        if (isVisibleToUser && mSwipeRefreshLayout != null && AsyncUtil.isTaskRunning(mAsyncTask))
+            mSwipeRefreshLayout.setRefreshing(true);
+    }
 
     private void execute() {
         mAsyncTask = super.execute(JOB);
     }
 
 
-    public static ArrayList<SeatItem> parseLibrarySeat() throws Exception {
+    public static SeatInfo parseLibrarySeat() throws Exception {
         return HttpRequest.Builder.newStringRequestBuilder(URL)
                 .setResultEncoding(StringUtil.ENCODE_EUC_KR)
                 .build()
@@ -322,6 +291,37 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<ArrayList<SeatItem>
             if (Double.valueOf(item.utilizationRate) >= 50)
                 originalList.remove(item);
 
+        }
+    }
+
+    private void initDismissDialog() {
+        mDismissDialogView = View.inflate(getActivity(), R.layout.dialog_seat_dismiss_info, null);
+
+        Toolbar toolbar = (Toolbar) mDismissDialogView.findViewById(R.id.toolbar);
+        toolbar.setTitle(R.string.action_dismiss_info);
+
+        RecyclerView recyclerView = (RecyclerView) mDismissDialogView.findViewById(R.id.tab_library_seat_dismiss_recyclerview);
+        LinearLayoutManager manager = new LinearLayoutManager(recyclerView.getContext());
+
+        recyclerView.setLayoutManager(manager);
+        recyclerView.setAdapter(mInfoAdapter);
+
+        mInfoDialog = new AlertDialog.Builder(getActivity())
+                .setView(mDismissDialogView)
+                .create();
+    }
+
+    private void showDismissInfoEmptyView() {
+        if (mDismissEmptyView == null) {
+            mDismissEmptyView = ((ViewStub) mDismissDialogView.findViewById(R.id.tab_library_seat_dismiss_stub_empty_info)).inflate();
+            mDismissEmptyView.findViewById(android.R.id.content).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mInfoDialog.dismiss();
+                }
+            });
+        } else {
+            mDismissEmptyView.setVisibility(View.VISIBLE);
         }
     }
 

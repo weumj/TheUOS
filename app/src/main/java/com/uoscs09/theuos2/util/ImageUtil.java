@@ -5,25 +5,29 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 import android.support.v4.content.res.ResourcesCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.uoscs09.theuos2.R;
+import com.uoscs09.theuos2.async.Processor;
+import com.uoscs09.theuos2.async.Request;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ImageUtil {
+
+    private ImageUtil() {
+    }
 
     /**
      * 주어진 리스트뷰의 전체 아이템들을 하나의 통합된 비트맵으로 만든다.
@@ -103,12 +107,12 @@ public class ImageUtil {
         return b;
     }
 
-    public static Bitmap drawOnBackground(Bitmap bitmap, int color){
+    public static Bitmap drawOnBackground(Bitmap bitmap, int color) {
         Bitmap processed = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
         processed.eraseColor(color);
         Canvas canvas = new Canvas(processed);
 
-        canvas.drawBitmap(bitmap, 0 ,0 ,new Paint());
+        canvas.drawBitmap(bitmap, 0, 0, new Paint());
 
         return processed;
     }
@@ -133,13 +137,13 @@ public class ImageUtil {
 
         return cs;
     }
-/*
+
+    /*
     public static Drawable getTintDrawable(Context context, @DrawableRes int id, int color ){
         return getTintDrawable(getDrawable(context, id), color);
     }
-  */
 
-
+    /*
     public static Drawable getTintDrawable(Drawable drawable, int color) {
         Drawable drawable1 = DrawableCompat.wrap(drawable);
         DrawableCompat.setTintMode(drawable1, PorterDuff.Mode.SRC_IN);
@@ -147,13 +151,16 @@ public class ImageUtil {
         return drawable1;
     }
 
+
     public static Drawable getTintDrawableForMenu(Context context, Drawable drawable) {
         return getTintDrawable(drawable, context.getResources().getColor(AppUtil.getAttrValue(context, R.attr.color_actionbar_title)));
     }
 
+
     public static Drawable getTintDrawableForMenu(Context context, @DrawableRes int id) {
         return getTintDrawableForMenu(context, getDrawable(context, id));
     }
+    */
 
     public static Drawable getDrawable(Context context, @DrawableRes int id) {
         return ResourcesCompat.getDrawable(context.getResources(), id, context.getTheme());
@@ -169,81 +176,101 @@ public class ImageUtil {
             return getDrawable(context, drawableRes);
 
     }
-/*
-    public static Drawable getBitmapDrawableFromXml(Context context, @DrawableRes int res) {
-        XmlResourceParser parser = null;
-        try {
-            Resources resources = context.getResources();
 
-            Method method = resources.getClass().getDeclaredMethod("loadXmlResourceParser", Integer.TYPE, String.class);
-            method.setAccessible(true);
-            parser = (XmlResourceParser) method.invoke(resources, res, "drawable");
+    public static class ImageWriteProcessor implements Processor<Bitmap, String> {
+        private final String fileName;
 
-            parser.next();
-
-            while (parser.next() != XmlPullParser.END_TAG) {
-                if (parser.getEventType() != XmlPullParser.START_TAG) {
-                    continue;
-                }
-
-                int src = 0, tint = 0;
-
-                String name = parser.getName();
-                if (name.equals("bitmap")) {
-                    for (int i = 0; i < parser.getAttributeCount(); i++) {
-
-                        switch (parser.getAttributeName(i)) {
-                            case "src":
-                                src = parser.getAttributeResourceValue(i, 0);
-                                break;
-
-                            case "tint":
-                                Class<?> clazz = parser.getClass();
-
-
-                                Field f = clazz.getDeclaredField("mParseState");
-                                f.setAccessible(true);
-                                long mParseState = f.getLong(parser);
-
-                                if (nativeGetAttributeData == null) {
-
-                                    Field fmCachedXmlBlocks = resources.getClass().getDeclaredField("mCachedXmlBlocks");
-                                    fmCachedXmlBlocks.setAccessible(true);
-                                    Object mCachedXmlBlocks = fmCachedXmlBlocks.get(resources);
-
-                                    Method[] ms = mCachedXmlBlocks.getClass().getComponentType().getDeclaredMethods();
-                                    for (Method m : ms) {
-                                        if (Modifier.isStatic(m.getModifiers()) && m.getName().equals("nativeGetAttributeData")) {
-                                            nativeGetAttributeData = m;
-                                            break;
-                                        }
-                                    }
-                                    //nativeGetAttributeData = Class.forName("android.content.res.XmlBlock").getMethod("nativeGetAttributeData", Long.TYPE, Integer.TYPE);
-                                    nativeGetAttributeData.setAccessible(true);
-                                }
-
-                                if (Build.VERSION.SDK_INT >= 21)
-                                    tint = (int) nativeGetAttributeData.invoke(null, mParseState, i);
-                                else
-                                    tint = (int) nativeGetAttributeData.invoke(null, (int) mParseState, i);
-                                break;
-                        }
-                    }
-
-                    parser.close();
-                    return getTintDrawable(getDrawable(context, src), resources.getColor(AppUtil.getAttrValue(context, tint)));
-                }
-
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (parser != null) parser.close();
+        public ImageWriteProcessor(String fileName) {
+            this.fileName = fileName;
         }
-        return null;
+
+        @Override
+        public String process(Bitmap bitmap) throws Exception {
+            try {
+                ImageUtil.saveImageToFile(fileName, bitmap);
+                return fileName;
+            } finally {
+                if (bitmap != null)
+                    bitmap.recycle();
+            }
+        }
     }
 
-    private static Method nativeGetAttributeData;
-    */
+    public static class ListViewBitmapRequest extends Request.Base<Bitmap> {
+        private final WeakReference<ListView> listViewRef;
+        private final ListAdapter adapter;
+        private final WeakReference<View> headerViewRef;
+
+        ListViewBitmapRequest(ListAdapter originalAdapter, WeakReference<ListView> listViewRef, WeakReference<View> headerViewRef) {
+            this.adapter = originalAdapter;
+            this.listViewRef = listViewRef;
+            this.headerViewRef = headerViewRef;
+        }
+
+        @Override
+        public Bitmap get() throws Exception {
+
+            ListView listView = listViewRef.get();
+            if (listView == null)
+                return null;
+            Bitmap listViewBitmap = getWholeListViewItemsToBitmap(listView, adapter, AppUtil.getAttrColor(listView.getContext(), R.attr.cardBackgroundColor));
+
+            Bitmap headerViewBitmap;
+            if (headerViewRef != null) {
+                headerViewBitmap = makeHeaderViewBitmap(headerViewRef.get());
+
+                if (headerViewBitmap == null) return listViewBitmap;
+
+                try {
+                    return merge(headerViewBitmap, listViewBitmap);
+                } finally {
+                    if (listViewBitmap != null)
+                        listViewBitmap.recycle();
+                    headerViewBitmap.recycle();
+                }
+            }
+
+            return listViewBitmap;
+        }
+
+        private Bitmap makeHeaderViewBitmap(View headerView) {
+            if (headerView == null)
+                return null;
+
+            headerView.setDrawingCacheEnabled(true);
+            headerView.buildDrawingCache(true);
+
+            Bitmap headerViewBitmap = headerView.getDrawingCache(true);
+
+            if (headerViewBitmap == null) headerViewBitmap = createBitmapFromView(headerView);
+
+            try {
+                return drawOnBackground(headerViewBitmap, AppUtil.getAttrColor(headerView.getContext(), R.attr.cardBackgroundColor));
+            } finally {
+                if (headerViewBitmap != null) headerViewBitmap.recycle();
+            }
+
+        }
+
+        public static final class Builder implements Request.Builder<Bitmap> {
+            private final WeakReference<ListView> listViewRef;
+            private final ListAdapter adapter;
+            WeakReference<View> headerViewRef;
+
+            public Builder(ListView listView, ListAdapter originalAdapter) {
+                this.listViewRef = new WeakReference<>(listView);
+                adapter = originalAdapter;
+            }
+
+            public Builder setHeaderView(View headerView) {
+                this.headerViewRef = new WeakReference<>(headerView);
+                return this;
+            }
+
+            @Override
+            public Request<Bitmap> build() {
+                return new ListViewBitmapRequest(adapter, listViewRef, headerViewRef);
+            }
+        }
+    }
 }

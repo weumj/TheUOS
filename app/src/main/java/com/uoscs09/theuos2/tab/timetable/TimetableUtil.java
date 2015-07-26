@@ -23,7 +23,7 @@ public class TimetableUtil {
 
         b &= context.deleteFile(IOUtil.FILE_COLOR_TABLE);
         clearTimeTableColor(context);
-        TimetableAlarmUtil.clearAllAlarm(context);
+        //TimetableAlarmUtil.clearAllAlarm(context);
 
         return b;
     }

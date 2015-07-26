@@ -1,6 +1,6 @@
-package com.uoscs09.theuos2.parse;
+package com.uoscs09.theuos2.tab.transport;
 
-import com.uoscs09.theuos2.tab.transport.TransportItem;
+import com.uoscs09.theuos2.parse.JerichoParser;
 
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.Source;
@@ -13,7 +13,7 @@ public class ParseTransport extends JerichoParser<ArrayList<TransportItem>> {
     private int howTo;
 
     @Override
-    protected ArrayList<TransportItem> parseHttpBody(Source source) throws Exception {
+    protected ArrayList<TransportItem> parseHtmlBody(Source source) throws Exception {
         switch (howTo) {
             case BASIC:
                 return parseMetroArrival(source);

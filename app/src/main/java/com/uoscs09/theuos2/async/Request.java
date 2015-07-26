@@ -12,6 +12,8 @@ public interface Request<T> {
 
     AsyncTask<Void, Integer, T> getAsync(ResultListener<T> resultListener, ErrorListener errorListener);
 
+    AsyncTask<Void, Integer, T> getAsyncOnExecutor(ResultListener<T> resultListener, ErrorListener errorListener);
+
     interface ErrorListener {
         void onError(Exception e);
     }
@@ -20,16 +22,18 @@ public interface Request<T> {
         void onResult(T result);
     }
 
+    /*
     interface ProgressUpdater {
         void notifyProgress(int progress);
     }
+    */
 
     interface Builder<T> {
         Request<T> build();
     }
 
-
     abstract class Base<T> implements Request<T> {
+        /*
         boolean resultRequestCalled = false;
 
         @Override
@@ -44,6 +48,7 @@ public interface Request<T> {
         }
 
         protected abstract T getInner() throws Exception;
+        */
 
         @Override
         public <V> Request<V> wrap(Processor<T, V> processor) {
@@ -51,17 +56,24 @@ public interface Request<T> {
         }
 
         @Override
-        public AsyncTask<Void, Integer, T> getAsync(@Nullable ResultListener<T> resultListener, @Nullable ErrorListener errorListener) {
+        public AsyncTask<Void, Integer, T> getAsync(@Nullable ResultListener<T> resultListener, ErrorListener errorListener) {
             return AsyncUtil.execute(
                     new Task<>(this, resultListener)
                             .setErrorListener(errorListener)
             );
         }
 
+        @Override
+        public AsyncTask<Void, Integer, T> getAsyncOnExecutor(ResultListener<T> resultListener, ErrorListener errorListener) {
+            return AsyncUtil.executeFor(
+                    new Task<>(this, resultListener)
+                            .setErrorListener(errorListener)
+            );
+        }
 
         private static class Wrapper<V, T> extends Base<T> {
-            private final Processor<V, T> processor;
-            private final Request<V> request;
+            private Processor<V, T> processor;
+            private Request<V> request;
 
             public Wrapper(Processor<V, T> processor, Request<V> request) {
                 this.processor = processor;
@@ -69,8 +81,13 @@ public interface Request<T> {
             }
 
             @Override
-            protected T getInner() throws Exception {
-                return processor.process(request.get());
+            public T get() throws Exception {
+                try {
+                    return processor.process(request.get());
+                } finally {
+                    request = null;
+                    processor = null;
+                }
             }
 
         }

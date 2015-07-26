@@ -14,7 +14,6 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.util.ArrayMap;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,16 +24,14 @@ import android.widget.TextView;
 import com.nhaarman.listviewanimations.appearance.AnimationAdapter;
 import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.async.AsyncJob;
 import com.uoscs09.theuos2.async.AsyncUtil;
-import com.uoscs09.theuos2.async.FileWriteProcessor;
-import com.uoscs09.theuos2.async.ImageWriteProcessor;
-import com.uoscs09.theuos2.async.ListViewBitmapRequest;
 import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.parse.XmlParserWrapper;
 import com.uoscs09.theuos2.util.AppUtil;
+import com.uoscs09.theuos2.util.IOUtil;
+import com.uoscs09.theuos2.util.ImageUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
 import com.uoscs09.theuos2.util.StringUtil;
@@ -42,8 +39,9 @@ import com.uoscs09.theuos2.util.TrackerUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
-public class CoursePlanDialogFragment extends DialogFragment implements Request.ErrorListener {
+public class CoursePlanDialogFragment extends DialogFragment implements Request.ErrorListener,  Toolbar.OnMenuItemClickListener {
     private final static String URL = "http://wise.uos.ac.kr/uosdoc/api.ApiApiCoursePlanView.oapi";
     private final static String INFO = "info";
 
@@ -138,23 +136,7 @@ public class CoursePlanDialogFragment extends DialogFragment implements Request.
         mToolbar.setTitle(R.string.tab_course_plan_title);
 
         mToolbar.inflateMenu(R.menu.dialog_courseplan);
-        mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.action_save_text:
-                        saveCoursePlanToText();
-                        return true;
-
-                    case R.id.action_save_image:
-                        saveCoursePlanToImage();
-                        return true;
-
-                    default:
-                        return false;
-                }
-            }
-        });
+        mToolbar.setOnMenuItemClickListener(this);
 
         mListView = (ListView) v.findViewById(R.id.fragment_course_plan_listview);
 
@@ -177,6 +159,22 @@ public class CoursePlanDialogFragment extends DialogFragment implements Request.
 
 
         return v;
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_save_text:
+                saveCoursePlanToText();
+                return true;
+
+            case R.id.action_save_image:
+                saveCoursePlanToImage();
+                return true;
+
+            default:
+                return false;
+        }
     }
 
     private void setCourseTitle(CoursePlanItem course) {
@@ -207,7 +205,46 @@ public class CoursePlanDialogFragment extends DialogFragment implements Request.
 
         mProgressDialog.setOnCancelListener(mJobCanceler);
         mProgressDialog.show();
-        mAsyncTask = AsyncUtil.execute(JOB);
+
+        mAsyncTask = AsyncUtil.newRequest(
+                new Callable<ArrayList<CoursePlanItem>>() {
+                    @Override
+                    public ArrayList<CoursePlanItem> call() throws Exception {
+                        if (mSubject.classInformationList.isEmpty())
+                            mSubject.afterParsing();
+
+                        return HttpRequest.Builder.newConnectionRequestBuilder(URL)
+                                .setParams(mOApiParams)
+                                .setParamsEncoding(StringUtil.ENCODE_EUC_KR)
+                                .build()
+                                .checkNetworkState(getActivity())
+                                .wrap(COURSE_PLAN_PARSER)
+                                .get();
+                    }
+                })
+                .getAsync(
+                        new Request.ResultListener<ArrayList<CoursePlanItem>>() {
+                            @Override
+                            public void onResult(ArrayList<CoursePlanItem> result) {
+                                dismissProgressDialog();
+
+                                if (result.isEmpty())
+                                    setCourseTitle(new CoursePlanItem());
+                                else
+                                    setCourseTitle(result.get(0));
+
+                                infoList.clear();
+                                infoList.addAll(result);
+
+                                mAdapter.notifyDataSetChanged();
+
+                                aAdapter.reset();
+                                aAdapter.notifyDataSetChanged();
+                                isDataInvalid = false;
+                            }
+                        },
+                        this
+                );
     }
 
     private final DialogInterface.OnCancelListener mJobCanceler = new DialogInterface.OnCancelListener() {
@@ -218,55 +255,10 @@ public class CoursePlanDialogFragment extends DialogFragment implements Request.
         }
     };
 
-    private final AsyncJob.Base<ArrayList<CoursePlanItem>> JOB = new AsyncJob.Base<ArrayList<CoursePlanItem>>() {
-        @Override
-        public void onResult(ArrayList<CoursePlanItem> coursePlanItems) {
-
-            if (coursePlanItems.isEmpty())
-                setCourseTitle(new CoursePlanItem());
-            else
-                setCourseTitle(coursePlanItems.get(0));
-
-            infoList.clear();
-            infoList.addAll(coursePlanItems);
-
-            mAdapter.notifyDataSetChanged();
-
-            aAdapter.reset();
-            aAdapter.notifyDataSetChanged();
-            isDataInvalid = false;
-        }
-
-        @Override
-        public ArrayList<CoursePlanItem> call() throws Exception {
-            if (mSubject.classInformationList.isEmpty())
-                mSubject.afterParsing();
-
-            return HttpRequest.Builder.newConnectionRequestBuilder(URL)
-                    .setParams(mOApiParams)
-                    .setParamsEncoding(StringUtil.ENCODE_EUC_KR)
-                    .build()
-                    .checkNetworkState(getActivity())
-                    .wrap(COURSE_PLAN_PARSER)
-                    .get();
-
-        }
-
-        @Override
-        public void exceptionOccured(Exception e) {
-            Log.e("CoursePlanView", "", e);
-
-            AppUtil.showErrorToast(getActivity(), e, isVisible());
-        }
-
-        @Override
-        public void onPostExcute() {
-            mProgressDialog.dismiss();
-            mAsyncTask = null;
-        }
-    };
-
     private void dismissProgressDialog() {
+        if (mAsyncTask != null)
+            mAsyncTask = null;
+
         mProgressDialog.dismiss();
         mProgressDialog.setOnCancelListener(null);
     }
@@ -281,18 +273,18 @@ public class CoursePlanDialogFragment extends DialogFragment implements Request.
     void saveCoursePlanToImage() {
         TrackerUtil.getInstance(this).sendClickEvent(TAG, "save course plan to image");
 
-        String dir = PrefUtil.getPicturePath(getActivity()) + getString(R.string.tab_course_plan_title) + '_' + mSubject.subject_nm + '_' + mSubject.prof_nm + '_' + mSubject.class_div + ".jpeg";
-        final AsyncTask<Void, ?, String> task = new ListViewBitmapRequest.Builder(mListView, mAdapter)
+        String dir = PrefUtil.getPicturePath(getActivity()) + "/" + getString(R.string.tab_course_plan_title) + '_' + mSubject.subject_nm + '_' + mSubject.prof_nm + '_' + mSubject.class_div + ".jpeg";
+        final AsyncTask<Void, ?, String> task = new ImageUtil.ListViewBitmapRequest.Builder(mListView, mAdapter)
                 .setHeaderView(mCourseTitle)
                 .build()
-                .wrap(new ImageWriteProcessor(dir))
+                .wrap(new ImageUtil.ImageWriteProcessor(dir))
                 .getAsync(
                         new Request.ResultListener<String>() {
                             @Override
                             public void onResult(final String result) {
                                 dismissProgressDialog();
 
-                                Snackbar.make(mListView, getText(R.string.save), Snackbar.LENGTH_LONG)
+                                Snackbar.make(mListView, getText(R.string.tab_course_plan_action_save_image_completed), Snackbar.LENGTH_LONG)
                                         .setAction(R.string.action_open, new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
@@ -300,6 +292,7 @@ public class CoursePlanDialogFragment extends DialogFragment implements Request.
                                                 intent.setAction(Intent.ACTION_VIEW);
                                                 intent.setDataAndType(Uri.parse("file://" + result), "image/*");
                                                 AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
+                                                TrackerUtil.getInstance(getActivity()).sendClickEvent(TAG, "show course plan image");
                                             }
                                         })
                                         .show();
@@ -320,35 +313,37 @@ public class CoursePlanDialogFragment extends DialogFragment implements Request.
     void saveCoursePlanToText() {
         TrackerUtil.getInstance(this).sendClickEvent(TAG, "save course plan to text");
 
-        String fileName = PrefUtil.getDocumentPath(getActivity()) + getString(R.string.tab_course_plan_title) + '_' + mSubject.subject_nm + '_' + mSubject.prof_nm + '_' + mSubject.class_div + ".txt";
+        final String fileName = PrefUtil.getDocumentPath(getActivity()) + "/" + getString(R.string.tab_course_plan_title) + '_' + mSubject.subject_nm + '_' + mSubject.prof_nm + '_' + mSubject.class_div + ".txt";
 
-        final AsyncTask<Void, ?, String> task = new Request.Base<String>() {
-            @Override
-            protected String getInner() throws Exception {
-                StringBuilder sb = new StringBuilder();
-                writeHeader(sb);
+        final AsyncTask<Void, ?, String> task = AsyncUtil.newRequest(
+                new Callable<String>() {
+                    @Override
+                    public String call() throws Exception {
+                        StringBuilder sb = new StringBuilder();
+                        writeHeader(sb);
 
-                int size = infoList.size();
-                for (int i = 0; i < size; i++) {
-                    writeWeek(sb, infoList.get(i));
-                }
-                return sb.toString();
-            }
-        }
-                .wrap(new FileWriteProcessor<String>(fileName))
+                        int size = infoList.size();
+                        for (int i = 0; i < size; i++) {
+                            writeWeek(sb, infoList.get(i));
+                        }
+                        return sb.toString();
+                    }
+                })
+                .wrap(IOUtil.<String>newFileWriteProcessor(null, fileName))
                 .getAsync(
                         new Request.ResultListener<String>() {
                             @Override
                             public void onResult(final String result) {
                                 dismissProgressDialog();
-                                Snackbar.make(mListView, getText(R.string.save), Snackbar.LENGTH_LONG)
+                                Snackbar.make(mListView, getText(R.string.tab_course_plan_action_save_text_completed), Snackbar.LENGTH_LONG)
                                         .setAction(R.string.action_open, new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
                                                 Intent intent = new Intent();
                                                 intent.setAction(Intent.ACTION_VIEW);
-                                                intent.setDataAndType(Uri.parse("file://" + result), "text/*");
+                                                intent.setDataAndType(Uri.parse("file://" + fileName), "text/*");
                                                 AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
+                                                TrackerUtil.getInstance(getActivity()).sendClickEvent(TAG, "show course plan text");
                                             }
                                         })
                                         .show();

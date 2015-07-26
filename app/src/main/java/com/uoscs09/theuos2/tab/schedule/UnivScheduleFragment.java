@@ -27,8 +27,8 @@ import android.widget.TextView;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.async.AsyncFragmentJob;
-import com.uoscs09.theuos2.async.AsyncJob;
 import com.uoscs09.theuos2.async.AsyncUtil;
+import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.common.PieProgressDrawable;
@@ -39,13 +39,13 @@ import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.Callable;
 
 import se.emilsjolander.stickylistheaders.ExpandableStickyListHeadersListView;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
@@ -57,21 +57,25 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
     private static final String FILE_NAME = "file_univ_schedule";
     private static final XmlParserWrapper<ArrayList<UnivScheduleItem>> UNIV_SCHEDULE_PARSER = OApiUtil.getUnivScheduleParser();
 
-    private final ArrayList<UnivScheduleItem> mList = new ArrayList<>();
-
     private ExpandableStickyListHeadersListView mListView;
-
+    private AlertDialog mItemSelectDialog;
+    private Dialog mProgressDialog;
     private Adapter mAdapter;
 
-    private AlertDialog mItemSelectDialog;
-
+    private final ArrayList<UnivScheduleItem> mList = new ArrayList<>();
     private UnivScheduleItem mSelectedItem;
-
-    private Dialog mProgressDialog;
-
     private String mSubTitle;
-
     private final SimpleDateFormat mDateFormat = new SimpleDateFormat("MMMM", Locale.getDefault());
+
+    private String[] selectionArgs;
+    private String mAccount;
+
+    private static final String SELECTION = "((" + CalendarContract.Calendars.ACCOUNT_NAME + " = ?) AND ("
+            + CalendarContract.Calendars.ACCOUNT_TYPE + " = ?) AND ("
+            + CalendarContract.Calendars.OWNER_ACCOUNT + " = ?))";
+    private final String[] EVENT_PROJECTION = {
+            CalendarContract.Calendars._ID
+    };
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -146,86 +150,77 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
         return view;
     }
 
-    private final String[] EVENT_PROJECTION = {
-            CalendarContract.Calendars._ID
-    };
+    private void getAccount() throws Exception {
+        if (mAccount == null) {
+            AccountManager accountManager = AccountManager.get(getActivity());
+            Account[] accounts = accountManager.getAccountsByType("com.google");
 
-    private String mAccount;
+            if (accounts.length < 1) {
+                throw new Exception(getString(R.string.tab_univ_schedule_google_account_not_exist));
+            }
+
+            mAccount = accounts[0].name;
+
+            selectionArgs = new String[]{mAccount, "com.google", mAccount};
+        }
+    }
 
     private void addUnivScheduleToCalender() {
         mProgressDialog.show();
 
-        AsyncUtil.execute(new AsyncJob.Base<Uri>() {
-            private static final String SELECTION = "((" + CalendarContract.Calendars.ACCOUNT_NAME + " = ?) AND ("
-                    + CalendarContract.Calendars.ACCOUNT_TYPE + " = ?) AND ("
-                    + CalendarContract.Calendars.OWNER_ACCOUNT + " = ?))";
-            private String[] selectionArgs;
+        AsyncUtil.newRequest(
+                new Callable<Uri>() {
+                    @Override
+                    public Uri call() throws Exception {
+                        getAccount();
 
-            @Override
-            public Uri call() throws Exception {
-                if (mAccount == null) {
-                    AccountManager accountManager = AccountManager.get(getActivity());
-                    Account[] accounts = accountManager.getAccountsByType("com.google");
+                        ContentResolver cr = getActivity().getContentResolver();
+                        Cursor c = cr.query(CalendarContract.Calendars.CONTENT_URI, EVENT_PROJECTION, SELECTION, selectionArgs, null);
 
-                    if (accounts.length < 1) {
-                        throw new Exception(getString(R.string.tab_univ_schedule_google_account_not_exist));
+                        if (c == null) {
+                            throw new Exception(getString(R.string.tab_univ_schedule_calendar_not_exist));
+                        } else if (!c.moveToFirst()) {
+                            c.close();
+                            throw new Exception(getString(R.string.tab_univ_schedule_calendar_not_exist));
+                        }
+
+                        long calendarId = c.getLong(0);
+                        ContentValues cv = mSelectedItem.toContentValues(calendarId);
+
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
+                            cv.put(CalendarContract.Events.EVENT_COLOR, getResources().getColor(AppUtil.getColor(mList.indexOf(mSelectedItem))));
+
+                        Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, cv);
+                        c.close();
+
+                        return uri;
                     }
+                })
+                .getAsync(
+                        new Request.ResultListener<Uri>() {
+                            @Override
+                            public void onResult(Uri result) {
+                                mProgressDialog.dismiss();
+                                if (result != null)
+                                    AppUtil.showToast(getActivity(), R.string.tab_univ_schedule_add_to_calendar_success, isMenuVisible());
+                                else
+                                    AppUtil.showToast(getActivity(), R.string.tab_univ_schedule_add_to_calendar_fail, isMenuVisible());
+                            }
+                        },
+                        new Request.ErrorListener() {
+                            @Override
+                            public void onError(Exception e) {
+                                mProgressDialog.dismiss();
+                                e.printStackTrace();
 
-                    mAccount = accounts[0].name;
+                                AppUtil.showErrorToast(getActivity(), e, isMenuVisible());
+                            }
+                        }
+                );
 
-                    selectionArgs = new String[]{mAccount, "com.google", mAccount};
-
-                }
-
-                ContentResolver cr = getActivity().getContentResolver();
-
-                Cursor c = cr.query(CalendarContract.Calendars.CONTENT_URI, EVENT_PROJECTION, SELECTION, selectionArgs, null);
-
-                if (c == null) {
-                    throw new Exception(getString(R.string.tab_univ_schedule_calendar_not_exist));
-
-                } else if (!c.moveToFirst()) {
-                    c.close();
-                    throw new Exception(getString(R.string.tab_univ_schedule_calendar_not_exist));
-                }
-
-
-                long calendarId = c.getLong(0);
-
-                ContentValues cv = mSelectedItem.toContentValues(calendarId);
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
-                    cv.put(CalendarContract.Events.EVENT_COLOR, getResources().getColor(AppUtil.getColor(mList.indexOf(mSelectedItem))));
-
-                Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, cv);
-
-                c.close();
-
-                return uri;
-            }
-
-            @Override
-            public void onResult(Uri result) {
-                if (result != null)
-                    AppUtil.showToast(getActivity(), R.string.tab_univ_schedule_add_to_calendar_success, isMenuVisible());
-                else
-                    AppUtil.showToast(getActivity(), R.string.tab_univ_schedule_add_to_calendar_fail, isMenuVisible());
-            }
-
-            @Override
-            public void exceptionOccured(Exception e) {
-                e.printStackTrace();
-
-                AppUtil.showErrorToast(getActivity(), e, isMenuVisible());
-            }
-
-            @Override
-            public void onPostExcute() {
-                mProgressDialog.dismiss();
-            }
-        });
     }
 
+    /*
     private static void writeFile(Context context, ArrayList<UnivScheduleItem> object) throws IOException {
         IOUtil.writeObjectToFile(context, FILE_NAME, object);
     }
@@ -233,15 +228,15 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
     private static ArrayList<UnivScheduleItem> readFile(Context context) throws IOException, ClassNotFoundException {
         return IOUtil.readFromFile(context, FILE_NAME);
     }
+    */
 
     private static ArrayList<UnivScheduleItem> readFromInternet(Context context) throws Exception {
         ArrayList<UnivScheduleItem> result = HttpRequest.Builder.newConnectionRequestBuilder(URL)
                 .build()
                 .checkNetworkState(context)
                 .wrap(UNIV_SCHEDULE_PARSER)
+                .wrap(IOUtil.<ArrayList<UnivScheduleItem>>newFileWriteProcessor(context, FILE_NAME))
                 .get();
-
-        writeFile(context, result);
 
         PrefUtil pref = PrefUtil.getInstance(context);
         pref.put(PrefUtil.KEY_SCHEDULE_FETCH_MONTH, result.get(0).getDate(true).get(Calendar.MONTH));
@@ -257,7 +252,10 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
 
             // 이번 달의 일정이 기록된 파일이 있으면, 인터넷에서 가져오지 않고 그 파일을 읽음
             if (pref.get(PrefUtil.KEY_SCHEDULE_FETCH_MONTH, -1) == Calendar.getInstance().get(Calendar.MONTH)) {
-                ArrayList<UnivScheduleItem> result = readFile(context);
+                ArrayList<UnivScheduleItem> result = new IOUtil.Builder<ArrayList<UnivScheduleItem>>(FILE_NAME)
+                        .setContext(context)
+                        .build()
+                        .get();
 
                 if (result != null)
                     return result;

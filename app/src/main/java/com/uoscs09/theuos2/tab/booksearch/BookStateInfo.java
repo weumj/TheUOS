@@ -7,14 +7,19 @@ import com.uoscs09.theuos2.annotation.KeepName;
 import com.uoscs09.theuos2.parse.IParser;
 
 @KeepName
-public class BookStateInfo implements Parcelable, IParser.AfterParsable{
+public class BookStateInfo implements Parcelable, IParser.AfterParsable {
 
-
-    /** 도서 코드*/
+    /**
+     * 도서 코드
+     */
     public String call_no;
-    /** 장소*/
+    /**
+     * 장소
+     */
     public String place_name;
-    /** 상태*/
+    /**
+     * 상태
+     */
     public String book_state;
     int bookStateInt;
 
@@ -39,11 +44,16 @@ public class BookStateInfo implements Parcelable, IParser.AfterParsable{
 
             case ""
         }*/
-        bookStateInt = book_state.contains("가능")? BookItem.BOOK_STATE_AVAILABLE : BookItem.BOOK_STATE_NOT_AVAILABLE;
+        bookStateInt = book_state.contains("가능") ? BookItem.BOOK_STATE_AVAILABLE : BookItem.BOOK_STATE_NOT_AVAILABLE;
     }
 
-    public boolean isBookAvailable(){
+    public boolean isBookAvailable() {
         return (bookStateInt & BookItem.BOOK_STATE_AVAILABLE) == BookItem.BOOK_STATE_AVAILABLE;
+    }
+
+    @Override
+    public String toString() {
+        return "[Code : " + call_no + " , Place : " + place_name + " , State : " + book_state + "]";
     }
 
     /*
@@ -55,7 +65,7 @@ public class BookStateInfo implements Parcelable, IParser.AfterParsable{
     */
 
     BookStateInfo(Parcel source) {
-        call_no =  source.readString();
+        call_no = source.readString();
         place_name = source.readString();
         book_state = source.readString();
         bookStateInt = source.readInt();

@@ -9,8 +9,10 @@
         android:summary="@string/setting_timetable_limit_desc"
         android:title="@string/setting_timetable_limit" />
 
+    <!--
     <PreferenceScreen
         android:icon="?theme_ic_action_action_alarm"
         android:summary="@string/setting_timetable_clear_alarm_desc"
         android:title="@string/setting_timetable_clear_alarm_title" />
+        -->
 </PreferenceScreen>

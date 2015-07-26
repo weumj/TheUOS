@@ -65,12 +65,13 @@ public abstract class HttpRequest<T> extends Request.Base<T> {
 
     }
 
-    private static void setUpPostSetting(HttpURLConnection connection, @Nullable String encodedParams) throws IOException {
+    void setUpPostSetting(HttpURLConnection connection, @Nullable String encodedParams) throws IOException {
         connection.setDefaultUseCaches(false);
         connection.setDoInput(true);
         connection.setDoOutput(true);
         connection.setRequestMethod("POST");
         connection.setRequestProperty("content-type", "application/x-www-form-urlencoded");
+        connection.setRequestProperty("accept-encoding", "gzip, deflate");
 
         if (encodedParams != null) {
             DataOutputStream out = new DataOutputStream(connection.getOutputStream());
@@ -91,14 +92,14 @@ public abstract class HttpRequest<T> extends Request.Base<T> {
         return connection;
     }
 
-    private static class StringRequest extends HttpRequest<String> {
+    static class StringRequest extends HttpRequest<String> {
 
         private StringRequest(String url, String encodedParams, String resultEncoding, int method) {
             super(url, encodedParams, resultEncoding, method);
         }
 
         @Override
-        public String getInner() throws IOException {
+        public String get() throws IOException {
 
             HttpURLConnection connection = null;
             try {
@@ -113,14 +114,14 @@ public abstract class HttpRequest<T> extends Request.Base<T> {
         }
     }
 
-    private static class ConnectionRequest extends HttpRequest<HttpURLConnection> {
+    static class ConnectionRequest extends HttpRequest<HttpURLConnection> {
 
         public ConnectionRequest(String url, String encodedParams, String resultEncoding, int method) {
             super(url, encodedParams, resultEncoding, method);
         }
 
         @Override
-        public HttpURLConnection getInner() throws IOException {
+        public HttpURLConnection get() throws IOException {
             return getHttpResult();
         }
 
@@ -144,10 +145,12 @@ public abstract class HttpRequest<T> extends Request.Base<T> {
             this.url = url;
         }
 
+        /*
         public Builder<T> setURL(String url) {
             this.url = url;
             return this;
         }
+        */
 
         public Builder<T> setResultEncoding(String encoding) {
             resultEncoding = encoding;
@@ -210,18 +213,22 @@ public abstract class HttpRequest<T> extends Request.Base<T> {
 
     }
 
-    public static class FileDownProcessor implements Processor<HttpURLConnection, File> {
+    public static class FileDownloadProcessor implements Processor<HttpURLConnection, File> {
         private File downloadDir;
 
-        public FileDownProcessor(File downloadDir) {
+        public FileDownloadProcessor(File downloadDir) {
             this.downloadDir = downloadDir;
         }
 
-        @Override
-        public File process(HttpURLConnection connection) throws Exception {
-            String responseHeaderFileName = connection.getHeaderField("content-disposition");
+        private String getFileName(HttpURLConnection connection) throws UnsupportedEncodingException {
+            String responseHeaderFileName = connection.getHeaderField("content-disposition").replace("\"","");
 
-            String fileNameAndExtension = URLDecoder.decode(responseHeaderFileName.substring(responseHeaderFileName.indexOf("filename=") + 9), StringUtil.ENCODE_UTF_8).trim();
+            return URLDecoder.decode(
+                    responseHeaderFileName.substring(responseHeaderFileName.indexOf("filename=") + 9), StringUtil.ENCODE_UTF_8)
+                    .trim();
+        }
+
+        private File makeFile(String fileNameAndExtension) {
             int dotIndex = fileNameAndExtension.lastIndexOf('.');
             String fileName, extension;
             if (dotIndex != -1) {
@@ -234,24 +241,53 @@ public abstract class HttpRequest<T> extends Request.Base<T> {
 
             File downloadFile = new File(downloadDir, fileNameAndExtension);
 
-            while (!downloadFile.createNewFile()) {
-                fileName += "_1";
-                fileNameAndExtension = fileName + extension;
-                downloadFile = new File(downloadDir, fileNameAndExtension);
+            while (true) {
+                try {
+                    while (!downloadFile.createNewFile()) {
+                        // 파일이 이미 존재하면 이름에 '_1' 을 덧붙여 파일을 생성한다.
+                        fileName += "_1";
+                        fileNameAndExtension = fileName + extension;
+                        downloadFile = new File(downloadDir, fileNameAndExtension);
+                    }
+                    break;
+
+                } catch (IOException e) {
+                    // 파일 이름이 이상해서 파일 생성에 실패한 경우
+                    // 주어진 이름으로 파일을 생성한다.
+                    // e.printStackTrace();
+                    fileName = "the_uos_download_file";
+                    fileNameAndExtension = fileName + extension;
+                    downloadFile = new File(downloadDir, fileNameAndExtension);
+                }
+
             }
 
+            return downloadFile;
+
+        }
+
+        private void writeContentsToFile(File downloadFile, InputStream inputStream) throws IOException {
             final FileOutputStream fileOutputStream = new FileOutputStream(downloadFile);
             final byte buffer[] = new byte[16 * 1024];
 
-            final InputStream inputStream = connection.getInputStream();
-
-            int len = 0;
+            int len;
             while ((len = inputStream.read(buffer)) > 0) {
                 fileOutputStream.write(buffer, 0, len);
             }
 
             fileOutputStream.flush();
             fileOutputStream.close();
+
+            inputStream.close();
+        }
+
+        @Override
+        public File process(HttpURLConnection connection) throws Exception {
+            String fileNameAndExtension = getFileName(connection);
+            File downloadFile = makeFile(fileNameAndExtension);
+
+            writeContentsToFile(downloadFile, connection.getInputStream());
+            connection.disconnect();
 
             return downloadFile;
         }

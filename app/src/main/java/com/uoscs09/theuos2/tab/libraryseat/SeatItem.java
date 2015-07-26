@@ -19,6 +19,7 @@ public class SeatItem implements Parcelable, Serializable {
         roomName = occupySeat = vacancySeat = utilizationRate = StringUtil.NULL;
     }
 
+    /*
     public SeatItem(String name, String occupySeat, String vacancySeat, String utilizationRate, int index) {
         this.roomName = name.trim();
         this.occupySeat = occupySeat.trim();
@@ -26,8 +27,9 @@ public class SeatItem implements Parcelable, Serializable {
         this.utilizationRate = utilizationRate.trim();
         this.index = index;
     }
+    */
 
-    private SeatItem(Parcel source) {
+    protected SeatItem(Parcel source) {
         roomName = source.readString();
         occupySeat = source.readString();
         vacancySeat = source.readString();

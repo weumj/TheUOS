@@ -1,6 +1,5 @@
 package com.uoscs09.theuos2.setting;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager.OnBackStackChangedListener;
@@ -93,11 +92,14 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
                 showThemeDialog();
                 return true;
 
+            /*
             case R.string.setting_announce_noti:
                 changeFragment(SettingsAnnounceNotificationFragment.class);
                 return true;
+            */
 
             case R.string.setting_delete_cache:
+                TrackerUtil.getInstance(this).sendEvent(TAG, "delete cache");
                 deleteCache();
                 return true;
 
@@ -107,9 +109,11 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 
             case R.string.setting_save_image_sub_title:
             case R.string.setting_save_text_sub_title:
+                int titleRes = preference.getTitleRes();
+                TrackerUtil.getInstance(this).sendEvent(TAG, "change directory - " + (titleRes == R.string.setting_save_image_sub_title ? "image" : "text"));
                 SettingsFileSelectDialogFragment f = new SettingsFileSelectDialogFragment();
                 f.setSavePathKey(preference.getKey());
-                f.setTitleId(preference.getTitleRes());
+                f.setTitleId(titleRes);
                 f.show(getFragmentManager(), null);
                 return true;
 
@@ -118,6 +122,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
                 return true;
 
             case R.string.setting_app_version_update:
+                TrackerUtil.getInstance(this).sendEvent(TAG, "check app version");
                 showAppVersionDialog();
                 return true;
 
@@ -133,11 +138,11 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 
         HttpRequest.Builder.newStringRequestBuilder(APP_URL)
                 .build()
-                //.checkNetworkState(getActivity())
+                        //.checkNetworkState(getActivity())
                 .wrap(
                         new JerichoParser<String>() {
                             @Override
-                            protected String parseHttpBody(Source source) throws Exception {
+                            protected String parseHtmlBody(Source source) throws Exception {
                                 Element e = source.getAllElementsByClass("details-section metadata").get(0)
                                         .getAllElementsByClass("details-section-contents").get(0).getAllElementsByClass("meta-info").get(3)
                                         .getAllElementsByClass("content").get(0);
@@ -190,7 +195,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
     }
 
     /**
-     * 테마를 선택하는 dialog를 보여준다.dialog가 null일시 초기화도 같이한다.
+     * 테마를 선택하는 dialog 를 보여준다. dialog 가 null 일시 초기화도 같이한다.
      */
     private void showThemeDialog() {
         if (mThemeSelectorDialog == null) {
@@ -240,7 +245,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
      * White, * BlackAndWhite, * Black, * LightBlue <br>
      * <br>
      * // ActionBar text, colorPrimary, colorPrimaryDark (또는 비슷한 색)<br>
-     * colorText, colorDrawableCentor, colorDrawableBorder
+     * colorText, colorDrawableCenter, colorDrawableBorder
      */
     private static final int[][] THEME_COLORS_RES = {
             {R.color.material_deep_teal_500, android.R.color.white, R.color.primary_material_light},
@@ -278,10 +283,10 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
             int colorText = res.getColor(THEME_COLORS_RES[position][0]);
             textView.setTextColor(colorText);
 
-            int colorDrawableCentor = res.getColor(THEME_COLORS_RES[position][1]);
+            int colorDrawableCenter = res.getColor(THEME_COLORS_RES[position][1]);
             int colorDrawableBorder = res.getColor(THEME_COLORS_RES[position][2]);
 
-            drawable.setCentorColor(colorDrawableCentor);
+            drawable.setCentorColor(colorDrawableCenter);
             drawable.setColor(colorDrawableBorder);
 
             textView.invalidateDrawable(drawable);
@@ -292,30 +297,39 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
      * 어플리케이션의 모든 캐쉬를 삭제한다.
      */
     private void deleteCache() {
-        AsyncUtil.execute(new Callable<Void>() {
-            @Override
-            public Void call() throws Exception {
-                AppUtil.clearCache(getActivity());
-                return null;
-            }
-        }, new AsyncUtil.OnTaskFinishedListener<Void>() {
-            @Override
-            public void onTaskFinished(boolean isExceptionOccurred, Void data, Exception e) {
-                if (isExceptionOccurred) {
-                    AppUtil.showErrorToast(getActivity(), e, true);
-                } else {
-                    AppUtil.showToast(getActivity(), R.string.execute_delete);
-                }
-            }
-        });
+        AsyncUtil.newRequest(
+                new Callable<Void>() {
+                    @Override
+                    public Void call() throws Exception {
+                        AppUtil.clearCache(getActivity());
+                        return null;
+                    }
+                })
+                .getAsync(
+                        new Request.ResultListener<Void>() {
+                            @Override
+                            public void onResult(Void result) {
+                                AppUtil.showToast(getActivity(), R.string.execute_delete);
+                            }
+                        },
+                        new Request.ErrorListener() {
+                            @Override
+                            public void onError(Exception e) {
+                                AppUtil.showErrorToast(getActivity(), e, true);
+                            }
+                        }
+                );
+
     }
 
     @Override
     public void onResume() {
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        actionBar.setTitle(R.string.setting);
-        actionBar.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP | ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE);
+        if (actionBar != null) {
+            actionBar.setTitle(R.string.setting);
+            actionBar.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP | ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE);
+        }
 
 
         if (getFragmentManager().findFragmentByTag("front") != null) {
@@ -331,8 +345,11 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
             getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
             ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
 
-            actionBar.setTitle(R.string.setting);
-            actionBar.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP | ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE);
+            if (actionBar != null) {
+                actionBar.setTitle(R.string.setting);
+                actionBar.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP | ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE);
+            }
+
         }
 
         super.onHiddenChanged(hidden);
@@ -390,14 +407,12 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 
             case PrefUtil.KEY_THEME:
                 Preference connectionPref = findPreference(key);
-                Activity activity = getActivity();
                 AppUtil.theme = AppTheme.values()[sharedPreferences.getInt(key, 0)];
-                AppUtil.applyTheme(activity.getApplicationContext());
+                AppUtil.applyTheme(getActivity().getApplicationContext());
                 connectionPref.setSummary(getString(R.string.setting_theme_desc) + "\n현재 적용된 테마 : " + AppUtil.theme.toString());
                 break;
 
             case PrefUtil.KEY_HOME:
-
                 TrackerUtil.getInstance(this).sendEvent(TAG, "enable home fragment", "" + sharedPreferences.getBoolean(key, true));
 
                 getActivity().setResult(AppUtil.RELAUNCH_ACTIVITY);
@@ -409,8 +424,8 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
     }
 
     private void setPrefScreenSummary(SharedPreferences pref, String key, int enableID, int disableID) {
-
-        findPreference(key).setSummary(pref.getBoolean(key, false) ? enableID : disableID);
-
+        boolean value = pref.getBoolean(key, false);
+        TrackerUtil.getInstance(this).sendEvent(TAG, key, String.valueOf(value));
+        findPreference(key).setSummary(value ? enableID : disableID);
     }
 }

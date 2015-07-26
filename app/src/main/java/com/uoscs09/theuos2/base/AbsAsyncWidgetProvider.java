@@ -3,8 +3,8 @@ package com.uoscs09.theuos2.base;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 
-import com.javacan.asyncexcute.AsyncCallback;
 import com.uoscs09.theuos2.async.AsyncUtil;
+import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.util.AppUtil;
 
 import java.util.concurrent.Callable;
@@ -17,29 +17,30 @@ public abstract class AbsAsyncWidgetProvider<Data> extends AbsAppWidgetProvider 
     @Override
     public void onUpdate(final Context context, final AppWidgetManager appWidgetManager, final int[] appWidgetIds) {
 
-        AsyncUtil.execute(
-                new Callable<Data>() {
-                    @Override
-                    public Data call() throws Exception {
-                        return doInBackGround(context, appWidgetManager, appWidgetIds);
-                    }
-                },
-
-                new AsyncCallback.Base<Data>() {
+        AsyncUtil.newRequest(new Callable<Data>() {
+            @Override
+            public Data call() throws Exception {
+                return doInBackGround(context, appWidgetManager, appWidgetIds);
+            }
+        }).getAsync(
+                new Request.ResultListener<Data>() {
                     @Override
                     public void onResult(Data result) {
                         AbsAsyncWidgetProvider.this.onBackgroundTaskResult(context, appWidgetManager, appWidgetIds, result);
                     }
-
+                },
+                new Request.ErrorListener() {
                     @Override
-                    public void exceptionOccured(Exception e) {
+                    public void onError(Exception e) {
                         AbsAsyncWidgetProvider.this.exceptionOccurred(context, appWidgetManager, appWidgetIds, e);
                     }
-                });
+                }
+        );
+
     }
 
     /**
-     * 다른 Thread에서 작업을 할 때 호출된다.
+     * 다른 Thread 에서 작업을 할 때 호출된다.
      *
      * @return 작업한 결과
      */

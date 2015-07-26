@@ -1,6 +1,7 @@
 package com.uoscs09.theuos2.tab.announce;
 
 import android.app.Dialog;
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -144,7 +145,7 @@ public class SubAnnounceWebActivity extends WebViewActivity {
         final AsyncTask<Void, ?, File> task = HttpRequest.Builder.newConnectionRequestBuilder(url)
                 .setHttpMethod(HttpRequest.HTTP_METHOD_POST)
                 .build()
-                .wrap(new HttpRequest.FileDownProcessor(new File(PrefUtil.getDocumentPath(this))))
+                .wrap(new HttpRequest.FileDownloadProcessor(new File(PrefUtil.getDocumentPath(this))))
                 .getAsync(
                         new Request.ResultListener<File>() {
                             @Override
@@ -165,8 +166,15 @@ public class SubAnnounceWebActivity extends WebViewActivity {
                                                 Intent intent = new Intent()
                                                         .setAction(Intent.ACTION_VIEW)
                                                         .setDataAndType(fileUri, mimeType);
-
-                                                AppUtil.startActivityWithScaleUp(SubAnnounceWebActivity.this, intent, v);
+                                                try {
+                                                    AppUtil.startActivityWithScaleUp(SubAnnounceWebActivity.this, intent, v);
+                                                } catch (ActivityNotFoundException e) {
+                                                    //e.printStackTrace();
+                                                    AppUtil.showToast(SubAnnounceWebActivity.this, R.string.tab_announce_no_activity_found_to_handle_file);
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                    AppUtil.showErrorToast(SubAnnounceWebActivity.this, e, true);
+                                                }
                                             }
                                         })
                                         .show();

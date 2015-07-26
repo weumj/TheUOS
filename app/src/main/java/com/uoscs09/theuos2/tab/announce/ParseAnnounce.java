@@ -1,6 +1,6 @@
-package com.uoscs09.theuos2.parse;
+package com.uoscs09.theuos2.tab.announce;
 
-import com.uoscs09.theuos2.tab.announce.AnnounceItem;
+import com.uoscs09.theuos2.parse.JerichoParser;
 
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
@@ -20,7 +20,7 @@ public abstract class ParseAnnounce extends JerichoParser<ArrayList<AnnounceItem
     }
 
     @Override
-    protected ArrayList<AnnounceItem> parseHttpBody(Source source) throws Exception {
+    protected ArrayList<AnnounceItem> parseHtmlBody(Source source) throws Exception {
         Element noticeTable = source.getFirstElementByClass(getTableClassName());
 
         Element tbody = noticeTable.getFirstElement(HTMLElementName.TBODY);

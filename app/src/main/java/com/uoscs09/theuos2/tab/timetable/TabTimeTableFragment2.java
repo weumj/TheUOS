@@ -12,6 +12,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.util.SimpleArrayMap;
 import android.support.v7.app.AlertDialog;
 import android.text.method.TextKeyListener;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,26 +29,22 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos2.async.AsyncFragmentJob;
-import com.uoscs09.theuos2.async.AsyncJob;
 import com.uoscs09.theuos2.async.AsyncUtil;
-import com.uoscs09.theuos2.async.AsyncUtil.OnTaskFinishedListener;
-import com.uoscs09.theuos2.async.ImageWriteProcessor;
-import com.uoscs09.theuos2.async.ListViewBitmapRequest;
 import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.common.SerializableArrayMap;
 import com.uoscs09.theuos2.customview.NestedListView;
 import com.uoscs09.theuos2.http.TimeTableHttpRequest;
-import com.uoscs09.theuos2.parse.ParseTimeTable2;
+import com.uoscs09.theuos2.parse.XmlParserWrapper;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.IOUtil;
+import com.uoscs09.theuos2.util.ImageUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.OApiUtil.Semester;
 import com.uoscs09.theuos2.util.PrefUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
@@ -182,34 +179,44 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
     */
 
     private void readTimetableFromFileOnFragmentCreated() {
-        AsyncUtil.execute(new AsyncJob.Base<TimeTable>() {
-            @Override
-            public TimeTable call() throws Exception {
-                TimeTable timeTable = TimetableUtil.readTimetable(getActivity());
-                if (timeTable != null) {
-                    colorTable.clear();
-                    SimpleArrayMap<String, Integer> map = TimetableUtil.readColorTableFromFile(getActivity());
-                    if (map != null)
-                        colorTable.putAll(map);
-                    timeTable.getClassTimeInformationTable();
-                }
+        AsyncUtil.newRequest(
+                new Callable<TimeTable>() {
+                    @Override
+                    public TimeTable call() throws Exception {
+                        TimeTable timeTable = TimetableUtil.readTimetable(getActivity());
+                        if (timeTable != null) {
+                            colorTable.clear();
+                            SimpleArrayMap<String, Integer> map = TimetableUtil.readColorTableFromFile(getActivity());
+                            if (map != null)
+                                colorTable.putAll(map);
+                            timeTable.getClassTimeInformationTable();
+                        }
 
-                return timeTable;
-            }
+                        return timeTable;
+                    }
+                })
+                .getAsync(
+                        new Request.ResultListener<TimeTable>() {
+                            @Override
+                            public void onResult(TimeTable result) {
+                                if (result == null || result.isEmpty()) {
+                                    emptyView.setVisibility(View.VISIBLE);
 
-            @Override
-            public void onResult(TimeTable timeTable) {
-                if (timeTable == null || timeTable.isEmpty()) {
-                    emptyView.setVisibility(View.VISIBLE);
+                                } else {
+                                    mTimeTable.copyFrom(result);
+                                    mTimeTableAdapter2.notifyDataSetChanged();
 
-                } else {
-                    mTimeTable.copyFrom(timeTable);
-                    mTimeTableAdapter2.notifyDataSetChanged();
-
-                    setTermTextViewText(mTimeTable);
-                }
-            }
-        });
+                                    setTermTextViewText(mTimeTable);
+                                }
+                            }
+                        },
+                        new Request.ErrorListener() {
+                            @Override
+                            public void onError(Exception e) {
+                                Log.e("TimeTable", "cannot read timetable from file.", e);
+                            }
+                        }
+                );
     }
 
     @Override
@@ -248,14 +255,14 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
         }
     }
 
-    private void dismissProgressDialog(){
+    private void dismissProgressDialog() {
         mProgressDialog.dismiss();
         mProgressDialog.setOnCancelListener(null);
     }
 
     private void saveTimetableImage() {
         if (mTimeTableAdapter2.isEmpty()) {
-            AppUtil.showToast(getActivity(), R.string.tab_timetable_wise_id, true);
+            AppUtil.showToast(getActivity(), R.string.tab_timetable_not_exist, true);
             return;
         }
 
@@ -265,10 +272,10 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
 
         String dir = PrefUtil.getPicturePath(getActivity()) + "timetable_" + mTimeTable.year + '_' + mTimeTable.semesterCode + '_' + String.valueOf(System.currentTimeMillis()) + ".png";
 
-        final AsyncTask<Void, ?, String> task = new ListViewBitmapRequest.Builder(mTimetableListView, mTimeTableAdapter2)
+        final AsyncTask<Void, ?, String> task = new ImageUtil.ListViewBitmapRequest.Builder(mTimetableListView, mTimeTableAdapter2)
                 .setHeaderView(getTabParentView())
                 .build()
-                .wrap(new ImageWriteProcessor(dir))
+                .wrap(new ImageUtil.ImageWriteProcessor(dir))
                 .getAsync(
                         new Request.ResultListener<String>() {
                             @Override
@@ -315,14 +322,10 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
             Semester semester = Semester.values()[mWiseTermSpinner.getSelectedItemPosition()];
             String mTimeTableYear = mWiseYearSpinner.getSelectedItem().toString();
 
-            HttpURLConnection connection = TimeTableHttpRequest.getHttpConnectionPost(getActivity(), mWiseIdView.getText(), mWisePasswdView.getText(), semester, mTimeTableYear);
-
-            TimeTable result;
-            try {
-                result = TIME_TABLE_PARSER.parse(connection.getInputStream());
-            } finally {
-                connection.disconnect();
-            }
+            TimeTable result = TimeTableHttpRequest.newRequest(mWiseIdView.getText(), mWisePasswdView.getText(), semester, mTimeTableYear)
+                    .wrap(new XmlParserWrapper<>(TIME_TABLE_PARSER))
+                    .wrap(IOUtil.<TimeTable>newFileWriteProcessor(getActivity(), IOUtil.FILE_TIMETABLE))
+                    .get();
 
             // 시간표를 정상적으로 불러왔다면, 시간표를 저장하고,
             // 시간표의 과목과 과목의 색을 Mapping 한다.
@@ -336,7 +339,7 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
                 colorTable.putAll((SimpleArrayMap<String, Integer>) newColorTable);
 
                 result.getClassTimeInformationTable();
-                TimetableUtil.writeTimetable(context, result);
+                //TimetableUtil.writeTimetable(context, result);
 
             }
 
@@ -520,33 +523,41 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
     }
 
     void deleteTimetable() {
-        AsyncUtil.execute(
+        mDeleteDialog.show();
+        AsyncUtil.newRequest(
                 new Callable<Boolean>() {
                     @Override
                     public Boolean call() throws Exception {
                         return TimetableUtil.deleteTimetable(getActivity());
                     }
-                },
-                new OnTaskFinishedListener<Boolean>() {
-                    @Override
-                    public void onTaskFinished(boolean isExceptionOccurred, Boolean data, Exception e) {
-                        if (!isExceptionOccurred && data) {
+                })
+                .getAsync(
+                        new Request.ResultListener<Boolean>() {
+                            @Override
+                            public void onResult(Boolean result) {
+                                mDeleteDialog.dismiss();
+                                if (result) {
+                                    mTimeTableAdapter2.clear();
 
-                            mTimeTableAdapter2.clear();
+                                    mTimeTable.copyFrom(new TimeTable());
+                                    mTimeTableAdapter2.notifyDataSetChanged();
 
-                            mTimeTable.copyFrom(new TimeTable());
-                            mTimeTableAdapter2.notifyDataSetChanged();
-
-                            AppUtil.showToast(getActivity(), R.string.execute_delete, isVisible());
-                            setSubtitleWhenVisible(null);
-
-                        } else {
-                            AppUtil.showToast(getActivity(), R.string.file_not_found, isMenuVisible());
+                                    AppUtil.showToast(getActivity(), R.string.execute_delete, isVisible());
+                                    setSubtitleWhenVisible(null);
+                                } else {
+                                    AppUtil.showToast(getActivity(), R.string.file_not_found, isMenuVisible());
+                                }
+                            }
+                        },
+                        new Request.ErrorListener() {
+                            @Override
+                            public void onError(Exception e) {
+                                mDeleteDialog.dismiss();
+                                AppUtil.showToast(getActivity(), R.string.file_not_found, isMenuVisible());
+                            }
                         }
+                );
 
-                    }
-                }
-        );
     }
 
 

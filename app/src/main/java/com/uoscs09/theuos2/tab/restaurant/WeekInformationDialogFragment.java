@@ -22,18 +22,17 @@ import android.widget.TextView;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
-import com.uoscs09.theuos2.async.AsyncJob;
 import com.uoscs09.theuos2.async.AsyncUtil;
+import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.http.HttpRequest;
-import com.uoscs09.theuos2.parse.ParseRestaurantWeek;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
 import com.uoscs09.theuos2.util.TrackerUtil;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.Callable;
 
 public class WeekInformationDialogFragment extends DialogFragment {
     private static final String TAG = "WeekInformationDialogFragment";
@@ -54,7 +53,7 @@ public class WeekInformationDialogFragment extends DialogFragment {
     @ReleaseWhenDestroy
     private ProgressWheel mProgressWheel;
     @ReleaseWhenDestroy
-    private View mFailView;
+    private View mFailView, mEmptyView;
 
     public void setSelection(int stringId) {
         this.mCurrentSelectionId = stringId;
@@ -101,7 +100,7 @@ public class WeekInformationDialogFragment extends DialogFragment {
 
     private void showReloadView() {
         if (mFailView == null) {
-            mFailView = ((ViewStub) ((View) mSwipeRefreshLayout.getParent()).findViewById(R.id.tab_rest_week_stub)).inflate();
+            mFailView = ((ViewStub) ((View) mSwipeRefreshLayout.getParent()).findViewById(R.id.tab_rest_week_stub_reload)).inflate();
             mFailView.findViewById(android.R.id.content).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -110,7 +109,18 @@ public class WeekInformationDialogFragment extends DialogFragment {
                 }
             });
         }
+    }
 
+    private void showEmptyView() {
+        if (mEmptyView == null) {
+            mEmptyView = ((ViewStub) ((View) mSwipeRefreshLayout.getParent()).findViewById(R.id.tab_rest_week_stub_empty_info)).inflate();
+            mEmptyView.findViewById(android.R.id.content).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dismiss();
+                }
+            });
+        }
     }
 
 
@@ -122,73 +132,88 @@ public class WeekInformationDialogFragment extends DialogFragment {
         if (mFailView != null)
             mFailView.setVisibility(View.GONE);
 
-        mAsyncTask = AsyncUtil.execute(new AsyncJob.Base<WeekRestItem>() {
-            @Override
-            public WeekRestItem call() throws Exception {
+        mAsyncTask = AsyncUtil.newRequest(
+                new Callable<WeekRestItem>() {
+                    @Override
+                    public WeekRestItem call() throws Exception {
+                        Context context = getActivity();
+                        PrefUtil pref = PrefUtil.getInstance(context);
 
-                Context context = getActivity();
-                PrefUtil pref = PrefUtil.getInstance(context);
+                        final int[] recodedDate = getValueFromPref(pref, mCurrentSelectionId);
+                        final int today = OApiUtil.getDate();
 
-                final int[] recodedDate = getValueFromPref(pref, mCurrentSelectionId);
-                final int today = OApiUtil.getDate();
+                        // 이번주의 식단이 기록된 파일이 있으면, 인터넷에서 가져오지 않고 그 파일을 읽음
+                        if (!shouldUpdateUsingInternet && ((recodedDate[0] <= today) && (today <= recodedDate[1]))) {
 
-                // 이번주의 식단이 기록된 파일이 있으면, 인터넷에서 가져오지 않고 그 파일을 읽음
-                if (!shouldUpdateUsingInternet && ((recodedDate[0] <= today) && (today <= recodedDate[1]))) {
-                    WeekRestItem result = readFile(context, mCurrentSelectionId);
+                            WeekRestItem result = new IOUtil.Builder<WeekRestItem>(getFileName(mCurrentSelectionId))
+                                    .setContext(context)
+                                    .build()
+                                    .get();
 
-                    if (result != null)
-                        return result;
+                            if (result != null)
+                                return result;
 
-                }
+                        }
 
-                return readFromInternet(context, mCurrentSelectionId);
-            }
+                        return readFromInternet(context, mCurrentSelectionId);
+                    }
+                })
+                .getAsync(
+                        new Request.ResultListener<WeekRestItem>() {
+                            @Override
+                            public void onResult(WeekRestItem result) {
+                                postExecute();
 
-            @Override
-            public void onPostExcute() {
-                super.onPostExcute();
+                                ArrayList<RestItem> weekList = result.weekList;
+                                mRestWeekAdapter.restItemArrayList.clear();
+                                mRestWeekAdapter.restItemArrayList.addAll(weekList);
+                                mRestWeekAdapter.notifyDataSetChanged();
 
-                if (mProgressWheel != null)
-                    mProgressWheel.stopSpinning();
-                if (mProgressLayout != null)
-                    mProgressLayout.setVisibility(View.INVISIBLE);
-                if (mFailView != null)
-                    mFailView.setVisibility(View.VISIBLE);
-
-                mSwipeRefreshLayout.setRefreshing(false);
-
-
-                mAsyncTask = null;
-
-            }
-
-            @Override
-            public void onResult(WeekRestItem result) {
-                ArrayList<RestItem> weekList = result.weekList;
-                mRestWeekAdapter.restItemArrayList.clear();
-                mRestWeekAdapter.restItemArrayList.addAll(weekList);
-                mRestWeekAdapter.notifyDataSetChanged();
-
-                mToolbar.setSubtitle(result.getPeriodString());
-
-            }
-
-            @Override
-            public void exceptionOccured(Exception e) {
-                AppUtil.showErrorToast(getActivity(), e, true);
-                showReloadView();
-            }
-        });
+                                if (weekList.isEmpty()) {
+                                    showEmptyView();
+                                } else {
+                                    mToolbar.setSubtitle(result.getPeriodString());
+                                }
+                            }
+                        },
+                        new Request.ErrorListener() {
+                            @Override
+                            public void onError(Exception e) {
+                                postExecute();
+                                AppUtil.showErrorToast(getActivity(), e, true);
+                                showReloadView();
+                            }
+                        }
+                );
 
     }
 
+    private void postExecute() {
+        if (mProgressWheel != null)
+            mProgressWheel.stopSpinning();
+        if (mProgressLayout != null)
+            mProgressLayout.setVisibility(View.INVISIBLE);
+        if (mFailView != null)
+            mFailView.setVisibility(View.VISIBLE);
 
-    private static WeekRestItem readFile(Context context, int selectionId) throws IOException, ClassNotFoundException {
-        return IOUtil.readFromFile(context, FILE_NAME + getCode(selectionId));
+        if (mSwipeRefreshLayout.isRefreshing())
+            mSwipeRefreshLayout.setRefreshing(false);
+
+        mAsyncTask = null;
     }
 
-    private static void writeFile(Context context, int selectionId, WeekRestItem object) throws IOException {
-        IOUtil.writeObjectToFile(context, FILE_NAME + getCode(selectionId), object);
+    /*
+
+        private static WeekRestItem readFile(Context context, int selectionId) throws IOException, ClassNotFoundException {
+            return IOUtil.readFromFile(context, getFileName(selectionId));
+        }
+
+        private static void writeFile(Context context, int selectionId, WeekRestItem object) throws IOException {
+            IOUtil.writeObjectToFile(context, getFileName(selectionId), object);
+        }
+    */
+    private static String getFileName(int selectionId) {
+        return FILE_NAME + getCode(selectionId);
     }
 
     private static WeekRestItem readFromInternet(Context context, int selectionId) throws Exception {
@@ -197,9 +222,9 @@ public class WeekInformationDialogFragment extends DialogFragment {
                 .build()
                 .checkNetworkState(context)
                 .wrap(RESTAURANT_WEEK_PARSER)
+                .wrap(IOUtil.<WeekRestItem>newFileWriteProcessor(context, getFileName(selectionId)))
                 .get();
 
-        writeFile(context, selectionId, result);
         putValueIntoPref(PrefUtil.getInstance(context), selectionId, result);
 
         return result;

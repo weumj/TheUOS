@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.util.Log;
 
 import com.uoscs09.theuos2.async.AsyncUtil;
+import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
@@ -35,7 +36,7 @@ public class TimetableAlarmUtil {
 
     // ************ Component Enable / Disable **************
 
-    private static void setNotificationReceiverEnabled(Context context, boolean enable){
+    private static void setNotificationReceiverEnabled(Context context, boolean enable) {
         ComponentName receiver = new ComponentName(context, TimeTableNotificationReceiver.class);
         PackageManager pm = context.getPackageManager();
 
@@ -46,17 +47,18 @@ public class TimetableAlarmUtil {
 
 
     // ************ ALARM **************
+
     /**
      * 주어진 과목과 알람 시간 정보로 알람을 설정하거나 취소하고 그 정보를 파일에 기록한다.
      */
-    static void setOrCancelAlarm(final Context context, final Subject subject, final int alarmType){
+    static void setOrCancelAlarm(final Context context, final Subject subject, final int alarmType) {
 
         // 알림 없음
         if (alarmType == 0) {
             cancelAlarm(context, subject.period, subject.day);
 
         } else {
-            if (!PrefUtil.getInstance(context).get(PrefUtil.KEY_CHECK_TIMETABLE_NOTIFY_SERVICE, false)){
+            if (!PrefUtil.getInstance(context).get(PrefUtil.KEY_CHECK_TIMETABLE_NOTIFY_SERVICE, false)) {
                 PrefUtil.getInstance(context).put(PrefUtil.KEY_CHECK_TIMETABLE_NOTIFY_SERVICE, true);
                 setNotificationReceiverEnabled(context, true);
             }
@@ -87,10 +89,10 @@ public class TimetableAlarmUtil {
             deleteSubject(context, period, day);
             deleteTimeSelection(context, period, day);
 
-            if(alarmCount < 2){
+            if (alarmCount < 2) {
                 deleteAlarmCount(context);
                 setNotificationReceiverEnabled(context, false);
-            } else{
+            } else {
                 writeAlarmCount(context, --alarmCount);
             }
 
@@ -167,21 +169,21 @@ public class TimetableAlarmUtil {
     /**
      * 현재 설정된 시간표 알림을 모두 취소한다.
      */
-    public static void clearAllAlarmWithResult(Context context, AsyncUtil.OnTaskFinishedListener<Boolean> finishedListener) {
+    public static void clearAllAlarmWithResult(Context context, Request.ResultListener<Boolean> resultListener, Request.ErrorListener errorListener) {
         final Context appContext = context.getApplicationContext();
 
-        AsyncUtil.execute(new Callable<Boolean>() {
+        AsyncUtil.newRequest(new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
                 return clearAllAlarmInner(appContext);
             }
-        }, finishedListener);
+        }).getAsync(resultListener, errorListener);
 
     }
 
     /**
      * @return 모든 알람이 성공적으로 삭제되었는지 여부
-     * */
+     */
     private static boolean clearAllAlarmInner(Context appContext) {
         AlarmManager am = (AlarmManager) appContext.getSystemService(Context.ALARM_SERVICE);
 
@@ -315,7 +317,7 @@ public class TimetableAlarmUtil {
         Calendar alarmTime = Calendar.getInstance();
 
         int today = getToday(alarmTime);
-        if(day > today){
+        if (day > today) {
             addDate = day - today;
         }
 
@@ -415,7 +417,7 @@ public class TimetableAlarmUtil {
         }
     }
 
-    static int readAlarmCount(Context context){
+    static int readAlarmCount(Context context) {
         Object obj = IOUtil.readFromFileSuppressed(context, FILE_ALARM_COUNT);
 
         if (obj == null)
@@ -425,11 +427,11 @@ public class TimetableAlarmUtil {
         return count > 0 ? count : 0;
     }
 
-    static void writeAlarmCount(Context context, int count){
+    static void writeAlarmCount(Context context, int count) {
         IOUtil.writeObjectToFileSuppressed(context, FILE_ALARM_COUNT, count);
     }
 
-    static void deleteAlarmCount(Context context){
+    static void deleteAlarmCount(Context context) {
         try {
             context.deleteFile(FILE_ALARM_COUNT);
         } catch (Exception e) {

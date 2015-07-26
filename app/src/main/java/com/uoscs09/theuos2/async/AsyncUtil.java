@@ -4,9 +4,6 @@ import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.javacan.asyncexcute.AsyncCallback;
-import com.javacan.asyncexcute.AsyncExecutor;
-
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
@@ -54,36 +51,26 @@ public class AsyncUtil {
 
     }
 
-    /**
-     * 비동기 작업을 실행한다.
-     *
-     * @param task 비동기 작업이 실시될 {@link Callable}
-     * @param l    작업 종료후 호출될 callback
-     */
-    public static <Data> AsyncTask<Void, ?, Data> execute(@NonNull Callable<Data> task, OnTaskFinishedListener<Data> l) {
-        return executeAsyncTask(getExecutor(task, l));
-    }
-
     public static <Progress, V> AsyncTask<Void, Progress, V> execute(@NonNull AsyncTask<Void, Progress, V> task) {
         return executeAsyncTask(task);
     }
 
-    /**
-     * 비동기 작업을 실행한다.
-     *
-     * @param task     비동기 작업이 실시될 {@link Callable}
-     * @param callback 작업 종료후 호출될 callback
-     */
-    public static <Data> AsyncTask<Void, ?, Data> execute(Callable<Data> task, AsyncCallback<Data> callback) {
-        return executeAsyncTask(new AsyncExecutor<Data>().setCallable(task).setCallback(callback));
+    public static <Progress, V> AsyncTask<Void, Progress, V> executeFor(@NonNull AsyncTask<Void, Progress, V> task) {
+        return executeAsyncTaskOnExecutor(task);
     }
 
+    /*
     public static <Data> AsyncTask<Void, ?, Data> execute(AsyncJob<Data> job) {
         return executeAsyncTask(new AsyncExecutor<Data>().setCallable(job).setCallback(job));
     }
+    */
 
     private static <Progress, Data> AsyncTask<Void, Progress, Data> executeAsyncTask(AsyncTask<Void, Progress, Data> task) {
         return task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    private static <Progress, Data> AsyncTask<Void, Progress, Data> executeAsyncTaskOnExecutor(AsyncTask<Void, Progress, Data> task) {
+        return task.executeOnExecutor(sEXECUTOR);
     }
 
     /**
@@ -107,35 +94,47 @@ public class AsyncUtil {
         sEXECUTOR.execute(r);
     }
 
-    private static <Data> AsyncTask<Void, ?, Data> getExecutor(@NonNull Callable<Data> task, final OnTaskFinishedListener<Data> l) {
-        return new AsyncExecutor<Data>().setCallable(task).setCallback(
-                new AsyncCallback.Base<Data>() {
-                    public void onResult(Data result) {
-                        if (l != null)
-                            l.onTaskFinished(false, result, null);
-                    }
-
-                    @Override
-                    public void exceptionOccured(Exception e) {
-                        if (l != null)
-                            l.onTaskFinished(true, null, e);
-                    }
-                }
-        );
+    public static <V, T> Request<T> newRequest(final Processor<V, T> processor, final V in) {
+        return new Request.Base<T>() {
+            @Override
+            public T get() throws Exception {
+                return processor.process(in);
+            }
+        };
     }
 
-    /**
-     * 비 동기 작업 후 호출될 listener
-     */
-    public interface OnTaskFinishedListener<T> {
-        /**
-         * 비 동기 작업 후 호출되는 메소드
-         *
-         * @param isExceptionOccurred Exception 발생 여부
-         * @param e                   Exception이 발생한 경우 : {@link Exception}객체, 아니면 null
-         * @param data                Exception이 발생하지 않은 경우 : 작업한 결과 , 아니면 null
-         */
-        void onTaskFinished(boolean isExceptionOccurred, T data, Exception e);
+    @SuppressWarnings("unchecked")
+    public static <T> Request<T> getEmptyRequest() {
+        return (Request<T>) EMPTY_REQUEST;
+    }
+
+    private static Request<?> EMPTY_REQUEST = new Request.Base<Object>() {
+        @Override
+        public Object get() throws Exception {
+            throw new Exception("empty request");
+        }
+    };
+
+
+    public static <T> Request<T> newRequest(Callable<T> callable) {
+        return new CallableRequest<>(callable);
+    }
+
+    private static class CallableRequest<T> extends Request.Base<T> {
+        private Callable<T> callable;
+
+        public CallableRequest(Callable<T> callable) {
+            this.callable = callable;
+        }
+
+        @Override
+        public T get() throws Exception {
+            try {
+                return callable.call();
+            } finally {
+                callable = null;
+            }
+        }
     }
 
 }

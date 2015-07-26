@@ -33,7 +33,7 @@ public class WeekRestItem implements Parcelable, Serializable, IParser.AfterPars
         else if (weekList.size() == 1)
             return (weekList.get(0).title);
         else
-            return (null);
+            return null;
     }
 
     private int getDate(RestItem item) {

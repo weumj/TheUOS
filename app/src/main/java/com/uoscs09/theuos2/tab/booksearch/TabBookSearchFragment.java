@@ -34,7 +34,6 @@ import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.common.UOSApplication;
 import com.uoscs09.theuos2.customview.NestedListView;
 import com.uoscs09.theuos2.http.HttpRequest;
-import com.uoscs09.theuos2.parse.ParseBook;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
 import com.uoscs09.theuos2.util.StringUtil;

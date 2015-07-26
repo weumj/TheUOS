@@ -6,8 +6,8 @@ import net.htmlparser.jericho.Source;
 public abstract class JerichoParser<T> extends IParser.Base<String, T> {
 
 	public T parse(String param) throws Exception {
-		return parseHttpBody(new Source(param));
+		return parseHtmlBody(new Source(param));
 	}
 
-	protected abstract T parseHttpBody(Source source) throws Exception;
+	protected abstract T parseHtmlBody(Source source) throws Exception;
 }

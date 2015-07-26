@@ -29,13 +29,10 @@ import com.uoscs09.theuos2.tab.booksearch.TabBookSearchFragment;
 import com.uoscs09.theuos2.tab.emptyroom.TabSearchEmptyRoomFragment;
 import com.uoscs09.theuos2.tab.libraryseat.TabLibrarySeatFragment;
 import com.uoscs09.theuos2.tab.map.TabMapFragment;
-import com.uoscs09.theuos2.tab.phonelist.TabPhoneFragment;
 import com.uoscs09.theuos2.tab.restaurant.TabRestaurantFragment;
 import com.uoscs09.theuos2.tab.schedule.UnivScheduleFragment;
-import com.uoscs09.theuos2.tab.score.ScoreFragment;
 import com.uoscs09.theuos2.tab.subject.TabSearchSubjectFragment2;
 import com.uoscs09.theuos2.tab.timetable.TabTimeTableFragment2;
-import com.uoscs09.theuos2.tab.transport.TabTransportFragment;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -60,7 +57,7 @@ public class AppUtil {
      */
     public enum AppTheme {
         /**
-         * white textColortheme
+         * white textColorTheme
          */
         White(R.style.AppTheme_Style_White),
         /**
@@ -68,7 +65,7 @@ public class AppUtil {
          */
         BlackAndWhite(R.style.AppTheme_Style_BlackAndWhite),
         /**
-         * black textColortheme
+         * black textColorTheme
          */
         Black(R.style.AppTheme_Style_Black),
         /**
@@ -93,7 +90,7 @@ public class AppUtil {
         AppUtil.theme = vals[v];
         AppUtil.test = pref.get("test", false);
 
-        PAGE_SIZE = test ? 13 : MAX_PAGE_SIZE_NORMAL;
+        PAGE_SIZE = MAX_PAGE_SIZE_NORMAL;//test ? 13 : MAX_PAGE_SIZE_NORMAL;
     }
 
 /*
@@ -572,9 +569,6 @@ public class AppUtil {
             case R.string.title_tab_map:
                 return TabMapFragment.class;
 
-            case R.string.title_tab_phone:
-                return TabPhoneFragment.class;
-
             case R.string.title_tab_timetable:
                 return TabTimeTableFragment2.class;
 
@@ -587,11 +581,16 @@ public class AppUtil {
             case R.string.title_tab_schedule:
                 return UnivScheduleFragment.class;
 
+            /*
+            case R.string.title_tab_phone:
+                return TabPhoneFragment.class;
+
             case R.string.title_tab_score:
                 return ScoreFragment.class;
 
             case R.string.title_tab_transport:
                 return TabTransportFragment.class;
+            */
 
             default:
                 return null;
@@ -624,8 +623,6 @@ public class AppUtil {
 
         else if (fragmentClass.equals(TabMapFragment.class))
             return R.string.title_tab_map;
-        else if (fragmentClass.equals(TabPhoneFragment.class))
-            return R.string.title_tab_phone;
 
         else if (fragmentClass.equals(TabTimeTableFragment2.class))
             return R.string.title_tab_timetable;
@@ -639,12 +636,16 @@ public class AppUtil {
         else if (fragmentClass.equals(UnivScheduleFragment.class))
             return R.string.title_tab_schedule;
 
+        /*
+        else if (fragmentClass.equals(TabPhoneFragment.class))
+            return R.string.title_tab_phone;
+
         else if (fragmentClass.equals(ScoreFragment.class))
             return R.string.title_tab_score;
 
         else if (fragmentClass.equals(TabTransportFragment.class))
             return R.string.title_tab_transport;
-
+*/
         else
             return RESOURCE_NOT_EXIST;
     }

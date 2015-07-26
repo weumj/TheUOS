@@ -1,8 +1,8 @@
-package com.uoscs09.theuos2.parse;
+package com.uoscs09.theuos2.tab.restaurant;
 
 import android.util.SparseArray;
 
-import com.uoscs09.theuos2.tab.restaurant.RestItem;
+import com.uoscs09.theuos2.parse.JerichoParser;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import net.htmlparser.jericho.Element;
@@ -15,7 +15,7 @@ public class ParseRest extends JerichoParser<SparseArray<RestItem>> {
     //private static final String BR = "*br*";
 
     @Override
-    protected SparseArray<RestItem> parseHttpBody(Source source) throws Exception {
+    protected SparseArray<RestItem> parseHtmlBody(Source source) throws Exception {
         SparseArray<RestItem> result = new SparseArray<>();
 
         List<Element> restList = source.getAllElementsByClass("d1 talign_l");

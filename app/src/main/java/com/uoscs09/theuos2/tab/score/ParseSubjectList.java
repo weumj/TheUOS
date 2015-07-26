@@ -1,4 +1,6 @@
-package com.uoscs09.theuos2.parse;
+package com.uoscs09.theuos2.tab.score;
+
+import com.uoscs09.theuos2.parse.OApiParser;
 
 import java.io.IOException;
 import java.util.ArrayList;

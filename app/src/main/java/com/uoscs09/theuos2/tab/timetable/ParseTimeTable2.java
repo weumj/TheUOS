@@ -1,8 +1,7 @@
-package com.uoscs09.theuos2.parse;
+package com.uoscs09.theuos2.tab.timetable;
 
 
-import com.uoscs09.theuos2.tab.timetable.Subject;
-import com.uoscs09.theuos2.tab.timetable.TimeTable;
+import com.uoscs09.theuos2.parse.XmlParser;
 import com.uoscs09.theuos2.util.OApiUtil;
 
 import org.xmlpull.v1.XmlPullParser;
