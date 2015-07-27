@@ -23,7 +23,6 @@
         android:orientation="horizontal">
 
         <com.balysv.materialripple.MaterialRippleLayout
-            android:id="@+id/drawer_setting_ripple"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:gravity="center"
@@ -32,7 +31,7 @@
             app:mrl_rippleColor="?colorPrimaryDark">
 
             <TextView
-                android:id="@+id/drawer_setting"
+                android:id="@+id/drawer_btn_setting"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 android:gravity="center_vertical"
@@ -45,7 +44,27 @@
 
 
         <com.balysv.materialripple.MaterialRippleLayout
-            android:id="@+id/drawer_exit_ripple"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:gravity="center"
+            android:layout_height="fill_parent"
+            app:mrl_rippleInAdapter="false"
+            app:mrl_rippleColor="?colorPrimaryDark">
+
+            <TextView
+                android:id="@+id/drawer_btn_map"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:gravity="center_vertical"
+                android:layout_gravity="center"
+                android:drawablePadding="10dp"
+                android:text="@string/action_map"
+                android:textColor="?color_tint_normal"
+                android:drawableLeft="?theme_ic_action_maps_place" />
+        </com.balysv.materialripple.MaterialRippleLayout>
+
+
+        <com.balysv.materialripple.MaterialRippleLayout
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="fill_parent"
@@ -54,7 +73,7 @@
             app:mrl_rippleColor="?colorPrimaryDark">
 
             <TextView
-                android:id="@+id/drawer_exit"
+                android:id="@+id/drawer_btn_exit"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 android:drawablePadding="10dp"

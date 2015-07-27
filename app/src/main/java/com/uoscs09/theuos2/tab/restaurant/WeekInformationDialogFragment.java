@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -24,17 +23,17 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.async.Request;
+import com.uoscs09.theuos2.base.BaseDialogFragment;
 import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
-import com.uoscs09.theuos2.util.TrackerUtil;
 
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
-public class WeekInformationDialogFragment extends DialogFragment {
+public class WeekInformationDialogFragment extends BaseDialogFragment {
     private static final String TAG = "WeekInformationDialogFragment";
     private static final String FILE_NAME = "FILE_REST_WEEK_ITEM";
     private static final ParseRestaurantWeek RESTAURANT_WEEK_PARSER = new ParseRestaurantWeek();
@@ -72,14 +71,15 @@ public class WeekInformationDialogFragment extends DialogFragment {
 
         mToolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
         mToolbar.setTitle(mCurrentSelectionId);
-        TrackerUtil.getInstance(this).sendEvent(TAG, "view", getString(mCurrentSelectionId));
+
+        sendTrackerEvent("view", getString(mCurrentSelectionId));
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.tab_rest_week_swipe_layout);
         mSwipeRefreshLayout.setColorSchemeColors(AppUtil.getAttrColor(getActivity(), R.attr.colorPrimaryDark));
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                TrackerUtil.getInstance(WeekInformationDialogFragment.this).sendEvent(TAG, "swipe", "SwipeRefreshView");
+                sendTrackerEvent("swipe", "SwipeRefreshView");
                 execute(true);
             }
         });
@@ -104,7 +104,7 @@ public class WeekInformationDialogFragment extends DialogFragment {
             mFailView.findViewById(android.R.id.content).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    TrackerUtil.getInstance(WeekInformationDialogFragment.this).sendClickEvent(TAG, "fail view");
+                    sendClickEvent("fail view");
                     execute(true);
                 }
             });
@@ -265,6 +265,12 @@ public class WeekInformationDialogFragment extends DialogFragment {
         AsyncUtil.cancelTask(mAsyncTask);
         mAsyncTask = null;
 
+    }
+
+    @NonNull
+    @Override
+    public String getScreenNameForTracker() {
+        return TAG;
     }
 
 

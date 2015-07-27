@@ -6,7 +6,6 @@ import android.webkit.WebSettings;
 
 import com.uoscs09.theuos2.common.WebViewActivity;
 import com.uoscs09.theuos2.util.StringUtil;
-import com.uoscs09.theuos2.util.TrackerUtil;
 
 public class SubSeatWebActivity extends WebViewActivity {
     @Override
@@ -16,7 +15,7 @@ public class SubSeatWebActivity extends WebViewActivity {
         SeatItem item = getIntent().getParcelableExtra(TabLibrarySeatFragment.ITEM);
 
 
-        TrackerUtil.getInstance(this).sendEvent(getScreenName(), "view", item.roomName);
+        sendTrackerEvent("view", item.roomName);
 
         getSupportActionBar().setTitle("좌석 정보");
         getSupportActionBar().setSubtitle(item.roomName);
@@ -37,7 +36,7 @@ public class SubSeatWebActivity extends WebViewActivity {
 
     @NonNull
     @Override
-    protected String getScreenName() {
+    public String getScreenNameForTracker() {
         return "SubSeatWebActivity";
     }
 

@@ -6,20 +6,15 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewStub;
 
-import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos2.async.AsyncFragmentJob;
@@ -73,21 +68,11 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<SeatInfo> {
      */
     private String mSearchTime = StringUtil.NULL;
 
-    /**
-     * 해지될 좌석 정보 버튼 ({@code R.id.action_info})을 선택하면 나타나는 AlertDialog<br>
-     * 해지될 좌석 정보를 보여준다.
-     */
-    @ReleaseWhenDestroy
-    private AlertDialog mInfoDialog;
     @ReleaseWhenDestroy
     private SwipeRefreshLayout mSwipeRefreshLayout;
     @ReleaseWhenDestroy
     private RecyclerView mSeatListView;
-
-    @ReleaseWhenDestroy
-    private View mDismissDialogView, mDismissEmptyView;
-
-    private SeatDismissInfoListAdapter mInfoAdapter;
+    private SeatDismissDialogFragment mSeatDismissDialogFragment;
     private AsyncTask<Void, Void, SeatInfo> mAsyncTask;
 
 
@@ -104,7 +89,8 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<SeatInfo> {
             mSeatInfo.seatDismissInfoList = new ArrayList<>();
         }
 
-        mInfoAdapter = new SeatDismissInfoListAdapter(mSeatInfo.seatDismissInfoList);
+        mSeatDismissDialogFragment = new SeatDismissDialogFragment();
+        mSeatDismissDialogFragment.setSeatInfo(mSeatInfo);
 
         super.onCreate(savedInstanceState);
     }
@@ -149,18 +135,6 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<SeatInfo> {
         mSeatListView.setLayoutManager(mLayoutManager);
         mSeatListView.setItemAnimator(new SlideInDownAnimator());
 
-        initDismissDialog();
-
-        FloatingActionButton actionButton = (FloatingActionButton) rootView.findViewById(R.id.action_btn);
-        actionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendClickEvent("actionButton");
-                mSwipeRefreshLayout.setRefreshing(true);
-                execute();
-            }
-        });
-
         if (mSeatInfo.seatItemList.isEmpty()) {
             execute();
         }
@@ -184,11 +158,12 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<SeatInfo> {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            /*
             case R.id.action_refresh:
+                sendClickEvent("refresh");
+                mSwipeRefreshLayout.setRefreshing(true);
                 execute();
                 return true;
-            */
+
             case R.id.action_info:
                 if (AsyncUtil.isTaskRunning(mAsyncTask)) {
                     AppUtil.showToast(getActivity(), R.string.progress_while_loading, true);
@@ -196,7 +171,8 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<SeatInfo> {
                 }
 
                 sendClickEvent("dismiss info");
-                mInfoDialog.show();
+                if (!mSeatDismissDialogFragment.isAdded())
+                    mSeatDismissDialogFragment.show(getFragmentManager(), "SeatDismissInfo");
 
                 return true;
 
@@ -227,12 +203,7 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<SeatInfo> {
             mSeatInfo.clearAndAddAll(result);
 
             mSeatListView.getAdapter().notifyItemRangeInserted(0, result.seatItemList.size());
-            mInfoAdapter.notifyDataSetChanged();
-
-            if (mSeatInfo.seatDismissInfoList.isEmpty())
-                showDismissInfoEmptyView();
-            else
-                mDismissEmptyView.setVisibility(View.GONE);
+            mSeatDismissDialogFragment.notifyDataSetChanged();
         }
 
         @Override
@@ -294,37 +265,6 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<SeatInfo> {
         }
     }
 
-    private void initDismissDialog() {
-        mDismissDialogView = View.inflate(getActivity(), R.layout.dialog_seat_dismiss_info, null);
-
-        Toolbar toolbar = (Toolbar) mDismissDialogView.findViewById(R.id.toolbar);
-        toolbar.setTitle(R.string.action_dismiss_info);
-
-        RecyclerView recyclerView = (RecyclerView) mDismissDialogView.findViewById(R.id.tab_library_seat_dismiss_recyclerview);
-        LinearLayoutManager manager = new LinearLayoutManager(recyclerView.getContext());
-
-        recyclerView.setLayoutManager(manager);
-        recyclerView.setAdapter(mInfoAdapter);
-
-        mInfoDialog = new AlertDialog.Builder(getActivity())
-                .setView(mDismissDialogView)
-                .create();
-    }
-
-    private void showDismissInfoEmptyView() {
-        if (mDismissEmptyView == null) {
-            mDismissEmptyView = ((ViewStub) mDismissDialogView.findViewById(R.id.tab_library_seat_dismiss_stub_empty_info)).inflate();
-            mDismissEmptyView.findViewById(android.R.id.content).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mInfoDialog.dismiss();
-                }
-            });
-        } else {
-            mDismissEmptyView.setVisibility(View.VISIBLE);
-        }
-    }
-
     private void updateTimeView() {
         mSearchTime = TimeUtil.getFormat_am_hms().format(new Date());
         setSubtitleWhenVisible(mSearchTime);
@@ -337,7 +277,7 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<SeatInfo> {
 
     @NonNull
     @Override
-    protected String getFragmentNameForTracker() {
+    public String getScreenNameForTracker() {
         return "TabLibrarySeatFragment";
     }
 

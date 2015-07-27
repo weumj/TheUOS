@@ -5,10 +5,12 @@ import android.content.res.Configuration;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -28,6 +30,7 @@ import android.widget.TextView;
 import com.uoscs09.theuos2.base.BaseActivity;
 import com.uoscs09.theuos2.common.BackPressCloseHandler;
 import com.uoscs09.theuos2.setting.SettingActivity;
+import com.uoscs09.theuos2.tab.map.GoogleMapActivity;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.ImageUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
@@ -69,8 +72,8 @@ public class UosMainActivity extends BaseActivity {
     private ActionBarDrawerToggle mDrawerToggle;
     private AppBarLayout mToolBarParent;
     private Toolbar mToolbar;
-    //private CoordinatorLayout mCoordinatorLayout;
-    //private CoordinatorLayout.Behavior mAppBarBehavior;
+    private CoordinatorLayout mCoordinatorLayout;
+    private CoordinatorLayout.Behavior mAppBarBehavior;
 
     private OnBackPressListener onBackPressListener = null;
 
@@ -99,12 +102,14 @@ public class UosMainActivity extends BaseActivity {
 
         setContentView(R.layout.activity_uosmain);
 
-        //mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.activity_uos_coordinator);
         mToolBarParent = (AppBarLayout) findViewById(R.id.toolbar_parent);
         mToolbar = (Toolbar) mToolBarParent.findViewById(R.id.toolbar);
 
-        //CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) mToolBarParent.getLayoutParams();
-        //mAppBarBehavior = params.getBehavior();
+        if (Build.VERSION.SDK_INT > 20) {
+            mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.activity_uos_coordinator);
+            CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) mToolBarParent.getLayoutParams();
+            mAppBarBehavior = params.getBehavior();
+        }
 
         setSupportActionBar(mToolbar);
 
@@ -133,7 +138,7 @@ public class UosMainActivity extends BaseActivity {
 
     @NonNull
     @Override
-    protected String getScreenName() {
+    public String getScreenNameForTracker() {
         return "UOSMainActivity";
     }
 
@@ -253,23 +258,31 @@ public class UosMainActivity extends BaseActivity {
         mDrawerListView.setLayoutManager(layoutManager);
         mDrawerListView.setAdapter(mDrawerAdapter = new DrawerAdapter());
 
-        mLeftDrawerLayout.findViewById(R.id.drawer_setting_ripple).setOnClickListener(new View.OnClickListener() {
+        View.OnClickListener l = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startSettingActivity();
-                mDrawerLayout.closeDrawer(mLeftDrawerLayout);
-            }
-        });
-        TextView drawerSetting = (TextView) mLeftDrawerLayout.findViewById(R.id.drawer_setting);
-        drawerSetting.setCompoundDrawablesWithIntrinsicBounds(AppUtil.getAttrValue(this, R.attr.theme_ic_action_action_settings), 0, 0, 0);
+                switch (v.getId()) {
+                    case R.id.drawer_btn_setting:
+                        mDrawerLayout.closeDrawer(mLeftDrawerLayout);
+                        startSettingActivity();
+                        break;
 
+                    case R.id.drawer_btn_map:
+                        AppUtil.startActivityWithScaleUp(UosMainActivity.this, new Intent(UosMainActivity.this, GoogleMapActivity.class), v);
+                        break;
 
-        mLeftDrawerLayout.findViewById(R.id.drawer_exit_ripple).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AppUtil.exit(UosMainActivity.this);
+                    case R.id.drawer_btn_exit:
+                        mDrawerLayout.closeDrawer(mLeftDrawerLayout);
+                        AppUtil.exit(UosMainActivity.this);
+                        break;
+                }
             }
-        });
+        };
+
+        mLeftDrawerLayout.findViewById(R.id.drawer_btn_setting).setOnClickListener(l);
+        mLeftDrawerLayout.findViewById(R.id.drawer_btn_map).setOnClickListener(l);
+        mLeftDrawerLayout.findViewById(R.id.drawer_btn_exit).setOnClickListener(l);
+
     }
 
     private void openOrCloseDrawer() {
@@ -320,7 +333,10 @@ public class UosMainActivity extends BaseActivity {
 
 
     private void resetAppBar() {
-        //mAppBarBehavior.onNestedFling(mCoordinatorLayout, mToolBarParent, null, 0, -1000, true);
+        if (mAppBarBehavior != null) {
+            //noinspection unchecked
+            mAppBarBehavior.onNestedFling(mCoordinatorLayout, mToolBarParent, null, 0, -1000, true);
+        }
     }
 
     /**
@@ -436,7 +452,7 @@ public class UosMainActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
-        if(onBackPressListener != null && onBackPressListener.onBackPress())
+        if (onBackPressListener != null && onBackPressListener.onBackPress())
             return;
 
         if (AppUtil.isScreenSizeSmall(this) && mDrawerLayout.isDrawerOpen(mLeftDrawerLayout)) {
@@ -493,11 +509,11 @@ public class UosMainActivity extends BaseActivity {
 
     }
 
-    public interface OnBackPressListener{
+    public interface OnBackPressListener {
         boolean onBackPress();
     }
 
-    public void setOnBackPressListener(OnBackPressListener l){
+    public void setOnBackPressListener(OnBackPressListener l) {
         this.onBackPressListener = l;
     }
 /*

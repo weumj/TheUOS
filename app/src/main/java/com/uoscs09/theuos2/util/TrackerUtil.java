@@ -3,6 +3,7 @@ package com.uoscs09.theuos2.util;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 
@@ -11,7 +12,7 @@ import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.common.UOSApplication;
+import com.uoscs09.theuos2.UOSApplication;
 
 import java.util.HashMap;
 
@@ -129,13 +130,24 @@ public class TrackerUtil {
 
 
     public static class AnalyticsExceptionParser implements ExceptionParser {
-        /*
-         * (non-Javadoc)
-         * @see com.google.analytics.tracking.android.ExceptionParser#getDescription(java.lang.String, java.lang.Throwable)
-         */
+
         @Override
         public String getDescription(String p_thread, Throwable p_throwable) {
             return "Thread: " + p_thread + ", Exception: " + Log.getStackTraceString(p_throwable);
         }
+    }
+
+    public interface TrackerScreen {
+
+        @NonNull
+        String getScreenNameForTracker();
+
+        void sendTrackerEvent(String action, String label);
+
+        void sendTrackerEvent(String action, String label, long value);
+
+        void sendClickEvent(String label);
+
+        void sendClickEvent(String label, long value);
     }
 }

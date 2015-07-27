@@ -23,7 +23,7 @@ public class PhoneListWebActivity extends WebViewActivity {
 
     @NonNull
     @Override
-    protected String getScreenName() {
+	public String getScreenNameForTracker() {
         return "PhoneListWebActivity";
     }
 }

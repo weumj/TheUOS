@@ -1,21 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto" >
-<!--
+
     <item
         android:id="@+id/action_wise"
-        android:icon="?menu_ic_secure_login"
+        android:icon="?menu_theme_ic_action_login"
         android:orderInCategory="101"
-        android:showAsAction="always"
         android:title="@string/tab_timetable_wise_login_title"
-        theuos22:showAsAction="always">
+        app:showAsAction="always">
     </item>
-    -->
+
     <item
         android:id="@+id/action_delete"
         android:icon="?menu_theme_ic_action_action_delete"
         android:orderInCategory="102"
-        android:showAsAction="ifRoom"
         android:title="@string/action_delete"
         app:showAsAction="ifRoom">
     </item>
@@ -23,7 +21,6 @@
         android:id="@+id/action_save"
         android:icon="?menu_theme_ic_action_content_save"
         android:orderInCategory="103"
-        android:showAsAction="ifRoom"
         android:title="@string/action_save"
         app:showAsAction="ifRoom">
     </item>

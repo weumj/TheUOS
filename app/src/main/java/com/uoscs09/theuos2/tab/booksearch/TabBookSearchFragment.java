@@ -26,12 +26,12 @@ import android.widget.Spinner;
 import com.nhaarman.listviewanimations.appearance.AnimationAdapter;
 import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
 import com.uoscs09.theuos2.R;
+import com.uoscs09.theuos2.UOSApplication;
 import com.uoscs09.theuos2.UosMainActivity;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos2.async.AsyncFragmentJob;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
-import com.uoscs09.theuos2.common.UOSApplication;
 import com.uoscs09.theuos2.customview.NestedListView;
 import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.util.AppUtil;
@@ -603,7 +603,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
 
     @NonNull
     @Override
-    protected String getFragmentNameForTracker() {
+    public String getScreenNameForTracker() {
         return "TabBookSearchFragment";
     }
 

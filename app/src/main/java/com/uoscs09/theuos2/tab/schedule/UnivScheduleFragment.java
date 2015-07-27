@@ -309,7 +309,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
 
     @NonNull
     @Override
-    protected String getFragmentNameForTracker() {
+    public String getScreenNameForTracker() {
         return "UnivScheduleFragment";
     }
 

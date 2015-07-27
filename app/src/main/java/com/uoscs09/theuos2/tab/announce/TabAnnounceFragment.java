@@ -605,7 +605,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
 
     @NonNull
     @Override
-    protected String getFragmentNameForTracker() {
+    public String getScreenNameForTracker() {
         return "TabAnnounceFragment";
     }
 

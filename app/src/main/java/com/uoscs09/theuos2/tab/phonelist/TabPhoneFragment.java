@@ -349,7 +349,7 @@ public class TabPhoneFragment extends AbsAsyncFragment<ArrayList<PhoneItem>> {
 
     @NonNull
     @Override
-    protected String getFragmentNameForTracker() {
+    public String getScreenNameForTracker() {
         return "TabPhoneFragment";
     }
 }

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.uoscs09.theuos2.tab.map.SubMapActivity">
+    tools:context="com.uoscs09.theuos2.tab.map.GoogleMapActivity">
 
     <include layout="@layout/view_toolbar" />
 

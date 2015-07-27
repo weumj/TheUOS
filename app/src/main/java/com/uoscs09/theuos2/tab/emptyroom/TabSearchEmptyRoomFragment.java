@@ -319,7 +319,7 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Em
 
     @NonNull
     @Override
-    protected String getFragmentNameForTracker() {
+    public String getScreenNameForTracker() {
         return "TabSearchEmptyRoomFragment";
     }
 

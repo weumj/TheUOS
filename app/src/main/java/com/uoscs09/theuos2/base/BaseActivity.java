@@ -1,21 +1,17 @@
 package com.uoscs09.theuos2.base;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-import com.uoscs09.theuos2.common.UOSApplication;
+import com.uoscs09.theuos2.UOSApplication;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.TrackerUtil;
 
-/**
- * onCreate에서 테마 설정을 하는 fragment액티비티
- */
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity implements TrackerUtil.TrackerScreen {
 
     @Override
     protected void onCreate(Bundle arg0) {
@@ -24,13 +20,10 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         if (!UOSApplication.DEBUG) {
             Tracker t = TrackerUtil.getInstance(this).getTracker();
-            t.setScreenName(getScreenName());
+            t.setScreenName(getScreenNameForTracker());
             t.send(new HitBuilders.AppViewBuilder().build());
         }
     }
-
-    @NonNull
-    protected abstract String getScreenName();
 
     @Override
     public void onStart() {
@@ -63,6 +56,22 @@ public abstract class BaseActivity extends AppCompatActivity {
             default:
                 return false;
         }
+    }
+
+    public void sendTrackerEvent(String action, String label) {
+        TrackerUtil.getInstance(this).sendEvent(getScreenNameForTracker(), action, label);
+    }
+
+    public void sendTrackerEvent(String action, String label, long value) {
+        TrackerUtil.getInstance(this).sendEvent(getScreenNameForTracker(), action, label, value);
+    }
+
+    public void sendClickEvent(String label) {
+        TrackerUtil.getInstance(this).sendClickEvent(getScreenNameForTracker(), label);
+    }
+
+    public void sendClickEvent(String label, long value) {
+        TrackerUtil.getInstance(this).sendClickEvent(getScreenNameForTracker(), label, value);
     }
 
 }

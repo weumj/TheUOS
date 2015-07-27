@@ -29,7 +29,7 @@ public class SettingActivity extends BaseActivity {
 
     @NonNull
     @Override
-    protected String getScreenName() {
+    public String getScreenNameForTracker() {
         return "SettingActivity";
     }
 

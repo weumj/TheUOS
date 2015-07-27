@@ -199,7 +199,7 @@ public class ScoreFragment extends AbsAsyncFragment<ArrayList<ScoreItem>> {
 
     @NonNull
     @Override
-    protected String getFragmentNameForTracker() {
+    public String getScreenNameForTracker() {
         return "ScoreFragment";
     }
 }

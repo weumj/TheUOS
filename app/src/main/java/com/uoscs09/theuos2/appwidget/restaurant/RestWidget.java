@@ -20,7 +20,7 @@ public class RestWidget extends AbsAsyncWidgetProvider<SparseArray<RestItem>> {
     public static final String REST_WIDGET_NEXT_ACTION = "com.uoscs09.theuos2.widget.restaurant.NEXT";
     public static final String REST_WIDGET_PREV_ACTION = "com.uoscs09.theuos2.widget.restaurant.PREV";
     public static final String REST_WIDGET_POSITION = "REST_WIDGET_POSITION";
-    public static final String REST_WIDGET_ITEM = "REST_WIDGET_ITEM";
+    //public static final String REST_WIDGET_ITEM = "REST_WIDGET_ITEM";
 
     private static final String[] REST_TAB_MENU_STRING_LABEL = {"학생회관", "양식당", "자연과학관", "본관 8층", "생활관"};
 
@@ -162,7 +162,8 @@ public class RestWidget extends AbsAsyncWidgetProvider<SparseArray<RestItem>> {
 
     @NonNull
     @Override
-    protected String getTrackerName() {
+    public String getScreenNameForTracker() {
         return "RestaurantWidget";
     }
+
 }

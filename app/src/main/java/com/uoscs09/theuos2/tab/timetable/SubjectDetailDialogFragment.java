@@ -9,7 +9,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.util.ArrayMap;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
@@ -23,23 +22,23 @@ import com.gc.materialdesign.widgets.ColorSelector;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
+import com.uoscs09.theuos2.base.BaseDialogFragment;
 import com.uoscs09.theuos2.common.PieProgressDrawable;
 import com.uoscs09.theuos2.common.SerializableArrayMap;
 import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.parse.XmlParserWrapper;
-import com.uoscs09.theuos2.tab.map.SubMapActivity;
+import com.uoscs09.theuos2.tab.map.GoogleMapActivity;
 import com.uoscs09.theuos2.tab.subject.CoursePlanDialogFragment;
 import com.uoscs09.theuos2.tab.subject.SubjectItem2;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.StringUtil;
-import com.uoscs09.theuos2.util.TrackerUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class SubjectDetailDialogFragment extends DialogFragment implements View.OnClickListener, ColorSelector.OnColorSelectedListener, Request.ErrorListener {
+public class SubjectDetailDialogFragment extends BaseDialogFragment implements View.OnClickListener, ColorSelector.OnColorSelectedListener, Request.ErrorListener {
     private static final String TAG = "SubjectDetailDialogFragment";
     private static final String URL = "http://wise.uos.ac.kr/uosdoc/api.ApiApiSubjectList.oapi";
 
@@ -145,7 +144,7 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
                     return;
                 }
 
-                TrackerUtil.getInstance(SubjectDetailDialogFragment.this).sendEvent(TAG, "timetable alarm", "period : " + mSubject.period + " / day : " + mSubject.day);
+                sendTrackerEvent("timetable alarm", "period : " + mSubject.period + " / day : " + mSubject.day);
                 setOrCancelAlarm(mSubject, position);
             }
 
@@ -220,7 +219,7 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
             color = Color.BLACK;
         }
 
-        TrackerUtil.getInstance(this).sendClickEvent(TAG, "color table");
+        sendClickEvent("color table");
         ColorSelector colorSelector = new ColorSelector(getActivity(), color, this);
         colorSelector.show();
     }
@@ -228,10 +227,10 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
     private void showMap(View v) {
 
         if (mSubject != null && mSubject.univBuilding.code > 0) {
-            Intent intent = new Intent(getActivity(), SubMapActivity.class);
+            Intent intent = new Intent(getActivity(), GoogleMapActivity.class);
             intent.putExtra("building", mSubject.univBuilding.code);
 
-            TrackerUtil.getInstance(this).sendClickEvent(TAG, "map");
+            sendClickEvent("map");
             AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
             dismiss();
 
@@ -244,7 +243,7 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
 
         if (mSubject != null && !mSubject.subjectName.equals(StringUtil.NULL)) {
 
-            TrackerUtil.getInstance(this).sendClickEvent(TAG, "course plan");
+            sendClickEvent("course plan");
 
             setUpParams();
 
@@ -342,6 +341,12 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
         }
     }
 
+    @NonNull
+    @Override
+    public String getScreenNameForTracker() {
+        return TAG;
+    }
+
     private static class ClassDivAdapter extends AbsArrayAdapter<SubjectInfoItem, ViewHolder> {
 
         public ClassDivAdapter(Context context, List<SubjectInfoItem> list) {
@@ -366,6 +371,5 @@ public class SubjectDetailDialogFragment extends DialogFragment implements View.
             textView = (TextView) v.findViewById(android.R.id.text1);
         }
     }
-
 
 }

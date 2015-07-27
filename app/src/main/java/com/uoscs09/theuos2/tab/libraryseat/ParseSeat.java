@@ -76,8 +76,9 @@ public class ParseSeat extends JerichoParser<SeatInfo> {
             return Collections.emptyList();
 
         ArrayList<SeatDismissInfo> list = new ArrayList<>(6);
-        for (Element e : dismissTR) {
-            List<Element> tds = e.getAllElements(HTMLElementName.TD);
+        final int N = dismissTR.size();
+        for (int i = 2; i < N; i++) {
+            List<Element> tds = dismissTR.get(i).getAllElements(HTMLElementName.TD);
 
             if (tds.size() < 2)
                 continue;

@@ -8,9 +8,9 @@
 
     <screenName name="com.uoscs09.theuos2.UosMainActivity">MainActivity</screenName>
     <screenName name="com.uoscs09.theuos2.setting.SettingActivity">SettingActivity</screenName>
-    <screenName name="com.uoscs09.theuos2.tab.map.SubMapActivity">SubMapActivity</screenName>
+    <screenName name="com.uoscs09.theuos2.tab.map.GoogleMapActivity">SubMapActivity</screenName>
 
-    <screenName name="com.uoscs09.theuos2.tab.announce.TabAnnounceFragment">TabAnounceFragment</screenName>
+    <screenName name="com.uoscs09.theuos2.tab.announce.TabAnnounceFragment">TabAnnounceFragment</screenName>
     <screenName name="com.uoscs09.theuos2.tab.booksearch.TabBookSearchFragment">TabBookSearchFragment</screenName>
     <screenName name="com.uoscs09.theuos2.tab.emptyroom.TabSearchEmptyRoomFragment">TabSearchEmptyRoomFragment</screenName>
     <screenName name="com.uoscs09.theuos2.tab.libraryseat.TabLibrarySeatFragment">TabLibrarySeatFragment</screenName>
@@ -18,13 +18,15 @@
     <screenName name="com.uoscs09.theuos2.tab.schedule.TabScheduleFragment">TabScheduleFragment</screenName>
     <screenName name="com.uoscs09.theuos2.tab.subject.TabSearchSubjectFragment2">TabSearchSubjectFragment2</screenName>
     <screenName name="com.uoscs09.theuos2.tab.subject.CoursePlanDialogFragment">CoursePlanDialogFragment</screenName>
-    <screenName name="com.uoscs09.theuos2.tab.subject.CoursePlanDialogFragment">CoursePlanDialogFragment</screenName>
+    <screenName name="com.uoscs09.theuos2.tab.timetable.TabTimeTableFragment2">TabTimeTableFragment2</screenName>
+    <screenName name="com.uoscs09.theuos2.tab.timetable.SubjectDetailDialogFragment">SubjectDetailDialogFragment</screenName>
+
+    <!--
     <screenName name="com.uoscs09.theuos2.tab.score.ScoreFragment">ScoreFragment</screenName>
     <screenName name="com.uoscs09.theuos2.tab.phonelist.TabPhoneFragment">TabPhoneFragment</screenName>
     <screenName name="com.uoscs09.theuos2.tab.map.TabMapFragment">TabMapFragment</screenName>
-    <screenName name="com.uoscs09.theuos2.tab.timetable.TabTimeTableFragment2">TabTimeTableFragment2</screenName>
-    <screenName name="com.uoscs09.theuos2.tab.timetable.SubjectDetailDialogFragment">SubjectDetailDialogFragment</screenName>
     <screenName name="com.uoscs09.theuos2.tab.transport.TabTransportFragment">TabTransportFragment</screenName>
+    -->
 
 
     <!--  The following value should be replaced with correct property id. -->

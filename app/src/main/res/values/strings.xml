@@ -97,6 +97,7 @@
     <string name="tab_map_submap_do_not_locate">현재 위치를 감지하지 못하였습니다. 잠시후에 시도하세요.</string>
     <string name="tab_map_submap_select_dest">목적지 선택</string>
     <string name="tab_map_submap_select_building">건물을 선택해 주세요.</string>
+    <string name="tab_map_submap_welfare">복지시설</string>
 
     <string name="tab_rest_students_hall">학생회관</string>
     <string name="tab_rest_anekan">양식당</string>
@@ -129,6 +130,7 @@
     <string name="tab_timetable_sat">토</string>
     <string name="tab_timetable_period">시간</string>
     <string name="tab_timetable_not_exist">시간표 데이터가 없습니다.</string>
+    <string name="tab_timetable_saved">시간표가 저장되었습니다.</string>
     <string name="tab_timetable_notify_subject">수업 (%1$s) 시작 %2$s 입니다.</string>
 
     <string name="tab_timetable_dialog_show_location_in_map">지도에서 건물 위치 보기</string>

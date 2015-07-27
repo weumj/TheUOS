@@ -23,7 +23,6 @@ import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
 import com.uoscs09.theuos2.util.StringUtil;
-import com.uoscs09.theuos2.util.TrackerUtil;
 
 import java.io.File;
 
@@ -73,7 +72,7 @@ public class SubAnnounceWebActivity extends WebViewActivity {
 
     @NonNull
     @Override
-    protected String getScreenName() {
+    public String getScreenNameForTracker() {
         return "SubAnnounceActivity";
     }
 
@@ -157,7 +156,7 @@ public class SubAnnounceWebActivity extends WebViewActivity {
                                             @Override
                                             public void onClick(View v) {
 
-                                                TrackerUtil.getInstance(SubAnnounceWebActivity.this).sendClickEvent(getScreenName(), "open file");
+                                                sendClickEvent("open file");
 
                                                 Uri fileUri = Uri.fromFile(result);
                                                 String fileExtension = MimeTypeMap.getFileExtensionFromUrl(fileUri.toString());
@@ -197,7 +196,7 @@ public class SubAnnounceWebActivity extends WebViewActivity {
         });
         mProgressDialog.show();
 
-        TrackerUtil.getInstance(this).sendClickEvent(getScreenName(), "download file");
+        sendClickEvent("download file");
     }
 
 /*

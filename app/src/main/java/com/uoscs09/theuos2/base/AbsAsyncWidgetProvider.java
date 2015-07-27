@@ -12,7 +12,7 @@ import java.util.concurrent.Callable;
 /**
  * 비 동기 작업이 필요한 AppWidget 을 위한 Abstract Class
  */
-public abstract class AbsAsyncWidgetProvider<Data> extends AbsAppWidgetProvider {
+public abstract class AbsAsyncWidgetProvider<Data> extends BaseAppWidgetProvider {
 
     @Override
     public void onUpdate(final Context context, final AppWidgetManager appWidgetManager, final int[] appWidgetIds) {

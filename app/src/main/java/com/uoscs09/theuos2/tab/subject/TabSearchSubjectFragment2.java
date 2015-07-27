@@ -982,7 +982,7 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
 
     @NonNull
     @Override
-    protected String getFragmentNameForTracker() {
+    public String getScreenNameForTracker() {
         return "TabSearchSubjectFragment";
     }
 }

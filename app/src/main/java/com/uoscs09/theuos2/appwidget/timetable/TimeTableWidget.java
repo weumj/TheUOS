@@ -11,7 +11,7 @@ import android.support.annotation.NonNull;
 import android.widget.RemoteViews;
 
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.base.AbsAppWidgetProvider;
+import com.uoscs09.theuos2.base.BaseAppWidgetProvider;
 import com.uoscs09.theuos2.tab.timetable.TimeTable;
 import com.uoscs09.theuos2.tab.timetable.TimetableUtil;
 import com.uoscs09.theuos2.util.AppUtil;
@@ -21,7 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public abstract class TimeTableWidget extends AbsAppWidgetProvider {
+public abstract class TimeTableWidget extends BaseAppWidgetProvider {
     public final static String WIDGET_TIMETABLE_REFRESH = "com.uoscs09.theuos2.widget.timetable.refresh";
     public final static String WIDGET_TIMETABLE_DAY = "WIDGET_TIMETABLE_DAY";
 
@@ -167,9 +167,4 @@ public abstract class TimeTableWidget extends AbsAppWidgetProvider {
 
     }
 
-    @NonNull
-    @Override
-    protected String getTrackerName() {
-        return "TimeTableWidget";
-    }
 }

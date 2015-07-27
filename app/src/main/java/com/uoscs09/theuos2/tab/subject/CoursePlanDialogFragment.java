@@ -10,7 +10,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.util.ArrayMap;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
@@ -27,6 +26,7 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
+import com.uoscs09.theuos2.base.BaseDialogFragment;
 import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.parse.XmlParserWrapper;
 import com.uoscs09.theuos2.util.AppUtil;
@@ -35,13 +35,12 @@ import com.uoscs09.theuos2.util.ImageUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
 import com.uoscs09.theuos2.util.StringUtil;
-import com.uoscs09.theuos2.util.TrackerUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-public class CoursePlanDialogFragment extends DialogFragment implements Request.ErrorListener,  Toolbar.OnMenuItemClickListener {
+public class CoursePlanDialogFragment extends BaseDialogFragment implements Request.ErrorListener,  Toolbar.OnMenuItemClickListener {
     private final static String URL = "http://wise.uos.ac.kr/uosdoc/api.ApiApiCoursePlanView.oapi";
     private final static String INFO = "info";
 
@@ -100,8 +99,6 @@ public class CoursePlanDialogFragment extends DialogFragment implements Request.
         }
 
         mProgressDialog = AppUtil.getProgressDialog(getActivity(), false, null);
-
-        TrackerUtil.getInstance(this).sendVisibleEvent(TAG);
 
     }
 
@@ -271,7 +268,7 @@ public class CoursePlanDialogFragment extends DialogFragment implements Request.
     }
 
     void saveCoursePlanToImage() {
-        TrackerUtil.getInstance(this).sendClickEvent(TAG, "save course plan to image");
+        sendClickEvent("save course plan to image");
 
         String dir = PrefUtil.getPicturePath(getActivity()) + "/" + getString(R.string.tab_course_plan_title) + '_' + mSubject.subject_nm + '_' + mSubject.prof_nm + '_' + mSubject.class_div + ".jpeg";
         final AsyncTask<Void, ?, String> task = new ImageUtil.ListViewBitmapRequest.Builder(mListView, mAdapter)
@@ -292,7 +289,8 @@ public class CoursePlanDialogFragment extends DialogFragment implements Request.
                                                 intent.setAction(Intent.ACTION_VIEW);
                                                 intent.setDataAndType(Uri.parse("file://" + result), "image/*");
                                                 AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
-                                                TrackerUtil.getInstance(getActivity()).sendClickEvent(TAG, "show course plan image");
+
+                                                sendClickEvent("show course plan image");
                                             }
                                         })
                                         .show();
@@ -311,7 +309,7 @@ public class CoursePlanDialogFragment extends DialogFragment implements Request.
     }
 
     void saveCoursePlanToText() {
-        TrackerUtil.getInstance(this).sendClickEvent(TAG, "save course plan to text");
+        sendClickEvent("save course plan to text");
 
         final String fileName = PrefUtil.getDocumentPath(getActivity()) + "/" + getString(R.string.tab_course_plan_title) + '_' + mSubject.subject_nm + '_' + mSubject.prof_nm + '_' + mSubject.class_div + ".txt";
 
@@ -343,7 +341,7 @@ public class CoursePlanDialogFragment extends DialogFragment implements Request.
                                                 intent.setAction(Intent.ACTION_VIEW);
                                                 intent.setDataAndType(Uri.parse("file://" + fileName), "text/*");
                                                 AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
-                                                TrackerUtil.getInstance(getActivity()).sendClickEvent(TAG, "show course plan text");
+                                                sendClickEvent("show course plan text");
                                             }
                                         })
                                         .show();
@@ -438,6 +436,12 @@ public class CoursePlanDialogFragment extends DialogFragment implements Request.
         sb.append(item.prjt_etc);
         sb.append(StringUtil.NEW_LINE);
         sb.append(StringUtil.NEW_LINE);
+    }
+
+    @NonNull
+    @Override
+    public String getScreenNameForTracker() {
+        return TAG;
     }
 
     private static class CoursePlanAdapter extends AbsArrayAdapter<CoursePlanItem, CoursePlanAdapter.ViewHolder> {

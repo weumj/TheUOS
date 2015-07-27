@@ -13,31 +13,31 @@ import java.util.List;
  * View Holder 패턴을 사용하는 ArrayAdapter
  */
 public abstract class AbsArrayAdapter<T, VH extends AbsArrayAdapter.ViewHoldable> extends ArrayAdapter<T> {
-    private final int layout;
+    protected int layoutId;
 
     public AbsArrayAdapter(Context context, int layout, List<T> list) {
         super(context, layout, list);
-        this.layout = layout;
+        this.layoutId = layout;
     }
 
     public AbsArrayAdapter(Context context, int layout, T[] array) {
         super(context, layout, array);
-        this.layout = layout;
+        this.layoutId = layout;
     }
 
     public AbsArrayAdapter(Context context, int layout) {
         super(context, layout);
-        this.layout = layout;
+        this.layoutId = layout;
     }
 
     public AbsArrayAdapter(Context context, int layout, int textViewID) {
         super(context, layout, textViewID);
-        this.layout = layout;
+        this.layoutId = layout;
     }
 
     public AbsArrayAdapter(Context context, int layout, int textViewID, List<T> list) {
         super(context, layout, textViewID, list);
-        this.layout = layout;
+        this.layoutId = layout;
     }
 
     @SuppressWarnings("unchecked")
@@ -45,7 +45,7 @@ public abstract class AbsArrayAdapter<T, VH extends AbsArrayAdapter.ViewHoldable
     public View getView(int position, View view, ViewGroup parent) {
         VH holder;
         if (view == null) {
-            view = LayoutInflater.from(parent.getContext()).inflate(layout, parent, false);
+            view = LayoutInflater.from(parent.getContext()).inflate(layoutId, parent, false);
             holder = onCreateViewHolder(view, getItemViewType(position));
             view.setTag(holder);
         } else {

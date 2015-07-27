@@ -28,7 +28,6 @@ import com.uoscs09.theuos2.tab.announce.TabAnnounceFragment;
 import com.uoscs09.theuos2.tab.booksearch.TabBookSearchFragment;
 import com.uoscs09.theuos2.tab.emptyroom.TabSearchEmptyRoomFragment;
 import com.uoscs09.theuos2.tab.libraryseat.TabLibrarySeatFragment;
-import com.uoscs09.theuos2.tab.map.TabMapFragment;
 import com.uoscs09.theuos2.tab.restaurant.TabRestaurantFragment;
 import com.uoscs09.theuos2.tab.schedule.UnivScheduleFragment;
 import com.uoscs09.theuos2.tab.subject.TabSearchSubjectFragment2;
@@ -43,7 +42,7 @@ public class AppUtil {
     public static final String DB_PHONE = "PhoneNumberDB.db";
     public static final int RELAUNCH_ACTIVITY = 6565;
 
-    private static final int MAX_PAGE_SIZE_NORMAL = 10;
+    private static final int MAX_PAGE_SIZE_NORMAL = 9;
 
     private static int PAGE_SIZE = MAX_PAGE_SIZE_NORMAL;
     public static boolean test;
@@ -321,19 +320,22 @@ public class AppUtil {
                 return 5;
             case R.string.title_tab_timetable:
                 return 6;
-            case R.string.title_tab_map:
-                return 7;
             case R.string.title_tab_search_empty_room:
-                return 8;
+                return 7;
             case R.string.title_tab_search_subject:
-                return 9;
+                return 8;
 
+            //unused
+            case R.string.title_tab_map:
+                return 9;
             case R.string.title_tab_phone:
                 return 10;
             case R.string.title_tab_score:
                 return 11;
             case R.string.title_tab_transport:
                 return 12;
+
+
             case R.string.setting:
                 return 98;
             case R.string.title_section_etc:
@@ -363,18 +365,20 @@ public class AppUtil {
             case 6:
                 return R.string.title_tab_timetable;
             case 7:
-                return R.string.title_tab_map;
-            case 8:
                 return R.string.title_tab_search_empty_room;
-            case 9:
+            case 8:
                 return R.string.title_tab_search_subject;
 
+            // unused
+            case 9:
+                return R.string.title_tab_map;
             case 10:
                 return R.string.title_tab_phone;
             case 11:
                 return R.string.title_tab_score;
             case 12:
                 return R.string.title_tab_transport;
+
             case 98:
                 return R.string.setting;
             case 99:
@@ -406,14 +410,6 @@ public class AppUtil {
                 id = R.attr.theme_ic_action_book_opened;
                 break;
 
-            case R.string.title_tab_map:
-                id = R.attr.theme_ic_action_maps_place;
-                break;
-
-            case R.string.title_tab_phone:
-                id = R.attr.theme_ic_action_communication_call;
-                break;
-
             case R.string.title_tab_timetable:
                 id = R.attr.theme_ic_action_timetable;
                 break;
@@ -430,6 +426,15 @@ public class AppUtil {
                 id = R.attr.theme_ic_action_calendar;
                 break;
 
+            //unused
+            case R.string.title_tab_map:
+                id = R.attr.theme_ic_action_maps_place;
+                break;
+
+            case R.string.title_tab_phone:
+                id = R.attr.theme_ic_action_communication_call;
+                break;
+
             case R.string.title_tab_score:
                 id = R.attr.theme_ic_action_content_content_copy;
                 break;
@@ -441,6 +446,7 @@ public class AppUtil {
             case R.string.title_section_etc:
                 id = R.attr.theme_ic_action_navigation_check;
                 break;
+
 
             case R.string.setting:
                 id = R.attr.theme_ic_action_action_settings;
@@ -566,9 +572,10 @@ public class AppUtil {
             case R.string.title_tab_library_seat:
                 return TabLibrarySeatFragment.class;
 
+            /*
             case R.string.title_tab_map:
                 return TabMapFragment.class;
-
+            */
             case R.string.title_tab_timetable:
                 return TabTimeTableFragment2.class;
 
@@ -621,8 +628,10 @@ public class AppUtil {
         else if (fragmentClass.equals(TabLibrarySeatFragment.class))
             return R.string.title_tab_library_seat;
 
+        /*
         else if (fragmentClass.equals(TabMapFragment.class))
             return R.string.title_tab_map;
+        */
 
         else if (fragmentClass.equals(TabTimeTableFragment2.class))
             return R.string.title_tab_timetable;

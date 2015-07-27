@@ -18,4 +18,6 @@
 
     <dimen name="fab_margin">12dp</dimen>
     <dimen name="toolbar_elevation_dialog">4dp</dimen>
+
+    <dimen name="tab_map_bottom_padding">0dp</dimen>
 </resources>

@@ -24,7 +24,6 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.gc.materialdesign.widgets.ColorSelector;
-import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
@@ -150,73 +149,12 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
         mTimetableListView.setEmptyView(emptyView);
         mTimetableListView.setAdapter(mTimeTableAdapter2);
 
-        final FloatingActionButton actionButton = (FloatingActionButton) rootView.findViewById(R.id.tab_timetable_action_btn);
-
-        //animator = actionButton.animate().translationYBy(20);
-        actionButton.setOnClickListener(this);
-
         registerProgressView(rootView.findViewById(R.id.progress_layout));
-
 
         if (savedInstanceState == null)
             readTimetableFromFileOnFragmentCreated();
 
         return rootView;
-    }
-
-    /*
-    ViewPropertyAnimator animator;
-
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-
-        if(isVisibleToUser)
-            animator.start();
-
-
-    }
-    */
-
-    private void readTimetableFromFileOnFragmentCreated() {
-        AsyncUtil.newRequest(
-                new Callable<TimeTable>() {
-                    @Override
-                    public TimeTable call() throws Exception {
-                        TimeTable timeTable = TimetableUtil.readTimetable(getActivity());
-                        if (timeTable != null) {
-                            colorTable.clear();
-                            SimpleArrayMap<String, Integer> map = TimetableUtil.readColorTableFromFile(getActivity());
-                            if (map != null)
-                                colorTable.putAll(map);
-                            timeTable.getClassTimeInformationTable();
-                        }
-
-                        return timeTable;
-                    }
-                })
-                .getAsync(
-                        new Request.ResultListener<TimeTable>() {
-                            @Override
-                            public void onResult(TimeTable result) {
-                                if (result == null || result.isEmpty()) {
-                                    emptyView.setVisibility(View.VISIBLE);
-
-                                } else {
-                                    mTimeTable.copyFrom(result);
-                                    mTimeTableAdapter2.notifyDataSetChanged();
-
-                                    setTermTextViewText(mTimeTable);
-                                }
-                            }
-                        },
-                        new Request.ErrorListener() {
-                            @Override
-                            public void onError(Exception e) {
-                                Log.e("TimeTable", "cannot read timetable from file.", e);
-                            }
-                        }
-                );
     }
 
     @Override
@@ -228,13 +166,16 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-           /* case R.id.action_wise:
-                if (isRunning()) {
+            case R.id.action_wise:
+                if (AsyncUtil.isTaskRunning(mAsyncTask)) {
                     AppUtil.showToast(getActivity(), R.string.progress_ongoing, true);
-                } else
-                    loginDialog.show();
+
+                } else {
+                    sendClickEvent("wise login");
+                    mLoginDialog.show();
+                }
                 return true;
-*/
+
             case R.id.action_delete:
                 if (mDeleteDialog == null) {
                     initDeleteDialog();
@@ -269,6 +210,7 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
         if (mProgressDialog == null)
             mProgressDialog = AppUtil.getProgressDialog(getActivity(), false, getText(R.string.progress_ongoing), null);
 
+        mTimeTableAdapter2.changeLayout(true);
 
         String dir = PrefUtil.getPicturePath(getActivity()) + "timetable_" + mTimeTable.year + '_' + mTimeTable.semesterCode + '_' + String.valueOf(System.currentTimeMillis()) + ".png";
 
@@ -281,8 +223,9 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
                             @Override
                             public void onResult(final String result) {
                                 dismissProgressDialog();
+                                mTimeTableAdapter2.changeLayout(false);
 
-                                Snackbar.make(getView(), getText(R.string.save), Snackbar.LENGTH_LONG)
+                                Snackbar.make(getView(), getText(R.string.tab_timetable_saved), Snackbar.LENGTH_LONG)
                                         .setAction(R.string.action_open, new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
@@ -299,6 +242,7 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
                             @Override
                             public void onError(Exception e) {
                                 dismissProgressDialog();
+                                mTimeTableAdapter2.changeLayout(false);
 
                                 AppUtil.showErrorToast(getActivity(), e, true);
                             }
@@ -412,19 +356,50 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
                 mLoginDialog.show();
                 break;
 
-            case R.id.tab_timetable_action_btn:
-                if (AsyncUtil.isTaskRunning(mAsyncTask)) {
-                    AppUtil.showToast(getActivity(), R.string.progress_ongoing, true);
-
-                } else {
-                    sendClickEvent("actionButton");
-                    mLoginDialog.show();
-                }
-                break;
-
             default:
                 break;
         }
+    }
+
+    private void readTimetableFromFileOnFragmentCreated() {
+        AsyncUtil.newRequest(
+                new Callable<TimeTable>() {
+                    @Override
+                    public TimeTable call() throws Exception {
+                        TimeTable timeTable = TimetableUtil.readTimetable(getActivity());
+                        if (timeTable != null) {
+                            colorTable.clear();
+                            SimpleArrayMap<String, Integer> map = TimetableUtil.readColorTableFromFile(getActivity());
+                            if (map != null)
+                                colorTable.putAll(map);
+                            timeTable.getClassTimeInformationTable();
+                        }
+
+                        return timeTable;
+                    }
+                })
+                .getAsync(
+                        new Request.ResultListener<TimeTable>() {
+                            @Override
+                            public void onResult(TimeTable result) {
+                                if (result == null || result.isEmpty()) {
+                                    emptyView.setVisibility(View.VISIBLE);
+
+                                } else {
+                                    mTimeTable.copyFrom(result);
+                                    mTimeTableAdapter2.notifyDataSetChanged();
+
+                                    setTermTextViewText(mTimeTable);
+                                }
+                            }
+                        },
+                        new Request.ErrorListener() {
+                            @Override
+                            public void onError(Exception e) {
+                                Log.e("TimeTable", "cannot read timetable from file.", e);
+                            }
+                        }
+                );
     }
 
     private void initDialog() {
@@ -571,7 +546,7 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
 
     @NonNull
     @Override
-    protected String getFragmentNameForTracker() {
+    public String getScreenNameForTracker() {
         return "TabTimeTableFragment2";
     }
 

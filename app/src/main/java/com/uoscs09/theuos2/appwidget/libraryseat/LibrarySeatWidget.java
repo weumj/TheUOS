@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class LibrarySeatWidget extends AbsAsyncWidgetProvider<ArrayList<SeatItem>> {
-    public static final String LIBRARY_SEAT_WIDGET_REFRASH = "com.uoscs09.theuos2.widget.libraryseat.REFRESH";
+    public static final String LIBRARY_SEAT_WIDGET_REFRESH = "com.uoscs09.theuos2.widget.libraryseat.REFRESH";
     public static final String LIBRARY_SEAT_WIDGET_DATA = "com.uoscs09.theuos2.widget.libraryseat.DATA";
     public static final String LIBRARY_SEAT_WIDGET_ACTIVITY = "com.uoscs09.theuos2.widget.libraryseat.ACTIVITY";
 
@@ -40,7 +40,7 @@ public class LibrarySeatWidget extends AbsAsyncWidgetProvider<ArrayList<SeatItem
     public void onReceive(@NonNull Context context, @NonNull Intent intent) {
 
         switch (intent.getAction()) {
-            case LIBRARY_SEAT_WIDGET_REFRASH:
+            case LIBRARY_SEAT_WIDGET_REFRESH:
 
                 int[] appWidgetIds = new int[]{intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)};
 
@@ -128,7 +128,7 @@ public class LibrarySeatWidget extends AbsAsyncWidgetProvider<ArrayList<SeatItem
             rv.setTextViewText(android.R.id.text1, dateTime);
 
             Intent clickIntent = new Intent(context, LibrarySeatWidget.class);
-            clickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id).setAction(LIBRARY_SEAT_WIDGET_REFRASH);
+            clickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id).setAction(LIBRARY_SEAT_WIDGET_REFRESH);
             rv.setOnClickPendingIntent(android.R.id.selectedIcon, PendingIntent.getBroadcast(context, REQUEST_REFRESH, clickIntent, PendingIntent.FLAG_UPDATE_CURRENT));
 
             // Collection OnclickListener
@@ -165,7 +165,7 @@ public class LibrarySeatWidget extends AbsAsyncWidgetProvider<ArrayList<SeatItem
             rv.setTextViewText(android.R.id.text1, context.getText(textId));
 
             Intent clickIntent = new Intent(context, LibrarySeatWidget.class);
-            clickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id).setAction(LIBRARY_SEAT_WIDGET_REFRASH);
+            clickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id).setAction(LIBRARY_SEAT_WIDGET_REFRESH);
             rv.setOnClickPendingIntent(android.R.id.selectedIcon, PendingIntent.getBroadcast(context, REQUEST_REFRESH, clickIntent, PendingIntent.FLAG_UPDATE_CURRENT));
 
             // Collection OnclickListener
@@ -184,7 +184,8 @@ public class LibrarySeatWidget extends AbsAsyncWidgetProvider<ArrayList<SeatItem
 
     @NonNull
     @Override
-    protected String getTrackerName() {
+    public String getScreenNameForTracker() {
         return "LibrarySeatWidget";
     }
+
 }

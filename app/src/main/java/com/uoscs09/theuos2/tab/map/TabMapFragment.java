@@ -68,7 +68,8 @@ public class TabMapFragment extends BaseFragment implements OnTouchListener, Vie
             case R.id.action_btn:
                 sendClickEvent("action button : to sub map");
                 Activity activity = getActivity();
-                ActivityCompat.startActivity(activity, new Intent(activity, SubMapActivity.class), ActivityOptionsCompat.makeScaleUpAnimation(v, v.getWidth() / 2, v.getHeight() / 2, v.getWidth(), v.getHeight()).toBundle());
+                ActivityCompat.startActivity(activity, new Intent(activity, GoogleMapActivity.class),
+                        ActivityOptionsCompat.makeScaleUpAnimation(v, v.getWidth() / 2, v.getHeight() / 2, v.getWidth(), v.getHeight()).toBundle());
                 break;
 
             case R.id.action_refresh:
@@ -116,7 +117,7 @@ public class TabMapFragment extends BaseFragment implements OnTouchListener, Vie
             mWebView.clearCache(true);
             mWebView.loadUrl("about:blank");
             AppUtil.unbindDrawables(mWebView);
-            mWebView.destroy();
+            //mWebView.destroy();
             mWebView = null;
         }
         super.onDestroyView();
@@ -124,7 +125,7 @@ public class TabMapFragment extends BaseFragment implements OnTouchListener, Vie
 
     @NonNull
     @Override
-    protected String getFragmentNameForTracker() {
+    public String getScreenNameForTracker() {
         return "TabMapFragment";
     }
 
@@ -141,7 +142,7 @@ public class TabMapFragment extends BaseFragment implements OnTouchListener, Vie
 
 		case R.id.action_map:
 			Activity activity = getActivity();
-			startActivity(new Intent(activity, SubMapActivity.class));
+			startActivity(new Intent(activity, GoogleMapActivity.class));
 			AppUtil.overridePendingTransition(activity, 0);
 			return true;
 

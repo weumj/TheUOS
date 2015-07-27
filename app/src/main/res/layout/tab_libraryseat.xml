@@ -17,19 +17,7 @@
             android:padding="10dp"
             android:scrollbarStyle="outsideOverlay"
             android:scrollbars="vertical"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
     </android.support.v4.widget.SwipeRefreshLayout>
-
-    <com.getbase.floatingactionbutton.AppCompatFloatingActionButton
-        android:id="@+id/action_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:fab_colorNormal="?colorPrimary"
-        app:fab_icon="?menu_theme_ic_action_navigation_refresh"
-        app:fab_colorPressed="?colorPrimaryDark"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_margin="16dp"
-        app:fab_title="@string/action_refresh" />
 
 </RelativeLayout>

@@ -1,4 +1,4 @@
-package com.uoscs09.theuos2.common;
+package com.uoscs09.theuos2;
 
 
 import android.app.Application;
@@ -8,6 +8,7 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.analytics.ExceptionReporter;
 import com.google.android.gms.analytics.Tracker;
+import com.uoscs09.theuos2.common.LruBitmapCache;
 import com.uoscs09.theuos2.util.TrackerUtil;
 
 public class UOSApplication extends Application {
@@ -15,7 +16,7 @@ public class UOSApplication extends Application {
     private ImageLoader mImageLoader;
     private TrackerUtil mTrackerUtil;
 
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = true;// BuildConfig.DEBUG;
 
 
     public TrackerUtil getTrackerUtil() {

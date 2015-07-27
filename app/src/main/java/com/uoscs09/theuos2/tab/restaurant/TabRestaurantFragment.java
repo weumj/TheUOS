@@ -8,6 +8,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -131,7 +134,7 @@ public class TabRestaurantFragment extends AbsAsyncFragment<SparseArray<RestItem
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                sendTrackerEvent("swipe", "SwipeRefreshView");
+                sendTrackerEvent("refresh", "SwipeRefreshView");
                 execute(true);
             }
         });
@@ -158,6 +161,25 @@ public class TabRestaurantFragment extends AbsAsyncFragment<SparseArray<RestItem
             performTabClick(mCurrentSelection);
 
         return rootView;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.tab_restaurant, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_refresh:
+                sendTrackerEvent("refresh", "option menu");
+                execute(true);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
     }
 
     private void performTabClick(int newTabSelection) {
@@ -229,21 +251,6 @@ public class TabRestaurantFragment extends AbsAsyncFragment<SparseArray<RestItem
         super.execute(JOB);
     }
 
-
-    /*
-    public static SerializableArrayMap<Integer, RestItem> getRestListFromWeb(Context context) throws Exception {
-        String body = HttpRequest.getBody("http://m.uos.ac.kr/mkor/food/list.do");
-
-        SparseArray<RestItem> sparseArray = REST_PARSER.parse(body);
-
-        SerializableArrayMap<Integer, RestItem> result = SerializableArrayMap.fromSparseArray(sparseArray);
-
-        IOUtil.writeObjectToFile(context, IOUtil.FILE_REST, result);
-        PrefUtil.getInstance(context).put(PrefUtil.KEY_REST_DATE_TIME, OApiUtil.getDate());
-        return result;
-    }
-    */
-
     /**
      * web 에서 식단표을 읽어온다.
      */
@@ -281,7 +288,7 @@ public class TabRestaurantFragment extends AbsAsyncFragment<SparseArray<RestItem
 
     @NonNull
     @Override
-    protected String getFragmentNameForTracker() {
+    public String getScreenNameForTracker() {
         return "TabRestaurantFragment";
     }
 
@@ -416,7 +423,7 @@ public class TabRestaurantFragment extends AbsAsyncFragment<SparseArray<RestItem
         public final TextView mTextView;
         public final View ripple;
         private final View mStrip;
-       // public int id;
+        // public int id;
 
         private final int mSelectedColor;
         private final int mNormalColor;
@@ -437,7 +444,7 @@ public class TabRestaurantFragment extends AbsAsyncFragment<SparseArray<RestItem
 
         public void setText(int stringId) {
             mTextView.setText(stringId);
-           // this.id = stringId;
+            // this.id = stringId;
         }
 
 

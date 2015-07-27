@@ -145,7 +145,7 @@ public class TabTransportFragment extends AbsProgressFragment<Map<String, ArrayL
 
     @NonNull
     @Override
-    protected String getFragmentNameForTracker() {
+    public String getScreenNameForTracker() {
         return "TabTransportFragment";
     }
 }

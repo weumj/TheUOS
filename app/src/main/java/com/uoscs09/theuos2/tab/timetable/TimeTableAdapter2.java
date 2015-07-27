@@ -30,6 +30,10 @@ class TimeTableAdapter2 extends AbsArrayAdapter<Subject[], TimeTableAdapter2.Tim
         periodTimeArray = context.getResources().getStringArray(R.array.tab_timetable_timelist_only_time);
     }
 
+    public void changeLayout(boolean forImage) {
+        this.layoutId = forImage ? R.layout.list_layout_timetable2_for_image : R.layout.list_layout_timetable2;
+    }
+
     @Override
     public int getCount() {
         return PrefUtil.getInstance(getContext()).get(PrefUtil.KEY_TIMETABLE_LIMIT, false) ? mTimeTable.maxTime : super.getCount();
@@ -49,7 +53,7 @@ class TimeTableAdapter2 extends AbsArrayAdapter<Subject[], TimeTableAdapter2.Tim
 
     @Override
     public TimeTableViewHolder onCreateViewHolder(View convertView, int viewType) {
-        return new TimeTableViewHolder(convertView);
+        return new TimeTableViewHolder(convertView, this.layoutId == R.layout.list_layout_timetable2_for_image);
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
@@ -82,22 +86,30 @@ class TimeTableAdapter2 extends AbsArrayAdapter<Subject[], TimeTableAdapter2.Tim
         };
 
         private final int cardBackgroundColor;
-        public TimeTableViewHolder(View itemView) {
+
+        public TimeTableViewHolder(View itemView, boolean forImage) {
             super(itemView);
             subjectViews = new SubjectViewHolder[6];
 
             View periodLayout = itemView.findViewById(R.id.tab_timetable_list_period);
-            periodLayout.findViewById(R.id.tab_timetable_list_period_ripple).setOnClickListener(this);
+            //periodLayout.findViewById(R.id.tab_timetable_list_period_ripple).setOnClickListener(this);
             period = (TextView) periodLayout.findViewById(R.id.tab_timetable_list_text_period);
+            if (!forImage)
+                period.setOnClickListener(this);
 
             int i = 0;
             for (int id : VIEW_IDS) {
                 View v = itemView.findViewById(id);
 
-                View ripple = v.findViewById(R.id.ripple);
-                ripple.findViewById(android.R.id.widget_frame).setTag(i);
+                //View ripple = v.findViewById(R.id.ripple);
+                //ripple.findViewById(android.R.id.widget_frame).setTag(i);
+                if (!forImage) {
+                    View frame = v.findViewById(android.R.id.widget_frame);
+                    frame.setTag(i);
+                    frame.setOnClickListener(this);
+                }
                 subjectViews[i] = new SubjectViewHolder(v);
-                ripple.setOnClickListener(this);
+                //ripple.setOnClickListener(this);
                 i++;
             }
 

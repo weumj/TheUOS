@@ -6,7 +6,6 @@
         android:id="@+id/action_refresh"
         android:icon="?menu_theme_ic_action_navigation_refresh"
         android:orderInCategory="101"
-        android:showAsAction="always"
         android:title="@string/action_refresh"
         app:showAsAction="always">
     </item>

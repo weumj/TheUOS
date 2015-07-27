@@ -135,7 +135,7 @@ public class TabHomeFragment extends BaseFragment implements OnItemClickListener
 
     @NonNull
     @Override
-    protected String getFragmentNameForTracker() {
+    public String getScreenNameForTracker() {
         return "TabHomeFragment";
     }
 
