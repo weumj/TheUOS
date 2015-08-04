@@ -39,7 +39,7 @@
                 android:drawablePadding="10dp"
                 android:text="@string/setting"
                 android:textColor="?color_tint_normal"
-                android:drawableLeft="?theme_ic_action_action_settings" />
+                android:drawableLeft="?color_theme_ic_action_action_settings" />
         </com.balysv.materialripple.MaterialRippleLayout>
 
 
@@ -60,11 +60,12 @@
                 android:drawablePadding="10dp"
                 android:text="@string/action_map"
                 android:textColor="?color_tint_normal"
-                android:drawableLeft="?theme_ic_action_maps_place" />
+                android:drawableLeft="?color_theme_ic_action_maps_place" />
         </com.balysv.materialripple.MaterialRippleLayout>
 
 
         <com.balysv.materialripple.MaterialRippleLayout
+            android:visibility="gone"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="fill_parent"
@@ -81,7 +82,7 @@
                 android:gravity="center_vertical"
                 android:text="@string/action_exit"
                 android:textColor="?color_tint_normal"
-                android:drawableLeft="?theme_ic_action_navigation_close" />
+                android:drawableLeft="?color_theme_ic_action_navigation_close" />
         </com.balysv.materialripple.MaterialRippleLayout>
     </LinearLayout>
 

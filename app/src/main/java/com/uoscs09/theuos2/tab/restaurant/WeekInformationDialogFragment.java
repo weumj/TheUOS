@@ -132,6 +132,8 @@ public class WeekInformationDialogFragment extends BaseDialogFragment {
         if (mFailView != null)
             mFailView.setVisibility(View.GONE);
 
+        AsyncUtil.cancelTask(mAsyncTask);
+
         mAsyncTask = AsyncUtil.newRequest(
                 new Callable<WeekRestItem>() {
                     @Override
@@ -248,12 +250,12 @@ public class WeekInformationDialogFragment extends BaseDialogFragment {
                 return "020";
             case R.string.tab_rest_anekan: // 양식당
                 return "030";
-            case R.string.tab_rest_natural: // 자연과학관
+            case R.string.tab_rest_nature_science: // 자연과학관
                 return "040";
             case R.string.tab_rest_main_8th: // 본관 8층
                 return "010";
             default:
-            case R.string.tab_rest_living: // 생활관
+            case R.string.tab_rest_dormitory: // 생활관
                 return "050";
         }
     }

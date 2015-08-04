@@ -175,7 +175,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
                                             .setPositiveButton(R.string.update, new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
-                                                    startActivity(AppUtil.setWebPageIntent(APP_URL));
+                                                    startActivity(AppUtil.getWebPageIntent(APP_URL));
                                                 }
                                             })
                                             .setNegativeButton(R.string.later, null)
@@ -286,7 +286,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
             int colorDrawableCenter = res.getColor(THEME_COLORS_RES[position][1]);
             int colorDrawableBorder = res.getColor(THEME_COLORS_RES[position][2]);
 
-            drawable.setCentorColor(colorDrawableCenter);
+            drawable.setCenterColor(colorDrawableCenter);
             drawable.setColor(colorDrawableBorder);
 
             textView.invalidateDrawable(drawable);

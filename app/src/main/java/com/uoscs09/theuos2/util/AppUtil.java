@@ -665,7 +665,7 @@ public class AppUtil {
      * @param webURL 접속하려는 페이지의 url
      * @return url이 설정된 intent
      */
-    public static Intent setWebPageIntent(String webURL) {
+    public static Intent getWebPageIntent(String webURL) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(webURL));
         return intent;

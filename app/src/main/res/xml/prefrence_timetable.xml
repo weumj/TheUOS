@@ -4,14 +4,14 @@
     android:layout_height="match_parent" >
 
     <CheckBoxPreference
-        android:icon="?theme_ic_action_communication_import_export"
+        android:icon="?color_theme_ic_action_communication_import_export"
         android:key="@string/pref_key_timetable_limit"
         android:summary="@string/setting_timetable_limit_desc"
         android:title="@string/setting_timetable_limit" />
 
     <!--
     <PreferenceScreen
-        android:icon="?theme_ic_action_action_alarm"
+        android:icon="?color_theme_ic_action_action_alarm"
         android:summary="@string/setting_timetable_clear_alarm_desc"
         android:title="@string/setting_timetable_clear_alarm_title" />
         -->

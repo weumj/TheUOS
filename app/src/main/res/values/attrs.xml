@@ -77,6 +77,44 @@
         <attr name="theme_ic_action_navigation_refresh" format="reference" />
         <attr name="theme_ic_action_social_share" format="reference" />
         <attr name="theme_ic_action_timetable" format="reference" />
+
+        <attr name="color_theme_ic_action_action_about" format="reference" />
+        <attr name="color_theme_ic_action_action_alarm" format="reference" />
+        <attr name="color_theme_ic_action_action_assignment" format="reference" />
+        <attr name="color_theme_ic_action_action_delete" format="reference" />
+        <attr name="color_theme_ic_action_action_help" format="reference" />
+        <attr name="color_theme_ic_action_action_language" format="reference" />
+        <attr name="color_theme_ic_action_action_search" format="reference" />
+        <attr name="color_theme_ic_action_action_settings" format="reference" />
+        <attr name="color_theme_ic_action_action_view_list" format="reference" />
+        <attr name="color_theme_ic_action_av_replay" format="reference" />
+        <attr name="color_theme_ic_action_book_search" format="reference" />
+        <attr name="color_theme_ic_action_book_opened" format="reference" />
+        <attr name="color_theme_ic_action_calendar" format="reference" />
+        <attr name="color_theme_ic_action_communication_call" format="reference" />
+        <attr name="color_theme_ic_action_communication_import_export" format="reference" />
+        <attr name="color_theme_ic_action_content_content_copy" format="reference" />
+        <attr name="color_theme_ic_action_content_content_paste" format="reference" />
+        <attr name="color_theme_ic_action_content_save" format="reference" />
+        <attr name="color_theme_ic_action_content_undo" format="reference" />
+        <attr name="color_theme_ic_action_device_storage" format="reference" />
+        <attr name="color_theme_ic_action_file_folder" format="reference" />
+        <attr name="color_theme_ic_action_hardware_phone_android" format="reference" />
+        <attr name="color_theme_ic_action_image_image" format="reference" />
+        <attr name="color_theme_ic_action_image_palette" format="reference" />
+        <attr name="color_theme_ic_action_login" format="reference" />
+        <attr name="color_theme_ic_action_maps_directions" format="reference" />
+        <attr name="color_theme_ic_action_maps_place" format="reference" />
+        <attr name="color_theme_ic_action_maps_local_restaurant" format="reference" />
+        <attr name="color_theme_ic_action_navigation_arrow_back" format="reference" />
+        <attr name="color_theme_ic_action_navigation_arrow_drop_down" format="reference" />
+        <attr name="color_theme_ic_action_navigation_arrow_drop_up" format="reference" />
+        <attr name="color_theme_ic_action_navigation_arrow_forward" format="reference" />
+        <attr name="color_theme_ic_action_navigation_close" format="reference" />
+        <attr name="color_theme_ic_action_navigation_check" format="reference" />
+        <attr name="color_theme_ic_action_navigation_refresh" format="reference" />
+        <attr name="color_theme_ic_action_social_share" format="reference" />
+        <attr name="color_theme_ic_action_timetable" format="reference" />
     </declare-styleable>
 
     <declare-styleable name="ThemeDrawable.Color">

@@ -36,31 +36,31 @@ public class SettingsWebPageFragment extends PreferenceFragment {
 
         switch (preference.getTitleRes()) {
             case R.string.web_page_uos:
-                startActivity(AppUtil.setWebPageIntent("http://m.uos.ac.kr/"));
+                startActivity(AppUtil.getWebPageIntent("http://m.uos.ac.kr/"));
                 return true;
 
             case R.string.web_page_portal:
-                startActivity(AppUtil.setWebPageIntent("http://portal.uos.ac.kr/"));
+                startActivity(AppUtil.getWebPageIntent("http://portal.uos.ac.kr/"));
                 return true;
 
             case R.string.web_page_club:
-                startActivity(AppUtil.setWebPageIntent("http://club.uos.ac.kr/"));
+                startActivity(AppUtil.getWebPageIntent("http://club.uos.ac.kr/"));
                 return true;
 
             case R.string.web_page_library:
-                startActivity(AppUtil.setWebPageIntent("http://mlibrary.uos.ac.kr/"));
+                startActivity(AppUtil.getWebPageIntent("http://mlibrary.uos.ac.kr/"));
                 return true;
 
             case R.string.web_page_square:
-                startActivity(AppUtil.setWebPageIntent("http://m.cafe.daum.net/uosisthebest/"));
+                startActivity(AppUtil.getWebPageIntent("http://m.cafe.daum.net/uosisthebest/"));
                 return true;
 
             case R.string.web_page_uostable:
-                startActivity(AppUtil.setWebPageIntent("http://u5s.kr/"));
+                startActivity(AppUtil.getWebPageIntent("http://u5s.kr/"));
                 return true;
 
             case R.string.web_page_uostime:
-                startActivity(AppUtil.setWebPageIntent("http://uosti.me/"));
+                startActivity(AppUtil.getWebPageIntent("http://uosti.me/"));
                 return true;
 
             default:

@@ -20,7 +20,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout="@layout/view_tab_rest_week_empty_info" />
+            android:layout_margin="20dp"
+            android:layout="@layout/view_tab_library_seat_dismiss_info_empty_info" />
 
         <include layout="@layout/view_toolbar_shadow" />
     </FrameLayout>

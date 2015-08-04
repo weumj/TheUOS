@@ -107,6 +107,7 @@ public class SettingsFileSelectDialogFragment extends DialogFragment {
             }
         });
         listView.setAdapter(mFileArrayAdapter);
+        listView.setDivider(null);
 
         mToolbar.setSubtitle(path);
 

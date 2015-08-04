@@ -15,7 +15,7 @@ import android.util.DisplayMetrics;
 public class PieProgressDrawable extends Drawable {
 
     private final Paint mPaint;
-    private final Paint mCentorPaint;
+    private final Paint mCenterPaint;
     private RectF mBoundsF;
     private RectF mInnerBoundsF;
     private static final float START_ANGLE = 0.f;
@@ -27,9 +27,9 @@ public class PieProgressDrawable extends Drawable {
     public PieProgressDrawable() {
         super();
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mCentorPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mCentorPaint.setStyle(Paint.Style.FILL);
-        mCentorPaint.setColor(Color.TRANSPARENT);
+        mCenterPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mCenterPaint.setStyle(Paint.Style.FILL);
+        mCenterPaint.setColor(Color.TRANSPARENT);
         mTextPaint = new Paint(mPaint);
         mTextPaint.setColor(Color.BLACK);
     }
@@ -91,7 +91,7 @@ public class PieProgressDrawable extends Drawable {
             mPaint.setColor(color);
         }
 
-        canvas.drawCircle(mInnerBoundsF.centerX(), mInnerBoundsF.centerY(), mInnerBoundsF.width() / 5 * 2, mCentorPaint);
+        canvas.drawCircle(mInnerBoundsF.centerX(), mInnerBoundsF.centerY(), mInnerBoundsF.width() / 5 * 2, mCenterPaint);
 
         canvas.rotate(90f, getBounds().centerX(), getBounds().centerY());
 
@@ -134,7 +134,7 @@ public class PieProgressDrawable extends Drawable {
         return mPaint.getAlpha();
     }
 
-    public void setCentorColor(int color) {
-        mCentorPaint.setColor(color);
+    public void setCenterColor(int color) {
+        mCenterPaint.setColor(color);
     }
 }

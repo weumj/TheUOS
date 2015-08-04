@@ -25,42 +25,43 @@ public class SeatDismissDialogFragment extends BaseDialogFragment {
     private View mDismissDialogView, mDismissEmptyView;
     private SeatDismissInfoListAdapter mInfoAdapter;
     private SeatInfo mSeatInfo;
+    private Dialog mDialog;
 
     public void setSeatInfo(SeatInfo info) {
         mSeatInfo = info;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setCancelable(true);
-
-        if (mInfoAdapter == null)
-            mInfoAdapter = new SeatDismissInfoListAdapter(mSeatInfo.seatDismissInfoList);
-        else
-            notifyDataSetChanged();
-    }
-
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        return new AlertDialog.Builder(getActivity())
-                .setView(createView())
-                .create();
+        if (mDialog == null) {
+            mDialog = new AlertDialog.Builder(getActivity())
+                    .setView(createView())
+                    .create();
+        } else {
+            notifyDataSetChanged();
+        }
+        return mDialog;
     }
 
     private View createView() {
-        mDismissDialogView = View.inflate(getActivity(), R.layout.dialog_seat_dismiss_info, null);
+        if (mDismissDialogView == null) {
+            mDismissDialogView = View.inflate(getActivity(), R.layout.dialog_seat_dismiss_info, null);
 
-        Toolbar toolbar = (Toolbar) mDismissDialogView.findViewById(R.id.toolbar);
-        toolbar.setTitle(R.string.action_dismiss_info);
+            Toolbar toolbar = (Toolbar) mDismissDialogView.findViewById(R.id.toolbar);
+            toolbar.setTitle(R.string.action_dismiss_info);
 
-        RecyclerView recyclerView = (RecyclerView) mDismissDialogView.findViewById(R.id.tab_library_seat_dismiss_recyclerview);
-        LinearLayoutManager manager = new LinearLayoutManager(recyclerView.getContext());
+            RecyclerView recyclerView = (RecyclerView) mDismissDialogView.findViewById(R.id.tab_library_seat_dismiss_recyclerview);
+            LinearLayoutManager manager = new LinearLayoutManager(recyclerView.getContext());
 
-        recyclerView.setLayoutManager(manager);
-        recyclerView.setAdapter(mInfoAdapter);
+            recyclerView.setLayoutManager(manager);
 
+            mInfoAdapter = new SeatDismissInfoListAdapter(mSeatInfo.seatDismissInfoList);
+            recyclerView.setAdapter(mInfoAdapter);
+
+            if (mSeatInfo.seatDismissInfoList.isEmpty())
+                showDismissInfoEmptyView();
+        }
         return mDismissDialogView;
     }
 

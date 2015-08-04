@@ -76,6 +76,44 @@
         <item name="theme_ic_action_navigation_refresh" >@drawable/theme_ic_action_navigation_refresh</item>
         <item name="theme_ic_action_social_share" >@drawable/theme_ic_action_social_share</item>
         <item name="theme_ic_action_timetable" >@drawable/theme_ic_action_timetable</item>
+
+        <item name="color_theme_ic_action_action_about" >@drawable/theme_ic_action_action_about_color</item>
+        <item name="color_theme_ic_action_action_alarm" >@drawable/theme_ic_action_action_alarm_color</item>
+        <item name="color_theme_ic_action_action_assignment" >@drawable/theme_ic_action_action_assignment_color</item>
+        <item name="color_theme_ic_action_action_delete" >@drawable/theme_ic_action_action_delete_color</item>
+        <item name="color_theme_ic_action_action_help" >@drawable/theme_ic_action_action_help_color</item>
+        <item name="color_theme_ic_action_action_language" >@drawable/theme_ic_action_action_language_color</item>
+        <item name="color_theme_ic_action_action_search" >@drawable/theme_ic_action_action_search_color</item>
+        <item name="color_theme_ic_action_action_settings" >@drawable/theme_ic_action_action_settings_color</item>
+        <item name="color_theme_ic_action_action_view_list" >@drawable/theme_ic_action_action_view_list_color</item>
+        <item name="color_theme_ic_action_av_replay" >@drawable/theme_ic_action_av_replay_color</item>
+        <item name="color_theme_ic_action_book_search" >@drawable/theme_ic_action_book_search_color</item>
+        <item name="color_theme_ic_action_book_opened" >@drawable/theme_ic_action_book_opened_color</item>
+        <item name="color_theme_ic_action_calendar">@drawable/theme_ic_action_calendar_color</item>
+        <item name="color_theme_ic_action_communication_call" >@drawable/theme_ic_action_communication_call_color</item>
+        <item name="color_theme_ic_action_communication_import_export" >@drawable/theme_ic_action_communication_import_export_color</item>
+        <item name="color_theme_ic_action_content_content_copy" >@drawable/theme_ic_action_content_content_copy_color</item>
+        <item name="color_theme_ic_action_content_content_paste" >@drawable/theme_ic_action_content_content_paste_color</item>
+        <item name="color_theme_ic_action_content_save" >@drawable/theme_ic_action_content_save_color</item>
+        <item name="color_theme_ic_action_content_undo" >@drawable/theme_ic_action_content_undo_color</item>
+        <item name="color_theme_ic_action_device_storage" >@drawable/theme_ic_action_device_storage_color</item>
+        <item name="color_theme_ic_action_file_folder" >@drawable/theme_ic_action_file_folder_color</item>
+        <item name="color_theme_ic_action_hardware_phone_android" >@drawable/theme_ic_action_hardware_phone_android_color</item>
+        <item name="color_theme_ic_action_image_image" >@drawable/theme_ic_action_image_image_color</item>
+        <item name="color_theme_ic_action_image_palette" >@drawable/theme_ic_action_image_palette_color</item>
+        <item name="color_theme_ic_action_login" >@drawable/theme_ic_action_login_color</item>
+        <item name="color_theme_ic_action_maps_directions" >@drawable/theme_ic_action_maps_directions_color</item>
+        <item name="color_theme_ic_action_maps_place" >@drawable/theme_ic_action_maps_place_color</item>
+        <item name="color_theme_ic_action_maps_local_restaurant" >@drawable/theme_ic_action_maps_local_restaurant_color</item>
+        <item name="color_theme_ic_action_navigation_arrow_back" >@drawable/theme_ic_action_navigation_arrow_back_color</item>
+        <item name="color_theme_ic_action_navigation_arrow_drop_down" >@drawable/theme_ic_action_navigation_arrow_drop_down_color</item>
+        <item name="color_theme_ic_action_navigation_arrow_drop_up" >@drawable/theme_ic_action_navigation_arrow_drop_up_color</item>
+        <item name="color_theme_ic_action_navigation_arrow_forward" >@drawable/theme_ic_action_navigation_arrow_forward_color</item>
+        <item name="color_theme_ic_action_navigation_close" >@drawable/theme_ic_action_navigation_close_color</item>
+        <item name="color_theme_ic_action_navigation_check" >@drawable/theme_ic_action_navigation_check_color</item>
+        <item name="color_theme_ic_action_navigation_refresh" >@drawable/theme_ic_action_navigation_refresh_color</item>
+        <item name="color_theme_ic_action_social_share" >@drawable/theme_ic_action_social_share_color</item>
+        <item name="color_theme_ic_action_timetable" >@drawable/theme_ic_action_timetable_color</item>
     </style>
 
 
@@ -155,6 +193,44 @@
         <item name="theme_ic_action_navigation_refresh" >@drawable/theme_ic_action_navigation_refresh</item>
         <item name="theme_ic_action_social_share" >@drawable/theme_ic_action_social_share</item>
         <item name="theme_ic_action_timetable" >@drawable/theme_ic_action_timetable</item>
+
+        <item name="color_theme_ic_action_action_about" >@drawable/theme_ic_action_action_about_color</item>
+        <item name="color_theme_ic_action_action_alarm" >@drawable/theme_ic_action_action_alarm_color</item>
+        <item name="color_theme_ic_action_action_assignment" >@drawable/theme_ic_action_action_assignment_color</item>
+        <item name="color_theme_ic_action_action_delete" >@drawable/theme_ic_action_action_delete_color</item>
+        <item name="color_theme_ic_action_action_help" >@drawable/theme_ic_action_action_help_color</item>
+        <item name="color_theme_ic_action_action_language" >@drawable/theme_ic_action_action_language_color</item>
+        <item name="color_theme_ic_action_action_search" >@drawable/theme_ic_action_action_search_color</item>
+        <item name="color_theme_ic_action_action_settings" >@drawable/theme_ic_action_action_settings_color</item>
+        <item name="color_theme_ic_action_action_view_list" >@drawable/theme_ic_action_action_view_list_color</item>
+        <item name="color_theme_ic_action_av_replay" >@drawable/theme_ic_action_av_replay_color</item>
+        <item name="color_theme_ic_action_book_search" >@drawable/theme_ic_action_book_search_color</item>
+        <item name="color_theme_ic_action_book_opened" >@drawable/theme_ic_action_book_opened_color</item>
+        <item name="color_theme_ic_action_calendar">@drawable/theme_ic_action_calendar_color</item>
+        <item name="color_theme_ic_action_communication_call" >@drawable/theme_ic_action_communication_call_color</item>
+        <item name="color_theme_ic_action_communication_import_export" >@drawable/theme_ic_action_communication_import_export_color</item>
+        <item name="color_theme_ic_action_content_content_copy" >@drawable/theme_ic_action_content_content_copy_color</item>
+        <item name="color_theme_ic_action_content_content_paste" >@drawable/theme_ic_action_content_content_paste_color</item>
+        <item name="color_theme_ic_action_content_save" >@drawable/theme_ic_action_content_save_color</item>
+        <item name="color_theme_ic_action_content_undo" >@drawable/theme_ic_action_content_undo_color</item>
+        <item name="color_theme_ic_action_device_storage" >@drawable/theme_ic_action_device_storage_color</item>
+        <item name="color_theme_ic_action_file_folder" >@drawable/theme_ic_action_file_folder_color</item>
+        <item name="color_theme_ic_action_hardware_phone_android" >@drawable/theme_ic_action_hardware_phone_android_color</item>
+        <item name="color_theme_ic_action_image_image" >@drawable/theme_ic_action_image_image_color</item>
+        <item name="color_theme_ic_action_image_palette" >@drawable/theme_ic_action_image_palette_color</item>
+        <item name="color_theme_ic_action_login" >@drawable/theme_ic_action_login_color</item>
+        <item name="color_theme_ic_action_maps_directions" >@drawable/theme_ic_action_maps_directions_color</item>
+        <item name="color_theme_ic_action_maps_place" >@drawable/theme_ic_action_maps_place_color</item>
+        <item name="color_theme_ic_action_maps_local_restaurant" >@drawable/theme_ic_action_maps_local_restaurant_color</item>
+        <item name="color_theme_ic_action_navigation_arrow_back" >@drawable/theme_ic_action_navigation_arrow_back_color</item>
+        <item name="color_theme_ic_action_navigation_arrow_drop_down" >@drawable/theme_ic_action_navigation_arrow_drop_down_color</item>
+        <item name="color_theme_ic_action_navigation_arrow_drop_up" >@drawable/theme_ic_action_navigation_arrow_drop_up_color</item>
+        <item name="color_theme_ic_action_navigation_arrow_forward" >@drawable/theme_ic_action_navigation_arrow_forward_color</item>
+        <item name="color_theme_ic_action_navigation_close" >@drawable/theme_ic_action_navigation_close_color</item>
+        <item name="color_theme_ic_action_navigation_check" >@drawable/theme_ic_action_navigation_check_color</item>
+        <item name="color_theme_ic_action_navigation_refresh" >@drawable/theme_ic_action_navigation_refresh_color</item>
+        <item name="color_theme_ic_action_social_share" >@drawable/theme_ic_action_social_share_color</item>
+        <item name="color_theme_ic_action_timetable" >@drawable/theme_ic_action_timetable_color</item>
     </style>
 
     <style name="AppTheme.Dark" parent="@style/AppTheme.Base.Dark">

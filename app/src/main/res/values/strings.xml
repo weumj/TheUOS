@@ -101,15 +101,31 @@
 
     <string name="tab_rest_students_hall">학생회관</string>
     <string name="tab_rest_anekan">양식당</string>
-    <string name="tab_rest_natural">자연과학관</string>
+    <string name="tab_rest_nature_science">자연과학관</string>
     <string name="tab_rest_main_8th">본관 8층</string>
-    <string name="tab_rest_living">생활관</string>
+    <string name="tab_rest_dormitory">생활관</string>
     <string name="tab_rest_breakfast">조식</string>
     <string name="tab_rest_lunch">중식</string>
     <string name="tab_rest_dinner">석식</string>
     <string name="tab_rest_no_info">정보가 없습니다.</string>
-    <string name="tab_rest_operation_time">운영시간</string>
     <string name="tab_rest_show_menu_in_week">일주일간 메뉴 보기</string>
+
+    <string name="tab_rest_operation_time">운영시간</string>
+    <string name="tab_rest_operation_time_in_semester">학기중</string>
+    <string name="tab_rest_operation_time_in_vacation">방학</string>
+
+    <string name="tab_rest_operation_time_students_hall_in_semester">조식\n08:00~10:00\n\n중식\n11:00~14:00\n15:00~17:00</string>
+    <string name="tab_rest_operation_time_anekan_in_semester">중식\n11:30~14:00\n\n석식\n15:00~19:00\n\n토요일\n휴무</string>
+    <string name="tab_rest_operation_time_nature_science_in_semester">중식\n11:30~13:30\n\n석식\n17:00~18:30\n\n토요일\n휴무</string>
+    <string name="tab_rest_operation_time_main_8th_in_semester"> </string>
+    <string name="tab_rest_operation_time_dormitory_in_semester">연중무휴</string>
+
+    <string name="tab_rest_operation_time_students_hall_in_vacation">조식\n09:00~10:00\n08:30~10:00\n(계절학기 기간)\n\n중식\n11:00~14:00\n15:00~17:00\n\n석식\n17:00~18:30\n\n토요일\n휴무</string>
+    <string name="tab_rest_operation_time_anekan_in_vacation">중식\n11:30~14:00\n\n석식\n16:00~18:30\n\n토요일\n휴무</string>
+    <string name="tab_rest_operation_time_nature_science_in_vacation">휴관</string>
+    <string name="tab_rest_operation_time_main_8th_in_vacation"> </string>
+    <string name="tab_rest_operation_time_dormitory_in_vacation">08:00~19:00</string>
+
 
     <string name="tab_phone_call">전화</string>
     <string name="tab_phone_search_hint">검색할 장소를 입력하세요.</string>

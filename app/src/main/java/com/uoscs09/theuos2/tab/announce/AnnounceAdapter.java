@@ -53,9 +53,9 @@ class AnnounceAdapter extends AbsArrayAdapter<AnnounceItem, AnnounceAdapter.Hold
 
         public Holder(View v) {
             textArray = new TextView[3];
-            textArray[0] = (TextView) v.findViewById(R.id.tab_anounce_list_text_type);
-            textArray[1] = (TextView) v.findViewById(R.id.tab_anounce_list_text_title);
-            textArray[2] = (TextView) v.findViewById(R.id.tab_anounce_list_text_date);
+            textArray[0] = (TextView) v.findViewById(R.id.tab_announce_list_text_type);
+            textArray[1] = (TextView) v.findViewById(R.id.tab_announce_list_text_title);
+            textArray[2] = (TextView) v.findViewById(R.id.tab_announce_list_text_date);
         }
     }
 

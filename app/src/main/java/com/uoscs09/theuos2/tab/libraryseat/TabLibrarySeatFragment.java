@@ -19,7 +19,7 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos2.async.AsyncFragmentJob;
 import com.uoscs09.theuos2.async.AsyncUtil;
-import com.uoscs09.theuos2.base.AbsAsyncFragment;
+import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.base.OnItemClickListener;
 import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.util.AppUtil;
@@ -36,7 +36,7 @@ import jp.wasabeef.recyclerview.animators.adapters.SlideInBottomAnimationAdapter
 /**
  * 도서관 좌석 정보 현황을 보여주는 페이지
  */
-public class TabLibrarySeatFragment extends AbsAsyncFragment<SeatInfo> {
+public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> implements OnItemClickListener<SeatListAdapter.ViewHolder> {
 
     /**
      * 중앙 도서관 좌석 정보 확인 페이지
@@ -91,6 +91,7 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<SeatInfo> {
 
         mSeatDismissDialogFragment = new SeatDismissDialogFragment();
         mSeatDismissDialogFragment.setSeatInfo(mSeatInfo);
+        mSeatDismissDialogFragment.setCancelable(true);
 
         super.onCreate(savedInstanceState);
     }
@@ -114,18 +115,7 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<SeatInfo> {
         });
 
         SeatListAdapter mSeatAdapter = new SeatListAdapter(getActivity(), mSeatInfo.seatItemList);
-        mSeatAdapter.setOnItemClickListener(new OnItemClickListener<SeatListAdapter.ViewHolder>() {
-
-            @Override
-            public void onItemClick(SeatListAdapter.ViewHolder viewHolder, View v) {
-                Intent intent = new Intent(getActivity(), SubSeatWebActivity.class);
-                intent.putExtra(TabLibrarySeatFragment.ITEM, (Parcelable) viewHolder.getItem());
-
-                // tracking 은 SubSeatWebActivity 에서 함.
-
-                AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
-            }
-        });
+        mSeatAdapter.setOnItemClickListener(this);
 
         StaggeredGridLayoutManager mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
@@ -135,11 +125,22 @@ public class TabLibrarySeatFragment extends AbsAsyncFragment<SeatInfo> {
         mSeatListView.setLayoutManager(mLayoutManager);
         mSeatListView.setItemAnimator(new SlideInDownAnimator());
 
+        registerProgressView(rootView.findViewById(R.id.progress_layout));
+
         if (mSeatInfo.seatItemList.isEmpty()) {
             execute();
         }
 
         return rootView;
+    }
+
+    @Override
+    public void onItemClick(SeatListAdapter.ViewHolder viewHolder, View v) {
+        Intent intent = new Intent(getActivity(), SubSeatWebActivity.class);
+        intent.putExtra(TabLibrarySeatFragment.ITEM, (Parcelable) viewHolder.getItem());
+
+        // tracking 은 SubSeatWebActivity 에서 함.
+        AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
     }
 
     @Override

@@ -50,7 +50,7 @@ class SeatListAdapter extends ListRecyclerAdapter<SeatItem, SeatListAdapter.View
             drawable.setTextSize(15 * dm.scaledDensity);
             drawable.setTextColor(textColor);
             drawable.setColor(context.getResources().getColor(R.color.gray_red));
-            drawable.setCentorColor(context.getResources().getColor(AppUtil.getAttrValue(context, R.attr.cardBackgroundColor)));
+            drawable.setCenterColor(AppUtil.getAttrColor(context, R.attr.cardBackgroundColor));
             progressImg.setBackgroundDrawable(drawable);
         }
 

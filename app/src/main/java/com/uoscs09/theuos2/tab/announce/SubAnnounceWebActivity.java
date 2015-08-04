@@ -91,7 +91,7 @@ public class SubAnnounceWebActivity extends WebViewActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_web:
-                startActivity(AppUtil.setWebPageIntent(url));
+                startActivity(AppUtil.getWebPageIntent(url));
                 return true;
 
             case R.id.action_share:

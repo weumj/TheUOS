@@ -158,13 +158,13 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
                         final BookItem item = holder.getItem();
                         switch (v.getId()) {
                             case R.id.tab_booksearch_list_book_image: {
-                                Intent i = AppUtil.setWebPageIntent("http://mlibrary.uos.ac.kr" + item.url);
+                                Intent i = AppUtil.getWebPageIntent("http://mlibrary.uos.ac.kr" + item.url);
                                 AppUtil.startActivityWithScaleUp(getActivity(), i, v);
                                 break;
                             }
                             case R.id.tab_booksearch_list_book_site:
                                 if (item.bookStateInt == BookItem.BOOK_STATE_ONLINE) {
-                                    Intent i = AppUtil.setWebPageIntent(item.site);
+                                    Intent i = AppUtil.getWebPageIntent(item.site);
                                     AppUtil.startActivityWithScaleUp(getActivity(), i, v);
                                 }
                                 break;

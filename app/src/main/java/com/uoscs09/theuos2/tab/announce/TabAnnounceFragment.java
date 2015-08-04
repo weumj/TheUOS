@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.util.ArrayMap;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -579,7 +580,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
         mPageNumberPicker.setMinValue(1);
         mPageNumberPicker.setMaxValue(999);
 
-        mPageSelectDialog = new android.support.v7.app.AlertDialog.Builder(context)
+        mPageSelectDialog = new AlertDialog.Builder(context)
                 .setTitle(R.string.tab_announce_plz_select_page)
                 .setView(mPageNumberPicker)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {

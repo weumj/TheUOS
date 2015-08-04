@@ -21,14 +21,13 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos2.async.AsyncFragmentJob;
-import com.uoscs09.theuos2.base.AbsAsyncFragment;
+import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.common.SerializableArrayMap;
 import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
-import com.uoscs09.theuos2.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -36,7 +35,7 @@ import java.util.Calendar;
 import jp.wasabeef.recyclerview.animators.SlideInDownAnimator;
 import jp.wasabeef.recyclerview.animators.adapters.SlideInBottomAnimationAdapter;
 
-public class TabRestaurantFragment extends AbsAsyncFragment<SparseArray<RestItem>> {
+public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestItem>> {
 
     @ReleaseWhenDestroy
     private SwipeRefreshLayout mSwipeRefreshLayout;
@@ -59,20 +58,23 @@ public class TabRestaurantFragment extends AbsAsyncFragment<SparseArray<RestItem
     private static final String BUTTON = "button";
     private static final String REST = "rest_list";
 
-    //NEEDFIX
-    private static final String[] TIME_SEMESTER = {
-            "학기중\n조식 : 08:00~10:00\n중식 : 11:00~14:00\n15:00~17:00",
-            "학기중\n중식 : 11:30~14:00\n석식 : 15:00~19:00\n토요일 : 휴무",
-            "학기중\n중식 : 11:30~13:30\n석식 : 17:00~18:30\n토요일 : 휴무",
-            StringUtil.NULL, StringUtil.NULL};
+    private static final int[] TIME_SEMESTER = {
+            R.string.tab_rest_operation_time_students_hall_in_semester,
+            R.string.tab_rest_operation_time_anekan_in_semester,
+            R.string.tab_rest_operation_time_nature_science_in_semester,
+            R.string.tab_rest_operation_time_main_8th_in_semester,
+            R.string.tab_rest_operation_time_dormitory_in_semester
+    };
 
-    //NEEDFIX
-    private static final String[] TIME_VACATION = {
-            "방학중\n조식 : 09:00~10:00\n	08:30~10:00\n(계절학기 기간)\n중식 : 11:00~14:00\n15:00~17:00\n석식 : 17:00~18:30\n토요일 : 휴무",
-            "방학중\n중식 : 11:30~14:00\n석식 : 16:00~18:30\n토요일 : 휴무",
-            "방학중 : 휴관\n\n\n", StringUtil.NULL, StringUtil.NULL};
+    private static final int[] TIME_VACATION = {
+            R.string.tab_rest_operation_time_students_hall_in_vacation,
+            R.string.tab_rest_operation_time_anekan_in_vacation,
+            R.string.tab_rest_operation_time_nature_science_in_vacation,
+            R.string.tab_rest_operation_time_main_8th_in_vacation,
+            R.string.tab_rest_operation_time_dormitory_in_vacation
+    };
 
-    private static final int[] REST_TAB_MENU_STRING_ID = {R.string.tab_rest_students_hall, R.string.tab_rest_anekan, R.string.tab_rest_natural, R.string.tab_rest_main_8th, R.string.tab_rest_living};
+    private static final int[] REST_TAB_MENU_STRING_ID = {R.string.tab_rest_students_hall, R.string.tab_rest_anekan, R.string.tab_rest_nature_science, R.string.tab_rest_main_8th, R.string.tab_rest_dormitory};
     private static final String[] REST_TAB_MENU_STRING_LABEL = {"학생회관 1층", "양식당 (아느칸)", "자연과학관", "본관 8층", "생활관"};
 
     @Override
@@ -154,6 +156,8 @@ public class TabRestaurantFragment extends AbsAsyncFragment<SparseArray<RestItem
         });
 
         mRecyclerView.setItemAnimator(new SlideInDownAnimator());
+
+        registerProgressView(rootView.findViewById(R.id.progress_layout));
 
         if (mRestTable.size() == 0)
             execute(false);

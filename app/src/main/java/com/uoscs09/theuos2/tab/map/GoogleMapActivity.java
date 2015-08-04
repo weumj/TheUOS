@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -18,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -40,7 +40,7 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
     private LocationManager locationManager;
     //private Location location;
     @ReleaseWhenDestroy
-    private AppCompatSpinner mLocationSelectSpinner;
+    private Spinner mLocationSelectSpinner;
 
     private int buildingNo;
 
@@ -72,7 +72,7 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
             actionBar.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP | ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE);
         }
         View spinnerLayout = View.inflate(this, R.layout.view_tab_map_sub_spinner_layout, null);
-        mLocationSelectSpinner = (AppCompatSpinner) spinnerLayout.findViewById(R.id.spinner);
+        mLocationSelectSpinner = (Spinner) spinnerLayout.findViewById(R.id.spinner);
         mLocationSelectSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -93,7 +93,7 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
         });
         toolbarParent.addView(spinnerLayout);
 
-        spinnerLayout.postDelayed(new Runnable() {
+        mLocationSelectSpinner.postDelayed(new Runnable() {
             @Override
             public void run() {
                 buildingNo = getIntent().getIntExtra("building", -1);

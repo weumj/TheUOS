@@ -176,7 +176,7 @@ public abstract class ServiceForAnnounce extends Service {
                                     break;
                             }
 
-                            Intent intent = AppUtil.setWebPageIntent(web);
+                            Intent intent = AppUtil.getWebPageIntent(web);
                             PendingIntent pi = PendingIntent.getActivity(context, 0, intent, 0);
                             mNotiManager.notify(notiNum++, notiBuilder(item, pi, context));
 
