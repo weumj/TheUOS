@@ -12,18 +12,14 @@ import android.support.annotation.StringRes;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
-import android.support.v7.internal.widget.AdapterViewCompat;
 import android.util.TypedValue;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.TabHomeFragment;
 import com.uoscs09.theuos2.UosMainActivity;
-import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos2.tab.announce.TabAnnounceFragment;
 import com.uoscs09.theuos2.tab.booksearch.TabBookSearchFragment;
 import com.uoscs09.theuos2.tab.emptyroom.TabSearchEmptyRoomFragment;
@@ -33,8 +29,6 @@ import com.uoscs09.theuos2.tab.schedule.UnivScheduleFragment;
 import com.uoscs09.theuos2.tab.subject.TabSearchSubjectFragment2;
 import com.uoscs09.theuos2.tab.timetable.TabTimeTableFragment2;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 public class AppUtil {
@@ -227,7 +221,7 @@ public class AppUtil {
             pref.put(PAGE_ENABLE_ + order, isEnable);
         }
 
-
+        /*
         static void clearAll(PrefUtil pref) {
             String[] array = new String[PAGE_SIZE];
             String[] array2 = new String[PAGE_SIZE];
@@ -238,6 +232,7 @@ public class AppUtil {
             pref.remove(array);
             pref.remove(array2);
         }
+        */
 
 
         public void swap(Page another) {
@@ -301,9 +296,9 @@ public class AppUtil {
 
     }
 
-    /**
-     * 기본 page title의 resource id에 따른 page순서를 반환한다.
-     */
+    /*
+     * 기본 page title 의 resource id에 따른 page 순서를 반환한다.
+
     public static int titleResIdToOrder(@StringRes int titleResId) {
         switch (titleResId) {
             case R.string.title_section0_home:
@@ -344,9 +339,10 @@ public class AppUtil {
                 return RESOURCE_NOT_EXIST;
         }
     }
+    */
 
     /**
-     * 기본 page순서에 따른 page title의 resource id를 반환한다.
+     * 기본 page 순서에 따른 page title 의 resource id를 반환한다.
      */
     public static int getTitleResId(int order) {
         switch (order) {
@@ -532,7 +528,7 @@ public class AppUtil {
         return out.resourceId;
     }
 
-    public static int getAttrColor(Context context, @AttrRes int attrColorId){
+    public static int getAttrColor(Context context, @AttrRes int attrColorId) {
         return context.getResources().getColor(getAttrValue(context, attrColorId));
     }
 
@@ -604,14 +600,14 @@ public class AppUtil {
         }
     }
 
-    public static int getPageResByClass(Class<? extends Fragment> fragmentClass) {
+    /*public static int getPageResByClass(Class<? extends Fragment> fragmentClass) {
 
-        /*
-        switch (fragmentClass.getSimpleName()) {
-            case "TabHomeFragment":
-                return R.string.title_section0_home;
-        }
-        */
+
+        //switch (fragmentClass.getSimpleName()) {
+//            case "TabHomeFragment":
+  //              return R.string.title_section0_home;
+    //    }
+
 
         if (fragmentClass.equals(TabHomeFragment.class))
             return R.string.title_section0_home;
@@ -628,10 +624,10 @@ public class AppUtil {
         else if (fragmentClass.equals(TabLibrarySeatFragment.class))
             return R.string.title_tab_library_seat;
 
-        /*
+
         else if (fragmentClass.equals(TabMapFragment.class))
             return R.string.title_tab_map;
-        */
+
 
         else if (fragmentClass.equals(TabTimeTableFragment2.class))
             return R.string.title_tab_timetable;
@@ -645,7 +641,7 @@ public class AppUtil {
         else if (fragmentClass.equals(UnivScheduleFragment.class))
             return R.string.title_tab_schedule;
 
-        /*
+
         else if (fragmentClass.equals(TabPhoneFragment.class))
             return R.string.title_tab_phone;
 
@@ -654,10 +650,11 @@ public class AppUtil {
 
         else if (fragmentClass.equals(TabTransportFragment.class))
             return R.string.title_tab_transport;
-*/
+
         else
             return RESOURCE_NOT_EXIST;
     }
+    */
 
     /**
      * 인텐트를 통해 인터넷 페이지를 띄운다.
@@ -671,7 +668,7 @@ public class AppUtil {
         return intent;
     }
 
-    public static void startActivityWithScaleUp(Activity activity, Intent intent, View v){
+    public static void startActivityWithScaleUp(Activity activity, Intent intent, View v) {
         ActivityCompat.startActivity(activity, intent, ActivityOptionsCompat.makeScaleUpAnimation(v, 0, 0, v.getWidth(), v.getHeight()).toBundle());
     }
 
@@ -709,23 +706,6 @@ public class AppUtil {
         }
     }
 
-    /**
-     * 공지사항 알리미 서비스를 시작/정지한다.
-     */
-    public static void startOrStopServiceAnnounce(Context context) {
-        /*boolean isServiceEnable = PrefUtil.getInstance(context).get(context.getString(R.string.pref_key_check_anounce_service), true);
-        Intent service = new Intent(context, ServiceForAnnounce.class);
-
-        if (isServiceEnable) {
-            context.startService(service);
-        } else {
-            context.stopService(service);
-        }
-
-        return isServiceEnable;
-        */
-       // return true;
-    }
 
     /**
      * 기본 메시지가 <b>R.string.progress_while_updating</b>인 <br>
@@ -763,16 +743,6 @@ public class AppUtil {
 
 
         return builder.build();
-    }
-
-    /**
-     * 열려진 DB를 모두 닫는다.
-     */
-    public static void closeAllDatabase(Context context) {
-        /*
-        if (PhoneNumberDB.isOpen())
-            PhoneNumberDB.getInstance(context).close();
-            */
     }
 
     /**
@@ -824,78 +794,6 @@ public class AppUtil {
                 return R.color.material_green_200;
             case 16:
                 return R.color.material_green_300;
-        }
-    }
-
-
-    /**
-     * <b>{@code @ReleaseWhenDestroy}</b> annotation이 붙은 Field를 null로 설정한다.
-     *
-     * @param receiver 해제 될 field가 있는 object
-     */
-    public static void releaseResource(Object receiver) {
-        Field[] fields = receiver.getClass().getDeclaredFields();
-
-        for (Field f : fields) {
-            if (f.getAnnotation(ReleaseWhenDestroy.class) != null) {
-                try {
-
-                    f.setAccessible(true);
-                    if (f.getType().isArray()) {
-
-                        Object array = f.get(receiver);
-                        int size = Array.getLength(array);
-
-                        for (int i = 0; i < size; i++) {
-                            Object o = Array.get(array, i);
-
-                            if (o instanceof View)
-                                unbindDrawables((View) o);
-
-                            Array.set(array, i, null);
-                        }
-
-                    }
-
-                    Object o = f.get(receiver);
-                    if (o instanceof View)
-                        unbindDrawables((View) o);
-
-                    f.set(receiver, null);
-                    f.setAccessible(false);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-        }
-
-    }
-
-    /**
-     * 주어진 View와 View의 child의 drawable을 제거한다.
-     *
-     * @param view - 해제될 View
-     */
-    public static void unbindDrawables(View view) {
-        view.destroyDrawingCache();
-
-        if (view.getBackground() != null) {
-            view.getBackground().setCallback(null);
-        }
-
-        if (view instanceof ViewGroup) {
-            ViewGroup viewGroup = (ViewGroup) view;
-
-            int count = viewGroup.getChildCount();
-            for (int i = 0; i < count; i++) {
-                unbindDrawables(viewGroup.getChildAt(i));
-            }
-
-            if (view instanceof AdapterView || view instanceof AdapterViewCompat)
-                return;
-
-            viewGroup.removeAllViews();
         }
     }
 

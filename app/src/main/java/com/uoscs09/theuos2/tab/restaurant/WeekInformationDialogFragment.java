@@ -20,7 +20,6 @@ import android.widget.TextView;
 
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.BaseDialogFragment;
@@ -33,26 +32,21 @@ import com.uoscs09.theuos2.util.PrefUtil;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
-public class WeekInformationDialogFragment extends BaseDialogFragment {
+public class WeekInformationDialogFragment extends BaseDialogFragment implements Callable<WeekRestItem>, Request.ResultListener<WeekRestItem>, Request.ErrorListener {
     private static final String TAG = "WeekInformationDialogFragment";
     private static final String FILE_NAME = "FILE_REST_WEEK_ITEM";
     private static final ParseRestaurantWeek RESTAURANT_WEEK_PARSER = new ParseRestaurantWeek();
 
-    @ReleaseWhenDestroy
     private Toolbar mToolbar;
-    @ReleaseWhenDestroy
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private View mProgressLayout;
+    private ProgressWheel mProgressWheel;
+    private View mFailView, mEmptyView;
 
     private RestWeekAdapter mRestWeekAdapter;
     private int mCurrentSelectionId;
     private AsyncTask<Void, ?, WeekRestItem> mAsyncTask;
-
-    @ReleaseWhenDestroy
-    private View mProgressLayout;
-    @ReleaseWhenDestroy
-    private ProgressWheel mProgressWheel;
-    @ReleaseWhenDestroy
-    private View mFailView, mEmptyView;
+    private boolean shouldUpdateUsingInternet;
 
     public void setSelection(int stringId) {
         this.mCurrentSelectionId = stringId;
@@ -133,61 +127,56 @@ public class WeekInformationDialogFragment extends BaseDialogFragment {
             mFailView.setVisibility(View.GONE);
 
         AsyncUtil.cancelTask(mAsyncTask);
+        this.shouldUpdateUsingInternet = shouldUpdateUsingInternet;
 
-        mAsyncTask = AsyncUtil.newRequest(
-                new Callable<WeekRestItem>() {
-                    @Override
-                    public WeekRestItem call() throws Exception {
-                        Context context = getActivity();
-                        PrefUtil pref = PrefUtil.getInstance(context);
+        mAsyncTask = AsyncUtil.newRequest(this).getAsync(this, this);
+    }
 
-                        final int[] recodedDate = getValueFromPref(pref, mCurrentSelectionId);
-                        final int today = OApiUtil.getDate();
+    @Override
+    public WeekRestItem call() throws Exception {
+        Context context = getActivity();
+        PrefUtil pref = PrefUtil.getInstance(context);
 
-                        // 이번주의 식단이 기록된 파일이 있으면, 인터넷에서 가져오지 않고 그 파일을 읽음
-                        if (!shouldUpdateUsingInternet && ((recodedDate[0] <= today) && (today <= recodedDate[1]))) {
+        final int[] recodedDate = getValueFromPref(pref, mCurrentSelectionId);
+        final int today = OApiUtil.getDate();
 
-                            WeekRestItem result = new IOUtil.Builder<WeekRestItem>(getFileName(mCurrentSelectionId))
-                                    .setContext(context)
-                                    .build()
-                                    .get();
+        // 이번주의 식단이 기록된 파일이 있으면, 인터넷에서 가져오지 않고 그 파일을 읽음
+        if (!shouldUpdateUsingInternet && ((recodedDate[0] <= today) && (today <= recodedDate[1]))) {
 
-                            if (result != null)
-                                return result;
+            WeekRestItem result = new IOUtil.Builder<WeekRestItem>(getFileName(mCurrentSelectionId))
+                    .setContext(context)
+                    .build()
+                    .get();
 
-                        }
+            if (result != null)
+                return result;
 
-                        return readFromInternet(context, mCurrentSelectionId);
-                    }
-                })
-                .getAsync(
-                        new Request.ResultListener<WeekRestItem>() {
-                            @Override
-                            public void onResult(WeekRestItem result) {
-                                postExecute();
+        }
 
-                                ArrayList<RestItem> weekList = result.weekList;
-                                mRestWeekAdapter.restItemArrayList.clear();
-                                mRestWeekAdapter.restItemArrayList.addAll(weekList);
-                                mRestWeekAdapter.notifyDataSetChanged();
+        return readFromInternet(context, mCurrentSelectionId);
+    }
 
-                                if (weekList.isEmpty()) {
-                                    showEmptyView();
-                                } else {
-                                    mToolbar.setSubtitle(result.getPeriodString());
-                                }
-                            }
-                        },
-                        new Request.ErrorListener() {
-                            @Override
-                            public void onError(Exception e) {
-                                postExecute();
-                                AppUtil.showErrorToast(getActivity(), e, true);
-                                showReloadView();
-                            }
-                        }
-                );
+    @Override
+    public void onResult(WeekRestItem result) {
+        postExecute();
 
+        ArrayList<RestItem> weekList = result.weekList;
+        mRestWeekAdapter.restItemArrayList.clear();
+        mRestWeekAdapter.restItemArrayList.addAll(weekList);
+        mRestWeekAdapter.notifyDataSetChanged();
+
+        if (weekList.isEmpty()) {
+            showEmptyView();
+        } else {
+            mToolbar.setSubtitle(result.getPeriodString());
+        }
+    }
+
+    @Override
+    public void onError(Exception e) {
+        postExecute();
+        AppUtil.showErrorToast(getActivity(), e, true);
+        showReloadView();
     }
 
     private void postExecute() {

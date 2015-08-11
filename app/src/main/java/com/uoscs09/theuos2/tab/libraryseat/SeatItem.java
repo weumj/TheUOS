@@ -12,19 +12,20 @@ public class SeatItem implements Parcelable, Serializable {
     public String roomName;
     public String occupySeat;
     public String vacancySeat;
-    public String utilizationRate;
+    public String utilizationRateStr;
+    public float utilizationRate;
     public int index;
 
     public SeatItem() {
-        roomName = occupySeat = vacancySeat = utilizationRate = StringUtil.NULL;
+        roomName = occupySeat = vacancySeat = utilizationRateStr = StringUtil.NULL;
     }
 
     /*
-    public SeatItem(String name, String occupySeat, String vacancySeat, String utilizationRate, int index) {
+    public SeatItem(String name, String occupySeat, String vacancySeat, String utilizationRateStr, int index) {
         this.roomName = name.trim();
         this.occupySeat = occupySeat.trim();
         this.vacancySeat = vacancySeat.trim();
-        this.utilizationRate = utilizationRate.trim();
+        this.utilizationRateStr = utilizationRateStr.trim();
         this.index = index;
     }
     */
@@ -33,7 +34,8 @@ public class SeatItem implements Parcelable, Serializable {
         roomName = source.readString();
         occupySeat = source.readString();
         vacancySeat = source.readString();
-        utilizationRate = source.readString();
+        utilizationRateStr = source.readString();
+        utilizationRate = source.readFloat();
         index = source.readInt();
     }
 
@@ -47,7 +49,8 @@ public class SeatItem implements Parcelable, Serializable {
         dest.writeString(this.roomName);
         dest.writeString(this.occupySeat);
         dest.writeString(this.vacancySeat);
-        dest.writeString(this.utilizationRate);
+        dest.writeString(this.utilizationRateStr);
+        dest.writeFloat(this.utilizationRate);
         dest.writeInt(this.index);
     }
 

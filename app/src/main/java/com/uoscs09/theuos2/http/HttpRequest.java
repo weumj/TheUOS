@@ -25,6 +25,9 @@ import java.net.URLEncoder;
 import java.util.Map;
 import java.util.Map.Entry;
 
+/**
+ * Http 요청을 처리하는 Request 클래스
+ */
 public abstract class HttpRequest<T> extends Request.Base<T> {
     //public static final int RETURN_TYPE_STRING = 0;
     // public static final int RETURN_TYPE_CONNECTION = 1;
@@ -35,6 +38,7 @@ public abstract class HttpRequest<T> extends Request.Base<T> {
     private final String encodedParams;
     final String resultEncoding;
     private final int method;
+    private Context mContext;
 
     HttpRequest(String url, String encodedParams, String resultEncoding, int method) {
         this.url = url;
@@ -43,14 +47,22 @@ public abstract class HttpRequest<T> extends Request.Base<T> {
         this.method = method;
     }
 
-    public final HttpRequest<T> checkNetworkState(Context context) throws IOException {
-        checkNetworkStateAndThrowException(context);
+    /**
+     * 네트워크 요청을 전송하기 전, 네트워크 상태를 검사하여 적절하지 않은 상태 일 경우 예외를 발생시킨다.
+     */
+    public HttpRequest<T> checkNetworkState(Context context) {
+        mContext = context != null ? context.getApplicationContext() : null;
         return this;
     }
 
+    /**
+     * Http 요청을 전송한다.
+     */
     HttpURLConnection getHttpResult() throws IOException {
-        HttpURLConnection connection;
+        if (mContext != null)
+            checkNetworkStateAndThrowException(mContext);
 
+        HttpURLConnection connection;
         if (method == HTTP_METHOD_GET && encodedParams != null)
             connection = getConnection(url + '?' + encodedParams);
         else
@@ -65,6 +77,9 @@ public abstract class HttpRequest<T> extends Request.Base<T> {
 
     }
 
+    /**
+     * Post 연결 설정을 한다.
+     */
     void setUpPostSetting(HttpURLConnection connection, @Nullable String encodedParams) throws IOException {
         connection.setDefaultUseCaches(false);
         connection.setDoInput(true);
@@ -81,6 +96,9 @@ public abstract class HttpRequest<T> extends Request.Base<T> {
 
     }
 
+
+    //**** util method
+
     private static HttpURLConnection getConnection(String url) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
 
@@ -91,6 +109,61 @@ public abstract class HttpRequest<T> extends Request.Base<T> {
 
         return connection;
     }
+
+    public static boolean checkNetworkUnable(Context context) {
+        ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+        return networkInfo == null || !networkInfo.isConnected();
+    }
+
+    static void checkNetworkStateAndThrowException(Context context) throws IOException {
+        context = context.getApplicationContext();
+        if (checkNetworkUnable(context))
+            throw new IOException("Failed to access current network.");
+    }
+
+    public static String encodeString(@Nullable Map<? extends CharSequence, ? extends CharSequence> table, @Nullable String encoding) throws UnsupportedEncodingException {
+        if (table == null)
+            return null;
+
+        if (encoding == null)
+            encoding = StringUtil.ENCODE_UTF_8;
+
+        StringBuilder sb = new StringBuilder();
+        final char eq = '=', amp = '&';
+        for (Entry<? extends CharSequence, ? extends CharSequence> entry : table.entrySet()) {
+            sb.append(URLEncoder.encode(entry.getKey().toString(), encoding)).append(eq)
+                    .append(URLEncoder.encode(entry.getValue().toString(), encoding))
+                    .append(amp);
+        }
+        sb.deleteCharAt(sb.length() - 1);
+        return sb.toString();
+    }
+
+    static void checkResponseAndThrowException(HttpURLConnection connection) throws IOException {
+        int response = connection.getResponseCode();
+        if (response != HttpURLConnection.HTTP_OK) {
+            Log.e("HttpRequest", connection.getURL().toExternalForm() + " / response : " + response);
+            throw new IOException("HttpURLConnection responses bad result.");
+        }
+    }
+
+    static String readContentFromStream(InputStream in, String encoding) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in, encoding));
+        try {
+            StringBuilder builder = new StringBuilder();
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                builder.append(line).append('\n');
+            }
+            return builder.toString();
+        } finally {
+            reader.close();
+        }
+    }
+
+    //** Request Impl
 
     static class StringRequest extends HttpRequest<String> {
 
@@ -126,6 +199,8 @@ public abstract class HttpRequest<T> extends Request.Base<T> {
         }
 
     }
+
+    //** Request Builder
 
     public static abstract class Builder<T> implements com.uoscs09.theuos2.async.Request.Builder<T> {
         String url;
@@ -213,6 +288,9 @@ public abstract class HttpRequest<T> extends Request.Base<T> {
 
     }
 
+
+    //** FileDownloadProcessor
+
     public static class FileDownloadProcessor implements Processor<HttpURLConnection, File> {
         private File downloadDir;
 
@@ -220,14 +298,34 @@ public abstract class HttpRequest<T> extends Request.Base<T> {
             this.downloadDir = downloadDir;
         }
 
+        @Override
+        public File process(HttpURLConnection connection) throws Exception {
+            String fileNameAndExtension = getFileName(connection);
+            File downloadFile = makeFile(fileNameAndExtension);
+
+            writeContentsToFile(downloadFile, connection.getInputStream());
+            connection.disconnect();
+
+            return downloadFile;
+        }
+
+        /**
+         * Http Response Header 에서 파일 이름을 가져온다.
+         *
+         * @param connection Http 연결
+         * @return 파일 이름과 확장자로 이루어진 문자열
+         */
         private String getFileName(HttpURLConnection connection) throws UnsupportedEncodingException {
-            String responseHeaderFileName = connection.getHeaderField("content-disposition").replace("\"","");
+            String responseHeaderFileName = connection.getHeaderField("content-disposition").replace("\"", "");
 
             return URLDecoder.decode(
                     responseHeaderFileName.substring(responseHeaderFileName.indexOf("filename=") + 9), StringUtil.ENCODE_UTF_8)
                     .trim();
         }
 
+        /**
+         * 주어진 파일 이름과 확장자로 이루어진 문자열로 부터 파일을 생성한다.
+         */
         private File makeFile(String fileNameAndExtension) {
             int dotIndex = fileNameAndExtension.lastIndexOf('.');
             String fileName, extension;
@@ -266,85 +364,30 @@ public abstract class HttpRequest<T> extends Request.Base<T> {
 
         }
 
+        /**
+         * 파일에 내용을 기록한다.
+         *
+         * @param downloadFile 다운로드하는 내용이 기록될 파일
+         * @param inputStream  Http 연결의 내용이 있는 스트림
+         */
         private void writeContentsToFile(File downloadFile, InputStream inputStream) throws IOException {
             final FileOutputStream fileOutputStream = new FileOutputStream(downloadFile);
             final byte buffer[] = new byte[16 * 1024];
 
-            int len;
-            while ((len = inputStream.read(buffer)) > 0) {
-                fileOutputStream.write(buffer, 0, len);
+            try {
+                int len;
+                while ((len = inputStream.read(buffer)) > 0) {
+                    fileOutputStream.write(buffer, 0, len);
+                }
+
+                fileOutputStream.flush();
+            } finally {
+                fileOutputStream.close();
+                inputStream.close();
             }
 
-            fileOutputStream.flush();
-            fileOutputStream.close();
-
-            inputStream.close();
         }
 
-        @Override
-        public File process(HttpURLConnection connection) throws Exception {
-            String fileNameAndExtension = getFileName(connection);
-            File downloadFile = makeFile(fileNameAndExtension);
-
-            writeContentsToFile(downloadFile, connection.getInputStream());
-            connection.disconnect();
-
-            return downloadFile;
-        }
-    }
-
-    public static boolean checkNetworkUnable(Context context) {
-        ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
-        return networkInfo == null || !networkInfo.isConnected();
-    }
-
-    static void checkNetworkStateAndThrowException(Context context) throws IOException {
-        context = context.getApplicationContext();
-        if (checkNetworkUnable(context))
-            throw new IOException("Failed to access current network.");
-    }
-
-    @Nullable
-    public static String encodeString(@Nullable Map<? extends CharSequence, ? extends CharSequence> table, @Nullable String encoding) throws UnsupportedEncodingException {
-        if (table == null)
-            return null;
-
-        if (encoding == null)
-            encoding = StringUtil.ENCODE_UTF_8;
-
-        StringBuilder sb = new StringBuilder();
-        final char eq = '=', amp = '&';
-        for (Entry<? extends CharSequence, ? extends CharSequence> entry : table.entrySet()) {
-            sb.append(URLEncoder.encode(entry.getKey().toString(), encoding)).append(eq)
-                    .append(URLEncoder.encode(entry.getValue().toString(), encoding))
-                    .append(amp);
-        }
-        sb.deleteCharAt(sb.length() - 1);
-        return sb.toString();
-    }
-
-    static void checkResponseAndThrowException(HttpURLConnection connection) throws IOException {
-        int response = connection.getResponseCode();
-        if (response != HttpURLConnection.HTTP_OK) {
-            Log.e("HttpRequest", connection.getURL().toExternalForm() + " / response : " + response);
-            throw new IOException("HttpURLConnection responses bad result.");
-        }
-    }
-
-    static String readContentFromStream(InputStream in, String encoding) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(in, encoding));
-        try {
-            StringBuilder builder = new StringBuilder();
-            String line;
-
-            while ((line = reader.readLine()) != null) {
-                builder.append(line).append('\n');
-            }
-            return builder.toString();
-        } finally {
-            reader.close();
-        }
     }
 
 }

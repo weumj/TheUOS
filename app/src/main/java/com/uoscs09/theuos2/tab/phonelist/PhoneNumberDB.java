@@ -1,19 +1,6 @@
 package com.uoscs09.theuos2.tab.phonelist;
-
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-
-import com.uoscs09.theuos2.async.AsyncUtil;
-import com.uoscs09.theuos2.util.AppUtil;
-import com.uoscs09.theuos2.util.PrefUtil;
-import com.uoscs09.theuos2.util.StringUtil;
-
-import java.util.ArrayList;
-import java.util.List;
-
-public class PhoneNumberDB implements Runnable {
+@Deprecated
+public class PhoneNumberDB{}/* implements Runnable {
     private SQLiteDatabase db;
     private static final String TABLE_Name = "PhoneNumberList";
     private static final String TABLE_AttrSite = "Site";
@@ -75,7 +62,7 @@ public class PhoneNumberDB implements Runnable {
     /**
      * @return update : update 된 row 갯수 <br>
      * insert : 성공 -> -1, 실패 -> -2
-     */
+
     public int insertOrUpdate(PhoneItem item) {
         if (read(item.siteName) != null) {
             return update(item);
@@ -225,3 +212,4 @@ public class PhoneNumberDB implements Runnable {
 
     }
 }
+*/

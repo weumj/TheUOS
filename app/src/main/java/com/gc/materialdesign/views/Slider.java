@@ -125,7 +125,7 @@ public class Slider extends CustomView {
                 if ((event.getX() <= getWidth() && event.getX() >= 0)) {
                     press = true;
                     // calculate value
-                    int newValue = 0;
+                    int newValue;
                     float division = (ball.xFin - ball.xIni) / (max - min);
                     if (event.getX() > ball.xFin) {
                         newValue = max;
@@ -184,7 +184,7 @@ public class Slider extends CustomView {
     /**
      * Make a dark color to press effect
      *
-     * @return
+     * @return color
      */
     protected int makePressColor() {
         int r = (this.backgroundColor >> 16) & 0xFF;
@@ -424,8 +424,8 @@ public class Slider extends CustomView {
             content.addView(numberIndicator);
 
             indicator.setLayoutParams(new RelativeLayout.LayoutParams(
-                    RelativeLayout.LayoutParams.FILL_PARENT,
-                    RelativeLayout.LayoutParams.FILL_PARENT));
+                    RelativeLayout.LayoutParams.MATCH_PARENT,
+                    RelativeLayout.LayoutParams.MATCH_PARENT));
         }
 
     }

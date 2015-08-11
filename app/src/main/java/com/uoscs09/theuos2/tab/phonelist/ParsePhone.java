@@ -1,22 +1,9 @@
 package com.uoscs09.theuos2.tab.phonelist;
 
-import com.uoscs09.theuos2.parse.JerichoParser;
-import com.uoscs09.theuos2.util.StringUtil;
-
-import net.htmlparser.jericho.Element;
-import net.htmlparser.jericho.HTMLElementName;
-import net.htmlparser.jericho.Source;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 //FIXME
 
 @Deprecated
-public class ParsePhone extends JerichoParser<ArrayList<PhoneItem>> {
+public class ParsePhone{}/* extends JerichoParser<ArrayList<PhoneItem>> {
     public static final int BODY = 1;
     public static final int SUBJECT = 2;
     public static final int CULTURE = 3;
@@ -174,4 +161,4 @@ public class ParsePhone extends JerichoParser<ArrayList<PhoneItem>> {
     public void setHowTo(int howTo) {
         this.howTo = howTo;
     }
-}
+}*/

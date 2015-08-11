@@ -19,8 +19,7 @@ import android.widget.TextView;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
-import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
-import com.uoscs09.theuos2.async.AsyncFragmentJob;
+import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.common.SerializableArrayMap;
 import com.uoscs09.theuos2.http.HttpRequest;
@@ -35,11 +34,10 @@ import java.util.Calendar;
 import jp.wasabeef.recyclerview.animators.SlideInDownAnimator;
 import jp.wasabeef.recyclerview.animators.adapters.SlideInBottomAnimationAdapter;
 
-public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestItem>> {
+public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestItem>>
+        implements Request.ResultListener<SparseArray<RestItem>>, Request.ErrorListener {
 
-    @ReleaseWhenDestroy
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    @ReleaseWhenDestroy
     private RecyclerView mRecyclerView;
     private RestItemAdapter mRestItemAdapter;
     // 리스트의 한 아이템은 식당 정보 (아침 점심 저녁) 를 나타냄
@@ -47,7 +45,6 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
     private SparseArray<RestItem> mRestTable;
 
     private int mCurrentSelection;
-    private boolean force = false;
 
     private static final ParseRest REST_PARSER = new ParseRest();
 
@@ -207,12 +204,21 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
         mRestTable.clear();
     }
 
-    private final AsyncFragmentJob.Base<SparseArray<RestItem>> JOB = new AsyncFragmentJob.Base<SparseArray<RestItem>>() {
+
+    private void execute(boolean force) {
+        mRequest.shouldForceUpdate = force;
+        execute(true, mRequest, this, this, true);
+    }
+
+    private RestRequest mRequest = new RestRequest();
+
+    private class RestRequest extends Request.Base<SparseArray<RestItem>> {
+        private boolean shouldForceUpdate = false;
 
         @Override
-        public SparseArray<RestItem> call() throws Exception {
+        public SparseArray<RestItem> get() throws Exception {
             Context context = getActivity();
-            if (!force && OApiUtil.getDateTime() - PrefUtil.getInstance(context).get(PrefUtil.KEY_REST_DATE_TIME, 0) < 3) {
+            if (!shouldForceUpdate && OApiUtil.getDateTime() - PrefUtil.getInstance(context).get(PrefUtil.KEY_REST_DATE_TIME, 0) < 3) {
                 try {
                     SparseArray<RestItem> result = getRestMapFromFile(context);
 
@@ -227,32 +233,22 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
             // web 에서 읽어온지 오래되었거나, 파일이 존재하지 않은경우 web 에서 읽어옴
             return getRestListFromWeb(context);
         }
+    }
 
-        @Override
-        public void onPostExcute() {
-            super.onPostExcute();
+    @Override
+    public void onResult(SparseArray<RestItem> result) {
+        mRestTable = result;
 
-            force = false;
-        }
+        performTabClick(mCurrentSelection);
 
-        @Override
-        public void onResult(SparseArray<RestItem> result) {
-            mRestTable = result;
+        mRestItemAdapter.mItems = mRestTable;
+        mRestItemAdapter.notifyDataSetChanged();
 
-            performTabClick(mCurrentSelection);
+        mSwipeRefreshLayout.setRefreshing(false);
+    }
 
-            mRestItemAdapter.mItems = mRestTable;
-            mRestItemAdapter.notifyDataSetChanged();
-
-            mSwipeRefreshLayout.setRefreshing(false);
-
-        }
-
-    };
-
-    private void execute(boolean force) {
-        this.force = force;
-        super.execute(JOB);
+    @Override
+    public void onError(Exception e) {
     }
 
     /**

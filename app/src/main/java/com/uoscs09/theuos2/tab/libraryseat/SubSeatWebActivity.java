@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.webkit.WebSettings;
 
+import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.common.WebViewActivity;
 import com.uoscs09.theuos2.util.StringUtil;
 
@@ -13,12 +14,17 @@ public class SubSeatWebActivity extends WebViewActivity {
         super.onCreate(savedInstanceState);
 
         SeatItem item = getIntent().getParcelableExtra(TabLibrarySeatFragment.ITEM);
-
+        if (item == null) {
+            finish();
+            return;
+        }
 
         sendTrackerEvent("view", item.roomName);
 
-        getSupportActionBar().setTitle("좌석 정보");
-        getSupportActionBar().setSubtitle(item.roomName);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(R.string.tab_library_seat_sub_seat_title);
+            getSupportActionBar().setSubtitle(item.roomName);
+        }
 
         settings.setSupportZoom(true);
         settings.setBuiltInZoomControls(true);

@@ -5,10 +5,8 @@ import android.app.Activity;
 import android.view.ViewGroup;
 
 import com.uoscs09.theuos2.UosMainActivity;
-import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 
 public abstract class BaseTabFragment extends BaseFragment {
-    @ReleaseWhenDestroy
     private ViewGroup mTabParent;
 
     @Override
@@ -19,7 +17,7 @@ public abstract class BaseTabFragment extends BaseFragment {
             throw new RuntimeException("Activity != UosMainActivity");
     }
 
-    protected UosMainActivity getUosMainActivity(){
+    protected UosMainActivity getUosMainActivity() {
         return (UosMainActivity) getActivity();
     }
 
@@ -72,12 +70,10 @@ public abstract class BaseTabFragment extends BaseFragment {
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
 
-        if (isAdded()) {
-            if (isVisibleToUser)
-                addTabMenu();
-            else
-                removeTabMenu();
-        }
+        if (isVisibleToUser)
+            addTabMenu();
+        else if (isAdded())
+            removeTabMenu();
 
     }
 

@@ -1,11 +1,7 @@
 package com.uoscs09.theuos2.tab.phonelist;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
-import com.uoscs09.theuos2.util.StringUtil;
-
-public class PhoneItem implements Parcelable {
+@Deprecated
+public class PhoneItem{} /*implements Parcelable {
 	public String siteName;
 	public String sitePhoneNumber;
 
@@ -59,3 +55,4 @@ public class PhoneItem implements Parcelable {
 		}
 	};
 }
+*/

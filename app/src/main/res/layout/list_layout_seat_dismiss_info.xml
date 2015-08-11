@@ -10,7 +10,6 @@
         android:id="@+id/tab_libray_seat_info_time"
         android:layout_width="0dp"
         android:layout_height="fill_parent"
-        android:layout_centerVertical="true"
         android:layout_weight="1"
         android:gravity="center"
         android:textAppearance="?android:attr/textAppearanceMedium" />

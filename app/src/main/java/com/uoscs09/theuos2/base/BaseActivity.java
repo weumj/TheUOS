@@ -42,12 +42,6 @@ public abstract class BaseActivity extends AppCompatActivity implements TrackerU
     }
 
     @Override
-    protected void onDestroy() {
-        AppUtil.unbindDrawables(getWindow().getDecorView());
-        super.onDestroy();
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:

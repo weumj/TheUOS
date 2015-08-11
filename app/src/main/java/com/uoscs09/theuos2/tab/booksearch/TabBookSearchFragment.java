@@ -29,8 +29,8 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.UOSApplication;
 import com.uoscs09.theuos2.UosMainActivity;
 import com.uoscs09.theuos2.annotation.AsyncData;
-import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
-import com.uoscs09.theuos2.async.AsyncFragmentJob;
+import com.uoscs09.theuos2.async.Processor;
+import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.customview.NestedListView;
 import com.uoscs09.theuos2.http.HttpRequest;
@@ -41,8 +41,10 @@ import com.uoscs09.theuos2.util.StringUtil;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.List;
 
-public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookItem>> implements OnQueryTextListener, View.OnClickListener, UosMainActivity.OnBackPressListener {
+public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookItem>>
+        implements OnQueryTextListener, View.OnClickListener, UosMainActivity.OnBackPressListener, Request.ResultListener<ArrayList<BookItem>>, Request.ErrorListener {
 
     /**
      * 비동기 작업 결과가 비었는지 여부
@@ -58,40 +60,33 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
     private String mEncodedQuery;
     private String mRawQuery;
     // private String mOptionString;
-    @ReleaseWhenDestroy
     private BookItemListAdapter mBookListAdapter;
-    @ReleaseWhenDestroy
     private AnimationAdapter mAnimAdapter;
     @AsyncData
     private ArrayList<BookItem> mBookList;
     /**
      * ListView의 mEmptyView
      */
-    @ReleaseWhenDestroy
     private View mEmptyView;
     /**
      * option : catergory
      */
-    @ReleaseWhenDestroy
     private Spinner oi;
     /**
      * option : sort
      */
-    @ReleaseWhenDestroy
     private Spinner os;
     /**
      * 옵션을 선택하게 하는 Dialog
      */
-    @ReleaseWhenDestroy
     private AlertDialog optionDialog;
     /**
      * 검색 메뉴, 검색할 단어가 입력되는 곳
      */
-    @ReleaseWhenDestroy
     private MenuItem searchMenu;
-    @ReleaseWhenDestroy
     private ActionMode actionMode;
 
+    private final BookProcessor bookProcessor = new BookProcessor();
     private static final ParseBook BOOK_PARSER = new ParseBook();
 
     private static final String BUNDLE_LIST = "BookList";
@@ -364,48 +359,27 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
         mEmptyView.setVisibility(View.GONE);
     }
 
-    private void execute() {
-        super.execute(JOB);
+    @Override
+    protected void onPostExecute() {
+        super.onPostExecute();
+        isResultEmpty = false;
     }
 
-    private final AsyncFragmentJob.Base<ArrayList<BookItem>> JOB = new AsyncFragmentJob.Base<ArrayList<BookItem>>() {
+    private void execute() {
+        execute(true,
+                HttpRequest.Builder.newStringRequestBuilder(buildUrl())
+                        .build()
+                        .checkNetworkState(getActivity())
+                        .wrap(BOOK_PARSER)
+                        .wrap(bookProcessor),
+                this, this, true);
+    }
+
+    private class BookProcessor implements Processor<List<BookItem>, ArrayList<BookItem>> {
+
         @Override
-        public ArrayList<BookItem> call() throws Exception {
-            String OS = getSpinnerItemString(1, os.getSelectedItemPosition());
-            String OI = getSpinnerItemString(0, oi.getSelectedItemPosition());
-
-            StringBuilder sb = new StringBuilder();
-            sb.append(URL).append(mCurrentPage).append("&q=").append(mEncodedQuery);
-            String finalURL = null;
-
-            String RM = "&websysdiv=tot";
-            boolean check = true;
-            if (!OI.equals(StringUtil.NULL)) {
-                sb.append("&oi=").append(OI);
-                finalURL = StringUtil.remove(sb.toString(), RM);
-                check = false;
-            }
-            if (!OS.equals(StringUtil.NULL)) {
-                sb.append("&os=").append(OS);
-                finalURL = sb.toString();
-                if (check) {
-                    finalURL = StringUtil.remove(finalURL, RM);
-                    check = false;
-                }
-            }
-
-            if (check) {
-                finalURL = sb.toString();
-            }
-
-            ArrayList<BookItem> bookList = new ArrayList<>(
-                    HttpRequest.Builder.newStringRequestBuilder(finalURL)
-                            .build()
-                            .checkNetworkState(getActivity())
-                            .wrap(BOOK_PARSER)
-                            .get()
-            );
-
+        public ArrayList<BookItem> process(List<BookItem> bookItems) throws Exception {
+            ArrayList<BookItem> bookList = new ArrayList<>(bookItems);
             // 대여 가능 도서만 가져옴
             if (PrefUtil.getInstance(getActivity()).get(PrefUtil.KEY_CHECK_BORROW, false) && bookList.size() > 0) {
                 bookList = getFilteredList(bookList, getString(R.string.tab_book_not_found));
@@ -413,35 +387,58 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
 
             return bookList;
         }
+    }
 
-        @Override
-        public void onResult(ArrayList<BookItem> result) {
-            if (result.size() == 0) {
-                AppUtil.showToast(getActivity(), R.string.search_result_empty, isMenuVisible());
-                isResultEmpty = true;
+    @Override
+    public void onResult(ArrayList<BookItem> result) {
+        if (result.size() == 0) {
+            AppUtil.showToast(getActivity(), R.string.search_result_empty, isMenuVisible());
+            isResultEmpty = true;
 
-                showEmptyView();
-
-            } else {
-                AppUtil.showToast(getActivity(), getString(R.string.search_found_amount, result.size()), isMenuVisible());
-                mBookList.addAll(result);
-                mBookListAdapter.notifyDataSetChanged();
-            }
-
-        }
-
-        @Override
-        public void onPostExcute() {
-            super.onPostExcute();
-            isResultEmpty = false;
-        }
-
-        @Override
-        public boolean exceptionOccurred(Exception e) {
             showEmptyView();
-            return super.exceptionOccurred(e);
+
+        } else {
+            AppUtil.showToast(getActivity(), getString(R.string.search_found_amount, result.size()), isMenuVisible());
+            mBookList.addAll(result);
+            mBookListAdapter.notifyDataSetChanged();
         }
-    };
+    }
+
+    @Override
+    public void onError(Exception e) {
+        showEmptyView();
+    }
+
+    private String buildUrl() {
+        String OS = getSpinnerItemString(1, os.getSelectedItemPosition());
+        String OI = getSpinnerItemString(0, oi.getSelectedItemPosition());
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(URL).append(mCurrentPage).append("&q=").append(mEncodedQuery);
+        String finalURL = null;
+
+        String RM = "&websysdiv=tot";
+        boolean check = true;
+        if (!OI.equals(StringUtil.NULL)) {
+            sb.append("&oi=").append(OI);
+            finalURL = StringUtil.remove(sb.toString(), RM);
+            check = false;
+        }
+        if (!OS.equals(StringUtil.NULL)) {
+            sb.append("&os=").append(OS);
+            finalURL = sb.toString();
+            if (check) {
+                finalURL = StringUtil.remove(finalURL, RM);
+                check = false;
+            }
+        }
+
+        if (check) {
+            finalURL = sb.toString();
+        }
+
+        return finalURL;
+    }
 
     private static String getSpinnerItemString(int which, int pos) {
         switch (which) {
@@ -490,7 +487,6 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
         return newList;
     }
 
-    @ReleaseWhenDestroy
     private final ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
 
         @Override

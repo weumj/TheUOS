@@ -82,6 +82,7 @@ public class UosMainActivity extends BaseActivity {
 
 
     private void initValues() {
+
         PrefUtil pref = PrefUtil.getInstance(this);
         AppUtil.initStaticValues(pref);
         mPageOrderList = AppUtil.loadEnabledPageOrder(this);
@@ -96,7 +97,6 @@ public class UosMainActivity extends BaseActivity {
         // StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll()
         // .penaltyLog().penaltyDeath().build());
         /* 호출 순서를 바꾸지 말 것 */
-        //requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         initValues();
         super.onCreate(savedInstanceState);
 
@@ -275,6 +275,9 @@ public class UosMainActivity extends BaseActivity {
                         mDrawerLayout.closeDrawer(mLeftDrawerLayout);
                         AppUtil.exit(UosMainActivity.this);
                         break;
+
+                    default:
+                        break;
                 }
             }
         };
@@ -405,14 +408,6 @@ public class UosMainActivity extends BaseActivity {
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        // AppUtil.clearApplicationFile(getCacheDir());
-        // AppUtil.clearApplicationFile(getExternalCacheDir());
-        AppUtil.closeAllDatabase(getApplicationContext());
-    }
-
     /**
      * 새로운 인텐트를 받을때 그것을 검사해서 <br>
      * FinishSelf = true 이면 어플리케이션 종료
@@ -424,10 +419,10 @@ public class UosMainActivity extends BaseActivity {
             // TODO 이곳에서 종료 전 처리를 한다.
             // AppUtil.clearApplicationFile(getCacheDir());
             // AppUtil.clearApplicationFile(getExternalCacheDir());
-            AppUtil.closeAllDatabase(this);
             finish();
             overridePendingTransition(R.anim.enter_fade, R.anim.exit_hold);
             // 지정 시간 후 모든 스레드 종료
+
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -480,14 +475,19 @@ public class UosMainActivity extends BaseActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
         // activity 를 재시작함
         // XXX potential memory leak!!!!!
         if (resultCode == AppUtil.RELAUNCH_ACTIVITY) {
+            //mDrawerLayout.closeDrawer(mLeftDrawerLayout);
+            //recreate();
+
             finish();
             overridePendingTransition(R.anim.enter_fade, R.anim.exit_hold);
+
             startActivity(getIntent().putExtra(SAVED_TAB_NUM, getCurrentPageId()));
         }
-        super.onActivityResult(requestCode, resultCode, intent);
+
     }
 
     @Override
@@ -496,10 +496,8 @@ public class UosMainActivity extends BaseActivity {
             case KeyEvent.KEYCODE_MENU:
                 if (!PrefUtil.getInstance(this).get(PrefUtil.KEY_HOME, true)) {
                     openOrCloseDrawer();
-
                 } else if (getCurrentPageIndex() != 0) {
                     openOrCloseDrawer();
-
                 }
                 return true;
 

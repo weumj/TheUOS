@@ -17,8 +17,7 @@ import android.widget.TextView;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
-import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
-import com.uoscs09.theuos2.async.AsyncFragmentJob;
+import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.customview.NestedListView;
 import com.uoscs09.theuos2.http.HttpRequest;
@@ -38,27 +37,20 @@ import java.util.Locale;
 /**
  * 빈 강의실을 조회하는 fragment
  */
-public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<EmptyClassRoomItem>> {
-    @ReleaseWhenDestroy
+public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<EmptyClassRoomItem>> implements Request.ResultListener<ArrayList<EmptyClassRoomItem>>, Request.ErrorListener {
+
+    private AlertDialog mSearchDialog;
+    private Spinner mBuildingSpinner;
+    private Spinner mTimeSpinner;
+    private Spinner mTermSpinner;
+    private TextView[] textViews;
+    private View[] tabStrips;
+    private View mEmptyView;
+
     private ArrayAdapter<EmptyClassRoomItem> mAdapter;
     @AsyncData
     private ArrayList<EmptyClassRoomItem> mClassRoomList;
-    @ReleaseWhenDestroy
-    private AlertDialog mSearchDialog;
     private final ArrayMap<String, String> params = new ArrayMap<>(9);
-    @ReleaseWhenDestroy
-    private Spinner mBuildingSpinner;
-    @ReleaseWhenDestroy
-    private Spinner mTimeSpinner;
-    @ReleaseWhenDestroy
-    private Spinner mTermSpinner;
-    @ReleaseWhenDestroy
-    private TextView[] textViews;
-    @ReleaseWhenDestroy
-    private View[] tabStrips;
-    @ReleaseWhenDestroy
-    private View mEmptyView;
-
     private String mTermString;
     private boolean isReverse = false;
     private int mTabSelection = -1;
@@ -219,23 +211,12 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Em
     }
 
     private void execute() {
-        super.execute(JOB);
+        execute(true, mRequest, this, this, true);
     }
 
-    private final AsyncFragmentJob.Base<ArrayList<EmptyClassRoomItem>> JOB = new AsyncFragmentJob.Base<ArrayList<EmptyClassRoomItem>>() {
+    private Request<ArrayList<EmptyClassRoomItem>> mRequest = new Request.Base<ArrayList<EmptyClassRoomItem>>() {
         @Override
-        public void onResult(ArrayList<EmptyClassRoomItem> result) {
-            mClassRoomList.clear();
-            mClassRoomList.addAll(result);
-            mAdapter.notifyDataSetChanged();
-            AppUtil.showToast(getActivity(), getString(R.string.search_found_amount, result.size()), true);
-
-            mTermString = mTimeSpinner.getSelectedItem().toString().split(StringUtil.NEW_LINE)[1] + StringUtil.NEW_LINE + mTermSpinner.getSelectedItem();
-            setSubtitleWhenVisible(mTermString);
-        }
-
-        @Override
-        public ArrayList<EmptyClassRoomItem> call() throws Exception {
+        public ArrayList<EmptyClassRoomItem> get() throws Exception {
             putParams();
 
             HttpRequest.Builder<HttpURLConnection> requestBuilder = HttpRequest.Builder.newConnectionRequestBuilder(URL)
@@ -243,7 +224,13 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Em
                     .setParamsEncoding(StringUtil.ENCODE_EUC_KR);
 
             if (params.get(BUILDING).equals("00")) {
-                final String[] buildings = {"01", "02", "03", "04", "05", "06", "08", "09", "10", "11", "13", "14", "15", "16", "17", "18", "19", "20", "23", "24", "25", "33"};
+
+                final String[] buildings = {
+                        "01", "02", "03", "04", "05",
+                        "06", "08", "09", "10", "11",
+                        "13", "14", "15", "16", "17",
+                        "18", "19", "20", "23", "24", "25", "33"};
+
                 ArrayList<EmptyClassRoomItem> list = new ArrayList<>();
 
                 for (String bd : buildings) {
@@ -264,11 +251,23 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Em
                         .wrap(EMPTY_ROOM_PARSER)
                         .get();
             }
-
         }
-
     };
 
+    @Override
+    public void onResult(ArrayList<EmptyClassRoomItem> result) {
+        mClassRoomList.clear();
+        mClassRoomList.addAll(result);
+        mAdapter.notifyDataSetChanged();
+        AppUtil.showToast(getActivity(), getString(R.string.search_found_amount, result.size()), true);
+
+        mTermString = mTimeSpinner.getSelectedItem().toString().split(StringUtil.NEW_LINE)[1] + StringUtil.NEW_LINE + mTermSpinner.getSelectedItem();
+        setSubtitleWhenVisible(mTermString);
+    }
+
+    @Override
+    public void onError(Exception e) {
+    }
 
     private void onTabClick(int field) {
         if (mClassRoomList.isEmpty()) {
@@ -306,7 +305,8 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Em
 
 
         textViews[field].setCompoundDrawablesWithIntrinsicBounds(
-                AppUtil.getAttrValue(getActivity(), isReverse ? R.attr.menu_theme_ic_action_navigation_arrow_drop_up : R.attr.menu_theme_ic_action_navigation_arrow_drop_down), 0, 0, 0);
+                AppUtil.getAttrValue(getActivity(), isReverse ?
+                        R.attr.menu_theme_ic_action_navigation_arrow_drop_up : R.attr.menu_theme_ic_action_navigation_arrow_drop_down), 0, 0, 0);
         tabStrips[field].setVisibility(View.VISIBLE);
 
         mAdapter.sort(EmptyClassRoomItem.getComparator(field, isReverse));

@@ -7,10 +7,8 @@ import android.view.MenuItem;
 import android.webkit.WebSettings;
 
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos2.base.BaseActivity;
 import com.uoscs09.theuos2.customview.NonLeakingWebView;
-import com.uoscs09.theuos2.util.AppUtil;
 
 /**
  * WebView가 포함된 액티비티, 액티비티 종료시(onDestroy) webView를 destory함
@@ -18,7 +16,6 @@ import com.uoscs09.theuos2.util.AppUtil;
 public abstract class WebViewActivity extends BaseActivity {
     protected NonLeakingWebView mWebView;
     protected WebSettings settings;
-    @ReleaseWhenDestroy
     protected Toolbar mToolbar;
 
     @Override
@@ -61,7 +58,6 @@ public abstract class WebViewActivity extends BaseActivity {
             settings = null;
             mWebView.clearCache(true);
             mWebView.loadUrl("about:blank");
-            AppUtil.unbindDrawables(mWebView);
             //mWebView.destroy();
             mWebView = null;
         }

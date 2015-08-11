@@ -3,6 +3,7 @@ package com.uoscs09.theuos2.tab.booksearch;
 import android.util.Log;
 
 import com.uoscs09.theuos2.async.AsyncUtil;
+import com.uoscs09.theuos2.async.Processor;
 import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.parse.JerichoParser;
 import com.uoscs09.theuos2.util.StringUtil;
@@ -68,7 +69,7 @@ public class ParseBook extends JerichoParser<List<BookItem>> {
 
         ArrayList<BookItem> bookItemList = new ArrayList<>();
 
-        // AsyncTask를 사용한다면 현재 Thread가 interrupt될 가능성이 존재함.
+        // AsyncTask 를 사용한다면 현재 Thread 가 interrupt 될 가능성이 존재함.
         for (; ; ) {
             try {
                 bookItemList.addAll(task1.get());
@@ -201,14 +202,7 @@ public class ParseBook extends JerichoParser<List<BookItem>> {
         try {
             imgSrc = HttpRequest.Builder.newStringRequestBuilder(imgUrl)
                     .build()
-                    .wrap(new JerichoParser<String>() {
-                        @Override
-                        protected String parseHtmlBody(Source source) throws Exception {
-                            return source.getAllElements(HTMLElementName.IMG)
-                                    .get(0)
-                                    .getAttributeValue(SRC);
-                        }
-                    })
+                    .wrap(imageHtmlParser)
                     .get();
 
         } catch (Exception e) {
@@ -217,5 +211,15 @@ public class ParseBook extends JerichoParser<List<BookItem>> {
 
         return imgSrc;
     }
+
+    private static final Processor<String, String> imageHtmlParser = new JerichoParser<String>() {
+        @Override
+        protected String parseHtmlBody(Source source) throws Exception {
+            return source.getAllElements(HTMLElementName.IMG)
+                    .get(0)
+                    .getAttributeValue(SRC);
+        }
+    };
+
 
 }

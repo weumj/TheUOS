@@ -80,18 +80,17 @@ public class LibrarySeatWidget extends AbsAsyncWidgetProvider<ArrayList<SeatItem
     @Override
     protected ArrayList<SeatItem> doInBackGround(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) throws Exception {
 
-        ArrayList<SeatItem> list = TabLibrarySeatFragment.parseLibrarySeat().seatItemList;
+        ArrayList<SeatItem> list = TabLibrarySeatFragment.requestSeatInfo(context).get().seatItemList;
         ArrayList<SeatItem> newList = new ArrayList<>();
 
         if (PrefUtil.getInstance(context).get(PrefUtil.KEY_LIB_WIDGET_SEAT_SHOW_ALL, false)) {
             for (int i : STUDY_ROOM_NUMBER_ARRAY) {
                 SeatItem item = list.get(i);
-                // if (Double.parseDouble(item.utilizationRate) < 50d)
+                // if (Double.parseDouble(item.utilizationRateStr) < 50d)
                 newList.add(item);
             }
         } else {
             newList = list;
-            newList.remove(newList.size() - 1);
         }
 
         // 파일 저장

@@ -1,9 +1,7 @@
 package com.uoscs09.theuos2.tab.score;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
-public class DetailScoreItem implements Parcelable {
+@Deprecated
+public class DetailScoreItem{}/* implements Parcelable {
 	public String type, class_eval_item, raw_score, eval_grade, ave;
 
 	public DetailScoreItem(String type, String class_eval_item,
@@ -50,4 +48,4 @@ public class DetailScoreItem implements Parcelable {
 		}
 
 	};
-}
+}*/

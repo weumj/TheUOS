@@ -26,10 +26,11 @@ public class LibrarySeatListService extends RemoteViewsService {
     private static class ListRemoteViewsFactory extends AbsListRemoteViewsFactory<SeatItem> {
         private final int mColorRed, mColorGreen;
         private final int[] STUDY_ROOM_INDEX = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 23, 24, 25, 26, 27, 28};
+
         public ListRemoteViewsFactory(Context context, Intent intent) {
             super(context);
             List<SeatItem> extraList = intent.getBundleExtra(LibrarySeatWidget.LIBRARY_SEAT_WIDGET_DATA).getParcelableArrayList(LibrarySeatWidget.LIBRARY_SEAT_WIDGET_DATA);
-            if (!extraList.isEmpty()) {
+            if (extraList != null && !extraList.isEmpty()) {
                 clear();
                 addAll(extraList);
             }
@@ -64,7 +65,7 @@ public class LibrarySeatListService extends RemoteViewsService {
                 occupySeatCount = 0;
             } else {
                 try {
-                    occupySeatCount = Integer.valueOf(item.occupySeat.trim());
+                    occupySeatCount = Integer.parseInt(item.occupySeat.trim());
                 } catch (Exception e) {
                     occupySeatCount = 0;
                 }
@@ -78,7 +79,7 @@ public class LibrarySeatListService extends RemoteViewsService {
 
             int color;
             try {
-                color = Float.valueOf(item.utilizationRate) < (inStudyRoom? 50:70) ? mColorGreen : mColorRed;
+                color = item.utilizationRate < (inStudyRoom ? 50 : 70) ? mColorGreen : mColorRed;
             } catch (Exception e) {
                 color = mColorGreen;
             }
@@ -86,7 +87,7 @@ public class LibrarySeatListService extends RemoteViewsService {
             rv.setTextColor(android.R.id.text2, color);
             rv.setTextColor(android.R.id.summary, color);
 
-            if(color == mColorRed && inStudyRoom){
+            if (color == mColorRed && inStudyRoom) {
                 rv.setTextColor(android.R.id.text1, Color.LTGRAY);
             } else {
                 rv.setTextColor(android.R.id.text1, Color.DKGRAY);

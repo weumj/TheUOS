@@ -115,13 +115,18 @@ public class ParseSeat extends JerichoParser<SeatInfo> {
         tmp = font.getTextExtractor().toString();
         item.vacancySeat = tmp;
 
-        // utilizationRate 이용율 얻기. 예) 20.35
+        // utilizationRateStr 이용율 얻기. 예) 20.35
         td = tr.getAllElements(HTMLElementName.TD).get(5);
         font = td.getAllElements(HTMLElementName.FONT).get(0);
         tmp = font.getTextExtractor().toString();
 
         // 원문 끝에 " %"가 들어가 있음.
-        item.utilizationRate = tmp.substring(0, tmp.length() - 2);
+        item.utilizationRateStr = tmp.substring(0, tmp.length() - 2);
+        try {
+            item.utilizationRate = Float.parseFloat(item.utilizationRateStr);
+        } catch (Exception e) {
+            item.utilizationRate = 0;
+        }
 
         item.index = indexToRoomNumber(i);
 

@@ -13,8 +13,7 @@ import android.widget.ExpandableListView;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
-import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
-import com.uoscs09.theuos2.async.AsyncFragmentJob;
+import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.common.SerializableArrayMap;
 import com.uoscs09.theuos2.http.HttpRequest;
@@ -24,14 +23,13 @@ import com.uoscs09.theuos2.util.SeoulOApiUtil;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class TabTransportFragment extends AbsProgressFragment<Map<String, ArrayList<TransportItem>>> {
-    @ReleaseWhenDestroy
+public class TabTransportFragment extends AbsProgressFragment<Map<String, ArrayList<TransportItem>>>
+        implements Request.ResultListener<Map<String, ArrayList<TransportItem>>>, Request.ErrorListener {
     private BaseExpandableListAdapter adapter;
     @AsyncData
     private Map<String, ArrayList<TransportItem>> data;
 
     private final ParseTransport mParser = new ParseTransport();
-    @ReleaseWhenDestroy
     private View empty;
 
     @Override
@@ -79,14 +77,12 @@ public class TabTransportFragment extends AbsProgressFragment<Map<String, ArrayL
     private void execute() {
         empty.setVisibility(View.INVISIBLE);
 
-        super.execute(JOB);
+        execute(true, mRequest, this, this, true);
     }
 
-
-    private final AsyncFragmentJob.Base<Map<String, ArrayList<TransportItem>>> JOB = new AsyncFragmentJob.Base<Map<String, ArrayList<TransportItem>>>() {
-
+    Request<Map<String, ArrayList<TransportItem>>> mRequest = new Request.Base<Map<String, ArrayList<TransportItem>>>() {
         @Override
-        public Map<String, ArrayList<TransportItem>> call() throws Exception {
+        public Map<String, ArrayList<TransportItem>> get() throws Exception {
             Map<String, ArrayList<TransportItem>> map = new SerializableArrayMap<>();
 
 
@@ -116,26 +112,30 @@ public class TabTransportFragment extends AbsProgressFragment<Map<String, ArrayL
             }
             return map;
         }
+    };
 
-        @Override
-        public void onResult(Map<String, ArrayList<TransportItem>> result) {
-            boolean empty = true;
-            for (ArrayList<TransportItem> item : result.values()) {
-                if (!item.isEmpty()) {
-                    empty = false;
-                    break;
-                }
-            }
-            if (empty) {
-                AppUtil.showToast(getActivity(), R.string.tab_rest_no_info, isMenuVisible());
-            } else {
-                data.clear();
-                data.putAll(result);
-                adapter.notifyDataSetChanged();
+    @Override
+    public void onResult(Map<String, ArrayList<TransportItem>> result) {
+        boolean empty = true;
+        for (ArrayList<TransportItem> item : result.values()) {
+            if (!item.isEmpty()) {
+                empty = false;
+                break;
             }
         }
+        if (empty) {
+            AppUtil.showToast(getActivity(), R.string.tab_rest_no_info, isMenuVisible());
+        } else {
+            data.clear();
+            data.putAll(result);
+            adapter.notifyDataSetChanged();
+        }
+    }
 
-    };
+    @Override
+    public void onError(Exception e) {
+
+    }
 
 
     private static String getMetroUrl(String where, int inOut) {

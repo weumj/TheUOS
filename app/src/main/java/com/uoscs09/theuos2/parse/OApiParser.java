@@ -1,11 +1,7 @@
 package com.uoscs09.theuos2.parse;
 
-import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 @Deprecated
-public abstract class OApiParser<ReturnType, ParseType> extends IParser.Base<String, ArrayList<ReturnType>> {
+public abstract class OApiParser{}/*<ReturnType, ParseType> extends IParser.Base<String, ArrayList<ReturnType>> {
 	protected static final String CDATA = "CDATA";
 	protected static final String PTN = "(.|\\n|\\r)*?";
 	protected static final String LIST = "<list>";
@@ -49,4 +45,4 @@ public abstract class OApiParser<ReturnType, ParseType> extends IParser.Base<Str
 	}
 
 	protected abstract void initItem(ArrayList<String> parsedStringList, ArrayList<ParseType> returningList);
-}
+}*/

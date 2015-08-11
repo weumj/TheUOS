@@ -26,7 +26,6 @@ import android.widget.AdapterView;
 import android.widget.TextView;
 
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.async.AsyncFragmentJob;
 import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
@@ -52,7 +51,8 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 
-public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivScheduleItem>> {
+public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivScheduleItem>>
+        implements Request.ResultListener<ArrayList<UnivScheduleItem>>, Request.ErrorListener {
     private static final String URL = OApiUtil.URL_API_MAIN_DB + '?' + OApiUtil.API_KEY + '=' + OApiUtil.UOS_API_KEY;
     private static final String FILE_NAME = "file_univ_schedule";
     private static final XmlParserWrapper<ArrayList<UnivScheduleItem>> UNIV_SCHEDULE_PARSER = OApiUtil.getUnivScheduleParser();
@@ -90,7 +90,8 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
             mList.clear();
 
             ArrayList<UnivScheduleItem> list = savedInstanceState.getParcelableArrayList("list");
-            mList.addAll(list);
+            if (list != null)
+                mList.addAll(list);
 
             mSubTitle = savedInstanceState.getString("subTitle");
             setSubtitleWhenVisible(mSubTitle);
@@ -244,9 +245,13 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
         return result;
     }
 
-    private final AsyncFragmentJob.Base<ArrayList<UnivScheduleItem>> JOB = new AsyncFragmentJob.Base<ArrayList<UnivScheduleItem>>() {
+    private void execute() {
+        execute(true, mRequest, this, this, true);
+    }
+
+    private Request<ArrayList<UnivScheduleItem>> mRequest = new Request.Base<ArrayList<UnivScheduleItem>>() {
         @Override
-        public ArrayList<UnivScheduleItem> call() throws Exception {
+        public ArrayList<UnivScheduleItem> get() throws Exception {
             Context context = getActivity();
             PrefUtil pref = PrefUtil.getInstance(context);
 
@@ -263,24 +268,21 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
             }
 
             return readFromInternet(context);
-
         }
-
-        @Override
-        public void onResult(ArrayList<UnivScheduleItem> result) {
-            mList.clear();
-            mList.addAll(result);
-            mAdapter.notifyDataSetChanged();
-
-            setSubtitleWhenVisible(mSubTitle = mDateFormat.format(mList.get(0).getDate(true).getTime()));
-        }
-
     };
 
-    private void execute() {
-        super.execute(JOB);
+    @Override
+    public void onResult(ArrayList<UnivScheduleItem> result) {
+        mList.clear();
+        mList.addAll(result);
+        mAdapter.notifyDataSetChanged();
+
+        setSubtitleWhenVisible(mSubTitle = mDateFormat.format(mList.get(0).getDate(true).getTime()));
     }
 
+    @Override
+    public void onError(Exception e) {
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {

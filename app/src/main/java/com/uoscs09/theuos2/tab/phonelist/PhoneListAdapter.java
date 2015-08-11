@@ -1,20 +1,6 @@
 package com.uoscs09.theuos2.tab.phonelist;
-
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.view.View;
-import android.widget.Filter;
-import android.widget.ImageButton;
-import android.widget.TextView;
-
-import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.base.AbsArrayAdapter;
-import com.uoscs09.theuos2.util.StringUtil;
-
-import java.util.ArrayList;
-import java.util.List;
-
-class PhoneListAdapter extends AbsArrayAdapter<PhoneItem, PhoneListAdapter.Holder> {
+@Deprecated
+class PhoneListAdapter{} /*extends AbsArrayAdapter<PhoneItem, PhoneListAdapter.Holder> {
     private Filter filter;
     private final View.OnClickListener l;
 
@@ -93,5 +79,5 @@ class PhoneListAdapter extends AbsArrayAdapter<PhoneItem, PhoneListAdapter.Holde
             imgButton = (ImageButton) convertView.findViewById(R.id.tab_phone_list_button_site_call);
         }
     }
-}
+}*/
 

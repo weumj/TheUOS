@@ -25,8 +25,7 @@ import android.widget.TextView;
 import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
-import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
-import com.uoscs09.theuos2.async.AsyncFragmentJob;
+import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.customview.CustomHorizontalScrollView;
 import com.uoscs09.theuos2.customview.NestedListView;
@@ -39,25 +38,19 @@ import com.uoscs09.theuos2.util.StringUtil;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
-public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<SubjectItem2>> implements AdapterView.OnItemClickListener, AdapterView.OnItemSelectedListener {
-    @ReleaseWhenDestroy
+public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<SubjectItem2>>
+        implements AdapterView.OnItemClickListener, AdapterView.OnItemSelectedListener, Request.ResultListener<ArrayList<SubjectItem2>>, Request.ErrorListener {
     private AlertDialog mSearchDialog;
-    @ReleaseWhenDestroy
     private EditText mSearchEditText;
-    @ReleaseWhenDestroy
     private Spinner mDialogSpinner1, mDialogSpinner2, mDialogSpinner3, mDialogSpinner4, mDialogTermSpinner, mDialogYearSpinner;
     private final int[] selections = new int[4];
     /*@ReleaseWhenDestroy
     private View mTitleLayout;
     */
-    @ReleaseWhenDestroy
     private TextView[] textViews;
-    @ReleaseWhenDestroy
     private View[] tabStrips;
 
-    @ReleaseWhenDestroy
     private CustomHorizontalScrollView mScrollView;
-    @ReleaseWhenDestroy
     private View mEmptyView;
 
     private String mSearchConditionString;
@@ -306,15 +299,12 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
 
     private void execute() {
         mEmptyView.setVisibility(View.INVISIBLE);
-
-        super.execute(JOB);
+        execute(true, mRequest, this, this, true);
     }
 
-
-    private final AsyncFragmentJob.Base<ArrayList<SubjectItem2>> JOB = new AsyncFragmentJob.Base<ArrayList<SubjectItem2>>() {
-
+    private Request<ArrayList<SubjectItem2>> mRequest = new Request.Base<ArrayList<SubjectItem2>>() {
         @Override
-        public ArrayList<SubjectItem2> call() throws Exception {
+        public ArrayList<SubjectItem2> get() throws Exception {
             String query;
             mOApiParams.clear();
             mOApiParams.put(OApiUtil.API_KEY, OApiUtil.UOS_API_KEY);
@@ -357,22 +347,23 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
                     .wrap(SUBJECT_PARSER)
                     .get();
         }
+    };
 
-        @Override
-        public void onResult(ArrayList<SubjectItem2> result) {
-            mSubjectAdapter.clear();
-            mSubjectAdapter.addAll(result);
-            mAminAdapter.reset();
-            mAminAdapter.notifyDataSetChanged();
+    @Override
+    public void onResult(ArrayList<SubjectItem2> result) {
+        mSubjectAdapter.clear();
+        mSubjectAdapter.addAll(result);
+        mAminAdapter.reset();
+        mAminAdapter.notifyDataSetChanged();
 
-            //mSubjectAdapter.notifyDataSetChanged();
+        //mSubjectAdapter.notifyDataSetChanged();
 
-            mScrollView.scrollTo(0, 0);
-            getTabParentView().scrollTo(0, 0);
+        mScrollView.scrollTo(0, 0);
+        getTabParentView().scrollTo(0, 0);
 
-            if (mSubjectAdapter.isEmpty()) {
-                mEmptyView.setVisibility(View.VISIBLE);
-            }
+        if (mSubjectAdapter.isEmpty()) {
+            mEmptyView.setVisibility(View.VISIBLE);
+        }
             /*
             if (result.isEmpty()) {
                 mTitleLayout.setVisibility(View.INVISIBLE);
@@ -381,14 +372,18 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
             }
             */
 
-            AppUtil.showToast(getActivity(), getString(R.string.search_found_amount, result.size()), true);
+        AppUtil.showToast(getActivity(), getString(R.string.search_found_amount, result.size()), true);
 
-            mSearchConditionString = mDialogYearSpinner.getSelectedItem().toString()
-                    + " / "
-                    + mDialogTermSpinner.getSelectedItem().toString();
-            setSubtitleWhenVisible(mSearchConditionString);
-        }
-    };
+        mSearchConditionString = mDialogYearSpinner.getSelectedItem().toString()
+                + " / "
+                + mDialogTermSpinner.getSelectedItem().toString();
+        setSubtitleWhenVisible(mSearchConditionString);
+    }
+
+    @Override
+    public void onError(Exception e) {
+
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -650,6 +645,9 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
                         break;
                     case 4:
                         table.put("subDept", "A201020202");// -중국어문화학과
+                        break;
+
+                    default:
                         break;
                 }
                 break;

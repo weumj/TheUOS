@@ -26,9 +26,8 @@ import android.widget.Spinner;
 import com.gc.materialdesign.widgets.ColorSelector;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
-import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
-import com.uoscs09.theuos2.async.AsyncFragmentJob;
 import com.uoscs09.theuos2.async.AsyncUtil;
+import com.uoscs09.theuos2.async.Processor;
 import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.common.SerializableArrayMap;
@@ -47,28 +46,20 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implements View.OnClickListener {
-    @ReleaseWhenDestroy
+public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable>
+        implements View.OnClickListener, Request.ResultListener<TimeTable>, Request.ErrorListener, Processor<TimeTable, TimeTable> {
     private AlertDialog mLoginDialog;
-    @ReleaseWhenDestroy
     protected View rootView;
-    @ReleaseWhenDestroy
     protected EditText mWiseIdView, mWisePasswdView;
-    @ReleaseWhenDestroy
     private Spinner mWiseTermSpinner, mWiseYearSpinner;
-    @ReleaseWhenDestroy
     private AlertDialog mDeleteDialog;
-    @ReleaseWhenDestroy
     protected NestedListView mTimetableListView;
-    @ReleaseWhenDestroy
     private View emptyView;
     private Dialog mProgressDialog;
 
     @AsyncData
     private TimeTable mTimeTable;
     private TimeTableAdapter2 mTimeTableAdapter2;
-
-    private AsyncTask<Void, Void, TimeTable> mAsyncTask;
 
     private final SerializableArrayMap<String, Integer> colorTable = new SerializableArrayMap<>();
 
@@ -82,7 +73,9 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
     @Override
     public void onCreate(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            colorTable.putAll((Map<String, Integer>) savedInstanceState.getSerializable("color"));
+            Map<String, Integer> colorMap = (Map<String, Integer>) savedInstanceState.getSerializable("color");
+            if (colorMap != null)
+                colorTable.putAll(colorMap);
             mTimeTable = savedInstanceState.getParcelable(IOUtil.FILE_TIMETABLE);
 
         } else {
@@ -167,7 +160,7 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_wise:
-                if (AsyncUtil.isTaskRunning(mAsyncTask)) {
+                if (isTaskRunning()) {
                     AppUtil.showToast(getActivity(), R.string.progress_ongoing, true);
 
                 } else {
@@ -258,79 +251,6 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
 
     }
 
-    private final AsyncFragmentJob.Base<TimeTable> JOB = new AsyncFragmentJob.Base<TimeTable>() {
-
-        @Override
-        public TimeTable call() throws Exception {
-            // 사용자가 WISE 에 시간표 정보를 요청하였을 때
-            Semester semester = Semester.values()[mWiseTermSpinner.getSelectedItemPosition()];
-            String mTimeTableYear = mWiseYearSpinner.getSelectedItem().toString();
-
-            TimeTable result = TimeTableHttpRequest.newRequest(mWiseIdView.getText(), mWisePasswdView.getText(), semester, mTimeTableYear)
-                    .wrap(new XmlParserWrapper<>(TIME_TABLE_PARSER))
-                    .wrap(IOUtil.<TimeTable>newFileWriteProcessor(getActivity(), IOUtil.FILE_TIMETABLE))
-                    .get();
-
-            // 시간표를 정상적으로 불러왔다면, 시간표를 저장하고,
-            // 시간표의 과목과 과목의 색을 Mapping 한다.
-            if (result != null && !result.isEmpty()) {
-
-                Context context = getActivity();
-                SerializableArrayMap<String, Integer> newColorTable = TimetableUtil.makeColorTable(result);
-                TimetableUtil.saveColorTable(context, newColorTable);
-
-                colorTable.clear();
-                colorTable.putAll((SimpleArrayMap<String, Integer>) newColorTable);
-
-                result.getClassTimeInformationTable();
-                //TimetableUtil.writeTimetable(context, result);
-
-            }
-
-            return result;
-        }
-
-        @Override
-        public void onResult(TimeTable result) {
-            if (result == null || result.isEmpty()) {
-                AppUtil.showToast(getActivity(), R.string.tab_timetable_wise_login_warning_fail, isMenuVisible());
-
-                if (mTimeTableAdapter2.isEmpty())
-                    emptyView.setVisibility(View.VISIBLE);
-
-                return;
-            }
-
-            mTimeTable.copyFrom(result);
-            mTimeTableAdapter2.notifyDataSetChanged();
-
-            setTermTextViewText(mTimeTable);
-        }
-
-        @Override
-        public void onPostExcute() {
-            super.onPostExcute();
-
-            clearPassWd();
-
-            mAsyncTask = null;
-        }
-
-        @Override
-        public boolean exceptionOccurred(Exception e) {
-            if (mTimeTableAdapter2.isEmpty())
-                emptyView.setVisibility(View.VISIBLE);
-
-            if (e instanceof IOException || e instanceof NullPointerException) {
-                e.printStackTrace();
-                AppUtil.showToast(getActivity(), R.string.tab_timetable_wise_login_warning_fail, isMenuVisible());
-                return true;
-            } else
-                return false;
-        }
-
-    };
-
     private void setTermTextViewText(@NonNull TimeTable timeTable) {
         setSubtitleWhenVisible(timeTable.getYearAndSemester());
     }
@@ -343,10 +263,72 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> implem
         emptyView.setVisibility(View.INVISIBLE);
     }
 
-    void execute() {
-        mAsyncTask = super.execute(JOB);
+    @Override
+    protected void onPostExecute() {
+        super.onPostExecute();
+        clearPassWd();
     }
 
+    void execute() {
+        Semester semester = Semester.values()[mWiseTermSpinner.getSelectedItemPosition()];
+        String mTimeTableYear = mWiseYearSpinner.getSelectedItem().toString();
+
+        execute(true,
+                TimeTableHttpRequest.newRequest(mWiseIdView.getText(), mWisePasswdView.getText(), semester, mTimeTableYear)
+                        .wrap(new XmlParserWrapper<>(TIME_TABLE_PARSER))
+                        .wrap(IOUtil.<TimeTable>newFileWriteProcessor(getActivity(), IOUtil.FILE_TIMETABLE))
+                        .wrap(this), this, this, true);
+    }
+
+    @Override
+    public TimeTable process(TimeTable timeTable) throws Exception {
+        // 시간표를 정상적으로 불러왔다면, 시간표를 저장하고,
+        // 시간표의 과목과 과목의 색을 Mapping 한다.
+        if (timeTable != null && !timeTable.isEmpty()) {
+
+            Context context = getActivity();
+            SerializableArrayMap<String, Integer> newColorTable = TimetableUtil.makeColorTable(timeTable);
+            TimetableUtil.saveColorTable(context, newColorTable);
+
+            colorTable.clear();
+            colorTable.putAll((SimpleArrayMap<String, Integer>) newColorTable);
+
+            timeTable.getClassTimeInformationTable();
+            //TimetableUtil.writeTimetable(context, result);
+
+        }
+        return timeTable;
+    }
+
+    @Override
+    public void onResult(TimeTable result) {
+        if (result == null || result.isEmpty()) {
+            AppUtil.showToast(getActivity(), R.string.tab_timetable_wise_login_warning_fail, isMenuVisible());
+
+            if (mTimeTableAdapter2.isEmpty())
+                emptyView.setVisibility(View.VISIBLE);
+
+            return;
+        }
+
+        mTimeTable.copyFrom(result);
+        mTimeTableAdapter2.notifyDataSetChanged();
+
+        setTermTextViewText(mTimeTable);
+    }
+
+    @Override
+    public void onError(Exception e) {
+        if (mTimeTableAdapter2.isEmpty())
+            emptyView.setVisibility(View.VISIBLE);
+
+        if (e instanceof IOException || e instanceof NullPointerException) {
+            e.printStackTrace();
+            AppUtil.showToast(getActivity(), R.string.tab_timetable_wise_login_warning_fail, isMenuVisible());
+        } else {
+            simpleErrorRespond(e);
+        }
+    }
 
     @Override
     public void onClick(View v) {

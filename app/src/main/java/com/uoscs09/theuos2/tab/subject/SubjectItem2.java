@@ -243,7 +243,7 @@ public class SubjectItem2 implements Parcelable, IParser.AfterParsable {
                             r = Integer.MAX_VALUE;
                         }
                         try {
-                            l = Integer.valueOf(lhs.infoArray[field]);
+                            l = Integer.parseInt(lhs.infoArray[field]);
                         } catch (Exception e) {
                             l = Integer.MAX_VALUE;
                         }

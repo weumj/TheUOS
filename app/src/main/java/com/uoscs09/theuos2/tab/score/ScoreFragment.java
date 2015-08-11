@@ -1,46 +1,17 @@
 package com.uoscs09.theuos2.tab.score;
 
-import android.app.Dialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.util.ArrayMap;
-import android.support.v7.app.AlertDialog;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.ExpandableListView;
-import android.widget.NumberPicker;
 
-import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
-import com.uoscs09.theuos2.async.AsyncFragmentJob;
-import com.uoscs09.theuos2.base.AbsAsyncFragment;
-import com.uoscs09.theuos2.http.HttpRequest;
-import com.uoscs09.theuos2.util.AppUtil;
-import com.uoscs09.theuos2.util.OApiUtil;
-import com.uoscs09.theuos2.util.StringUtil;
+import com.uoscs09.theuos2.base.BaseFragment;
 
-import java.util.ArrayList;
-
-public class ScoreFragment extends AbsAsyncFragment<ArrayList<ScoreItem>> {
-    @ReleaseWhenDestroy
+@Deprecated
+public class ScoreFragment extends BaseFragment{/*AbsAsyncFragment<ArrayList<ScoreItem>> {
     private AlertDialog alertDialog;
-    @ReleaseWhenDestroy
     private Dialog mProgressDialog;
-    @ReleaseWhenDestroy
     private NumberPicker datePicker, termPicker;
-    @ReleaseWhenDestroy
     private EditText edit;
     private ArrayMap<String, String> table;
-    @ReleaseWhenDestroy
     private ScoreAdapter adapter;
-    @ReleaseWhenDestroy
     private ExpandableListView listView;
 
     private final ParseSubjectList mSubjectListParser = new ParseSubjectList();
@@ -130,60 +101,63 @@ public class ScoreFragment extends AbsAsyncFragment<ArrayList<ScoreItem>> {
     }
 
     private void execute() {
-        super.execute(JOB);
-    }
 
-    private AsyncFragmentJob.Base<ArrayList<ScoreItem>> JOB = new AsyncFragmentJob.Base<ArrayList<ScoreItem>>() {
-        @Override
-        public void onResult(ArrayList<ScoreItem> result) {
-            adapter = new ScoreAdapter(getActivity(), result);
-            listView.setAdapter(adapter);
-            adapter.notifyDataSetChanged();
-        }
+        execute(true, new Request.Base<ArrayList<ScoreItem>>() {
+            @Override
+            public ArrayList<ScoreItem> get() throws Exception {
+                table.put(OApiUtil.SUBJECT_NAME, edit.getText().toString());
+                table.put(OApiUtil.YEAR, String.valueOf(datePicker.getValue()));
+                table.put(OApiUtil.TERM, termPicker.getValue() == 1 ? "A10" : "A20");
 
-        @Override
-        public ArrayList<ScoreItem> call() throws Exception {
-            table.put(OApiUtil.SUBJECT_NAME, edit.getText().toString());
-            table.put(OApiUtil.YEAR, String.valueOf(datePicker.getValue()));
-            table.put(OApiUtil.TERM, termPicker.getValue() == 1 ? "A10" : "A20");
-
-            ArrayList<ArrayList<String>> numList = HttpRequest.Builder
-                    .newStringRequestBuilder("http://wise.uos.ac.kr/uosdoc/api.ApiApiSubjectList.oapi")
-                    .setParams(table)
-                    .setParamsEncoding(StringUtil.ENCODE_EUC_KR)
-                    .setResultEncoding(StringUtil.ENCODE_EUC_KR)
-                    .build()
-                    .wrap(mSubjectListParser)
-                    .get();
+                ArrayList<ArrayList<String>> numList = HttpRequest.Builder
+                        .newStringRequestBuilder("http://wise.uos.ac.kr/uosdoc/api.ApiApiSubjectList.oapi")
+                        .setParams(table)
+                        .setParamsEncoding(StringUtil.ENCODE_EUC_KR)
+                        .setResultEncoding(StringUtil.ENCODE_EUC_KR)
+                        .build()
+                        .wrap(mSubjectListParser)
+                        .get();
 
 
-            HttpRequest.Builder<String> requestBuilder = HttpRequest.Builder
-                    .newStringRequestBuilder("http://wise.uos.ac.kr/uosdoc/api.ApiUcsLecturerEstimateResultInq.oapi")
-                    .setParams(table)
-                    .setParamsEncoding(StringUtil.ENCODE_EUC_KR)
-                    .setResultEncoding(StringUtil.ENCODE_EUC_KR);
+                HttpRequest.Builder<String> requestBuilder = HttpRequest.Builder
+                        .newStringRequestBuilder("http://wise.uos.ac.kr/uosdoc/api.ApiUcsLecturerEstimateResultInq.oapi")
+                        .setParams(table)
+                        .setParamsEncoding(StringUtil.ENCODE_EUC_KR)
+                        .setResultEncoding(StringUtil.ENCODE_EUC_KR);
 
-            ArrayList<ScoreItem> list = new ArrayList<>();
-            int size = numList.size();
-            for (int i = 0; i < size; i++) {
-                ArrayList<String> item = numList.get(i);
-                table.put(OApiUtil.SUBJECT_NO, item.get(0));
-                table.put(OApiUtil.SUBJECT_NAME, item.get(1));
+                ArrayList<ScoreItem> list = new ArrayList<>();
+                int size = numList.size();
+                for (int i = 0; i < size; i++) {
+                    ArrayList<String> item = numList.get(i);
+                    table.put(OApiUtil.SUBJECT_NO, item.get(0));
+                    table.put(OApiUtil.SUBJECT_NAME, item.get(1));
 
-                list.addAll(
-                        requestBuilder.build()
-                                .wrap(mParser)
-                                .get()
-                );
+                    list.addAll(
+                            requestBuilder.build()
+                                    .wrap(mParser)
+                                    .get()
+                    );
+
+                }
+
+                table.remove(OApiUtil.SUBJECT_NO);
+                table.remove(OApiUtil.SUBJECT_NAME);
+                return list;
+            }
+        }, new Request.ResultListener<ArrayList<ScoreItem>>() {
+            @Override
+            public void onResult(ArrayList<ScoreItem> result) {
+                adapter = new ScoreAdapter(getActivity(), result);
+                listView.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+            }
+        }, new Request.ErrorListener() {
+            @Override
+            public void onError(Exception e) {
 
             }
-
-            table.remove(OApiUtil.SUBJECT_NO);
-            table.remove(OApiUtil.SUBJECT_NAME);
-            return list;
-        }
-    };
-
+        }, true);
+    }
 
     @Override
     protected void onPreExecute() {
@@ -196,6 +170,7 @@ public class ScoreFragment extends AbsAsyncFragment<ArrayList<ScoreItem>> {
         super.onPostExecute();
         mProgressDialog.dismiss();
     }
+    */
 
     @NonNull
     @Override

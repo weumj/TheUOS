@@ -1,18 +1,7 @@
 package com.uoscs09.theuos2.tab.score;
 
-import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseExpandableListAdapter;
-import android.widget.TextView;
-
-import com.uoscs09.theuos2.R;
-
-import java.lang.ref.WeakReference;
-import java.util.List;
-
-class ScoreAdapter extends BaseExpandableListAdapter {
+@Deprecated
+class ScoreAdapter{} /*extends BaseExpandableListAdapter {
     private final List<ScoreItem> list;
     private final WeakReference<Context> contextRef;
 
@@ -117,3 +106,4 @@ class ScoreAdapter extends BaseExpandableListAdapter {
         return false;
     }
 }
+*/

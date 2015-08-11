@@ -24,22 +24,17 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos2.base.BaseActivity;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.OApiUtil.UnivBuilding;
 import com.uoscs09.theuos2.util.StringUtil;
 
 public class GoogleMapActivity extends BaseActivity implements LocationListener {
-    @ReleaseWhenDestroy
     private GoogleMap googleMap;
     private boolean isInit = true;
-    @ReleaseWhenDestroy
     private AlertDialog mWelfareBuildingDialog;
-    @ReleaseWhenDestroy
     private LocationManager locationManager;
     //private Location location;
-    @ReleaseWhenDestroy
     private Spinner mLocationSelectSpinner;
 
     private int buildingNo;

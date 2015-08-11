@@ -1,12 +1,7 @@
 package com.uoscs09.theuos2.tab.score;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
-import java.util.ArrayList;
-import java.util.List;
-
-public class ScoreItem implements Parcelable {
+@Deprecated
+public class ScoreItem{}/* implements Parcelable {
     public String title;
     public List<DetailScoreItem> list = new ArrayList<>();
 
@@ -45,3 +40,4 @@ public class ScoreItem implements Parcelable {
 
     };
 }
+*/

@@ -14,7 +14,6 @@ import android.widget.GridView;
 import android.widget.ListView;
 
 import com.nhaarman.listviewanimations.appearance.simple.SwingBottomInAnimationAdapter;
-import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.base.BaseFragment;
 import com.uoscs09.theuos2.util.AppUtil;
@@ -23,7 +22,6 @@ import com.uoscs09.theuos2.util.ImageUtil;
 import java.util.List;
 
 public class TabHomeFragment extends BaseFragment implements OnItemClickListener {
-    @ReleaseWhenDestroy
     private AlertDialog etcDialog;
 
     private static class GridViewAdapter extends AbsArrayAdapter.SimpleAdapter<Integer> {

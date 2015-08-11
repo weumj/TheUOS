@@ -1,7 +1,7 @@
 package com.uoscs09.theuos2.tab.libraryseat;
 
+import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
@@ -16,9 +16,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
-import com.uoscs09.theuos2.async.AsyncFragmentJob;
-import com.uoscs09.theuos2.async.AsyncUtil;
+import com.uoscs09.theuos2.async.Processor;
+import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.base.OnItemClickListener;
 import com.uoscs09.theuos2.http.HttpRequest;
@@ -36,14 +35,15 @@ import jp.wasabeef.recyclerview.animators.adapters.SlideInBottomAnimationAdapter
 /**
  * 도서관 좌석 정보 현황을 보여주는 페이지
  */
-public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> implements OnItemClickListener<SeatListAdapter.ViewHolder> {
+public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo>
+        implements OnItemClickListener<SeatListAdapter.ViewHolder>, Request.ResultListener<SeatInfo>, Request.ErrorListener, Processor<SeatInfo, SeatInfo> {
 
     /**
      * 중앙 도서관 좌석 정보 확인 페이지
      */
     private final static String URL = "http://203.249.102.34:8080/seat/domian5.asp";
     /**
-     * bundle에서 동기화 시간 정보 String을 가리킨다.
+     * bundle 에서 동기화 시간 정보 String을 가리킨다.
      */
     private final static String COMMIT_TIME = "COMMIT_TIME";
 
@@ -51,13 +51,17 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> implem
     /**
      * {@code SubSeatWebActivity}에 전달할 SeatItem을 가리킨다.
      */
-    public final static String ITEM = "item";
+    final static String ITEM = "item";
 
     private static final ParseSeat LIBRARY_SEAR_PARSER = new ParseSeat();
     /*
     private SeatListAdapter mSeatAdapter;
     private StaggeredGridLayoutManager mLayoutManager;
     */
+
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private RecyclerView mSeatListView;
+    private SeatDismissDialogFragment mSeatDismissDialogFragment;
 
     private SeatInfo mSeatInfo;
 
@@ -67,13 +71,6 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> implem
      * {@code onSaveInstanceState()} 에서 "COMMIT_TIME"라는 이름으로 저장된다.
      */
     private String mSearchTime = StringUtil.NULL;
-
-    @ReleaseWhenDestroy
-    private SwipeRefreshLayout mSwipeRefreshLayout;
-    @ReleaseWhenDestroy
-    private RecyclerView mSeatListView;
-    private SeatDismissDialogFragment mSeatDismissDialogFragment;
-    private AsyncTask<Void, Void, SeatInfo> mAsyncTask;
 
 
     @Override
@@ -166,7 +163,7 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> implem
                 return true;
 
             case R.id.action_info:
-                if (AsyncUtil.isTaskRunning(mAsyncTask)) {
+                if (isTaskRunning()) {
                     AppUtil.showToast(getActivity(), R.string.progress_while_loading, true);
                     return true;
                 }
@@ -181,38 +178,6 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> implem
                 return false;
         }
     }
-
-
-    private final AsyncFragmentJob.Base<SeatInfo> JOB = new AsyncFragmentJob.Base<SeatInfo>() {
-
-        @Override
-        public SeatInfo call() throws Exception {
-            SeatInfo info = parseLibrarySeat();
-            ArrayList<SeatItem> callSeatList = info.seatItemList;
-
-            // 이용률이 50%가 넘는 스터디룸은 보여주지 않음
-            if (PrefUtil.getInstance(getActivity()).get(PrefUtil.KEY_CHECK_SEAT, false)) {
-                filterSeatList(callSeatList);
-            }
-            return info;
-        }
-
-        @Override
-        public void onResult(SeatInfo result) {
-            updateTimeView();
-
-            mSeatInfo.clearAndAddAll(result);
-
-            mSeatListView.getAdapter().notifyItemRangeInserted(0, result.seatItemList.size());
-            mSeatDismissDialogFragment.notifyDataSetChanged();
-        }
-
-        @Override
-        public void onPostExcute() {
-            super.onPostExcute();
-            mAsyncTask = null;
-        }
-    };
 
     @Override
     protected void onPreExecute() {
@@ -229,27 +194,51 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> implem
             mSwipeRefreshLayout.setRefreshing(false);
     }
 
+
+    private void execute() {
+        execute(true, requestSeatInfo(getActivity()).wrap(this), this, this, true);
+    }
+
+    @Override
+    public SeatInfo process(SeatInfo info) throws Exception {
+        ArrayList<SeatItem> callSeatList = info.seatItemList;
+
+        // 이용률이 50%가 넘는 스터디룸은 보여주지 않음
+        if (PrefUtil.getInstance(getActivity()).get(PrefUtil.KEY_CHECK_SEAT, false)) {
+            filterSeatList(callSeatList);
+        }
+        return info;
+    }
+
+    @Override
+    public void onResult(SeatInfo result) {
+        updateTimeView();
+
+        mSeatInfo.clearAndAddAll(result);
+
+        mSeatListView.getAdapter().notifyItemRangeInserted(0, result.seatItemList.size());
+        mSeatDismissDialogFragment.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onError(Exception e) {
+    }
+
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
 
-        if (isVisibleToUser && mSwipeRefreshLayout != null && AsyncUtil.isTaskRunning(mAsyncTask))
+        if (isVisibleToUser && mSwipeRefreshLayout != null && isTaskRunning())
             mSwipeRefreshLayout.setRefreshing(true);
     }
 
-    private void execute() {
-        mAsyncTask = super.execute(JOB);
-    }
-
-
-    public static SeatInfo parseLibrarySeat() throws Exception {
+    public static Request<SeatInfo> requestSeatInfo(Context context) {
         return HttpRequest.Builder.newStringRequestBuilder(URL)
                 .setResultEncoding(StringUtil.ENCODE_EUC_KR)
                 .build()
-                .wrap(LIBRARY_SEAR_PARSER)
-                .get();
+                .checkNetworkState(context)
+                .wrap(LIBRARY_SEAR_PARSER);
     }
-
 
     private static void filterSeatList(ArrayList<SeatItem> originalList) {
         SeatItem item;
@@ -260,7 +249,7 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> implem
         for (int i = size - 1; i > -1; i--) {
             item = originalList.get(filterArr[i]);
 
-            if (Double.valueOf(item.utilizationRate) >= 50)
+            if (item.utilizationRate >= 50)
                 originalList.remove(item);
 
         }

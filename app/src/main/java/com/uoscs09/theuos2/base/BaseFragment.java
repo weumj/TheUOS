@@ -5,27 +5,20 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 
-import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.TrackerUtil;
 
 /**
  * 기본적인 편의 기능이 구현된 Fragment<br>
  * <br>
  * 지원되는 기능 : <br>
- * <li>{@link #getActionBar()} - 현 Activity 의 ActionBar를 가져온다</> <li>
+ * <li>{@link #getActionBar()} - 현 Activity 의 ActionBar 를 가져온다</> <li>
  * {@link #setSubtitleWhenVisible(CharSequence)} - Fragment 가 UI에 보여질 때,
  * subTitle 을 설정한다.</>
  */
 public abstract class BaseFragment extends Fragment implements TrackerUtil.TrackerScreen {
 
-    @Override
-    public void onDetach() {
-        AppUtil.releaseResource(this);
-        super.onDetach();
-    }
-
     /**
-     * 현 Activity의 ActionBar를 가져온다
+     * 현 Activity 의 ActionBar 를 가져온다
      */
     protected final ActionBar getActionBar() {
         if (isAdded())
@@ -39,7 +32,7 @@ public abstract class BaseFragment extends Fragment implements TrackerUtil.Track
     }
 
     /**
-     * Fragment가 UI에 보여질 때, subTitle을 설정한다
+     * Fragment 가 UI에 보여질 때, subTitle 을 설정한다
      */
     protected void setSubtitleWhenVisible(CharSequence subTitle) {
         if (isMenuVisible()) {

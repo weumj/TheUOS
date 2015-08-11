@@ -10,7 +10,9 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.text.ParseException;
 
-/** Thread-Unsafe*/
+/**
+ * Thread-Unsafe
+ */
 public class ParseTimeTable2 extends XmlParser<TimeTable> {
 
     private static final String LIST = "list";
@@ -28,10 +30,12 @@ public class ParseTimeTable2 extends XmlParser<TimeTable> {
             }
 
             switch (parser.getName()) {
-                case "strSmtCd":
-                    timeTable.semesterCode = OApiUtil.Semester.getSemesterByCode(Integer.parseInt(readText(parser)));
+                case "strSmtCd": {
+                    String text = readText(parser);
+                    if (text != null)
+                        timeTable.semesterCode = OApiUtil.Semester.getSemesterByCode(Integer.parseInt(text));
                     break;
-
+                }
                 case "strMyEngShreg":
                     try {
                         timeTable.studentInfoEng = new TimeTable.StudentInfo(readText(parser));
@@ -51,9 +55,12 @@ public class ParseTimeTable2 extends XmlParser<TimeTable> {
                     readTimeList(parser);
                     break;
 
-                case "strSchYear":
-                    timeTable.year = Integer.valueOf(readText(parser));
+                case "strSchYear": {
+                    String text = readText(parser);
+                    if (text != null)
+                        timeTable.year = Integer.parseInt(text);
                     break;
+                }
 
                 default:
                     skip(parser);

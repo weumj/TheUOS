@@ -1,12 +1,7 @@
 package com.uoscs09.theuos2.tab.score;
 
-import com.uoscs09.theuos2.parse.OApiParser;
-
-import java.io.IOException;
-import java.util.ArrayList;
-
 @Deprecated
-public class ParseSubjectList extends OApiParser<ArrayList<String>, ArrayList<String>> {
+public class ParseSubjectList {}/*extends OApiParser<ArrayList<String>, ArrayList<String>> {
     private final String[] PTN = {"subject_no", "subject_nm", "class_div"};
 
     @Override
@@ -20,3 +15,4 @@ public class ParseSubjectList extends OApiParser<ArrayList<String>, ArrayList<St
         returningList.add((ArrayList<String>) parsedStringList.clone());
     }
 }
+*/

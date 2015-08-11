@@ -92,6 +92,7 @@
     <string name="tab_library_seat_occupy"> 사용 좌석수 : </string>
     <string name="tab_library_seat_dismiss_info_not_exist_in_1hr">1시간 내에 해지될 좌석이 없습니다.</string>
     <string name="tab_library_seat_dismiss_info_time_within">%1$d 분이내</string>
+    <string name="tab_library_seat_sub_seat_title">좌석 정보</string>
 
     <string name="tab_map_submap_device_without_googlemap">이 기기는 구글 지도를 지원하지 않습니다.</string>
     <string name="tab_map_submap_do_not_locate">현재 위치를 감지하지 못하였습니다. 잠시후에 시도하세요.</string>

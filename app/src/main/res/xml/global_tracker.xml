@@ -6,6 +6,7 @@
     <!-- Enable automatic Activity measurement -->
     <bool name="ga_autoActivityTracking">true</bool>
 
+    <!--
     <screenName name="com.uoscs09.theuos2.UosMainActivity">MainActivity</screenName>
     <screenName name="com.uoscs09.theuos2.setting.SettingActivity">SettingActivity</screenName>
     <screenName name="com.uoscs09.theuos2.tab.map.GoogleMapActivity">SubMapActivity</screenName>
@@ -20,6 +21,7 @@
     <screenName name="com.uoscs09.theuos2.tab.subject.CoursePlanDialogFragment">CoursePlanDialogFragment</screenName>
     <screenName name="com.uoscs09.theuos2.tab.timetable.TabTimeTableFragment2">TabTimeTableFragment2</screenName>
     <screenName name="com.uoscs09.theuos2.tab.timetable.SubjectDetailDialogFragment">SubjectDetailDialogFragment</screenName>
+    -->
 
     <!--
     <screenName name="com.uoscs09.theuos2.tab.score.ScoreFragment">ScoreFragment</screenName>

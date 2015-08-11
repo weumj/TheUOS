@@ -16,15 +16,12 @@ import android.webkit.WebSettings;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.annotation.ReleaseWhenDestroy;
 import com.uoscs09.theuos2.base.BaseFragment;
 import com.uoscs09.theuos2.common.CustomWebViewClient;
 import com.uoscs09.theuos2.customview.NonLeakingWebView;
-import com.uoscs09.theuos2.util.AppUtil;
 
 @SuppressLint("ClickableViewAccessibility")
 public class TabMapFragment extends BaseFragment implements OnTouchListener, View.OnClickListener {
-    @ReleaseWhenDestroy
     private NonLeakingWebView mWebView;
     private final static String URL = "http://m.uos.ac.kr/mkor/html/01_auos/05_location/location.do";
 
@@ -116,7 +113,6 @@ public class TabMapFragment extends BaseFragment implements OnTouchListener, Vie
         if (mWebView != null) {
             mWebView.clearCache(true);
             mWebView.loadUrl("about:blank");
-            AppUtil.unbindDrawables(mWebView);
             //mWebView.destroy();
             mWebView = null;
         }

@@ -1,14 +1,13 @@
 package com.uoscs09.theuos2.base;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
-import com.javacan.asyncexcute.AsyncCallback;
-import com.javacan.asyncexcute.AsyncExecutor;
 import com.uoscs09.theuos2.annotation.AsyncData;
-import com.uoscs09.theuos2.async.AsyncFragmentJob;
+import com.uoscs09.theuos2.async.AsyncUtil;
+import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.util.AppUtil;
 
 import java.io.IOException;
@@ -16,14 +15,10 @@ import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * {@code Fragment}에 {@code AsyncExcutor} 인터페이스를 구현한 클래스<br>
- * 이 클래스를 상속 받는 클래스는 {@code Callable} 인터페이스를 반드시 구현해야한다.<br>
- * 구현한 {@code Callable} 은 백그라운드 작업이 실행되는 콜백이다.
- */
 public abstract class AbsAsyncFragment<T> extends BaseTabFragment {
 
     private final static Map<String, Object> sAsyncDataStoreMap = new ConcurrentHashMap<>();
+    private AsyncTask<Void, ?, T> mAsyncTask;
 
     /**
      * {@code super.onCreate()}를 호출하면, 이전의 비 동기 작업 처리 결과에 따라<br>
@@ -53,6 +48,10 @@ public abstract class AbsAsyncFragment<T> extends BaseTabFragment {
 
     }
 
+    protected boolean isTaskRunning() {
+        return AsyncUtil.isTaskRunning(mAsyncTask);
+    }
+
     /**
      * 비동기 작업이 실행되기 전 호출된다.
      */
@@ -60,84 +59,58 @@ public abstract class AbsAsyncFragment<T> extends BaseTabFragment {
     }
 
     /**
-     * 주어진 비동기 작업을 실행한다.
+     * 주어진 작업을 비 동기로 실행한다.
      */
-    @NonNull
-    protected final AsyncTask<Void, Void, T> execute(@NonNull AsyncFragmentJob<T> job) {
-        InnerJob<T> innerJob = new InnerJob<>(this, job);
-
-        sAsyncDataStoreMap.remove(getClass().getName());
+    protected final AsyncTask<Void, ?, T> execute(boolean cancelPrevRequest, @NonNull Request<T> request,
+                                                  @NonNull final Request.ResultListener<T> resultListener,
+                                                  @Nullable final Request.ErrorListener errorListener,
+                                                  final boolean callBaseErrorListener) {
+        if (cancelPrevRequest)
+            AsyncUtil.cancelTask(mAsyncTask);
 
         onPreExecute();
 
-        return new AsyncExecutor<T>().setCallable(job).setCallback(innerJob).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
+        sAsyncDataStoreMap.remove(getClass().getName());
 
-    protected void onPostExecute(){
-    }
-
-
-    private static class InnerJob<V> implements AsyncCallback<V> {
-        private AsyncFragmentJob<V> mAsyncFragmentJob;
-        private AbsAsyncFragment<V> mFragment;
-
-        private InnerJob(AbsAsyncFragment<V> fragment, AsyncFragmentJob<V> asyncJob) {
-            this.mFragment = fragment;
-            this.mAsyncFragmentJob = asyncJob;
-        }
-
-        @Override
-        public void onResult(V v) {
-            if (mFragment.isVisible())
-                mAsyncFragmentJob.onResult(v);
-            else {
-                mFragment.putAsyncData(mFragment.getClass().getName(), v);
-                mAsyncFragmentJob.onResultBackground(v);
-            }
-
-            releaseResource();
-        }
-
-        @Override
-        public void exceptionOccured(Exception e) {
-            e.printStackTrace();
-            Context context = mFragment.getActivity();
-            if (mFragment.isVisible()) {
-                if(!mAsyncFragmentJob.exceptionOccurred(e)) {
-                    if (e instanceof IOException) {
-                        AppUtil.showInternetConnectionErrorToast(context, mFragment.isMenuVisible());
-                    } else {
-                        AppUtil.showErrorToast(context, e, mFragment.isMenuVisible());
+        return mAsyncTask = request.getAsync(
+                new Request.ResultListener<T>() {
+                    @Override
+                    public void onResult(T result) {
+                        mAsyncTask = null;
+                        if (isVisible()) {
+                            onPostExecute();
+                            resultListener.onResult(result);
+                        } else {
+                            putAsyncData(getClass().getName(), result);
+                        }
+                    }
+                },
+                new Request.ErrorListener() {
+                    @Override
+                    public void onError(Exception e) {
+                        mAsyncTask = null;
+                        if (isVisible()) {
+                            onPostExecute();
+                            if (callBaseErrorListener) {
+                                simpleErrorRespond(e);
+                            }
+                            if (errorListener != null) {
+                                errorListener.onError(e);
+                            }
+                        }
                     }
                 }
+        );
+    }
 
-            } else {
-                mAsyncFragmentJob.errorOnBackground(e);
-            }
+    protected void onPostExecute() {
+    }
 
-            releaseResource();
-        }
-
-        @Override
-        public void cancelled() {
-            if (mFragment.isVisible()) {
-                mAsyncFragmentJob.cancelled();
-            }
-
-            releaseResource();
-        }
-
-        @Override
-        public void onPostExcute() {
-            if (mFragment.isVisible()) {
-                mFragment.onPostExecute();
-            }
-            mAsyncFragmentJob.onPostExcute();
-        }
-
-        private void releaseResource() {
-            mAsyncFragmentJob = null;
-            mFragment = null;
+    protected void simpleErrorRespond(Exception e) {
+        if (e instanceof IOException) {
+            AppUtil.showInternetConnectionErrorToast(getActivity(), isMenuVisible());
+        } else {
+            AppUtil.showErrorToast(getActivity(), e, isMenuVisible());
         }
     }
 
@@ -167,44 +140,4 @@ public abstract class AbsAsyncFragment<T> extends BaseTabFragment {
         return sAsyncDataStoreMap.remove(key);
     }
 
-
-   /*
-    protected void errorOnBackground(Context context, T result) {
-        final NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        Notification noti;
-        CharSequence resultMesage;
-        if (result instanceof Exception) {
-            resultMesage = context.getText(R.string.progress_fail);
-        } else {
-            resultMesage = context.getText(R.string.finish_update);
-        }
-
-        int titleRes = AppUtil.getPageResByClass(getClass());
-        CharSequence title;
-        if (titleRes != -1) {
-            title = context.getText(titleRes);
-        } else {
-            title = context.getText(R.string.progress_finish);
-        }
-        String msg = resultMesage + " : " + title;
-
-        noti = new NotificationCompat.Builder(context)
-                .setAutoCancel(true)
-                .setContentTitle(msg)
-                .setSmallIcon(R.drawable.ic_launcher)
-                .setTicker(msg)
-                .build();
-
-        final int notiId = AppUtil.titleResIdToOrder(titleRes);
-        nm.notify(notiId, noti);
-
-        HANDLER.postDelayed(new Runnable() {
-
-            @Override
-            public void run() {
-                nm.cancel(notiId);
-            }
-        }, 2000);
-    }
-    */
 }
