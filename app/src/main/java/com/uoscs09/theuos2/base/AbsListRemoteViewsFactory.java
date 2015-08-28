@@ -1,6 +1,8 @@
 package com.uoscs09.theuos2.base;
 
+import android.appwidget.AppWidgetManager;
 import android.content.Context;
+import android.content.Intent;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 import android.widget.RemoteViewsService.RemoteViewsFactory;
@@ -19,9 +21,15 @@ import java.util.List;
 public abstract class AbsListRemoteViewsFactory<T> implements RemoteViewsFactory {
     private Context mContext;
     private List<T> mDataList = new ArrayList<>();
+    private final int mAppWidgetId;
 
-    public AbsListRemoteViewsFactory(Context context) {
+    public AbsListRemoteViewsFactory(Context context, Intent intent) {
         this.mContext = context;
+        this.mAppWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
+    }
+
+    protected int getAppWidgetId() {
+        return mAppWidgetId;
     }
 
     protected boolean addAll(Collection<? extends T> collection) {

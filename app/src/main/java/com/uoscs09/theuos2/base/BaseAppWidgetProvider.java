@@ -4,6 +4,7 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.uoscs09.theuos2.UOSApplication;
 import com.uoscs09.theuos2.util.TrackerUtil;
 
 
@@ -26,23 +27,31 @@ public abstract class BaseAppWidgetProvider extends AppWidgetProvider {
     @NonNull
     public abstract String getScreenNameForTracker();
 
+    protected boolean isApplication(Context context){
+        return context.getApplicationContext() instanceof UOSApplication;
+    }
+
+    protected TrackerUtil getTrackerUtil(Context context){
+        return isApplication(context) ? ((UOSApplication)context.getApplicationContext()).getTrackerUtil() : TrackerUtil.newInstance(context);
+    }
+
     public void sendTrackerEvent(Context context, String action) {
-        TrackerUtil.newInstance(context).sendEvent(getScreenNameForTracker(), action);
+        getTrackerUtil(context).sendEvent(getScreenNameForTracker(), action);
     }
 
     public void sendTrackerEvent(Context context, String action, String label) {
-        TrackerUtil.newInstance(context).sendEvent(getScreenNameForTracker(), action, label);
+        getTrackerUtil(context).sendEvent(getScreenNameForTracker(), action, label);
     }
 
     public void sendTrackerEvent(Context context, String action, String label, long value) {
-        TrackerUtil.newInstance(context).sendEvent(getScreenNameForTracker(), action, label, value);
+        getTrackerUtil(context).sendEvent(getScreenNameForTracker(), action, label, value);
     }
 
     public void sendClickEvent(Context context, String label) {
-        TrackerUtil.newInstance(context).sendClickEvent(getScreenNameForTracker(), label);
+        getTrackerUtil(context).sendClickEvent(getScreenNameForTracker(), label);
     }
 
     public void sendClickEvent(Context context, String label, long value) {
-        TrackerUtil.newInstance(context).sendClickEvent(getScreenNameForTracker(), label, value);
+        getTrackerUtil(context).sendClickEvent(getScreenNameForTracker(), label, value);
     }
 }

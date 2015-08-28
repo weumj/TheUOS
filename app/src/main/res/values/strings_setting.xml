@@ -27,6 +27,8 @@
     <string name="setting_delete_cache">임시파일 삭제</string>
     <string name="setting_delete_cache_desc">임시파일을 삭제합니다.</string>
 
+    <string name="setting_announce_except_type_notice">\'공지\' 타입 표시안함</string>
+    <string name="setting_announce_except_type_notice_desc">체크한 경우 검색된 공지사항 리스트에서 \'공지\' 타입을 제외합니다.</string>
 
     <string name="setting_announce_noti">UOS 공지사항 알리미</string>
     <string name="setting_announce_noti_desc">공지사항 알리미의 설정을 변경합니다.</string>
@@ -81,6 +83,8 @@
     <string name="setting_timetable_clear_alarm_title">모든 알람 삭제</string>
     <string name="setting_timetable_clear_alarm_desc">설정된 모든 알람을 삭제합니다.</string>
 
+    <!-- '공지' 타입 표시안함 여부, boolean-->
+    <string name="pref_key_announce_except_type_notice" translatable="false">KEY_ANNOUNCE_EXCEPT_TYPE_NOTICE</string>
     <!-- 공지사항 알리미를 사용 할 것인지 여부, boolean -->
     <string name="pref_key_check_anounce_service" translatable="false">ACTIVE_SERVICE_ANOUNCE</string>
     <!-- 캐쉬를 삭제하는 메뉴를 띄우는 용도 -->

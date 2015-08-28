@@ -17,6 +17,7 @@ public abstract class AbsAsyncWidgetProvider<Data> extends BaseAppWidgetProvider
     @Override
     public void onUpdate(final Context context, final AppWidgetManager appWidgetManager, final int[] appWidgetIds) {
 
+        final PendingResult pendingResult = goAsync();
         AsyncUtil.newRequest(new Callable<Data>() {
             @Override
             public Data call() throws Exception {
@@ -27,12 +28,14 @@ public abstract class AbsAsyncWidgetProvider<Data> extends BaseAppWidgetProvider
                     @Override
                     public void onResult(Data result) {
                         AbsAsyncWidgetProvider.this.onBackgroundTaskResult(context, appWidgetManager, appWidgetIds, result);
+                        pendingResult.finish();
                     }
                 },
                 new Request.ErrorListener() {
                     @Override
                     public void onError(Exception e) {
                         AbsAsyncWidgetProvider.this.exceptionOccurred(context, appWidgetManager, appWidgetIds, e);
+                        pendingResult.finish();
                     }
                 }
         );

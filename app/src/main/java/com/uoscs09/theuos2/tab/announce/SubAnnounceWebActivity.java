@@ -40,7 +40,7 @@ public class SubAnnounceWebActivity extends WebViewActivity {
         Intent intent = getIntent();
 
         mItem = intent.getParcelableExtra(TabAnnounceFragment.ITEM);
-        category = intent.getIntExtra(TabAnnounceFragment.PAGE_NUM, 0);
+        category = intent.getIntExtra(TabAnnounceFragment.INDEX_CATEGORY, 0);
         switch (category) {
             case 3:
                 url = mItem.pageURL;

@@ -47,24 +47,25 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
     private static final String TAG = "SettingsFragment";
     private static final String APP_URL = "https://play.google.com/store/apps/details?id=com.uoscs09.theuos2";
 
+    private OnBackStackChangedListener onBackStackChangedListener = new OnBackStackChangedListener() {
+        @Override
+        public void onBackStackChanged() {
+            if (getFragmentManager() != null) {
+                if (getFragmentManager().getBackStackEntryCount() < 1) {
+                    getFragmentManager().beginTransaction()
+                            .show(SettingsFragment.this)
+                            .commit();
+                }
+            }
+        }
+    };
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Fragment가 재생성 되었을 때, 표시 화면을 정확히 복구하기 위한 설정
-        getFragmentManager().addOnBackStackChangedListener(new OnBackStackChangedListener() {
-
-            @Override
-            public void onBackStackChanged() {
-                if (getFragmentManager() != null) {
-                    if (getFragmentManager().getBackStackEntryCount() < 1) {
-                        getFragmentManager().beginTransaction()
-                                .show(SettingsFragment.this)
-                                .commit();
-                    }
-                }
-            }
-        });
+        getFragmentManager().addOnBackStackChangedListener(onBackStackChangedListener);
 
         setHasOptionsMenu(true);
         addPreferencesFromResource(R.xml.prefrence);
@@ -92,6 +93,9 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
                 showThemeDialog();
                 return true;
 
+            case R.string.setting_announce_except_type_notice:
+                TrackerUtil.getInstance(this).sendEvent(TAG, "announce_except_type_notice");
+                return true;
             /*
             case R.string.setting_announce_noti:
                 changeFragment(SettingsAnnounceNotificationFragment.class);
@@ -138,7 +142,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 
         HttpRequest.Builder.newStringRequestBuilder(APP_URL)
                 .build()
-                        //.checkNetworkState(getActivity())
+                .checkNetworkState(getActivity())
                 .wrap(
                         new JerichoParser<String>() {
                             @Override
@@ -368,9 +372,14 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         SharedPreferences pref = getPreferenceScreen().getSharedPreferences();
         pref.registerOnSharedPreferenceChangeListener(this);
 
-        String[] keys = {PrefUtil.KEY_CHECK_BORROW, PrefUtil.KEY_CHECK_SEAT,
-                PrefUtil.KEY_LIB_WIDGET_SEAT_SHOW_ALL, PrefUtil.KEY_THEME,
-                PrefUtil.KEY_IMAGE_SAVE_PATH, PrefUtil.KEY_TXT_SAVE_PATH};
+        String[] keys = {
+                PrefUtil.KEY_ANNOUNCE_EXCEPT_TYPE_NOTICE,
+                PrefUtil.KEY_CHECK_BORROW,
+                PrefUtil.KEY_CHECK_SEAT,
+                PrefUtil.KEY_LIB_WIDGET_SEAT_SHOW_ALL,
+                PrefUtil.KEY_THEME,
+                PrefUtil.KEY_IMAGE_SAVE_PATH, PrefUtil.KEY_TXT_SAVE_PATH
+        };
         for (String key : keys) {
             onSharedPreferenceChanged(pref, key);
         }
@@ -378,7 +387,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 
     @Override
     public void onDetach() {
-        getFragmentManager().addOnBackStackChangedListener(null);
+        getFragmentManager().removeOnBackStackChangedListener(onBackStackChangedListener);
         super.onDetach();
     }
 

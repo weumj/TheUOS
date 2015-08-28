@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
-    <PreferenceCategory android:title="@string/setting_screen" >
+    <PreferenceCategory android:title="@string/setting_screen">
         <PreferenceScreen
             android:icon="?color_theme_ic_action_communication_import_export"
             android:key="@string/pref_key_order"
             android:summary="@string/setting_order_desc"
-            android:title="@string/setting_order" >
-        </PreferenceScreen>
+            android:title="@string/setting_order" />
         <PreferenceScreen
             android:icon="?color_theme_ic_action_image_palette"
             android:key="@string/pref_key_theme"
@@ -23,75 +22,74 @@
             android:summary="@string/setting_home_desc"
             android:title="@string/setting_home" />
     </PreferenceCategory>
-    <!--
-    <PreferenceCategory android:title="@string/title_tab_announce" >
-        <PreferenceScreen
-            android:icon="?attr/ic_collections_view_as_list"
-            android:summary="@string/setting_announce_noti_desc"
-            android:title="@string/setting_announce_noti" >
-        </PreferenceScreen>
+
+    <PreferenceCategory android:title="@string/title_tab_announce">
+        <CheckBoxPreference
+            android:icon="?color_theme_ic_action_action_view_list"
+            android:key="@string/pref_key_announce_except_type_notice"
+            android:summary="@string/setting_announce_except_type_notice_desc"
+            android:title="@string/setting_announce_except_type_notice" />
+
     </PreferenceCategory>
-    -->
-    <PreferenceCategory android:title="@string/title_tab_book_search" >
+
+    <PreferenceCategory android:title="@string/title_tab_book_search">
         <CheckBoxPreference
             android:icon="?color_theme_ic_action_book_search"
             android:key="@string/pref_key_check_borrow"
             android:title="@string/setting_check_borrow" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/title_tab_library_seat" >
+
+    <PreferenceCategory android:title="@string/title_tab_library_seat">
         <CheckBoxPreference
             android:icon="?color_theme_ic_action_book_opened"
             android:key="@string/pref_key_check_seat"
             android:title="@string/setting_check_seat" />
-         <CheckBoxPreference
+        <CheckBoxPreference
             android:icon="?color_theme_ic_action_book_opened"
             android:key="@string/pref_key_widget_seat_show_all"
             android:title="@string/setting_widget_seat_show_all" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/title_tab_timetable" >
+
+    <PreferenceCategory android:title="@string/title_tab_timetable">
         <PreferenceScreen
             android:icon="?color_theme_ic_action_timetable"
             android:summary="@string/setting_timetable_desc"
-            android:title="@string/setting_timetable" >
-        </PreferenceScreen>
+            android:title="@string/setting_timetable" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/setting_data" >
+
+    <PreferenceCategory android:title="@string/setting_data">
         <PreferenceScreen
             android:icon="?color_theme_ic_action_image_image"
             android:key="@string/pref_key_save_image_route"
-            android:title="@string/setting_save_image_sub_title" >
-        </PreferenceScreen>
+            android:title="@string/setting_save_image_sub_title" />
         <PreferenceScreen
             android:icon="?color_theme_ic_action_action_view_list"
             android:key="@string/pref_key_save_txt_route"
-            android:title="@string/setting_save_text_sub_title" >
-        </PreferenceScreen>
+            android:title="@string/setting_save_text_sub_title" />
         <PreferenceScreen
             android:icon="?color_theme_ic_action_action_delete"
             android:key="@string/pref_key_delete_cache"
             android:summary="@string/setting_delete_cache_desc"
-            android:title="@string/setting_delete_cache" >
-        </PreferenceScreen>
+            android:title="@string/setting_delete_cache" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/setting_etc" >
+
+    <PreferenceCategory android:title="@string/setting_etc">
         <PreferenceScreen
             android:icon="?color_theme_ic_action_action_language"
             android:summary="@string/setting_web_page_desc"
-            android:title="@string/setting_web_page" >
-        </PreferenceScreen>
+            android:title="@string/setting_web_page" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/setting_app_info" >
+
+    <PreferenceCategory android:title="@string/setting_app_info">
         <PreferenceScreen
             android:icon="?color_theme_ic_action_action_about"
             android:summary="@string/setting_app_version_name"
-            android:title="@string/setting_app_version" >
-        </PreferenceScreen>
+            android:title="@string/setting_app_version" />
 
         <PreferenceScreen
             android:icon="?color_theme_ic_action_action_search"
             android:summary="@string/setting_app_version_update_desc"
-            android:title="@string/setting_app_version_update" >
-        </PreferenceScreen>
+            android:title="@string/setting_app_version_update" />
 
     </PreferenceCategory>
 

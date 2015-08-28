@@ -31,12 +31,20 @@ import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.customview.NestedListView;
 import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.util.AppUtil;
+import com.uoscs09.theuos2.util.PrefUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import java.util.ArrayList;
 
 public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceItem>>
         implements AdapterView.OnItemClickListener, AdapterView.OnItemSelectedListener, SearchView.OnQueryTextListener, Request.ErrorListener {
+
+    static final String PAGE_NUM = "PAGE";
+    static final String ITEM = "item";
+    static final String INDEX_CATEGORY = "category_index";
+    private static final ParseAnnounce PARSER = ParseAnnounce.getParser();
+    private static final ParseAnnounce SCHOLARSHIP_PARSER = ParseAnnounce.getScholarshipParser();
+
     /**
      * 상단 액션바에 추가될 위젯, 페이지 인덱스
      */
@@ -58,57 +66,51 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
     /**
      * (검색 메뉴 선택시)검색어를 저장함
      */
-    private String searchQuery;
-    private int mSpinnerSelection = 0;
-    private int pageNum;
+    private String mSearchQuery;
+    private boolean mIsSearchRequesting = false;
+    private int mCurrentPageIndex;
+
     /**
      * 표시할 공지사항목록의 변동이 생겼을 때 (분류 변경 등등..)<br>
      * 페이지의 최대값이 변경되어야 하는지를 가리키는 값
      */
     private boolean mShouldChangeMaxValueOfPage = false;
-    /**
-     * 이전 페이지 번호, 공지사항 검색 결과가 없으면 현재 페이지 번호를 변하지 않게하는 역할
-     */
-    private int prevPageNum;
     private ArrayMap<String, String> mQueryTable;
 
-    private final RequestHelper requestHelper = new RequestHelper(), moreRequestHelper = new MoreRequestHelper();
+    private final RequestHelper mRequestHelper = new RequestHelper(), mMoreRequestHelper = new MoreRequestHelper();
 
-    static final String PAGE_NUM = "PAGE";
-    static final String ITEM = "item";
-    private static final String SP_SELECTION = "spinner_selection";
-    private static final ParseAnnounce PARSER = ParseAnnounce.getParser();
-    private static final ParseAnnounce SCHOLARSHIP_PARSER = ParseAnnounce.getScholarshipParser();
 
     /* TODO Fragment Callback */
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(PAGE_NUM, pageNum);
-        outState.putInt(SP_SELECTION, mSpinnerSelection);
+        outState.putInt(PAGE_NUM, mCurrentPageIndex);
+        outState.putInt(INDEX_CATEGORY, mCategorySpinner.getSelectedItemPosition());
         outState.putParcelableArrayList(ITEM, mDataList);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        int currentCategoryIndex;
         if (savedInstanceState != null) {
-            pageNum = savedInstanceState.getInt(PAGE_NUM);
-            mSpinnerSelection = savedInstanceState.getInt(SP_SELECTION);
+            mCurrentPageIndex = savedInstanceState.getInt(PAGE_NUM);
             mDataList = savedInstanceState.getParcelableArrayList(ITEM);
+            currentCategoryIndex = savedInstanceState.getInt(INDEX_CATEGORY);
         } else {
-            pageNum = 1;
+            mCurrentPageIndex = 1;
             mDataList = new ArrayList<>();
+            currentCategoryIndex = 0;
         }
 
         mQueryTable = new ArrayMap<>();
 
-        initDialog();
+        initPageSelectDialog();
 
         super.onCreate(savedInstanceState);
 
         mAnnounceAdapter = new AnnounceAdapter(getActivity(), mDataList);
 
-        initToolbarAndTab();
+        initToolbarAndTab(currentCategoryIndex);
 
     }
 
@@ -127,6 +129,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
                 sendEmptyViewClickEvent();
             }
         });
+
         mEmptyView.setVisibility(mDataList.size() != 0 ? View.INVISIBLE : View.VISIBLE);
 
         mListFooterView = inflater.inflate(R.layout.view_tab_announce_bottom_more, mListView, false);
@@ -136,7 +139,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
             @Override
             public void onClick(View v) {
                 sendClickEvent("view more page");
-                executeJob(true);
+                executeJob(mIsSearchRequesting, true, mCurrentPageIndex + 1);
             }
         });
 
@@ -157,28 +160,28 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
             mListFooterView.setVisibility(View.VISIBLE);
     }
 
+    private int getCurrentCategoryIndex() {
+        return mCategorySpinner.getSelectedItemPosition();
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_forward: {
-                if (mSpinnerSelection == 0 || !isMenuVisible())
+                if (getCurrentCategoryIndex() < 1 || !isMenuVisible())
                     return true;
 
-                sendTrackerEvent("forward", "" + mSpinnerSelection);
-
-                setPageValue(pageNum + 1);
-                executeJob(false);
+                sendTrackerEvent("page forward", "" + getCurrentCategoryIndex());
+                executeJob(mIsSearchRequesting, false, mCurrentPageIndex + 1);
                 return true;
             }
             case R.id.action_backward: {
-                if (mSpinnerSelection == 0 || !isMenuVisible())
+                if (getCurrentCategoryIndex() < 1 || !isMenuVisible())
                     return true;
 
-                if (pageNum != 1) {
-                    sendTrackerEvent("backward", "" + mSpinnerSelection);
-
-                    setPageValue(pageNum - 1);
-                    executeJob(false);
+                if (mCurrentPageIndex > 1) {
+                    sendTrackerEvent("page backward", "" + getCurrentCategoryIndex());
+                    executeJob(mIsSearchRequesting, false, mCurrentPageIndex - 1);
                 }
                 return true;
             }
@@ -222,12 +225,12 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int pos, long itemId) {
-        if (!isMenuVisible() || mSpinnerSelection == 0)
+        if (!isMenuVisible() || getCurrentCategoryIndex() < 1)
             return;
 
-        Intent intent = new Intent(getActivity(), SubAnnounceWebActivity.class);
-        intent.putExtra(ITEM, mAnnounceAdapter.getItem(pos));
-        intent.putExtra(PAGE_NUM, mSpinnerSelection);
+        Intent intent = new Intent(getActivity(), SubAnnounceWebActivity.class)
+                .putExtra(ITEM, mAnnounceAdapter.getItem(pos))
+                .putExtra(INDEX_CATEGORY, getCurrentCategoryIndex());
 
         AppUtil.startActivityWithScaleUp(getActivity(), intent, view);
     }
@@ -238,9 +241,6 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
      */
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int position, long itemId) {
-        // 카테고리가 변경되었으므로, 기존 검색사항 초기화.
-        mSpinnerSelection = position;
-
         // Fragment 가 ViewPager 내부에 존재하지만, 사용자에게 보이지 않는 경우
         if (!isMenuVisible()) {
             return;
@@ -250,13 +250,13 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
             return;
         }
 
-        if (mSpinnerSelection == 0)
+        if (position < 1)
             return;
 
         clearParams();
-        executeJob(false);
+        executeJob(false, false, 1);
 
-        sendTrackerEvent("announce category change", "", mSpinnerSelection);
+        sendTrackerEvent("category changed", "", position);
     }
 
     @Override
@@ -278,13 +278,13 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
 
         mSearchMenu.collapseActionView();
 
-        if (mSpinnerSelection == 0) {
+        if (getCurrentCategoryIndex() < 1) {
             AppUtil.showToast(getActivity(), R.string.tab_announce_invalid_category, true);
 
         } else {
             clearParams();
-            searchQuery = query.trim();
-            executeJob(false);
+            mSearchQuery = query.trim();
+            executeJob(true, false, 1);
         }
 
         return true;
@@ -293,9 +293,10 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
 	/* TODO Listener end */
 
     private void clearParams() {
-        searchQuery = null;
-        setPageValue(1);
+        mSearchQuery = null;
+        mCurrentPageIndex = 1;
         mShouldChangeMaxValueOfPage = true;
+        mIsSearchRequesting = false;
 
         // TODO 최적화 필요, 필요없이 지우고 쓰고 함
         mQueryTable.clear();
@@ -314,13 +315,118 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
         mListFooterView.setClickable(true);
     }
 
+    private void executeJob(boolean searchRequest, boolean moreRequest, int newPageIndex) {
+        RequestHelper requestHelper = moreRequest ? mMoreRequestHelper : this.mRequestHelper;
+        requestHelper.init(searchRequest, newPageIndex, getCurrentCategoryIndex());
+
+        execute(true, requestHelper.getRequest(), requestHelper, this, true);
+    }
+
+    @Override
+    public void onError(Exception e) {
+        if (mAnnounceAdapter.isEmpty())
+            mEmptyView.setVisibility(View.VISIBLE);
+    }
+
+    private boolean checkResultNotEmpty(ArrayList<AnnounceItem> result) {
+        if (result == null || result.size() == 0) {
+            AppUtil.showToast(getActivity(), R.string.search_result_empty, true);
+
+            if (mAnnounceAdapter.isEmpty()) {
+                mListFooterView.setVisibility(View.GONE);
+                mEmptyView.setVisibility(View.VISIBLE);
+            }
+
+            return false;
+        } else
+            return true;
+    }
+
+	/* TODO AsyncJob end */
+
+    /**
+     * Toolbar 에 붙일 Tab (카테고리 Spinner & PageIndexView) 을 초기화 한다.
+     */
+    private void initToolbarAndTab(final int currentCategoryIndex) {
+        ViewGroup mTabParent = (ViewGroup) LayoutInflater.from(getActivity()).inflate(R.layout.view_tab_announce_toolbar_menu, getToolbarParent(), false);
+
+        mCategorySpinner = (Spinner) mTabParent.findViewById(R.id.tab_announce_action_spinner1);
+
+        // 이전에 선택된 카테고리가 존재하는 경우 (mCurrentCategoryIndex != 0)
+        // Spinner.setSelection() 이 호출되면 mSpinnerOnItemSelectedListener.onItemSelected() 가 호출된다.
+        // 이미 공지사항 데이터가 존재하므로, 웹에서 공지사항을 얻어올 필요가 없으므로
+        // spinner 에 tagging 을 하여 알려준다.
+        mCategorySpinner.setTag(1);
+        mCategorySpinner.setSelection(currentCategoryIndex);
+        mCategorySpinner.setOnItemSelectedListener(this);
+
+        mPageIndexView = (TextView) mTabParent.findViewById(R.id.tab_anounce_action_textView_page);
+        mPageIndexView.setOnClickListener(new View.OnClickListener() {
+            // 페이지를 나타내는 버튼을 선택했을 시, 페이지를 선택하는 메뉴를 띄운다.
+            @Override
+            public void onClick(View v) {
+                if (currentCategoryIndex < 1) {
+                    AppUtil.showToast(getActivity(), R.string.tab_announce_invalid_category, true);
+                } else {
+                    mPageSelectDialog.show();
+                }
+            }
+        });
+
+        updatePageNumber(mCurrentPageIndex);
+
+        registerTabParentView(mTabParent);
+    }
+
+    private void updatePageNumber(int pageIndex) {
+        if (mPageIndexView != null)
+            mPageIndexView.setText(Integer.toString(pageIndex) + StringUtil.SPACE + PAGE_NUM);
+    }
+
+    /**
+     * 페이지 선택 dialog 를 생성한다.
+     */
+    private void initPageSelectDialog() {
+        Context context = getActivity();
+        mPageNumberPicker = new NumberPicker(context);
+        mPageNumberPicker.setLayoutParams(new NumberPicker.LayoutParams(NumberPicker.LayoutParams.WRAP_CONTENT, NumberPicker.LayoutParams.WRAP_CONTENT));
+
+        mPageNumberPicker.setMinValue(1);
+        mPageNumberPicker.setMaxValue(999);
+
+        mPageSelectDialog = new AlertDialog.Builder(context)
+                .setTitle(R.string.tab_announce_plz_select_page)
+                .setView(mPageNumberPicker)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        sendTrackerEvent("page changed", "" + getCurrentCategoryIndex(), mPageNumberPicker.getValue());
+                        executeJob(mIsSearchRequesting, false, mPageNumberPicker.getValue());
+                    }
+                })
+                .setNegativeButton(android.R.string.no, null)
+                .create();
+
+    }
+
+    @NonNull
+    @Override
+    public String getScreenNameForTracker() {
+        return "TabAnnounceFragment";
+    }
+
+
     private class RequestHelper implements Request.ResultListener<ArrayList<AnnounceItem>>, Processor<ArrayList<AnnounceItem>, ArrayList<AnnounceItem>> {
         private boolean categoryScholarship = false;
-        private boolean searching = false;
+        private boolean searchRequest = false;
+        private int mCurrentCategoryIndex;
+        protected int mNewPageIndex;
 
-        void init() {
-            categoryScholarship = mSpinnerSelection == 3;
-            searching = searchQuery != null;
+        void init(boolean searching, int mNewPageIndex, int category) {
+            this.mCurrentCategoryIndex = category;
+            this.mNewPageIndex = mNewPageIndex;
+            categoryScholarship = category == 3;
+            this.searchRequest = searching;
         }
 
         private ParseAnnounce getParser() {
@@ -328,19 +434,19 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
         }
 
         private void initParams() {
-            mQueryTable.put("pageIndex", Integer.toString(pageNum));
+            mQueryTable.put("pageIndex", Integer.toString(mNewPageIndex));
             if (categoryScholarship) {
                 mQueryTable.put("brdBbsseq", "1");
-                if (searching) {
-                    mQueryTable.put("sword", searchQuery);
+                if (searchRequest) {
+                    mQueryTable.put("sword", mSearchQuery);
                     mQueryTable.put("skind", "title");
 
                 }
             } else {
-                mQueryTable.put("list_id", mSpinnerSelection == 1 ? "FA1" : "FA2");
-                if (searching) {
+                mQueryTable.put("list_id", mCurrentCategoryIndex == 1 ? "FA1" : "FA2");
+                if (searchRequest) {
                     mQueryTable.put("searchCnd", "1");
-                    mQueryTable.put("searchWrd", searchQuery);
+                    mQueryTable.put("searchWrd", mSearchQuery);
                 }
             }
         }
@@ -363,7 +469,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
 
         @Override
         public ArrayList<AnnounceItem> process(ArrayList<AnnounceItem> result) throws Exception {
-            if (searching) {
+            if (searchRequest || PrefUtil.getInstance(getContext()).get(PrefUtil.KEY_ANNOUNCE_EXCEPT_TYPE_NOTICE, false)) {
                 removeNoticeTypeAnnounce(result);
             }
             return result;
@@ -393,6 +499,12 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
                     mShouldChangeMaxValueOfPage = false;
                 }
                 mListFooterView.setVisibility(mAnnounceAdapter.isEmpty() ? View.GONE : View.VISIBLE);
+
+            } else if (searchRequest) {
+                mAnnounceAdapter.clear();
+                mAnnounceAdapter.notifyDataSetChanged();
+                clearParams();
+                mCategorySpinner.setSelection(0, true);
             }
 
             updatePageNumber();
@@ -411,21 +523,18 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
 
             return 0;
         }
+
+        protected void updatePageNumber() {
+            TabAnnounceFragment.this.updatePageNumber(mNewPageIndex);
+            TabAnnounceFragment.this.mIsSearchRequesting = searchRequest;
+        }
     }
 
     private class MoreRequestHelper extends RequestHelper {
-        @Override
-        void init() {
-            super.init();
-            pageNum++;
-        }
 
         @Override
         public ArrayList<AnnounceItem> process(ArrayList<AnnounceItem> result) throws Exception {
-            setPageValue(pageNum);
-
             removeNoticeTypeAnnounce(result);
-
             return result;
         }
 
@@ -434,123 +543,15 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
             if (checkResultNotEmpty(result)) {
                 mAnnounceAdapter.addAll(result);
                 mAnnounceAdapter.notifyDataSetChanged();
+
+                // 검색된 결과가 10개 이하이면, 마지막 페이지에 도달한 것 이므로
+                // '다음 페이지' 버튼을 보여주지 않는다.
                 mListFooterView.setVisibility(result.size() < 10 ? View.GONE : View.VISIBLE);
+
+                updatePageNumber();
             }
-            updatePageNumber();
+            // '다음 페이지 요청'의 경우 검색된 결과가 없다는 것은 마지막 페이지를 지났다는 것 이므로
+            // 페이지를 업데이트 하지 않는다.
         }
     }
-
-    private void executeJob(boolean moreRequest) {
-        RequestHelper requestHelper = moreRequest ? moreRequestHelper : this.requestHelper;
-        requestHelper.init();
-
-        execute(true, requestHelper.getRequest(), requestHelper, this, true);
-    }
-
-    @Override
-    public void onError(Exception e) {
-        showEmptyViewIfDataSetIsEmpty();
-    }
-
-    private boolean checkResultNotEmpty(ArrayList<AnnounceItem> result) {
-        if (result == null || result.size() == 0) {
-            pageNum = prevPageNum;
-            AppUtil.showToast(getActivity(), R.string.search_result_empty, true);
-
-            mListFooterView.setVisibility(View.GONE);
-
-            showEmptyViewIfDataSetIsEmpty();
-
-            return false;
-        } else
-            return true;
-    }
-
-    private void showEmptyViewIfDataSetIsEmpty() {
-        if (mAnnounceAdapter.isEmpty())
-            mEmptyView.setVisibility(View.VISIBLE);
-    }
-
-	/* TODO AsyncJob end */
-
-    /**
-     * Toolbar 에 붙일 Tab (카테고리 Spinner & PageIndexView) 을 초기화 한다.
-     */
-    private void initToolbarAndTab() {
-        ViewGroup mTabParent = (ViewGroup) LayoutInflater.from(getActivity()).inflate(R.layout.view_tab_announce_toolbar_menu, getToolbarParent(), false);
-
-        mCategorySpinner = (Spinner) mTabParent.findViewById(R.id.tab_announce_action_spinner1);
-
-        // 이전에 선택된 카테고리가 존재하는 경우 (mSpinnerSelection != 0)
-        // Spinner.setSelection() 이 호출되면 mSpinnerOnItemSelectedListener.onItemSelected() 가 호출된다.
-        // 이미 공지사항 데이터가 존재하므로, 웹에서 공지사항을 얻어올 필요가 없으므로
-        // spinner 에 tagging 을 하여 알려준다.
-        mCategorySpinner.setTag(1);
-        mCategorySpinner.setSelection(mSpinnerSelection);
-        mCategorySpinner.setOnItemSelectedListener(this);
-
-        mPageIndexView = (TextView) mTabParent.findViewById(R.id.tab_anounce_action_textView_page);
-        mPageIndexView.setOnClickListener(new View.OnClickListener() {
-            // 페이지를 나타내는 버튼을 선택했을 시, 페이지를 선택하는 메뉴를 띄운다.
-            @Override
-            public void onClick(View v) {
-                if (mSpinnerSelection == 0) {
-                    AppUtil.showToast(getActivity(), R.string.tab_announce_invalid_category, true);
-                } else {
-                    mPageSelectDialog.show();
-                }
-            }
-        });
-
-        updatePageNumber();
-
-        registerTabParentView(mTabParent);
-    }
-
-    private void updatePageNumber() {
-        if (mPageIndexView != null)
-            mPageIndexView.setText(Integer.toString(pageNum) + StringUtil.SPACE + PAGE_NUM);
-    }
-
-    /**
-     * 페이지 선택 dialog 를 생성한다.
-     */
-    private void initDialog() {
-        Context context = getActivity();
-        mPageNumberPicker = new NumberPicker(context);
-        mPageNumberPicker.setLayoutParams(new NumberPicker.LayoutParams(NumberPicker.LayoutParams.WRAP_CONTENT, NumberPicker.LayoutParams.WRAP_CONTENT));
-
-        mPageNumberPicker.setMinValue(1);
-        mPageNumberPicker.setMaxValue(999);
-
-        mPageSelectDialog = new AlertDialog.Builder(context)
-                .setTitle(R.string.tab_announce_plz_select_page)
-                .setView(mPageNumberPicker)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        sendTrackerEvent("page change", "" + mSpinnerSelection, mPageNumberPicker.getValue());
-                        setPageValue(mPageNumberPicker.getValue());
-                        executeJob(false);
-                    }
-                })
-                .setNegativeButton(android.R.string.no, null)
-                .create();
-
-    }
-
-    /**
-     * 현재 page의 번호를 설정한다.
-     */
-    private void setPageValue(int newValue) {
-        prevPageNum = pageNum;
-        pageNum = newValue;
-    }
-
-    @NonNull
-    @Override
-    public String getScreenNameForTracker() {
-        return "TabAnnounceFragment";
-    }
-
 }

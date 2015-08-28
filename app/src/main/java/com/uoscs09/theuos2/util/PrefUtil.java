@@ -32,6 +32,12 @@ public class PrefUtil {
      */
     public static final String KEY_KEYWORD_ANOUNCE = "KEYWORD_ANOUNCE";
     /**
+     * '공지' 타입 표시안함 여부, {@code boolean}
+     *
+     * @see R.string#pref_key_announce_except_type_notice
+     */
+    public static final String KEY_ANNOUNCE_EXCEPT_TYPE_NOTICE = "KEY_ANNOUNCE_EXCEPT_TYPE_NOTICE";
+    /**
      * 대출 불가능한 도서 표시 여부, {@code boolean}
      *
      * @see R.string#pref_key_check_borrow

@@ -24,6 +24,7 @@
         android:required="true" />
 
     <application
+        android:fullBackupContent="true"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:name=".UOSApplication"
@@ -136,10 +137,12 @@
                 android:resource="@xml/widget_conf_timetable_4x4" />
 
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="com.uoscs09.theuos2.widget.timetable.refresh" />
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.ACTION_EXTERNAL_APPLICATION_AVAILABLE" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED"/>
+                <action android:name="android.intent.action.DATE_CHANGED"/>
             </intent-filter>
         </receiver>
 
@@ -152,10 +155,12 @@
                 android:resource="@xml/widget_conf_timetable_5x4" />
 
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="com.uoscs09.theuos2.widget.timetable.refresh" />
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.ACTION_EXTERNAL_APPLICATION_AVAILABLE" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED"/>
+                <action android:name="android.intent.action.DATE_CHANGED"/>
             </intent-filter>
         </receiver>
 
@@ -168,10 +173,9 @@
                 android:resource="@xml/widget_conf_rest" />
 
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="com.uoscs09.theuos2.widget.restaurant.RestWidget.NEXT_ACTION" />
                 <action android:name="com.uoscs09.theuos2.widget.restaurant.RestWidget.PREV_ACTION" />
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="android.intent.action.ACTION_EXTERNAL_APPLICATION_AVAILABLE" />
             </intent-filter>
         </receiver>

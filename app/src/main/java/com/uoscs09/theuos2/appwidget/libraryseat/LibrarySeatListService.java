@@ -24,11 +24,11 @@ public class LibrarySeatListService extends RemoteViewsService {
     }
 
     private static class ListRemoteViewsFactory extends AbsListRemoteViewsFactory<SeatItem> {
+        private static final int[] STUDY_ROOM_INDEX = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 23, 24, 25, 26, 27, 28};
         private final int mColorRed, mColorGreen;
-        private final int[] STUDY_ROOM_INDEX = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 23, 24, 25, 26, 27, 28};
 
         public ListRemoteViewsFactory(Context context, Intent intent) {
-            super(context);
+            super(context, intent);
             List<SeatItem> extraList = intent.getBundleExtra(LibrarySeatWidget.LIBRARY_SEAT_WIDGET_DATA).getParcelableArrayList(LibrarySeatWidget.LIBRARY_SEAT_WIDGET_DATA);
             if (extraList != null && !extraList.isEmpty()) {
                 clear();

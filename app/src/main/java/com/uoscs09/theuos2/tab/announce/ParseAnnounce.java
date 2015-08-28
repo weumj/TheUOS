@@ -44,8 +44,13 @@ public abstract class ParseAnnounce extends JerichoParser<ArrayList<AnnounceItem
             List<Element> childElementList = element.getAllElements(HTMLElementName.TD);
             if (checkElementIsNoticeType(element))
                 item.type = AnnounceItem.TYPE_NOTICE;
-            else
-                item.number = Integer.parseInt(childElementList.get(0).getTextExtractor().toString());
+            else {
+                String numberString = childElementList.get(0).getTextExtractor().toString();
+                if ("글이 없습니다.".equals(numberString))
+                    return null;
+                else
+                    item.number = Integer.parseInt(childElementList.get(0).getTextExtractor().toString());
+            }
 
             Element titleElement = childElementList.get(1);
             item.title = titleElement.getTextExtractor().toString();
