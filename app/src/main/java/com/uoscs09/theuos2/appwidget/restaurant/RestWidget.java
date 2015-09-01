@@ -32,6 +32,8 @@ public class RestWidget extends AbsAsyncWidgetProvider<SparseArray<RestItem>> {
 
     @Override
     public void onReceive(@NonNull Context context, @NonNull Intent intent) {
+        super.onReceive(context, intent);
+
         switch (intent.getAction()) {
 
             case REST_WIDGET_NEXT_ACTION: {
@@ -41,10 +43,7 @@ public class RestWidget extends AbsAsyncWidgetProvider<SparseArray<RestItem>> {
 
                 PrefUtil.getInstance(context).put(REST_WIDGET_POSITION, position);
 
-                int[] ids = new int[]{intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)};
-
-                onUpdate(context, AppWidgetManager.getInstance(context), ids);
-                context.sendBroadcast(new Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE).putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, ids[0]));
+                callOnUpdate(context);
                 break;
             }
 
@@ -55,10 +54,7 @@ public class RestWidget extends AbsAsyncWidgetProvider<SparseArray<RestItem>> {
 
                 PrefUtil.getInstance(context).put(REST_WIDGET_POSITION, position);
 
-                int[] ids = new int[]{intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)};
-
-                onUpdate(context, AppWidgetManager.getInstance(context), ids);
-                context.sendBroadcast(new Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE).putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, ids[0]));
+               callOnUpdate(context);
                 break;
             }
 
@@ -72,7 +68,6 @@ public class RestWidget extends AbsAsyncWidgetProvider<SparseArray<RestItem>> {
                 break;
 
             default:
-                super.onReceive(context, intent);
                 break;
         }
     }

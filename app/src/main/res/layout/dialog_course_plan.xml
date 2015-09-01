@@ -22,6 +22,12 @@
             android:scrollingCache="true" />
 
         <include layout="@layout/view_toolbar_shadow" />
+
+        <include
+            layout="@layout/view_shadow_bottom"
+            android:layout_width="fill_parent"
+            android:layout_height="16dp"
+            android:layout_gravity="bottom" />
     </FrameLayout>
 
 

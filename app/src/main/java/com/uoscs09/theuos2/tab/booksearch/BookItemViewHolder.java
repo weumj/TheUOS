@@ -134,7 +134,7 @@ class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements ImageLoad
             } else {
                 asyncTask = HttpRequest.Builder.newConnectionRequestBuilder(item.infoUrl)
                         .build()
-                                //.checkNetworkState(holder.itemView.getContext())
+                        .checkNetworkState(holder.itemView.getContext())
                         .wrap(BOOK_STATE_INFO_PARSER)
                         .getAsyncOnExecutor(
                                 new Request.ResultListener<ArrayList<BookStateInfo>>() {

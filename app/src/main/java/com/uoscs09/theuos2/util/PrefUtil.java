@@ -95,7 +95,9 @@ public class PrefUtil {
      * 식단표를 웹에서 받아온 시각, {@code int}
      */
     public static final String KEY_REST_DATE_TIME = "REST_DATE_TIME";
-    /** 학사일정을 가져온 달. {@code int}, 0~11 : 정상, -1 : 없음*/
+    /**
+     * 학사일정을 가져온 달. {@code int}, 0~11 : 정상, -1 : 없음
+     */
     public static final String KEY_SCHEDULE_FETCH_MONTH = "UNIV_SCHEDULE_FETCH_MONTH";
     public static final String KEY_REST_WEEK_FETCH_TIME = "REST_WEEK_FETCH_TIME";
 
@@ -185,7 +187,7 @@ public class PrefUtil {
     }
 
     public void remove(String key) {
-        pref.edit().remove(key).commit();
+        pref.edit().remove(key).apply();
     }
 
     public void remove(String... keys) {
@@ -193,7 +195,7 @@ public class PrefUtil {
         if (keys != null) {
             SharedPreferences.Editor editor = pref.edit();
             for (String key : keys) editor.remove(key);
-            editor.commit();
+            editor.apply();
         }
 
     }
@@ -204,15 +206,28 @@ public class PrefUtil {
 
     /**
      * 그림파일이 저장되는 경로를 얻는다.
+     * <p/>
+     * <b>반환되는 경로 끝에는 '/' 이 붙지 않으므로 사용할 때 주의하여야 한다.</b>
      */
     public static String getPicturePath(Context context) {
         return getInstance(context).get(KEY_IMAGE_SAVE_PATH, getDefaultPath(KEY_IMAGE_SAVE_PATH));
     }
 
+    /**
+     * 문서파일이 저장되는 경로를 얻는다.
+     * <p/>
+     * <b>반환되는 경로 끝에는 '/' 이 붙지 않으므로 사용할 때 주의하여야 한다.</b>
+     */
     public static String getDocumentPath(Context context) {
         return getInstance(context).get(KEY_TXT_SAVE_PATH, getDefaultPath(KEY_TXT_SAVE_PATH));
     }
 
+    /**
+     * 파일이 저장되는 경로를 얻는다.
+     * <p/>
+     * <b>반환되는 경로 끝에는 '/' 이 붙지 않으므로 사용할 때 주의하여야 한다.</b>
+     *
+     * @param key 파일에 해당하는 키키     */
     public static String getDefaultPath(final String key) {
         switch (key) {
             default:

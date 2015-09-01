@@ -11,13 +11,14 @@
     <string name="canceled">취소되었습니다.</string>
     <string name="cancel">취소</string>
     <string name="success">성공하였습니다.</string>
-    <string name="saved_file">이(가) 저장되었습니다.</string>
+    <string name="saved_file">%1$s 폴더에 %2$s 파일이 저장되었습니다.</string>
     <string name="saved">에 저장되었습니다.</string>
     <string name="save">저장되었습니다.</string>
     <string name="deleted">삭제되었습니다.</string>
     <string name="failed">실패하였습니다.</string>
     <string name="error_occur">에러!</string>
     <string name="error_internet">인터넷 또는 학교 서버 접속에 실패하였습니다.</string>
+    <string name="error_no_activity_found_to_handle_file">해당 파일을 열 수 있는 앱을 찾을 수 없습니다.</string>
 
     <string name="finish_update">업데이트 완료</string>
     <string name="progress_finish">작업 완료</string>
@@ -76,7 +77,6 @@
     <string name="tab_announce_show_next_page">다음 페이지</string>
     <string name="tab_announce_type_notice">공지</string>
     <string name="tab_announce_no_download_link">다운로드 할 파일이 없습니다.</string>
-    <string name="tab_announce_no_activity_found_to_handle_file">해당 파일을 열 수 있는 앱을 찾을 수 없습니다.</string>
 
     <string name="tab_book_book_opt">도서 검색 옵션</string>
     <string name="tab_book_book_opt_sub">분류와 정렬 방식을 선택해 주세요</string>
@@ -147,7 +147,7 @@
     <string name="tab_timetable_sat">토</string>
     <string name="tab_timetable_period">시간</string>
     <string name="tab_timetable_not_exist">시간표 데이터가 없습니다.</string>
-    <string name="tab_timetable_saved">시간표가 저장되었습니다.</string>
+    <string name="tab_timetable_saved">%1$s 폴더에 시간표가 저장되었습니다.</string>
     <string name="tab_timetable_notify_subject">수업 (%1$s) 시작 %2$s 입니다.</string>
 
     <string name="tab_timetable_dialog_show_location_in_map">지도에서 건물 위치 보기</string>
@@ -200,8 +200,8 @@
     <string name="tab_course_week_prjt_etc">준비물, 과제, 기타</string>
     <string name="tab_course_plan_action_save_image">이미지로 저장</string>
     <string name="tab_course_plan_action_save_text">텍스트로 저장</string>
-    <string name="tab_course_plan_action_save_image_completed">수업계획서가 이미지로 저장되었습니다.</string>
-    <string name="tab_course_plan_action_save_text_completed">수업계획서가 텍스트로 저장되었습니다.</string>
+    <string name="tab_course_plan_action_save_image_completed">%1$s 폴더에 수업계획서가 이미지로 저장되었습니다.</string>
+    <string name="tab_course_plan_action_save_text_completed">%1$s 폴더에 수업계획서가 텍스트로 저장되었습니다.</string>
 
     <string name="tab_transport_empty">버튼을 눌러 정보를 불러오세요.</string>
 

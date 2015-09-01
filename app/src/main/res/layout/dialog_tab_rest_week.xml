@@ -31,16 +31,22 @@
             android:id="@+id/tab_rest_week_stub_reload"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout="@layout/view_tab_rest_week_reload"
-            android:layout_gravity="center" />
+            android:layout_gravity="center"
+            android:layout="@layout/view_tab_rest_week_reload" />
 
         <ViewStub
             android:id="@+id/tab_rest_week_stub_empty_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout="@layout/view_tab_rest_week_empty_info"
-            android:layout_gravity="center" />
+            android:layout_gravity="center"
+            android:layout="@layout/view_tab_rest_week_empty_info" />
 
         <include layout="@layout/view_toolbar_shadow" />
+
+        <include
+            layout="@layout/view_shadow_bottom"
+            android:layout_width="fill_parent"
+            android:layout_height="16dp"
+            android:layout_gravity="bottom" />
     </FrameLayout>
 </LinearLayout>

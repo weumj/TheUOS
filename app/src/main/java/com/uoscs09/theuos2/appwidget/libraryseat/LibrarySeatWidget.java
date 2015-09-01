@@ -38,15 +38,10 @@ public class LibrarySeatWidget extends AbsAsyncWidgetProvider<ArrayList<SeatItem
 
     @Override
     public void onReceive(@NonNull Context context, @NonNull Intent intent) {
-
+        super.onReceive(context, intent);
         switch (intent.getAction()) {
             case LIBRARY_SEAT_WIDGET_REFRESH:
-
-                int[] appWidgetIds = new int[]{intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)};
-
-                if (appWidgetIds.length > 0) {
-                    this.onUpdate(context, AppWidgetManager.getInstance(context), appWidgetIds);
-                }
+               callOnUpdate(context);
                 // } else if (LIBRARY_SEAT_WIDGET_ACTIVITY.equals(action)) {
                 // SeatItem item = (SeatItem) intent.getExtras().getSerializable(
                 // LIBRARY_SEAT_WIDGET_DATA);
@@ -72,7 +67,6 @@ public class LibrarySeatWidget extends AbsAsyncWidgetProvider<ArrayList<SeatItem
 
                 break;
             default:
-                super.onReceive(context, intent);
                 break;
         }
     }

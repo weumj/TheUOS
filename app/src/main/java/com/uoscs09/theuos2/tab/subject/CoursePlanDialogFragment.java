@@ -2,6 +2,7 @@ package com.uoscs09.theuos2.tab.subject;
 
 
 import android.app.Dialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -40,7 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-public class CoursePlanDialogFragment extends BaseDialogFragment implements Request.ErrorListener,  Toolbar.OnMenuItemClickListener {
+public class CoursePlanDialogFragment extends BaseDialogFragment implements Request.ErrorListener, Toolbar.OnMenuItemClickListener {
     private final static String URL = "http://wise.uos.ac.kr/uosdoc/api.ApiApiCoursePlanView.oapi";
     private final static String INFO = "info";
 
@@ -270,7 +271,8 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Requ
     void saveCoursePlanToImage() {
         sendClickEvent("save course plan to image");
 
-        String dir = PrefUtil.getPicturePath(getActivity()) + "/" + getString(R.string.tab_course_plan_title) + '_' + mSubject.subject_nm + '_' + mSubject.prof_nm + '_' + mSubject.class_div + ".jpeg";
+        final String picturePath = PrefUtil.getPicturePath(getActivity());
+        String dir = picturePath + "/" + getString(R.string.tab_course_plan_title) + '_' + mSubject.subject_nm + '_' + mSubject.prof_nm + '_' + mSubject.class_div + ".jpeg";
         final AsyncTask<Void, ?, String> task = new ImageUtil.ListViewBitmapRequest.Builder(mListView, mAdapter)
                 .setHeaderView(mCourseTitle)
                 .build()
@@ -281,15 +283,24 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Requ
                             public void onResult(final String result) {
                                 dismissProgressDialog();
 
-                                Snackbar.make(mListView, getText(R.string.tab_course_plan_action_save_image_completed), Snackbar.LENGTH_LONG)
+                                String pictureDir = picturePath.substring(picturePath.lastIndexOf('/') + 1);
+                                Snackbar.make(mListView, getString(R.string.tab_course_plan_action_save_image_completed, pictureDir), Snackbar.LENGTH_LONG)
                                         .setAction(R.string.action_open, new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
                                                 Intent intent = new Intent();
                                                 intent.setAction(Intent.ACTION_VIEW);
                                                 intent.setDataAndType(Uri.parse("file://" + result), "image/*");
-                                                AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
 
+                                                try {
+                                                    AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
+                                                } catch (ActivityNotFoundException e) {
+                                                    //e.printStackTrace();
+                                                    AppUtil.showToast(getActivity(), R.string.error_no_activity_found_to_handle_file);
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                    AppUtil.showErrorToast(getActivity(), e, true);
+                                                }
                                                 sendClickEvent("show course plan image");
                                             }
                                         })
@@ -311,7 +322,8 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Requ
     void saveCoursePlanToText() {
         sendClickEvent("save course plan to text");
 
-        final String fileName = PrefUtil.getDocumentPath(getActivity()) + "/" + getString(R.string.tab_course_plan_title) + '_' + mSubject.subject_nm + '_' + mSubject.prof_nm + '_' + mSubject.class_div + ".txt";
+        final String docPath = PrefUtil.getDocumentPath(getActivity());
+        final String fileName = docPath + "/" + getString(R.string.tab_course_plan_title) + '_' + mSubject.subject_nm + '_' + mSubject.prof_nm + '_' + mSubject.class_div + ".txt";
 
         final AsyncTask<Void, ?, String> task = AsyncUtil.newRequest(
                 new Callable<String>() {
@@ -333,17 +345,31 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Requ
                             @Override
                             public void onResult(final String result) {
                                 dismissProgressDialog();
-                                Snackbar.make(mListView, getText(R.string.tab_course_plan_action_save_text_completed), Snackbar.LENGTH_LONG)
+
+                                String docDir = docPath.substring(docPath.lastIndexOf('/') + 1);
+                                Snackbar.make(mListView, getString(R.string.tab_course_plan_action_save_text_completed, docDir), Snackbar.LENGTH_LONG)
                                         .setAction(R.string.action_open, new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                Intent intent = new Intent();
-                                                intent.setAction(Intent.ACTION_VIEW);
-                                                intent.setDataAndType(Uri.parse("file://" + fileName), "text/*");
-                                                AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
-                                                sendClickEvent("show course plan text");
-                                            }
-                                        })
+                                                    @Override
+                                                    public void onClick(View v) {
+                                                        Intent intent = new Intent();
+                                                        intent.setAction(Intent.ACTION_VIEW);
+                                                        intent.setDataAndType(Uri.parse("file://" + fileName), "text/*");
+
+                                                        try {
+                                                            AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
+                                                        } catch (ActivityNotFoundException e) {
+                                                            //e.printStackTrace();
+                                                            AppUtil.showToast(getActivity(), R.string.error_no_activity_found_to_handle_file);
+                                                        } catch (Exception e) {
+                                                            e.printStackTrace();
+                                                            AppUtil.showErrorToast(getActivity(), e, true);
+                                                        }
+
+                                                        sendClickEvent("show course plan text");
+                                                    }
+                                                }
+
+                                        )
                                         .show();
                             }
                         },

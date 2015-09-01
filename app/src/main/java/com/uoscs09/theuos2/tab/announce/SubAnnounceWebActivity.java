@@ -141,17 +141,19 @@ public class SubAnnounceWebActivity extends WebViewActivity {
                 return;
         }
 
+        final String docPath = PrefUtil.getDocumentPath(this);
         final AsyncTask<Void, ?, File> task = HttpRequest.Builder.newConnectionRequestBuilder(url)
                 .setHttpMethod(HttpRequest.HTTP_METHOD_POST)
                 .build()
-                .wrap(new HttpRequest.FileDownloadProcessor(new File(PrefUtil.getDocumentPath(this))))
+                .wrap(new HttpRequest.FileDownloadProcessor(new File(docPath)))
                 .getAsync(
                         new Request.ResultListener<File>() {
                             @Override
                             public void onResult(final File result) {
                                 dismissProgressDialog();
 
-                                Snackbar.make(mWebView, result.getName() + "\n" + getText(R.string.saved_file), Snackbar.LENGTH_LONG)
+                                String docDir = docPath.substring(docPath.lastIndexOf('/') + 1);
+                                Snackbar.make(mWebView, getString(R.string.saved_file, docDir, result.getName()), Snackbar.LENGTH_LONG)
                                         .setAction(R.string.action_open, new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
@@ -169,7 +171,7 @@ public class SubAnnounceWebActivity extends WebViewActivity {
                                                     AppUtil.startActivityWithScaleUp(SubAnnounceWebActivity.this, intent, v);
                                                 } catch (ActivityNotFoundException e) {
                                                     //e.printStackTrace();
-                                                    AppUtil.showToast(SubAnnounceWebActivity.this, R.string.tab_announce_no_activity_found_to_handle_file);
+                                                    AppUtil.showToast(SubAnnounceWebActivity.this, R.string.error_no_activity_found_to_handle_file);
                                                 } catch (Exception e) {
                                                     e.printStackTrace();
                                                     AppUtil.showErrorToast(SubAnnounceWebActivity.this, e, true);

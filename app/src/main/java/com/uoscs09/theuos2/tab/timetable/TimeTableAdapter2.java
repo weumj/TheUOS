@@ -30,6 +30,11 @@ class TimeTableAdapter2 extends AbsArrayAdapter<Subject[], TimeTableAdapter2.Tim
         periodTimeArray = context.getResources().getStringArray(R.array.tab_timetable_timelist_only_time);
     }
 
+    /**
+     * 이미지 캡쳐를 위해 임시적으로 레이아웃 리소스를 바꾼다.
+     *
+     * @param forImage 이미지 캡쳐를 위한 레이아웃 리소스를 사용하는 경우 true
+     */
     public void changeLayout(boolean forImage) {
         this.layoutId = forImage ? R.layout.list_layout_timetable2_for_image : R.layout.list_layout_timetable2;
     }

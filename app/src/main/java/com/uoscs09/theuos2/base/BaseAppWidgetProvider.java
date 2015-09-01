@@ -1,6 +1,8 @@
 package com.uoscs09.theuos2.base;
 
+import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
@@ -24,15 +26,22 @@ public abstract class BaseAppWidgetProvider extends AppWidgetProvider {
         sendTrackerEvent(context, "disabled");
     }
 
+    protected void callOnUpdate(Context context) {
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        int[] ids = appWidgetManager.getAppWidgetIds(new ComponentName(context, getClass()));
+
+        onUpdate(context, appWidgetManager, ids);
+    }
+
     @NonNull
     public abstract String getScreenNameForTracker();
 
-    protected boolean isApplication(Context context){
+    protected boolean isApplication(Context context) {
         return context.getApplicationContext() instanceof UOSApplication;
     }
 
-    protected TrackerUtil getTrackerUtil(Context context){
-        return isApplication(context) ? ((UOSApplication)context.getApplicationContext()).getTrackerUtil() : TrackerUtil.newInstance(context);
+    protected TrackerUtil getTrackerUtil(Context context) {
+        return isApplication(context) ? ((UOSApplication) context.getApplicationContext()).getTrackerUtil() : TrackerUtil.newInstance(context);
     }
 
     public void sendTrackerEvent(Context context, String action) {

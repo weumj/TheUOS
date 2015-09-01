@@ -110,22 +110,17 @@ public abstract class TimeTableWidget extends BaseAppWidgetProvider {
 
                 }
 
-                context.sendBroadcast(new Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE));
+                //context.sendBroadcast(new Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE));
 
-                int[] ids = new int[]{intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)};
-
-                AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-
-                onUpdate(context, appWidgetManager, ids);
+                callOnUpdate(context);
                 // AppUtil.showToast(context, "새로고침...", true);
-                appWidgetManager.notifyAppWidgetViewDataChanged(ids, R.id.widget_timetable_listview);
-
+                //appWidgetManager.notifyAppWidgetViewDataChanged(ids, R.id.widget_timetable_listview);
                 break;
 
             case Intent.ACTION_TIMEZONE_CHANGED:
             case Intent.ACTION_DATE_CHANGED:
             case Intent.ACTION_BOOT_COMPLETED:
-                context.sendBroadcast(intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE));
+                callOnUpdate(context);
                 break;
 
             default:
@@ -133,5 +128,6 @@ public abstract class TimeTableWidget extends BaseAppWidgetProvider {
         }
 
     }
+
 
 }

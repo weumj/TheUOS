@@ -213,6 +213,7 @@ public class ImageUtil {
             ListView listView = listViewRef.get();
             if (listView == null)
                 return null;
+
             Bitmap listViewBitmap = getWholeListViewItemsToBitmap(listView, adapter, AppUtil.getAttrColor(listView.getContext(), R.attr.cardBackgroundColor));
 
             Bitmap headerViewBitmap;
@@ -242,12 +243,16 @@ public class ImageUtil {
 
             Bitmap headerViewBitmap = headerView.getDrawingCache(true);
 
-            if (headerViewBitmap == null) headerViewBitmap = createBitmapFromView(headerView);
+            boolean newBitmapCreated = false;
+            if (headerViewBitmap == null || headerViewBitmap.isRecycled()) {
+                headerViewBitmap = createBitmapFromView(headerView);
+                newBitmapCreated = true;
+            }
 
             try {
                 return drawOnBackground(headerViewBitmap, AppUtil.getAttrColor(headerView.getContext(), R.attr.cardBackgroundColor));
             } finally {
-                if (headerViewBitmap != null) headerViewBitmap.recycle();
+                if (headerViewBitmap != null && newBitmapCreated) headerViewBitmap.recycle();
             }
 
         }
@@ -255,7 +260,7 @@ public class ImageUtil {
         public static final class Builder implements Request.Builder<Bitmap> {
             private final WeakReference<ListView> listViewRef;
             private final ListAdapter adapter;
-            WeakReference<View> headerViewRef;
+            private WeakReference<View> headerViewRef;
 
             public Builder(ListView listView, ListAdapter originalAdapter) {
                 this.listViewRef = new WeakReference<>(listView);

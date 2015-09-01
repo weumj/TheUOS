@@ -365,7 +365,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
             // 페이지를 나타내는 버튼을 선택했을 시, 페이지를 선택하는 메뉴를 띄운다.
             @Override
             public void onClick(View v) {
-                if (currentCategoryIndex < 1) {
+                if (getCurrentCategoryIndex() < 1) {
                     AppUtil.showToast(getActivity(), R.string.tab_announce_invalid_category, true);
                 } else {
                     mPageSelectDialog.show();
@@ -381,6 +381,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
     private void updatePageNumber(int pageIndex) {
         if (mPageIndexView != null)
             mPageIndexView.setText(Integer.toString(pageIndex) + StringUtil.SPACE + PAGE_NUM);
+        mCurrentPageIndex = pageIndex;
     }
 
     /**

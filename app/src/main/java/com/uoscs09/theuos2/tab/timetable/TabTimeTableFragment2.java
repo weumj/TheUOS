@@ -1,6 +1,7 @@
 package com.uoscs09.theuos2.tab.timetable;
 
 import android.app.Dialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -205,12 +206,13 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable>
 
         mTimeTableAdapter2.changeLayout(true);
 
-        String dir = PrefUtil.getPicturePath(getActivity()) + "timetable_" + mTimeTable.year + '_' + mTimeTable.semesterCode + '_' + String.valueOf(System.currentTimeMillis()) + ".png";
+        final String picturePath = PrefUtil.getPicturePath(getActivity());
+        String savedPath = picturePath + "/timetable_" + mTimeTable.year + '_' + mTimeTable.semesterCode + '_' + String.valueOf(System.currentTimeMillis()) + ".png";
 
         final AsyncTask<Void, ?, String> task = new ImageUtil.ListViewBitmapRequest.Builder(mTimetableListView, mTimeTableAdapter2)
                 .setHeaderView(getTabParentView())
                 .build()
-                .wrap(new ImageUtil.ImageWriteProcessor(dir))
+                .wrap(new ImageUtil.ImageWriteProcessor(savedPath))
                 .getAsync(
                         new Request.ResultListener<String>() {
                             @Override
@@ -218,14 +220,25 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable>
                                 dismissProgressDialog();
                                 mTimeTableAdapter2.changeLayout(false);
 
-                                Snackbar.make(getView(), getText(R.string.tab_timetable_saved), Snackbar.LENGTH_LONG)
+                                String pictureDir = picturePath.substring(picturePath.lastIndexOf('/') + 1);
+                                Snackbar.make(rootView, getString(R.string.tab_timetable_saved, pictureDir), Snackbar.LENGTH_LONG)
                                         .setAction(R.string.action_open, new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
                                                 Intent intent = new Intent();
                                                 intent.setAction(Intent.ACTION_VIEW);
                                                 intent.setDataAndType(Uri.parse("file://" + result), "image/*");
-                                                AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
+
+                                                try {
+                                                    AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
+                                                    sendClickEvent("show timetable image");
+                                                } catch (ActivityNotFoundException e) {
+                                                    //e.printStackTrace();
+                                                    AppUtil.showToast(getActivity(), R.string.error_no_activity_found_to_handle_file);
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                    AppUtil.showErrorToast(getActivity(), e, true);
+                                                }
                                             }
                                         })
                                         .show();
