@@ -13,6 +13,7 @@ import android.widget.ExpandableListView;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
+import com.uoscs09.theuos2.async.AbstractRequest;
 import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.common.SerializableArrayMap;
@@ -80,7 +81,7 @@ public class TabTransportFragment extends AbsProgressFragment<Map<String, ArrayL
         execute(true, mRequest, this, this, true);
     }
 
-    Request<Map<String, ArrayList<TransportItem>>> mRequest = new Request.Base<Map<String, ArrayList<TransportItem>>>() {
+    Request<Map<String, ArrayList<TransportItem>>> mRequest = new AbstractRequest<Map<String,ArrayList<TransportItem>>>() {
         @Override
         public Map<String, ArrayList<TransportItem>> get() throws Exception {
             Map<String, ArrayList<TransportItem>> map = new SerializableArrayMap<>();

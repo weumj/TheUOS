@@ -13,6 +13,7 @@ import com.uoscs09.theuos2.util.StringUtil;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
 @KeepName
 public class SubjectItem2 implements Parcelable, IParser.AfterParsable {
@@ -100,7 +101,7 @@ public class SubjectItem2 implements Parcelable, IParser.AfterParsable {
         return classRoomInformation;
     }
 
-    private void buildClassRoomInfoString(Context context){
+    private void buildClassRoomInfoString(Context context) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < classInformationList.size(); i++) {
             sb.append(classInformationList.get(i).toString(context)).append('\n');
@@ -456,14 +457,15 @@ public class SubjectItem2 implements Parcelable, IParser.AfterParsable {
     }
 
 
-    public static class ClassInformation implements Parcelable, Serializable{
+    public static class ClassInformation implements Parcelable, Serializable {
 
         private static final long serialVersionUID = 8612642740508029423L;
         public int dayInWeek = -1;
-        public ArrayList<Integer> times = new ArrayList<>(7);
+        public ArrayList<Integer> times;
         public String buildingAndRoom = "";
 
         public ClassInformation() {
+            times = new ArrayList<>(7);
         }
 
         @Override
@@ -493,7 +495,7 @@ public class SubjectItem2 implements Parcelable, IParser.AfterParsable {
         }
 
         public String toString(Context context) {
-            return (dayInWeek != -1 ? context.getString(getDayInWeek()) : "") + times.toString() + " / " + buildingAndRoom;
+            return (getDayInWeek() != -1 ? context.getString(getDayInWeek()) : "") + times.toString() + " / " + buildingAndRoom;
         }
 
         @Override
@@ -503,36 +505,26 @@ public class SubjectItem2 implements Parcelable, IParser.AfterParsable {
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
-            dest.writeInt(dayInWeek);
-            dest.writeString(buildingAndRoom);
-
-            int size = times.size();
-            dest.writeInt(size);
-            for (int i = 0; i < size; i++)
-                dest.writeInt(times.get(i));
+            dest.writeInt(this.dayInWeek);
+            dest.writeList(this.times);
+            dest.writeString(this.buildingAndRoom);
         }
 
-        ClassInformation(Parcel source) {
-            dayInWeek = source.readInt();
-            buildingAndRoom = source.readString();
-
-            int size = source.readInt();
-            for (int i = 0; i < size; i++)
-                times.add(source.readInt());
+        protected ClassInformation(Parcel in) {
+            this.dayInWeek = in.readInt();
+            this.times = new ArrayList<>(7);
+            in.readList(this.times, List.class.getClassLoader());
+            this.buildingAndRoom = in.readString();
         }
 
         public static final Creator<ClassInformation> CREATOR = new Creator<ClassInformation>() {
-
-            @Override
             public ClassInformation createFromParcel(Parcel source) {
                 return new ClassInformation(source);
             }
 
-            @Override
             public ClassInformation[] newArray(int size) {
                 return new ClassInformation[size];
             }
-
         };
     }
 }

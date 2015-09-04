@@ -191,6 +191,10 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements V
 
     @Override
     public void onClick(View v) {
+        if(getActivity() == null) {
+            return;
+        }
+
         switch (v.getId()) {
             case R.id.dialog_timetable_button_info:
                 showSubjectInfo();
@@ -227,7 +231,7 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements V
     private void showMap(View v) {
 
         if (mSubject != null && mSubject.univBuilding.code > 0) {
-            Intent intent = new Intent(getActivity(), GoogleMapActivity.class);
+            Intent intent = new Intent(v.getContext(), GoogleMapActivity.class);
             intent.putExtra("building", mSubject.univBuilding.code);
 
             sendClickEvent("map");
@@ -251,7 +255,7 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements V
                     .setParams(params)
                     .setParamsEncoding(StringUtil.ENCODE_EUC_KR)
                     .build()
-                            //.checkNetworkState(getActivity())
+                    .checkNetworkState(getActivity())
                     .wrap(SUBJECT_INFO_PARSER)
                     .getAsync(
                             new Request.ResultListener<ArrayList<SubjectInfoItem>>() {

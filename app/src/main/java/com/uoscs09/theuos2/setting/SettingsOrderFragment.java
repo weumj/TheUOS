@@ -49,7 +49,8 @@ public class SettingsOrderFragment extends Fragment {
     public void onResume() {
         super.onResume();
         AppCompatActivity activity = (AppCompatActivity) getActivity();
-        activity.getSupportActionBar().setTitle(R.string.setting_order);
+        if (activity.getSupportActionBar() != null)
+            activity.getSupportActionBar().setTitle(R.string.setting_order);
     }
 
     @Override

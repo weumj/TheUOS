@@ -6,8 +6,8 @@ import android.net.NetworkInfo;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.uoscs09.theuos2.async.AbstractRequest;
 import com.uoscs09.theuos2.async.Processor;
-import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import java.io.BufferedReader;
@@ -28,7 +28,7 @@ import java.util.Map.Entry;
 /**
  * Http 요청을 처리하는 Request 클래스
  */
-public abstract class HttpRequest<T> extends Request.Base<T> {
+public abstract class HttpRequest<T> extends AbstractRequest<T> {
     //public static final int RETURN_TYPE_STRING = 0;
     // public static final int RETURN_TYPE_CONNECTION = 1;
     public static final int HTTP_METHOD_GET = 0;

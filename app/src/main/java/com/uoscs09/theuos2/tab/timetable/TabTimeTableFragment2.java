@@ -81,7 +81,6 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable>
 
         } else {
             mTimeTable = new TimeTable();
-
         }
 
         mSubjectDetailDialog.setColorTable(colorTable);

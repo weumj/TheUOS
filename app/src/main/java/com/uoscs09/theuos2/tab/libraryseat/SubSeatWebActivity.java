@@ -9,9 +9,15 @@ import com.uoscs09.theuos2.common.WebViewActivity;
 import com.uoscs09.theuos2.util.StringUtil;
 
 public class SubSeatWebActivity extends WebViewActivity {
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (getIntent() == null) {
+            finish();
+            return;
+        }
 
         SeatItem item = getIntent().getParcelableExtra(TabLibrarySeatFragment.ITEM);
         if (item == null) {

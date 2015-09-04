@@ -1,7 +1,7 @@
 package com.uoscs09.theuos2.base;
 
 
-import android.app.Activity;
+import android.content.Context;
 import android.view.ViewGroup;
 
 import com.uoscs09.theuos2.UosMainActivity;
@@ -10,10 +10,10 @@ public abstract class BaseTabFragment extends BaseFragment {
     private ViewGroup mTabParent;
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(Context context) {
+        super.onAttach(context);
 
-        if (!(activity instanceof UosMainActivity))
+        if (!(context instanceof UosMainActivity))
             throw new RuntimeException("Activity != UosMainActivity");
     }
 

@@ -226,10 +226,18 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Requ
                             public void onResult(ArrayList<CoursePlanItem> result) {
                                 dismissProgressDialog();
 
-                                if (result.isEmpty())
-                                    setCourseTitle(new CoursePlanItem());
-                                else
+                                if (getActivity() == null) {
+                                    dismiss();
+                                    return;
+                                }
+
+                                if (result.isEmpty()) {
+                                    AppUtil.showToast(getActivity(), R.string.tab_course_plan_result_empty);
+                                    dismiss();
+                                    return;
+                                } else {
                                     setCourseTitle(result.get(0));
+                                }
 
                                 infoList.clear();
                                 infoList.addAll(result);

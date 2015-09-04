@@ -72,7 +72,7 @@ class Task<T> extends AsyncTask<Void, Integer, T> {
     }
 
     protected void logException(Exception e) {
-        Log.e(TAG, "exception occurred while doing T background: " + e.getMessage(), e);
+        Log.e(TAG, "exception occurred while doing background: " + e.getMessage(), e);
     }
 
 }

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:mrl_rippleColor="?colorPrimaryDark"
-    app:mrl_rippleInAdapter="true">
+    app:mrl_rippleInAdapter="false">
 
     <LinearLayout
         android:layout_width="fill_parent"

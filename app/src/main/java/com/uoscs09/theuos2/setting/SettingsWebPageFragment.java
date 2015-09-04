@@ -28,7 +28,8 @@ public class SettingsWebPageFragment extends PreferenceFragment {
     public void onResume() {
         super.onResume();
         AppCompatActivity activity = (AppCompatActivity) getActivity();
-        activity.getSupportActionBar().setTitle(R.string.setting_web_page);
+        if (activity.getSupportActionBar() != null)
+            activity.getSupportActionBar().setTitle(R.string.setting_web_page);
     }
 
     @Override

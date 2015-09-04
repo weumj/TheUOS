@@ -26,6 +26,7 @@ import android.widget.AdapterView;
 import android.widget.TextView;
 
 import com.uoscs09.theuos2.R;
+import com.uoscs09.theuos2.async.AbstractRequest;
 import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
@@ -249,7 +250,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
         execute(true, mRequest, this, this, true);
     }
 
-    private Request<ArrayList<UnivScheduleItem>> mRequest = new Request.Base<ArrayList<UnivScheduleItem>>() {
+    private Request<ArrayList<UnivScheduleItem>> mRequest = new AbstractRequest<ArrayList<UnivScheduleItem>>() {
         @Override
         public ArrayList<UnivScheduleItem> get() throws Exception {
             Context context = getActivity();

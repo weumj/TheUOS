@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
+import com.uoscs09.theuos2.async.AbstractRequest;
 import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.customview.NestedListView;
@@ -214,7 +215,7 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Em
         execute(true, mRequest, this, this, true);
     }
 
-    private Request<ArrayList<EmptyClassRoomItem>> mRequest = new Request.Base<ArrayList<EmptyClassRoomItem>>() {
+    private final Request<ArrayList<EmptyClassRoomItem>> mRequest = new AbstractRequest<ArrayList<EmptyClassRoomItem>>() {
         @Override
         public ArrayList<EmptyClassRoomItem> get() throws Exception {
             putParams();

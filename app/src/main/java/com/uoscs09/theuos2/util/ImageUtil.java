@@ -15,6 +15,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.uoscs09.theuos2.R;
+import com.uoscs09.theuos2.async.AbstractRequest;
 import com.uoscs09.theuos2.async.Processor;
 import com.uoscs09.theuos2.async.Request;
 
@@ -196,7 +197,7 @@ public class ImageUtil {
         }
     }
 
-    public static class ListViewBitmapRequest extends Request.Base<Bitmap> {
+    public static class ListViewBitmapRequest extends AbstractRequest<Bitmap> {
         private final WeakReference<ListView> listViewRef;
         private final ListAdapter adapter;
         private final WeakReference<View> headerViewRef;

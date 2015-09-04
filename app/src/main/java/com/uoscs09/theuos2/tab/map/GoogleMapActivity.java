@@ -1,7 +1,9 @@
 package com.uoscs09.theuos2.tab.map;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -152,34 +154,62 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
                 }
             });
 
-            locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-            Criteria criteria = new Criteria();
-            String provider = locationManager.getBestProvider(criteria, true);
-            if (provider == null) {
-                // 위치정보 설정이 안되어 있으면 설정하는 엑티비티로 이동
-                new AlertDialog.Builder(this)
-                        .setTitle("위치서비스 동의")
-                        .setNeutralButton("이동", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                startActivityForResult(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), REQUEST_LOCATION_SOURCE_SETTINGS);
-                            }
-                        })
-
-                        .setOnCancelListener(new DialogInterface.OnCancelListener() {
-                            @Override
-                            public void onCancel(DialogInterface dialog) {
-                                finish();
-                            }
-                        })
-                        .show();
-
-            } else {
-                // 위치 정보 설정이 되어 있으면 현재위치를 받아옴
-                locationManager.requestLocationUpdates(provider, 1, 1, this);
-            }
         }
+
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        Criteria criteria = new Criteria();
+        String provider = locationManager.getBestProvider(criteria, true);
+        if (provider == null) {
+            // 위치정보 설정이 안되어 있으면 설정하는 엑티비티로 이동
+            new AlertDialog.Builder(this)
+                    .setTitle("위치서비스 동의")
+                    .setNeutralButton("이동", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            startActivityForResult(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), REQUEST_LOCATION_SOURCE_SETTINGS);
+                        }
+                    })
+
+                    .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialog) {
+                            finish();
+                        }
+                    })
+                    .show();
+
+        } else {
+            // 위치 정보 설정이 되어 있으면 현재위치를 받아옴
+            if (checkLocationPermissionDenied()) {
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_REQUEST_LOCATION);
+            } else
+                locationManager.requestLocationUpdates(provider, 1, 1, this);
+        }
+
         return true;
+    }
+
+    private static final int PERMISSION_REQUEST_LOCATION = 4826;
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+            case PERMISSION_REQUEST_LOCATION:
+                for (int result : grantResults) {
+                    if (result == PackageManager.PERMISSION_DENIED) {
+                        AppUtil.showToast(this, R.string.tab_map_submap_permission_denied);
+                        finish();
+                        return;
+                    }
+                }
+                initMap();
+                break;
+
+            default:
+                break;
+        }
     }
 
     @Override
@@ -196,6 +226,8 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
                     finish();
 
                     // 사용자가 위치설정 동의 했을때
+                } else if (checkLocationPermissionDenied()) {
+                    requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_REQUEST_LOCATION);
                 } else {
                     locationManager.requestLocationUpdates(provider, 1L, 2F, this);
                     initMap();
@@ -205,6 +237,11 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
             default:
                 break;
         }
+    }
+
+    private boolean checkLocationPermissionDenied() {
+        return checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED;
     }
 
     @Override
@@ -273,7 +310,8 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
         }
 
         if (locationManager != null) {
-            locationManager.removeUpdates(this);
+            if (!checkLocationPermissionDenied())
+                locationManager.removeUpdates(this);
             locationManager = null;
         }
         super.onDestroy();

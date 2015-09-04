@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
+import com.uoscs09.theuos2.async.AbstractRequest;
 import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.common.SerializableArrayMap;
@@ -212,7 +213,7 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
 
     private RestRequest mRequest = new RestRequest();
 
-    private class RestRequest extends Request.Base<SparseArray<RestItem>> {
+    private class RestRequest extends AbstractRequest<SparseArray<RestItem>> {
         private boolean shouldForceUpdate = false;
 
         @Override

@@ -109,10 +109,13 @@ public class NestedListView extends ListView implements NestedScrollingChild {
             if (listView.getChildCount() > 0) {
                 final int scrollY = listView.getScrollY();
                 final View child = listView.getChildAt(findRow(y) - listView.getFirstVisiblePosition());
-                return !(y < child.getTop() - scrollY
-                        || y >= child.getBottom() - scrollY
-                        || x < child.getLeft()
-                        || x >= child.getRight());
+
+                return child != null &&
+                        !(y < child.getTop() - scrollY
+                                || y >= child.getBottom() - scrollY
+                                || x < child.getLeft()
+                                || x >= child.getRight()
+                        );
             }
             return false;
         }

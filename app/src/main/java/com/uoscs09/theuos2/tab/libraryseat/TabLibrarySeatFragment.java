@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import jp.wasabeef.recyclerview.animators.SlideInDownAnimator;
-import jp.wasabeef.recyclerview.animators.adapters.SlideInBottomAnimationAdapter;
 
 /**
  * 도서관 좌석 정보 현황을 보여주는 페이지
@@ -64,6 +63,7 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo>
     private SeatDismissDialogFragment mSeatDismissDialogFragment;
 
     private SeatInfo mSeatInfo;
+    private boolean isAdapterItemClicked = false;
 
     /**
      * 상단 액션바에 설정되는 timeTextView 에 설정될 Text.<br>
@@ -118,7 +118,7 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo>
         mLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
 
         mSeatListView = (RecyclerView) rootView.findViewById(R.id.tab_library_list_seat);
-        mSeatListView.setAdapter(new SlideInBottomAnimationAdapter(mSeatAdapter));
+        mSeatListView.setAdapter(mSeatAdapter);
         mSeatListView.setLayoutManager(mLayoutManager);
         mSeatListView.setItemAnimator(new SlideInDownAnimator());
 
@@ -133,11 +133,16 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo>
 
     @Override
     public void onItemClick(SeatListAdapter.ViewHolder viewHolder, View v) {
+        if (isAdapterItemClicked)
+            return;
+
+        isAdapterItemClicked = true;
         Intent intent = new Intent(getActivity(), SubSeatWebActivity.class);
         intent.putExtra(TabLibrarySeatFragment.ITEM, (Parcelable) viewHolder.getItem());
 
         // tracking 은 SubSeatWebActivity 에서 함.
         AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
+        isAdapterItemClicked = false;
     }
 
     @Override

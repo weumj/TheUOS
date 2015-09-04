@@ -3,6 +3,9 @@ package com.uoscs09.theuos2.tab.timetable;
 
 import com.uoscs09.theuos2.annotation.KeepName;
 import com.uoscs09.theuos2.tab.subject.SubjectItem2;
+
+import java.util.ArrayList;
+
 @KeepName
 public class SubjectInfoItem {
 
@@ -27,7 +30,9 @@ public class SubjectInfoItem {
         item.term = timeTable.semesterCode.code;
         item.year = Integer.toString(timeTable.year);
 
-        item.classInformationList.addAll(timeTable.getClassTimeInformationTable().get(subject.subjectName));
+        ArrayList<SubjectItem2.ClassInformation> classInformationList = timeTable.getClassTimeInformationTable().get(subject.subjectName);
+        if (classInformationList != null)
+            item.classInformationList.addAll(classInformationList);
 
         item.setInfoArray();
 

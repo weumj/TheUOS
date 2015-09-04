@@ -35,7 +35,7 @@ public class AsyncUtil {
     };
 
     private static final BlockingQueue<Runnable> sPoolWorkQueue = new LinkedBlockingQueue<>(128);
-    private static final Executor sEXECUTOR = new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE, TimeUnit.SECONDS, sPoolWorkQueue, sThreadFactory);
+    static final Executor sEXECUTOR = new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE, TimeUnit.SECONDS, sPoolWorkQueue, sThreadFactory);
 
 
     public static boolean isTaskRunning(@Nullable AsyncTask<?, ?, ?> task) {
@@ -52,24 +52,10 @@ public class AsyncUtil {
     }
 
     public static <Progress, V> AsyncTask<Void, Progress, V> execute(@NonNull AsyncTask<Void, Progress, V> task) {
-        return executeAsyncTask(task);
-    }
-
-    public static <Progress, V> AsyncTask<Void, Progress, V> executeFor(@NonNull AsyncTask<Void, Progress, V> task) {
-        return executeAsyncTaskOnExecutor(task);
-    }
-
-    /*
-    public static <Data> AsyncTask<Void, ?, Data> execute(AsyncJob<Data> job) {
-        return executeAsyncTask(new AsyncExecutor<Data>().setCallable(job).setCallback(job));
-    }
-    */
-
-    private static <Progress, Data> AsyncTask<Void, Progress, Data> executeAsyncTask(AsyncTask<Void, Progress, Data> task) {
         return task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    private static <Progress, Data> AsyncTask<Void, Progress, Data> executeAsyncTaskOnExecutor(AsyncTask<Void, Progress, Data> task) {
+    public static <Progress, V> AsyncTask<Void, Progress, V> executeFor(@NonNull AsyncTask<Void, Progress, V> task) {
         return task.executeOnExecutor(sEXECUTOR);
     }
 
@@ -95,7 +81,7 @@ public class AsyncUtil {
     }
 
     public static <V, T> Request<T> newRequest(final Processor<V, T> processor, final V in) {
-        return new Request.Base<T>() {
+        return new AbstractRequest<T>() {
             @Override
             public T get() throws Exception {
                 return processor.process(in);
@@ -108,7 +94,7 @@ public class AsyncUtil {
         return (Request<T>) EMPTY_REQUEST;
     }
 
-    private static Request<?> EMPTY_REQUEST = new Request.Base<Object>() {
+    private static Request<?> EMPTY_REQUEST = new AbstractRequest<Object>() {
         @Override
         public Object get() throws Exception {
             throw new Exception("empty request");
@@ -120,7 +106,7 @@ public class AsyncUtil {
         return new CallableRequest<>(callable);
     }
 
-    private static class CallableRequest<T> extends Request.Base<T> {
+    private static class CallableRequest<T> extends AbstractRequest<T> {
         private Callable<T> callable;
 
         public CallableRequest(Callable<T> callable) {

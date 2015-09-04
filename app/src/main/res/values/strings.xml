@@ -99,6 +99,7 @@
     <string name="tab_map_submap_select_dest">목적지 선택</string>
     <string name="tab_map_submap_select_building">건물을 선택해 주세요.</string>
     <string name="tab_map_submap_welfare">복지시설</string>
+    <string name="tab_map_submap_permission_denied">권한이 거절되어서 구글맵이 종료됩니다.</string>
 
     <string name="tab_rest_students_hall">학생회관</string>
     <string name="tab_rest_anekan">양식당</string>
@@ -202,6 +203,7 @@
     <string name="tab_course_plan_action_save_text">텍스트로 저장</string>
     <string name="tab_course_plan_action_save_image_completed">%1$s 폴더에 수업계획서가 이미지로 저장되었습니다.</string>
     <string name="tab_course_plan_action_save_text_completed">%1$s 폴더에 수업계획서가 텍스트로 저장되었습니다.</string>
+    <string name="tab_course_plan_result_empty">수업계획서 정보가 없습니다.</string>
 
     <string name="tab_transport_empty">버튼을 눌러 정보를 불러오세요.</string>
 

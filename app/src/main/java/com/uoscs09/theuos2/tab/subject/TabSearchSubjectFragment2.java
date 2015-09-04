@@ -25,6 +25,7 @@ import android.widget.TextView;
 import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
+import com.uoscs09.theuos2.async.AbstractRequest;
 import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.customview.CustomHorizontalScrollView;
@@ -302,7 +303,7 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
         execute(true, mRequest, this, this, true);
     }
 
-    private Request<ArrayList<SubjectItem2>> mRequest = new Request.Base<ArrayList<SubjectItem2>>() {
+    private Request<ArrayList<SubjectItem2>> mRequest = new AbstractRequest<ArrayList<SubjectItem2>>() {
         @Override
         public ArrayList<SubjectItem2> get() throws Exception {
             String query;

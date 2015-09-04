@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.uoscs09.theuos2.async.AbstractRequest;
 import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.async.Processor;
 import com.uoscs09.theuos2.async.Request;
@@ -236,7 +237,7 @@ public class IOUtil {
         }
     }
 
-    private static class FileOpenRequest<T> extends Request.Base<T> {
+    private static class FileOpenRequest<T> extends AbstractRequest<T> {
         private final String fileName;
         private final Context context;
 
