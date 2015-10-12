@@ -3,7 +3,6 @@ package com.uoscs09.theuos2.tab.subject;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.util.ArrayMap;
@@ -111,12 +110,9 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
         //mTitleLayout.setVisibility(View.INVISIBLE);
 
         mEmptyView = rootView.findViewById(R.id.tab_search_subject_empty_view);
-        mEmptyView.findViewById(R.id.empty1).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendEmptyViewClickEvent();
-                mSearchDialog.show();
-            }
+        mEmptyView.findViewById(R.id.empty1).setOnClickListener(v -> {
+            sendEmptyViewClickEvent();
+            mSearchDialog.show();
         });
 
         if (savedInstanceState != null) {
@@ -137,29 +133,23 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
 
         mScrollView = (CustomHorizontalScrollView) rootView.findViewById(R.id.tab_search_subject_scrollview);
         final CustomHorizontalScrollView mTabParent = (CustomHorizontalScrollView) LayoutInflater.from(getActivity()).inflate(R.layout.view_tab_search_subject_toolbar_menu, getToolbarParent(), false);
-        mTabParent.setOnScrollListener(new CustomHorizontalScrollView.OnScrollListener() {
-            @Override
-            public void onScrollChanged(int l, int t, int oldl, int oldt) {
-                if (!mIsScrollViewScrolling) {
-                    mIsScrollViewScrolling = true;
+        mTabParent.setOnScrollListener((l, t, oldl, oldt) -> {
+            if (!mIsScrollViewScrolling) {
+                mIsScrollViewScrolling = true;
 
-                    mScrollView.scrollTo(l, 0);
+                mScrollView.scrollTo(l, 0);
 
-                    mIsScrollViewScrolling = false;
-                }
+                mIsScrollViewScrolling = false;
             }
         });
 
-        mScrollView.setOnScrollListener(new CustomHorizontalScrollView.OnScrollListener() {
-            @Override
-            public void onScrollChanged(int l, int t, int oldl, int oldt) {
-                if (!mIsScrollViewScrolling) {
-                    mIsScrollViewScrolling = true;
+        mScrollView.setOnScrollListener((l, t, oldl, oldt) -> {
+            if (!mIsScrollViewScrolling) {
+                mIsScrollViewScrolling = true;
 
-                    mTabParent.scrollTo(l, 0);
+                mTabParent.scrollTo(l, 0);
 
-                    mIsScrollViewScrolling = false;
-                }
+                mIsScrollViewScrolling = false;
             }
         });
 
@@ -176,12 +166,7 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
         for (int id : ids) {
             final int j = i;
             View ripple = rippleParent.getChildAt(i);
-            ripple.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onTabClick(j);
-                }
-            });
+            ripple.setOnClickListener(v -> onTabClick(j));
 
             textViews[i] = (TextView) ripple.findViewById(id);
             tabStrips[i++] = ripple.findViewById(R.id.tab_tab_strip);
@@ -287,13 +272,10 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
                 .setView(v)
                 .setTitle(R.string.title_tab_search_subject)
                 .setMessage(R.string.tab_book_subject_opt)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        InputMethodManager ipm = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
-                        ipm.hideSoftInputFromWindow(mSearchEditText.getWindowToken(), 0);
-                        execute();
-                    }
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                    InputMethodManager ipm = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+                    ipm.hideSoftInputFromWindow(mSearchEditText.getWindowToken(), 0);
+                    execute();
                 })
                 .create();
     }

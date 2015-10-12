@@ -1,6 +1,5 @@
 package com.uoscs09.theuos2.tab.emptyroom;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.util.ArrayMap;
@@ -87,12 +86,7 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Em
         for (int id : ids) {
             final int j = i;
             View ripple = mTabParent.findViewById(id);
-            ripple.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onTabClick(j);
-                }
-            });
+            ripple.setOnClickListener(v -> onTabClick(j));
 
             textViews[i] = (TextView) ripple.findViewById(android.R.id.title);
             tabStrips[i++] = ripple.findViewById(R.id.tab_tab_strip);
@@ -114,11 +108,8 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Em
 
         mSearchDialog = new AlertDialog.Builder(getActivity())
                 .setView(dialogLayout)
-                .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        execute();
-                    }
+                .setPositiveButton(R.string.confirm, (dialog, which) -> {
+                    execute();
                 })
                 .create();
     }
@@ -133,12 +124,9 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Em
         mListView.setAdapter(mAdapter);
 
         mEmptyView = root.findViewById(R.id.tab_search_subject_empty_view);
-        mEmptyView.findViewById(R.id.empty1).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendEmptyViewClickEvent();
-                mSearchDialog.show();
-            }
+        mEmptyView.findViewById(R.id.empty1).setOnClickListener(v -> {
+            sendEmptyViewClickEvent();
+            mSearchDialog.show();
         });
         mListView.setEmptyView(mEmptyView);
 

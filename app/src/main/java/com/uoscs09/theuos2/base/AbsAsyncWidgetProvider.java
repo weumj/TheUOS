@@ -4,10 +4,7 @@ import android.appwidget.AppWidgetManager;
 import android.content.Context;
 
 import com.uoscs09.theuos2.async.AsyncUtil;
-import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.util.AppUtil;
-
-import java.util.concurrent.Callable;
 
 /**
  * 비 동기 작업이 필요한 AppWidget 을 위한 Abstract Class
@@ -18,25 +15,14 @@ public abstract class AbsAsyncWidgetProvider<Data> extends BaseAppWidgetProvider
     public void onUpdate(final Context context, final AppWidgetManager appWidgetManager, final int[] appWidgetIds) {
 
         final PendingResult pendingResult = goAsync();
-        AsyncUtil.newRequest(new Callable<Data>() {
-            @Override
-            public Data call() throws Exception {
-                return doInBackGround(context, appWidgetManager, appWidgetIds);
-            }
-        }).getAsync(
-                new Request.ResultListener<Data>() {
-                    @Override
-                    public void onResult(Data result) {
-                        AbsAsyncWidgetProvider.this.onBackgroundTaskResult(context, appWidgetManager, appWidgetIds, result);
-                        pendingResult.finish();
-                    }
+        AsyncUtil.newRequest(() -> doInBackGround(context, appWidgetManager, appWidgetIds)).getAsync(
+                result -> {
+                    AbsAsyncWidgetProvider.this.onBackgroundTaskResult(context, appWidgetManager, appWidgetIds, result);
+                    pendingResult.finish();
                 },
-                new Request.ErrorListener() {
-                    @Override
-                    public void onError(Exception e) {
-                        AbsAsyncWidgetProvider.this.exceptionOccurred(context, appWidgetManager, appWidgetIds, e);
-                        pendingResult.finish();
-                    }
+                e -> {
+                    AbsAsyncWidgetProvider.this.exceptionOccurred(context, appWidgetManager, appWidgetIds, e);
+                    pendingResult.finish();
                 }
         );
 

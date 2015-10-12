@@ -28,52 +28,49 @@ public abstract class TimeTableWidget extends BaseAppWidgetProvider {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
 
         final PendingResult pendingResult = goAsync();
-        AsyncUtil.execute(new Runnable() {
-            @Override
-            public void run() {
-                RemoteViews views = getRemoteViews(context);
+        AsyncUtil.execute(() -> {
+            RemoteViews views = getRemoteViews(context);
 
-                for (int appWidgetId : appWidgetIds) {
-                    // adapter
-                    Intent adapterIntent = new Intent(context, getListServiceClass())
-                            .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-                    adapterIntent.setData(Uri.parse(adapterIntent.toUri(Intent.URI_INTENT_SCHEME)));
+            for (int appWidgetId : appWidgetIds) {
+                // adapter
+                Intent adapterIntent = new Intent(context, getListServiceClass())
+                        .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+                adapterIntent.setData(Uri.parse(adapterIntent.toUri(Intent.URI_INTENT_SCHEME)));
 
-                    views.setRemoteAdapter(R.id.widget_timetable_listview, adapterIntent);
-                    views.setEmptyView(R.id.widget_timetable_listview, R.id.widget_timetable_empty);
+                views.setRemoteAdapter(R.id.widget_timetable_listview, adapterIntent);
+                views.setEmptyView(R.id.widget_timetable_listview, R.id.widget_timetable_empty);
 
-                    // refresh button
-                    Intent refreshIntent = new Intent(context, getWidgetClass())
-                            .setAction(WIDGET_TIMETABLE_REFRESH)
-                            .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+                // refresh button
+                Intent refreshIntent = new Intent(context, getWidgetClass())
+                        .setAction(WIDGET_TIMETABLE_REFRESH)
+                        .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
 
-                    PendingIntent p = PendingIntent.getBroadcast(context, 0, refreshIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-                    views.setOnClickPendingIntent(R.id.widget_time_refresh, p);
+                PendingIntent p = PendingIntent.getBroadcast(context, 0, refreshIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                views.setOnClickPendingIntent(R.id.widget_time_refresh, p);
 
-                    // title
-                    SimpleDateFormat date = new SimpleDateFormat("yyyy MMM dd E", Locale.getDefault());
-                    views.setTextViewText(R.id.widget_time_date, date.format(new Date()));
+                // title
+                SimpleDateFormat date = new SimpleDateFormat("yyyy MMM dd E", Locale.getDefault());
+                views.setTextViewText(R.id.widget_time_date, date.format(new Date()));
 
-                    TimeTable timeTable = TimetableUtil.readTimetable(context);
-                    if (timeTable != null) {
-                        views.setTextViewText(R.id.widget_time_term, timeTable.getYearAndSemester());
+                TimeTable timeTable = TimetableUtil.readTimetable(context);
+                if (timeTable != null) {
+                    views.setTextViewText(R.id.widget_time_term, timeTable.getYearAndSemester());
 
-                    } else {
-                        views.setTextViewText(R.id.widget_time_term, "");
-                    }
-
-                    // Intent serviceIntent = new Intent(context,
-                    // getListServiceClass());
-                    // serviceIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
-                    // appWidgetId);
-                    // context.startService(serviceIntent);
-
-                    appWidgetManager.updateAppWidget(appWidgetId, views);
-                    appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_timetable_listview);
+                } else {
+                    views.setTextViewText(R.id.widget_time_term, "");
                 }
 
-                pendingResult.finish();
+                // Intent serviceIntent = new Intent(context,
+                // getListServiceClass());
+                // serviceIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
+                // appWidgetId);
+                // context.startService(serviceIntent);
+
+                appWidgetManager.updateAppWidget(appWidgetId, views);
+                appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_timetable_listview);
             }
+
+            pendingResult.finish();
         });
     }
 

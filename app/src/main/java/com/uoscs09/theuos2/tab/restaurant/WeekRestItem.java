@@ -53,7 +53,7 @@ public class WeekRestItem implements Parcelable, Serializable, IParser.AfterPars
 
         final int size = in.readInt();
         for (int i = 0; i < size; i++)
-            weekList.add((RestItem) in.readParcelable(RestItem.class.getClassLoader()));
+            weekList.add(in.readParcelable(RestItem.class.getClassLoader()));
     }
 
     @Override

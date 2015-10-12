@@ -16,7 +16,7 @@ public class UOSApplication extends Application {
     private ImageLoader mImageLoader;
     private TrackerUtil mTrackerUtil;
 
-    public static final boolean DEBUG = true;// BuildConfig.DEBUG;
+    public static final boolean DEBUG = BuildConfig.DEBUG;
 
 
     public TrackerUtil getTrackerUtil() {

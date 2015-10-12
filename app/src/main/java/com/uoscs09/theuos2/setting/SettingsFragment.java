@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager.OnBackStackChangedListener;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Resources;
@@ -22,7 +21,6 @@ import android.widget.TextView;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.async.AsyncUtil;
-import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.common.PieProgressDrawable;
 import com.uoscs09.theuos2.http.HttpRequest;
@@ -36,7 +34,6 @@ import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.Source;
 
 import java.util.Formatter;
-import java.util.concurrent.Callable;
 
 /**
  * 메인 설정화면을 나타내는 {@code PreferenceFragment}
@@ -47,15 +44,12 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
     private static final String TAG = "SettingsFragment";
     private static final String APP_URL = "https://play.google.com/store/apps/details?id=com.uoscs09.theuos2";
 
-    private OnBackStackChangedListener onBackStackChangedListener = new OnBackStackChangedListener() {
-        @Override
-        public void onBackStackChanged() {
-            if (getFragmentManager() != null) {
-                if (getFragmentManager().getBackStackEntryCount() < 1) {
-                    getFragmentManager().beginTransaction()
-                            .show(SettingsFragment.this)
-                            .commit();
-                }
+    private OnBackStackChangedListener onBackStackChangedListener = () -> {
+        if (getFragmentManager() != null) {
+            if (getFragmentManager().getBackStackEntryCount() < 1) {
+                getFragmentManager().beginTransaction()
+                        .show(SettingsFragment.this)
+                        .commit();
             }
         }
     };
@@ -155,45 +149,36 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
                         }
                 )
                 .getAsync(
-                        new Request.ResultListener<String>() {
-                            @Override
-                            public void onResult(String result) {
-                                progress.dismiss();
-                                String thisVersion = getString(R.string.setting_app_version_name);
-                                if (thisVersion.equals(result)) {
-                                    AppUtil.showToast(getActivity(), R.string.setting_app_version_update_this_new, true);
-                                } else {
+                        result -> {
+                            progress.dismiss();
+                            String thisVersion = getString(R.string.setting_app_version_name);
+                            if (thisVersion.equals(result)) {
+                                AppUtil.showToast(getActivity(), R.string.setting_app_version_update_this_new, true);
+                            } else {
 
-                                    TextView tv = new TextView(getActivity());
-                                    tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
-                                    tv.setPadding(100, 20, 20, 20);
+                                TextView tv = new TextView(getActivity());
+                                tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+                                tv.setPadding(100, 20, 20, 20);
 
-                                    Formatter f = new Formatter();
-                                    f.format(getString(R.string.setting_app_version_update_this_old), thisVersion);
-                                    tv.setText(f.toString() + " " + result);
-                                    f.close();
+                                Formatter f = new Formatter();
+                                f.format(getString(R.string.setting_app_version_update_this_old), thisVersion);
+                                tv.setText(f.toString() + " " + result);
+                                f.close();
 
-                                    AlertDialog d = new AlertDialog.Builder(getActivity())
-                                            .setTitle(R.string.setting_app_version_update_require)
-                                            .setIcon(R.drawable.theme_ic_action_action_about)
-                                            .setPositiveButton(R.string.update, new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    startActivity(AppUtil.getWebPageIntent(APP_URL));
-                                                }
-                                            })
-                                            .setNegativeButton(R.string.later, null)
-                                            .create();
-                                    d.show();
-                                }
+                                AlertDialog d = new AlertDialog.Builder(getActivity())
+                                        .setTitle(R.string.setting_app_version_update_require)
+                                        .setIcon(R.drawable.theme_ic_action_action_about)
+                                        .setPositiveButton(R.string.update, (dialog, which) -> {
+                                            startActivity(AppUtil.getWebPageIntent(APP_URL));
+                                        })
+                                        .setNegativeButton(R.string.later, null)
+                                        .create();
+                                d.show();
                             }
                         },
-                        new Request.ErrorListener() {
-                            @Override
-                            public void onError(Exception e) {
-                                progress.dismiss();
-                                AppUtil.showErrorToast(getActivity(), e, true);
-                            }
+                        e -> {
+                            progress.dismiss();
+                            AppUtil.showErrorToast(getActivity(), e, true);
                         }
                 );
     }
@@ -206,23 +191,20 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
             mThemeSelectorDialog = new AlertDialog.Builder(getActivity())
                     .setIconAttribute(R.attr.theme_ic_action_image_palette)
                     .setTitle(R.string.setting_plz_select_theme)
-                    .setAdapter(new ThemeSelectAdapter(getActivity()), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int i) {
-                            PrefUtil pref = PrefUtil.getInstance(getActivity());
-                            int originalValue = pref.get(PrefUtil.KEY_THEME, 0);
+                    .setAdapter(new ThemeSelectAdapter(getActivity()), (dialog, i) -> {
+                        PrefUtil pref = PrefUtil.getInstance(getActivity());
+                        int originalValue = pref.get(PrefUtil.KEY_THEME, 0);
 
-                            if (originalValue != i) {
+                        if (originalValue != i) {
 
-                                TrackerUtil.getInstance(SettingsFragment.this).sendEvent(TAG, "apply theme", AppTheme.values()[i].name(), i);
+                            TrackerUtil.getInstance(SettingsFragment.this).sendEvent(TAG, "apply theme", AppTheme.values()[i].name(), i);
 
-                                pref.put(PrefUtil.KEY_THEME, i);
-                                onSharedPreferenceChanged(getPreferenceScreen().getSharedPreferences(), PrefUtil.KEY_THEME);
-                                getActivity().setResult(AppUtil.RELAUNCH_ACTIVITY);
-                            }
-
-                            mThemeSelectorDialog.dismiss();
+                            pref.put(PrefUtil.KEY_THEME, i);
+                            onSharedPreferenceChanged(getPreferenceScreen().getSharedPreferences(), PrefUtil.KEY_THEME);
+                            getActivity().setResult(AppUtil.RELAUNCH_ACTIVITY);
                         }
+
+                        mThemeSelectorDialog.dismiss();
                     })
                     .create();
         }
@@ -302,26 +284,13 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
      */
     private void deleteCache() {
         AsyncUtil.newRequest(
-                new Callable<Void>() {
-                    @Override
-                    public Void call() throws Exception {
-                        AppUtil.clearCache(getActivity());
-                        return null;
-                    }
+                () -> {
+                    AppUtil.clearCache(getActivity());
+                    return null;
                 })
                 .getAsync(
-                        new Request.ResultListener<Void>() {
-                            @Override
-                            public void onResult(Void result) {
-                                AppUtil.showToast(getActivity(), R.string.execute_delete);
-                            }
-                        },
-                        new Request.ErrorListener() {
-                            @Override
-                            public void onError(Exception e) {
-                                AppUtil.showErrorToast(getActivity(), e, true);
-                            }
-                        }
+                        result -> AppUtil.showToast(getActivity(), R.string.execute_delete),
+                        e -> AppUtil.showErrorToast(getActivity(), e, true)
                 );
 
     }

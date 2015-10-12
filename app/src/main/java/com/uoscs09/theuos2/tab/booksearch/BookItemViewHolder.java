@@ -14,7 +14,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.async.AsyncUtil;
-import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.common.PieProgressDrawable;
 import com.uoscs09.theuos2.http.HttpRequest;
@@ -137,24 +136,16 @@ class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements ImageLoad
                         .checkNetworkState(holder.itemView.getContext())
                         .wrap(BOOK_STATE_INFO_PARSER)
                         .getAsyncOnExecutor(
-                                new Request.ResultListener<ArrayList<BookStateInfo>>() {
-                                    @Override
-                                    public void onResult(ArrayList<BookStateInfo> result) {
-                                        item.bookStateInfoList = result;
+                                result -> {
+                                    item.bookStateInfoList = result;
 
-                                        // 처리 후, ViewHolder item 과 결과 item 이 다르다면 무시
-                                        if (holder.item.equals(item))
-                                            drawBookStateLayout(holder);
-                                        else
-                                            Log.d("BookItemViewHolder", "request item != current item");
-                                    }
+                                    // 처리 후, ViewHolder item 과 결과 item 이 다르다면 무시
+                                    if (holder.item.equals(item))
+                                        drawBookStateLayout(holder);
+                                    else
+                                        Log.d("BookItemViewHolder", "request item != current item");
                                 },
-                                new Request.ErrorListener() {
-                                    @Override
-                                    public void onError(Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                }
+                                Throwable::printStackTrace
 
                         );
 

@@ -70,19 +70,16 @@ public class WeekInformationDialogFragment extends BaseDialogFragment implements
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.tab_rest_week_swipe_layout);
         mSwipeRefreshLayout.setColorSchemeColors(AppUtil.getAttrColor(getActivity(), R.attr.colorPrimaryDark));
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                sendTrackerEvent("swipe", "SwipeRefreshView");
-                execute(true);
-            }
+        mSwipeRefreshLayout.setOnRefreshListener(() -> {
+            sendTrackerEvent("swipe", "SwipeRefreshView");
+            execute(true);
         });
 
         RecyclerView recyclerView = (RecyclerView) mSwipeRefreshLayout.findViewById(R.id.tab_rest_week_recyclerview);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
 
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(mRestWeekAdapter = new RestWeekAdapter(new ArrayList<RestItem>()));
+        recyclerView.setAdapter(mRestWeekAdapter = new RestWeekAdapter(new ArrayList<>()));
 
         mProgressLayout = rootView.findViewById(R.id.progress_layout);
         mProgressWheel = (ProgressWheel) mProgressLayout.findViewById(R.id.progress_wheel);
@@ -95,12 +92,9 @@ public class WeekInformationDialogFragment extends BaseDialogFragment implements
     private void showReloadView() {
         if (mFailView == null) {
             mFailView = ((ViewStub) ((View) mSwipeRefreshLayout.getParent()).findViewById(R.id.tab_rest_week_stub_reload)).inflate();
-            mFailView.findViewById(android.R.id.content).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    sendClickEvent("fail view");
-                    execute(true);
-                }
+            mFailView.findViewById(android.R.id.content).setOnClickListener(v -> {
+                sendClickEvent("fail view");
+                execute(true);
             });
         }
     }
@@ -108,12 +102,7 @@ public class WeekInformationDialogFragment extends BaseDialogFragment implements
     private void showEmptyView() {
         if (mEmptyView == null) {
             mEmptyView = ((ViewStub) ((View) mSwipeRefreshLayout.getParent()).findViewById(R.id.tab_rest_week_stub_empty_info)).inflate();
-            mEmptyView.findViewById(android.R.id.content).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dismiss();
-                }
-            });
+            mEmptyView.findViewById(android.R.id.content).setOnClickListener(v -> dismiss());
         }
     }
 

@@ -217,14 +217,11 @@ public class SubjectItem2 implements Parcelable, IParser.AfterParsable {
             case 4:
             case 7:
             case 8:
-                return new Comparator<SubjectItem2>() {
-                    @Override
-                    public int compare(SubjectItem2 lhs, SubjectItem2 rhs) {
-                        lhs.setInfoArray();
-                        rhs.setInfoArray();
-                        return isInverse ? rhs.infoArray[field].compareTo(lhs.infoArray[field])
-                                : lhs.infoArray[field].compareTo(rhs.infoArray[field]);
-                    }
+                return (lhs, rhs) -> {
+                    lhs.setInfoArray();
+                    rhs.setInfoArray();
+                    return isInverse ? rhs.infoArray[field].compareTo(lhs.infoArray[field])
+                            : lhs.infoArray[field].compareTo(rhs.infoArray[field]);
                 };
             case 2:
             case 3:
@@ -232,24 +229,21 @@ public class SubjectItem2 implements Parcelable, IParser.AfterParsable {
             case 6:
             case 9:
             case 10:
-                return new Comparator<SubjectItem2>() {
-                    @Override
-                    public int compare(SubjectItem2 lhs, SubjectItem2 rhs) {
-                        lhs.setInfoArray();
-                        rhs.setInfoArray();
-                        int r, l;
-                        try {
-                            r = Integer.parseInt(rhs.infoArray[field]);
-                        } catch (Exception e) {
-                            r = Integer.MAX_VALUE;
-                        }
-                        try {
-                            l = Integer.parseInt(lhs.infoArray[field]);
-                        } catch (Exception e) {
-                            l = Integer.MAX_VALUE;
-                        }
-                        return isInverse ? r - l : l - r;
+                return (lhs, rhs) -> {
+                    lhs.setInfoArray();
+                    rhs.setInfoArray();
+                    int r, l;
+                    try {
+                        r = Integer.parseInt(rhs.infoArray[field]);
+                    } catch (Exception e) {
+                        r = Integer.MAX_VALUE;
                     }
+                    try {
+                        l = Integer.parseInt(lhs.infoArray[field]);
+                    } catch (Exception e) {
+                        l = Integer.MAX_VALUE;
+                    }
+                    return isInverse ? r - l : l - r;
                 };
             default:
                 return null;

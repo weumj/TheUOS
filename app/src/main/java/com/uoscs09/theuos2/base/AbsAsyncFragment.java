@@ -85,18 +85,15 @@ public abstract class AbsAsyncFragment<T> extends BaseTabFragment {
                         }
                     }
                 },
-                new Request.ErrorListener() {
-                    @Override
-                    public void onError(Exception e) {
-                        mAsyncTask = null;
-                        if (isVisible()) {
-                            onPostExecute();
-                            if (callBaseErrorListener) {
-                                simpleErrorRespond(e);
-                            }
-                            if (errorListener != null) {
-                                errorListener.onError(e);
-                            }
+                e -> {
+                    mAsyncTask = null;
+                    if (isVisible()) {
+                        onPostExecute();
+                        if (callBaseErrorListener) {
+                            simpleErrorRespond(e);
+                        }
+                        if (errorListener != null) {
+                            errorListener.onError(e);
                         }
                     }
                 }

@@ -45,12 +45,7 @@ public class TabTransportFragment extends AbsProgressFragment<Map<String, ArrayL
         adapter = new TransportAdapter(getActivity(), android.R.layout.simple_expandable_list_item_1, data);
         listview.setAdapter(adapter);
         empty = v.findViewById(R.id.empty_view);
-        empty.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                execute();
-            }
-        });
+        empty.setOnClickListener(v1 -> execute());
         listview.setEmptyView(empty);
 
         registerProgressView(v.findViewById(R.id.progress_layout));

@@ -2,7 +2,6 @@ package com.uoscs09.theuos2.tab.announce;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -121,13 +120,9 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
         NestedListView mListView = (NestedListView) rootView.findViewById(R.id.tab_announce_list_announce);
 
         mEmptyView = rootView.findViewById(R.id.tab_announce_empty_view);
-        mEmptyView.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                mCategorySpinner.performClick();
-                sendEmptyViewClickEvent();
-            }
+        mEmptyView.setOnClickListener(v -> {
+            mCategorySpinner.performClick();
+            sendEmptyViewClickEvent();
         });
 
         mEmptyView.setVisibility(mDataList.size() != 0 ? View.INVISIBLE : View.VISIBLE);
@@ -135,12 +130,9 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
         mListFooterView = inflater.inflate(R.layout.view_tab_announce_bottom_more, mListView, false);
         mListView.addFooterView(mListFooterView);
         mListFooterView.setVisibility(View.GONE);
-        mListFooterView.findViewById(android.R.id.text1).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendClickEvent("view more page");
-                executeJob(mIsSearchRequesting, true, mCurrentPageIndex + 1);
-            }
+        mListFooterView.findViewById(android.R.id.text1).setOnClickListener(v -> {
+            sendClickEvent("view more page");
+            executeJob(mIsSearchRequesting, true, mCurrentPageIndex + 1);
         });
 
         mListView.setEmptyView(mEmptyView);
@@ -202,13 +194,10 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
             searchView.setOnQueryTextListener(this);
             searchView.setSubmitButtonEnabled(true);
             searchView.setQueryHint(getText(R.string.search_hint));
-            searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
-                @Override
-                public void onFocusChange(View view, boolean queryTextFocused) {
-                    if (!queryTextFocused) {
-                        MenuItemCompat.collapseActionView(mSearchMenu);
-                        searchView.setQuery("", false);
-                    }
+            searchView.setOnQueryTextFocusChangeListener((view, queryTextFocused) -> {
+                if (!queryTextFocused) {
+                    MenuItemCompat.collapseActionView(mSearchMenu);
+                    searchView.setQuery("", false);
                 }
             });
 
@@ -230,7 +219,8 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
 
         Intent intent = new Intent(getActivity(), SubAnnounceWebActivity.class)
                 .putExtra(ITEM, mAnnounceAdapter.getItem(pos))
-                .putExtra(INDEX_CATEGORY, getCurrentCategoryIndex());
+                .putExtra(INDEX_CATEGORY, getCurrentCategoryIndex())
+                .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
         AppUtil.startActivityWithScaleUp(getActivity(), intent, view);
     }
@@ -361,15 +351,11 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
         mCategorySpinner.setOnItemSelectedListener(this);
 
         mPageIndexView = (TextView) mTabParent.findViewById(R.id.tab_anounce_action_textView_page);
-        mPageIndexView.setOnClickListener(new View.OnClickListener() {
-            // 페이지를 나타내는 버튼을 선택했을 시, 페이지를 선택하는 메뉴를 띄운다.
-            @Override
-            public void onClick(View v) {
-                if (getCurrentCategoryIndex() < 1) {
-                    AppUtil.showToast(getActivity(), R.string.tab_announce_invalid_category, true);
-                } else {
-                    mPageSelectDialog.show();
-                }
+        mPageIndexView.setOnClickListener(v -> {
+            if (getCurrentCategoryIndex() < 1) {
+                AppUtil.showToast(getActivity(), R.string.tab_announce_invalid_category, true);
+            } else {
+                mPageSelectDialog.show();
             }
         });
 
@@ -398,12 +384,9 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
         mPageSelectDialog = new AlertDialog.Builder(context)
                 .setTitle(R.string.tab_announce_plz_select_page)
                 .setView(mPageNumberPicker)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        sendTrackerEvent("page changed", "" + getCurrentCategoryIndex(), mPageNumberPicker.getValue());
-                        executeJob(mIsSearchRequesting, false, mPageNumberPicker.getValue());
-                    }
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                    sendTrackerEvent("page changed", "" + getCurrentCategoryIndex(), mPageNumberPicker.getValue());
+                    executeJob(mIsSearchRequesting, false, mPageNumberPicker.getValue());
                 })
                 .setNegativeButton(android.R.string.no, null)
                 .create();

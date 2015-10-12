@@ -258,27 +258,24 @@ public class UosMainActivity extends BaseActivity {
         mDrawerListView.setLayoutManager(layoutManager);
         mDrawerListView.setAdapter(mDrawerAdapter = new DrawerAdapter());
 
-        View.OnClickListener l = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                switch (v.getId()) {
-                    case R.id.drawer_btn_setting:
-                        mDrawerLayout.closeDrawer(mLeftDrawerLayout);
-                        startSettingActivity();
-                        break;
+        View.OnClickListener l = v -> {
+            switch (v.getId()) {
+                case R.id.drawer_btn_setting:
+                    mDrawerLayout.closeDrawer(mLeftDrawerLayout);
+                    startSettingActivity();
+                    break;
 
-                    case R.id.drawer_btn_map:
-                        AppUtil.startActivityWithScaleUp(UosMainActivity.this, new Intent(UosMainActivity.this, GoogleMapActivity.class), v);
-                        break;
+                case R.id.drawer_btn_map:
+                    AppUtil.startActivityWithScaleUp(UosMainActivity.this, new Intent(UosMainActivity.this, GoogleMapActivity.class), v);
+                    break;
 
-                    case R.id.drawer_btn_exit:
-                        mDrawerLayout.closeDrawer(mLeftDrawerLayout);
-                        AppUtil.exit(UosMainActivity.this);
-                        break;
+                case R.id.drawer_btn_exit:
+                    mDrawerLayout.closeDrawer(mLeftDrawerLayout);
+                    AppUtil.exit(UosMainActivity.this);
+                    break;
 
-                    default:
-                        break;
-                }
+                default:
+                    break;
             }
         };
 
@@ -423,12 +420,7 @@ public class UosMainActivity extends BaseActivity {
             overridePendingTransition(R.anim.enter_fade, R.anim.exit_hold);
             // 지정 시간 후 모든 스레드 종료
 
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    android.os.Process.killProcess(android.os.Process.myPid());
-                }
-            }, 300);
+            new Handler().postDelayed(() -> android.os.Process.killProcess(android.os.Process.myPid()), 300);
         }
     }
 

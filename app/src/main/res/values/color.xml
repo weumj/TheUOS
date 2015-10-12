@@ -49,12 +49,12 @@
     <color name="material_teal_700">#00796b</color>
 
 	<color name="material_grey_400">#bdbdbd</color>
-	<color name="material_grey_600">#757575</color>
-	<color name="material_grey_800">#424242</color>
+	<color name="material_grey_600_">#757575</color>
+	<color name="material_grey_800_">#424242</color>
 	<color name="material_blue_grey_200">#b0bec5</color>
 	<color name="material_blue_grey_400">#78909c</color>
 	<color name="material_blue_grey_600">#546e7a</color>
-	<color name="material_blue_grey_800">#37474f</color>
+	<color name="material_blue_grey_800_">#37474f</color>
 
     <color name="tint_gray">#9a323232</color>
     <color name="tint_white">#cdffffff</color>

@@ -12,7 +12,6 @@ import com.uoscs09.theuos2.tab.libraryseat.SeatItem;
 import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -111,7 +110,7 @@ public class LibrarySeatListService extends RemoteViewsService {
         public void onDataSetChanged() {
             super.onDataSetChanged();
             clear();
-            addAll((ArrayList<SeatItem>) IOUtil.readFromFileSuppressed(getContext(), IOUtil.FILE_LIBRARY_SEAT));
+            addAll(IOUtil.readFromFileSuppressed(getContext(), IOUtil.FILE_LIBRARY_SEAT));
         }
 
     }

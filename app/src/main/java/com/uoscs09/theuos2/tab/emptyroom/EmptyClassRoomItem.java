@@ -76,43 +76,36 @@ public class EmptyClassRoomItem implements Parcelable {
             case 1:
             case 2:
 
-                return new Comparator<EmptyClassRoomItem>() {
+                return (lhs, rhs) -> {
+                    String l, r;
+                    switch (field) {
+                        case 0:
+                            l = lhs.building;
+                            r = rhs.building;
+                            break;
 
-                    @Override
-                    public int compare(EmptyClassRoomItem lhs, EmptyClassRoomItem rhs) {
-                        String l, r;
-                        switch (field) {
-                            case 0:
-                                l = lhs.building;
-                                r = rhs.building;
-                                break;
+                        case 1:
+                            l = lhs.room_no;
+                            r = rhs.room_no;
+                            break;
 
-                            case 1:
-                                l = lhs.room_no;
-                                r = rhs.room_no;
-                                break;
+                        case 2:
+                            l = lhs.room_div;
+                            r = rhs.room_div;
+                            break;
 
-                            case 2:
-                                l = lhs.room_div;
-                                r = rhs.room_div;
-                                break;
-
-                            default:
-                                return 0;
-                        }
-
-                        return isReverse ? r.compareTo(l) : l.compareTo(r);
+                        default:
+                            return 0;
                     }
+
+                    return isReverse ? r.compareTo(l) : l.compareTo(r);
                 };
 
             case 3:
 
-                return new Comparator<EmptyClassRoomItem>() {
-                    @Override
-                    public int compare(EmptyClassRoomItem lhs, EmptyClassRoomItem rhs) {
-                        int result = lhs.person_cnt < rhs.person_cnt ? -1 : (lhs.person_cnt == rhs.person_cnt ? 0 : 1);
-                        return isReverse ? -result : result;
-                    }
+                return (lhs, rhs) -> {
+                    int result = lhs.person_cnt < rhs.person_cnt ? -1 : (lhs.person_cnt == rhs.person_cnt ? 0 : 1);
+                    return isReverse ? -result : result;
                 };
 
             default:

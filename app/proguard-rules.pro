@@ -23,7 +23,33 @@
     protected Object[][] getContents();
 }
 
-# Google Play Services
+-keep class com.uoscs09.theuos2.annotation.**
+
+
+-keepclassmembers @com.uoscs09.theuos2.annotation.KeepName class * {
+   public <init>(...);
+}
+
+-keepclassmembers class * implements java.io.Serializable {
+    private static final java.io.ObjectStreamField[] serialPersistentFields;
+    private static final long serialVersionUID;
+    private void writeObject(java.io.ObjectOutputStream);
+    private void readObject(java.io.ObjectInputStream);
+    java.lang.Object writeReplace();
+    java.lang.Object readResolve();
+}
+
+
+#### Retrolambda
+-dontwarn java.lang.invoke.*
+-keepclassmembernames  @com.uoscs09.theuos2.annotation.KeepName class * {
+     *;
+}
+
+
+
+
+#### Google Play Services
 #
 # Keep SafeParcelable value, needed for reflection. This is required to support backwards
 # compatibility of some classes.
@@ -42,28 +68,37 @@
     public static final ** CREATOR;
 }
 
-# Android Support Library
+
+
+##### Android Support Library
 -keep class android.support.** { *; }
 -keep interface android.support.** { *; }
+-keep class !android.support.v7.internal.view.menu.**, ** { *; }
 
--keep class com.uoscs09.theuos2.annotation.**
 
--keepclassmembernames  @com.uoscs09.theuos2.annotation.KeepName class * {
-     *;
+
+#### Butterknife
+-keep class butterknife.** { *; }
+-dontwarn butterknife.internal.**
+-keep class **$$ViewBinder { *; }
+
+-keepclasseswithmembernames class * {
+    @butterknife.* <fields>;
 }
 
--keepclassmembers @com.uoscs09.theuos2.annotation.KeepName class * {
-   public <init>(...);
+-keepclasseswithmembernames class * {
+    @butterknife.* <methods>;
 }
 
--keepclassmembers class * implements java.io.Serializable {
-    private static final java.io.ObjectStreamField[] serialPersistentFields;
-    private static final long serialVersionUID;
-    private void writeObject(java.io.ObjectOutputStream);
-    private void readObject(java.io.ObjectInputStream);
-    java.lang.Object writeReplace();
-    java.lang.Object readResolve();
-}
+
+
+
+#### Volley
+-keep class com.android.volley.** { *; }
+-keep class org.apache.commons.logging.**
+-keep class android.net.http.AndroidHttpClient
+-keep class com.android.volley.toolbox.HttpClientStatck$HttpPatch {*;}
+
 
 # Library Jars
 #-libraryjars libs/jericho-html-3.3.jar
@@ -73,3 +108,4 @@
 -dontwarn com.haarman.listviewanimations.**
 -dontwarn net.htmlparser.jericho.**
 -dontwarn com.google.android.gms.**
+-dontwarn com.android.volley.**

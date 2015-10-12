@@ -3,7 +3,6 @@ package com.uoscs09.theuos2.tab.timetable;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -258,29 +257,26 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements V
                     .checkNetworkState(getActivity())
                     .wrap(SUBJECT_INFO_PARSER)
                     .getAsync(
-                            new Request.ResultListener<ArrayList<SubjectInfoItem>>() {
-                                @Override
-                                public void onResult(ArrayList<SubjectInfoItem> result) {
-                                    mProgress.dismiss();
+                            result -> {
+                                mProgress.dismiss();
 
-                                    int size;
-                                    if (result == null || (size = result.size()) == 0) {
-                                        AppUtil.showToast(getActivity(), R.string.tab_timetable_error_on_search_subject, true);
-                                        dismiss();
+                                int size;
+                                if (result == null || (size = result.size()) == 0) {
+                                    AppUtil.showToast(getActivity(), R.string.tab_timetable_error_on_search_subject, true);
+                                    dismiss();
 
-                                    } else if (size == 1) {
-                                        showCoursePlan(result.get(0).toSubjectItem(mTimeTable, mSubject));
-                                        dismiss();
+                                } else if (size == 1) {
+                                    showCoursePlan(result.get(0).toSubjectItem(mTimeTable, mSubject));
+                                    dismiss();
 
-                                    } else {
-                                        mClassDivSelectAdapter.clear();
-                                        mClassDivSelectAdapter.addAll(result);
-                                        mClassDivSelectAdapter.notifyDataSetChanged();
+                                } else {
+                                    mClassDivSelectAdapter.clear();
+                                    mClassDivSelectAdapter.addAll(result);
+                                    mClassDivSelectAdapter.notifyDataSetChanged();
 
-                                        mClassDivSelectDialog.show();
-                                    }
-
+                                    mClassDivSelectDialog.show();
                                 }
+
                             }, this
                     );
 
@@ -316,25 +312,17 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements V
         mClassDivSelectDialog = new AlertDialog.Builder(getActivity())
                 .setTitle(mSubject.getSubjectNameLocal())
                 .setView(dialogView)
-                .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
-                        dismiss();
-                    }
-                })
+                .setOnDismissListener(dialog -> dismiss())
                 .create();
 
-        mClassDivSelectAdapter = new ClassDivAdapter(getActivity(), new ArrayList<SubjectInfoItem>());
+        mClassDivSelectAdapter = new ClassDivAdapter(getActivity(), new ArrayList<>());
 
         ListView divListView = (ListView) dialogView.findViewById(R.id.dialog_timetable_callback_listview_div);
         divListView.setAdapter(mClassDivSelectAdapter);
-        divListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapter, View arg1, int pos, long arg3) {
-                showCoursePlan(mClassDivSelectAdapter.getItem(pos).toSubjectItem(mTimeTable, mSubject));
+        divListView.setOnItemClickListener((adapter, arg1, pos, arg3) -> {
+            showCoursePlan(mClassDivSelectAdapter.getItem(pos).toSubjectItem(mTimeTable, mSubject));
 
-                mClassDivSelectDialog.dismiss();
-            }
+            mClassDivSelectDialog.dismiss();
         });
     }
 

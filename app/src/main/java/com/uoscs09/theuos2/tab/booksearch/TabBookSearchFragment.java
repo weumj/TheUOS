@@ -272,13 +272,10 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
             searchView.setOnQueryTextListener(this);
             searchView.setSubmitButtonEnabled(true);
             searchView.setQueryHint(getText(R.string.search_hint));
-            searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
-                @Override
-                public void onFocusChange(View view, boolean queryTextFocused) {
-                    if (!queryTextFocused) {
-                        searchMenu.collapseActionView();
-                        searchView.setQuery("", false);
-                    }
+            searchView.setOnQueryTextFocusChangeListener((view, queryTextFocused) -> {
+                if (!queryTextFocused) {
+                    searchMenu.collapseActionView();
+                    searchView.setQuery("", false);
                 }
             });
 
@@ -554,26 +551,23 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
         oi.setSelection(oiSelect);
         os.setSelection(osSelect);
 
-        DialogInterface.OnClickListener l = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case DialogInterface.BUTTON_POSITIVE:
-                        if (!mBookList.isEmpty()) {
-                            mBookList.clear();
-                            mCurrentPage = 1;
-                            execute();
-                        }
-                        break;
+        DialogInterface.OnClickListener l = (dialog, which) -> {
+            switch (which) {
+                case DialogInterface.BUTTON_POSITIVE:
+                    if (!mBookList.isEmpty()) {
+                        mBookList.clear();
+                        mCurrentPage = 1;
+                        execute();
+                    }
+                    break;
 
-                    case DialogInterface.BUTTON_NEGATIVE:
-                        oi.setSelection(0);
-                        os.setSelection(0);
-                        break;
+                case DialogInterface.BUTTON_NEGATIVE:
+                    oi.setSelection(0);
+                    os.setSelection(0);
+                    break;
 
-                    default:
-                        break;
-                }
+                default:
+                    break;
             }
         };
         optionDialog = new AlertDialog.Builder(getActivity())

@@ -181,14 +181,11 @@ public class IOUtil {
 
     public static void writeObjectToFileAsync(Context context, final String fileName, final Object obj) {
         final Context appContext = context.getApplicationContext();
-        AsyncUtil.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    writeObjectToFile(appContext, fileName, obj);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        AsyncUtil.execute(() -> {
+            try {
+                writeObjectToFile(appContext, fileName, obj);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         });
     }

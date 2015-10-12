@@ -33,14 +33,13 @@ class Task<T> extends AsyncTask<Void, Integer, T> {
             logException(e);
             setException(e);
             return null;
+        } finally {
+            request = null;
         }
     }
 
     @Override
     protected void onPostExecute(T result) {
-
-        if (isCancelled())
-            notifyCanceled();
 
         if (isExceptionOccurred())
             notifyException();
@@ -49,12 +48,17 @@ class Task<T> extends AsyncTask<Void, Integer, T> {
 
     }
 
+    @Override
+    protected void onCancelled(T result) {
+        notifyCanceled();
+    }
+
     protected void setException(Exception e) {
         mOccurredException = e;
     }
 
     private void notifyCanceled() {
-        setException(new CancellationException("canceled."));
+        setException(new CancellationException(TAG + " canceled."));
     }
 
     private boolean isExceptionOccurred() {
@@ -62,8 +66,10 @@ class Task<T> extends AsyncTask<Void, Integer, T> {
     }
 
     private void notifyException() {
-        if (errorListener != null)
+        if (errorListener != null) {
             errorListener.onError(mOccurredException);
+            mOccurredException = null;
+        }
     }
 
     private void notifyResult(T result) {

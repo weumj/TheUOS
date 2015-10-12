@@ -69,12 +69,9 @@ public class TabHomeFragment extends BaseFragment implements OnItemClickListener
 
         listView.setAdapter(new DialogAdapter(getActivity(), list));
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                etcDialog.dismiss();
-                ((UosMainActivity) getActivity()).navigateItem(position + 8, false);
-            }
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            etcDialog.dismiss();
+            ((UosMainActivity) getActivity()).navigateItem(position + 8, false);
         });
 
         etcDialog = new AlertDialog.Builder(context)

@@ -68,12 +68,7 @@ public class SeatDismissDialogFragment extends BaseDialogFragment {
     private void showDismissInfoEmptyView() {
         if (mDismissEmptyView == null) {
             mDismissEmptyView = ((ViewStub) mDismissDialogView.findViewById(R.id.tab_library_seat_dismiss_stub_empty_info)).inflate();
-            mDismissEmptyView.findViewById(android.R.id.content).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dismiss();
-                }
-            });
+            mDismissEmptyView.findViewById(android.R.id.content).setOnClickListener(v -> dismiss());
         } else {
             mDismissEmptyView.setVisibility(View.VISIBLE);
         }

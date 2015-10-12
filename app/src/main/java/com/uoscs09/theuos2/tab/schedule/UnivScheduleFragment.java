@@ -6,7 +6,6 @@ import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -22,7 +21,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.TextView;
 
 import com.uoscs09.theuos2.R;
@@ -45,11 +43,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.Callable;
 
 import se.emilsjolander.stickylistheaders.ExpandableStickyListHeadersListView;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
-import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 
 public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivScheduleItem>>
@@ -105,25 +101,19 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
         mListView = (ExpandableStickyListHeadersListView) view.findViewById(R.id.list);
         mListView.setNestedScrollingEnabled(true);
 
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mSelectedItem = mList.get(position);
+        mListView.setOnItemClickListener((parent, view1, position, id) -> {
+            mSelectedItem = mList.get(position);
 
-                mItemSelectDialog.setMessage(String.format(getString(R.string.tab_univ_schedule_add_schedule_to_calender), mSelectedItem.content));
-                mItemSelectDialog.show();
-            }
+            mItemSelectDialog.setMessage(String.format(getString(R.string.tab_univ_schedule_add_schedule_to_calender), mSelectedItem.content));
+            mItemSelectDialog.show();
         });
 
         mListView.setAdapter(mAdapter);
-        mListView.setOnHeaderClickListener(new StickyListHeadersListView.OnHeaderClickListener() {
-            @Override
-            public void onHeaderClick(StickyListHeadersListView l, View header, int itemPosition, long headerId, boolean currentlySticky) {
-                if (mListView.isHeaderCollapsed(headerId)) {
-                    mListView.expand(headerId);
-                } else {
-                    mListView.collapse(headerId);
-                }
+        mListView.setOnHeaderClickListener((l, header, itemPosition, headerId, currentlySticky) -> {
+            if (mListView.isHeaderCollapsed(headerId)) {
+                mListView.expand(headerId);
+            } else {
+                mListView.collapse(headerId);
             }
         });
 
@@ -131,13 +121,10 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
 
         mItemSelectDialog = new AlertDialog.Builder(getActivity())
                 .setTitle(R.string.tab_univ_schedule_add_to_calendar)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        sendClickEvent("add schedule to calender");
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                    sendClickEvent("add schedule to calender");
 
-                        addUnivScheduleToCalender();
-                    }
+                    addUnivScheduleToCalender();
                 })
                 .setNegativeButton(android.R.string.no, null)
                 .setMessage("")
@@ -171,52 +158,43 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
         mProgressDialog.show();
 
         AsyncUtil.newRequest(
-                new Callable<Uri>() {
-                    @Override
-                    public Uri call() throws Exception {
-                        getAccount();
+                () -> {
+                    getAccount();
 
-                        ContentResolver cr = getActivity().getContentResolver();
-                        Cursor c = cr.query(CalendarContract.Calendars.CONTENT_URI, EVENT_PROJECTION, SELECTION, selectionArgs, null);
+                    ContentResolver cr = getActivity().getContentResolver();
+                    Cursor c = cr.query(CalendarContract.Calendars.CONTENT_URI, EVENT_PROJECTION, SELECTION, selectionArgs, null);
 
-                        if (c == null) {
-                            throw new Exception(getString(R.string.tab_univ_schedule_calendar_not_exist));
-                        } else if (!c.moveToFirst()) {
-                            c.close();
-                            throw new Exception(getString(R.string.tab_univ_schedule_calendar_not_exist));
-                        }
-
-                        long calendarId = c.getLong(0);
-                        ContentValues cv = mSelectedItem.toContentValues(calendarId);
-
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
-                            cv.put(CalendarContract.Events.EVENT_COLOR, getResources().getColor(AppUtil.getColor(mList.indexOf(mSelectedItem))));
-
-                        Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, cv);
+                    if (c == null) {
+                        throw new Exception(getString(R.string.tab_univ_schedule_calendar_not_exist));
+                    } else if (!c.moveToFirst()) {
                         c.close();
-
-                        return uri;
+                        throw new Exception(getString(R.string.tab_univ_schedule_calendar_not_exist));
                     }
+
+                    long calendarId = c.getLong(0);
+                    ContentValues cv = mSelectedItem.toContentValues(calendarId);
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
+                        cv.put(CalendarContract.Events.EVENT_COLOR, getResources().getColor(AppUtil.getColor(mList.indexOf(mSelectedItem))));
+
+                    Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, cv);
+                    c.close();
+
+                    return uri;
                 })
                 .getAsync(
-                        new Request.ResultListener<Uri>() {
-                            @Override
-                            public void onResult(Uri result) {
-                                mProgressDialog.dismiss();
-                                if (result != null)
-                                    AppUtil.showToast(getActivity(), R.string.tab_univ_schedule_add_to_calendar_success, isMenuVisible());
-                                else
-                                    AppUtil.showToast(getActivity(), R.string.tab_univ_schedule_add_to_calendar_fail, isMenuVisible());
-                            }
+                        result -> {
+                            mProgressDialog.dismiss();
+                            if (result != null)
+                                AppUtil.showToast(getActivity(), R.string.tab_univ_schedule_add_to_calendar_success, isMenuVisible());
+                            else
+                                AppUtil.showToast(getActivity(), R.string.tab_univ_schedule_add_to_calendar_fail, isMenuVisible());
                         },
-                        new Request.ErrorListener() {
-                            @Override
-                            public void onError(Exception e) {
-                                mProgressDialog.dismiss();
-                                e.printStackTrace();
+                        e -> {
+                            mProgressDialog.dismiss();
+                            e.printStackTrace();
 
-                                AppUtil.showErrorToast(getActivity(), e, isMenuVisible());
-                            }
+                            AppUtil.showErrorToast(getActivity(), e, isMenuVisible());
                         }
                 );
 

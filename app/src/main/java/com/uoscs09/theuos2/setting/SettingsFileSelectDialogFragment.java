@@ -3,14 +3,11 @@ package com.uoscs09.theuos2.setting;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -80,32 +77,24 @@ public class SettingsFileSelectDialogFragment extends DialogFragment {
         mToolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
         mToolbar.setTitle(titleId);
         mToolbar.inflateMenu(R.menu.dialog_file_select);
-        mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
+        mToolbar.setOnMenuItemClickListener(item -> {
 
-                switch (item.getItemId()) {
-                    case R.id.action_up:
+            switch (item.getItemId()) {
+                case R.id.action_up:
 
-                        if (path.equals(ROOT))
-                            loadFileListToListView(new File(ROOT));
-                        else
-                            loadFileListToListView(new File(path).getParentFile());
+                    if (path.equals(ROOT))
+                        loadFileListToListView(new File(ROOT));
+                    else
+                        loadFileListToListView(new File(path).getParentFile());
 
-                        return true;
-                    default:
-                        return false;
-                }
+                    return true;
+                default:
+                    return false;
             }
         });
 
         ListView listView = (ListView) rootView.findViewById(R.id.dialog_setting_save_route_listView);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-                loadFileListToListView((File) arg0.getItemAtPosition(position));
-            }
-        });
+        listView.setOnItemClickListener((arg0, arg1, position, arg3) -> loadFileListToListView((File) arg0.getItemAtPosition(position)));
         listView.setAdapter(mFileArrayAdapter);
         listView.setDivider(null);
 
@@ -146,24 +135,14 @@ public class SettingsFileSelectDialogFragment extends DialogFragment {
         }
     }
 
-    private final Comparator<File> caseIgnoreComparator = new Comparator<File>() {
-        @Override
-        public int compare(File lhs, File rhs) {
-            return lhs.getName().compareToIgnoreCase(rhs.getName());
-        }
-    };
+    private final Comparator<File> caseIgnoreComparator = (lhs, rhs) -> lhs.getName().compareToIgnoreCase(rhs.getName());
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return new AlertDialog.Builder(getActivity())
                 .setView(createView())
                 //.setIconAttribute(R.attr.theme_ic_action_image_image)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        putPathToPref(getActivity(), path);
-                    }
-                })
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> putPathToPref(getActivity(), path)                )
                 .setNegativeButton(android.R.string.cancel, null)
                 .create();
     }

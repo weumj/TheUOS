@@ -107,12 +107,7 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
         for (int stringId : REST_TAB_MENU_STRING_ID) {
             final Tab tab = new Tab(mTabParent);
             tab.setText(stringId);
-            tab.ripple.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    performTabClick(mTabList.indexOf(tab));
-                }
-            });
+            tab.ripple.setOnClickListener(v -> performTabClick(mTabList.indexOf(tab)));
             mTabParent.addView(tab.tabView);
             mTabList.add(tab);
         }
@@ -131,12 +126,9 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
                 AppUtil.getAttrValue(getActivity(), R.attr.colorAccent)
         );
         mSwipeRefreshLayout.setProgressBackgroundColorSchemeResource(AppUtil.getAttrValue(getActivity(), R.attr.colorPrimary));
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                sendTrackerEvent("refresh", "SwipeRefreshView");
-                execute(true);
-            }
+        mSwipeRefreshLayout.setOnRefreshListener(() -> {
+            sendTrackerEvent("refresh", "SwipeRefreshView");
+            execute(true);
         });
 
         mRecyclerView = (RecyclerView) mSwipeRefreshLayout.findViewById(R.id.tab_rest_recycler_view);
@@ -146,12 +138,7 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
 
         mRecyclerView.setAdapter(new SlideInBottomAnimationAdapter(mRestItemAdapter = new RestItemAdapter(mRestTable)));
         mRestItemAdapter.setRestMenu(mCurrentSelection);
-        mRestItemAdapter.setExtraMenuListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showWeekDialog();
-            }
-        });
+        mRestItemAdapter.setExtraMenuListener(v -> showWeekDialog());
 
         mRecyclerView.setItemAnimator(new SlideInDownAnimator());
 

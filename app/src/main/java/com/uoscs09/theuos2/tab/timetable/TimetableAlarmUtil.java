@@ -18,7 +18,6 @@ import com.uoscs09.theuos2.util.TimeUtil;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.concurrent.Callable;
 
 public class TimetableAlarmUtil {
     private static final String TAG = "TimetableAlarmUtil";
@@ -67,11 +66,8 @@ public class TimetableAlarmUtil {
 
         }
 
-        AsyncUtil.executeFor(new Runnable() {
-            @Override
-            public void run() {
-                recordAlarmInfo(context, subject, alarmType);
-            }
+        AsyncUtil.executeFor(() -> {
+            recordAlarmInfo(context, subject, alarmType);
         });
     }
 
@@ -115,17 +111,14 @@ public class TimetableAlarmUtil {
 
         final Context appContext = context.getApplicationContext();
 
-        AsyncUtil.executeFor(new Runnable() {
-            @Override
-            public void run() {
+        AsyncUtil.executeFor(() -> {
 
-                for (int period = 0; period < 15; period++) {
-                    for (int day = 0; day < 7; day++) {
-                        registerAlarmFromFileOnStart(appContext, period, day);
-                    }
+            for (int period = 0; period < 15; period++) {
+                for (int day = 0; day < 7; day++) {
+                    registerAlarmFromFileOnStart(appContext, period, day);
                 }
-
             }
+
         });
 
     }
@@ -157,11 +150,8 @@ public class TimetableAlarmUtil {
     public static void clearAllAlarm(Context context) {
         final Context appContext = context.getApplicationContext();
 
-        AsyncUtil.executeFor(new Runnable() {
-            @Override
-            public void run() {
-                clearAllAlarmInner(appContext);
-            }
+        AsyncUtil.executeFor(() -> {
+            clearAllAlarmInner(appContext);
         });
 
     }
@@ -172,12 +162,7 @@ public class TimetableAlarmUtil {
     public static void clearAllAlarmWithResult(Context context, Request.ResultListener<Boolean> resultListener, Request.ErrorListener errorListener) {
         final Context appContext = context.getApplicationContext();
 
-        AsyncUtil.newRequest(new Callable<Boolean>() {
-            @Override
-            public Boolean call() throws Exception {
-                return clearAllAlarmInner(appContext);
-            }
-        }).getAsync(resultListener, errorListener);
+        AsyncUtil.newRequest(() -> clearAllAlarmInner(appContext)).getAsync(resultListener, errorListener);
 
     }
 

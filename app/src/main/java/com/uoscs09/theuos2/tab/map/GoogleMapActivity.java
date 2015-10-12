@@ -1,13 +1,13 @@
 package com.uoscs09.theuos2.tab.map;
 
 import android.Manifest;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
@@ -90,25 +90,22 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
         });
         toolbarParent.addView(spinnerLayout);
 
-        mLocationSelectSpinner.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                buildingNo = getIntent().getIntExtra("building", -1);
-                if (buildingNo != -1) {
-                    isInit = false;
+        mLocationSelectSpinner.postDelayed(() -> {
+            buildingNo = getIntent().getIntExtra("building", -1);
+            if (buildingNo != -1) {
+                isInit = false;
 
-                    // UnivBuilding univBuilding =  UnivBuilding.fromNumber(buildingNo);
-                    mLocationSelectSpinner.setSelection(buildingNo - 1, false);
-                    // moveCamera(univBuilding);
-                    //moveCameraPositionAt(buildingNo);
-                    buildingNo = -1;
+                // UnivBuilding univBuilding =  UnivBuilding.fromNumber(buildingNo);
+                mLocationSelectSpinner.setSelection(buildingNo - 1, false);
+                // moveCamera(univBuilding);
+                //moveCameraPositionAt(buildingNo);
+                buildingNo = -1;
 
-                } else {
-                    moveCamera(UnivBuilding.Univ);
-                    setMapMarker(UnivBuilding.Univ);
-                    // moveCameraPositionAt(0);
-                    //setMapMarker( UnivBuilding.fromNumber(0, getString(R.string.univ));
-                }
+            } else {
+                moveCamera(UnivBuilding.Univ);
+                setMapMarker(UnivBuilding.Univ);
+                // moveCameraPositionAt(0);
+                //setMapMarker( UnivBuilding.fromNumber(0, getString(R.string.univ));
             }
         }, 500);
     }
@@ -146,12 +143,8 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
 
             googleMap.setBuildingsEnabled(true);
             googleMap.setMyLocationEnabled(true);
-            googleMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
-
-                @Override
-                public void onMyLocationChange(Location arg0) {
-                    // location = arg0;
-                }
+            googleMap.setOnMyLocationChangeListener(arg0 -> {
+                // location = arg0;
             });
 
         }
@@ -163,19 +156,11 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
             // 위치정보 설정이 안되어 있으면 설정하는 엑티비티로 이동
             new AlertDialog.Builder(this)
                     .setTitle("위치서비스 동의")
-                    .setNeutralButton("이동", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            startActivityForResult(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), REQUEST_LOCATION_SOURCE_SETTINGS);
-                        }
+                    .setNeutralButton("이동", (dialog, which) -> {
+                        startActivityForResult(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), REQUEST_LOCATION_SOURCE_SETTINGS);
                     })
 
-                    .setOnCancelListener(new DialogInterface.OnCancelListener() {
-                        @Override
-                        public void onCancel(DialogInterface dialog) {
-                            finish();
-                        }
-                    })
+                    .setOnCancelListener(dialog -> finish())
                     .show();
 
         } else {
@@ -240,7 +225,8 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
     }
 
     private boolean checkLocationPermissionDenied() {
-        return checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M // Android M 이전 버전에는 permission check 메소드가 없음
+                && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED;
     }
 
@@ -321,110 +307,107 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
         if (mWelfareBuildingDialog == null) {
             mWelfareBuildingDialog = new AlertDialog.Builder(this)
                     .setTitle(R.string.tab_map_submap_welfare)
-                    .setItems(R.array.tab_map_submap_buildings_welfare, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int item) {
-                            googleMap.clear();
+                    .setItems(R.array.tab_map_submap_buildings_welfare, (dialog, item) -> {
+                        googleMap.clear();
 
-                            //String locationName = getResources().getStringArray(R.array.tab_map_submap_buildings_welfare)[item];
-                            String locationName = mWelfareBuildingDialog.getListView().getAdapter().getItem(item).toString();
+                        //String locationName = getResources().getStringArray(R.array.tab_map_submap_buildings_welfare)[item];
+                        String locationName = mWelfareBuildingDialog.getListView().getAdapter().getItem(item).toString();
 
-                            WelfareCategory welfareCategory = WelfareCategory.values()[item];
-                            sendTrackerEvent("welfare", welfareCategory.name());
-                            // TODO 리팩토링이  필요함.
-                            switch (welfareCategory) {
-                                case BANK:
-                                    setMapMarker(UnivBuilding.University_Center, locationName);
-                                    break;
-                                case COPY:
-                                    setMapMarker(UnivBuilding.Student_Hall, locationName);
-                                    setMapMarker(UnivBuilding.Library, locationName);
-                                    break;
-                                case PRINT:
-                                    setMapMarker(UnivBuilding.Liberal_Arts, locationName + StringUtil.NEW_LINE + "2층 PC실(533호)");
-                                    setMapMarker(UnivBuilding.The_21st_Century, locationName + StringUtil.NEW_LINE + "전자도서관(입금가능), 2층 227호");
-                                    setMapMarker(UnivBuilding.Law, locationName + StringUtil.NEW_LINE + "4층(입금가능), 5층, 6층(도서관)");
-                                    setMapMarker(UnivBuilding.Library, locationName + StringUtil.NEW_LINE + "1층, 2층, 3층(입금가능), 4층");
-                                    setMapMarker(UnivBuilding.Mirae, locationName + StringUtil.NEW_LINE + "3층 경영도서관, 4층 PC실(입금가능)");
-                                    setMapMarker(UnivBuilding.International, locationName + StringUtil.NEW_LINE + "1층 로비");
-                                    break;
-                                case CASH:
-                                    setMapMarker(UnivBuilding.University_Center, locationName);
-                                    setMapMarker(UnivBuilding.Natural_Science, locationName);
-                                    setMapMarker(UnivBuilding.Student_Hall, locationName);
-                                    setMapMarker(UnivBuilding.The_21st_Century, locationName);
-                                    setMapMarker(UnivBuilding.Library, locationName);
-                                    break;
-                                case ELEVATOR:
-                                    setMapMarker(UnivBuilding.Architecture_and_CivilEngineering, locationName);
-                                    setMapMarker(UnivBuilding.Liberal_Arts, locationName);
-                                    setMapMarker(UnivBuilding.Baebong, locationName);
-                                    setMapMarker(UnivBuilding.University_Center, locationName);
-                                    setMapMarker(UnivBuilding.Student_Hall, locationName);
-                                    setMapMarker(UnivBuilding.Science_and_Technology, locationName);
-                                    setMapMarker(UnivBuilding.The_21st_Century, locationName);
-                                    setMapMarker(UnivBuilding.IT, locationName);
-                                    setMapMarker(UnivBuilding.Law, locationName);
-                                    setMapMarker(UnivBuilding.Library, locationName);
-                                    setMapMarker(UnivBuilding.Dormitory, locationName);
-                                    setMapMarker(UnivBuilding.International, locationName);
-                                    break;
-                                case HEALTH:
-                                    setMapMarker(UnivBuilding.Gymnaseum, locationName);
-                                    setMapMarker(UnivBuilding.Dormitory, locationName);
-                                    setMapMarker(UnivBuilding.Wellness, locationName);
-                                    break;
-                                case TENNIS:
-                                    setMapMarker(UnivBuilding.Wellness, locationName);
-                                    break;
-                                case WRITING:
-                                case BOOK:
-                                case FASTFOOD:
-                                case POST:
-                                case SOUVENIR:
-                                case EYE:
-                                case HEALTH_CENTER:
-                                    setMapMarker(UnivBuilding.Student_Hall, locationName);
-                                    break;
-                                case REST:
-                                    setMapMarker(UnivBuilding.Architecture_and_CivilEngineering, locationName);
-                                    setMapMarker(UnivBuilding.Liberal_Arts, locationName);
-                                    setMapMarker(UnivBuilding.Baebong, locationName);
-                                    setMapMarker(UnivBuilding.Natural_Science, locationName);
-                                    setMapMarker(UnivBuilding.Student_Hall, locationName);
-                                    setMapMarker(UnivBuilding.The_21st_Century, locationName);
-                                    setMapMarker(UnivBuilding.Design_and_Sculpture, locationName);
-                                    setMapMarker(UnivBuilding.IT, locationName);
-                                    setMapMarker(UnivBuilding.Law, locationName);
-                                    setMapMarker(UnivBuilding.Library, locationName);
-                                    setMapMarker(UnivBuilding.Dormitory, locationName);
-                                    setMapMarker(UnivBuilding.Mirae, locationName);
-                                    break;
-                                case RESTAURANT:
-                                    setMapMarker(UnivBuilding.University_Center, locationName);
-                                    setMapMarker(UnivBuilding.Natural_Science, locationName);
-                                    setMapMarker(UnivBuilding.Student_Hall, locationName);
-                                    setMapMarker(UnivBuilding.International, locationName);
-                                    break;
-                                case SEARCH:
-                                    setMapMarker(UnivBuilding.Architecture_and_CivilEngineering, locationName);
-                                    setMapMarker(UnivBuilding.Changgong, locationName);
-                                    setMapMarker(UnivBuilding.Natural_Science, locationName);
-                                    setMapMarker(UnivBuilding.Science_and_Technology, locationName);
-                                    setMapMarker(UnivBuilding.IT, locationName);
-                                    setMapMarker(UnivBuilding.Library, locationName);
-                                    setMapMarker(UnivBuilding.Dormitory, locationName);
-                                    break;
-                                case STAND:
-                                    setMapMarker(UnivBuilding.Student_Hall, locationName);
-                                    setMapMarker(UnivBuilding.Library, locationName);
-                                    setMapMarker(UnivBuilding.Mirae, locationName);
-                                    break;
-                                default:
-                                    break;
-                            }
-                            dialog.dismiss();
+                        WelfareCategory welfareCategory = WelfareCategory.values()[item];
+                        sendTrackerEvent("welfare", welfareCategory.name());
+                        // TODO 리팩토링이  필요함.
+                        switch (welfareCategory) {
+                            case BANK:
+                                setMapMarker(UnivBuilding.University_Center, locationName);
+                                break;
+                            case COPY:
+                                setMapMarker(UnivBuilding.Student_Hall, locationName);
+                                setMapMarker(UnivBuilding.Library, locationName);
+                                break;
+                            case PRINT:
+                                setMapMarker(UnivBuilding.Liberal_Arts, locationName + StringUtil.NEW_LINE + "2층 PC실(533호)");
+                                setMapMarker(UnivBuilding.The_21st_Century, locationName + StringUtil.NEW_LINE + "전자도서관(입금가능), 2층 227호");
+                                setMapMarker(UnivBuilding.Law, locationName + StringUtil.NEW_LINE + "4층(입금가능), 5층, 6층(도서관)");
+                                setMapMarker(UnivBuilding.Library, locationName + StringUtil.NEW_LINE + "1층, 2층, 3층(입금가능), 4층");
+                                setMapMarker(UnivBuilding.Mirae, locationName + StringUtil.NEW_LINE + "3층 경영도서관, 4층 PC실(입금가능)");
+                                setMapMarker(UnivBuilding.International, locationName + StringUtil.NEW_LINE + "1층 로비");
+                                break;
+                            case CASH:
+                                setMapMarker(UnivBuilding.University_Center, locationName);
+                                setMapMarker(UnivBuilding.Natural_Science, locationName);
+                                setMapMarker(UnivBuilding.Student_Hall, locationName);
+                                setMapMarker(UnivBuilding.The_21st_Century, locationName);
+                                setMapMarker(UnivBuilding.Library, locationName);
+                                break;
+                            case ELEVATOR:
+                                setMapMarker(UnivBuilding.Architecture_and_CivilEngineering, locationName);
+                                setMapMarker(UnivBuilding.Liberal_Arts, locationName);
+                                setMapMarker(UnivBuilding.Baebong, locationName);
+                                setMapMarker(UnivBuilding.University_Center, locationName);
+                                setMapMarker(UnivBuilding.Student_Hall, locationName);
+                                setMapMarker(UnivBuilding.Science_and_Technology, locationName);
+                                setMapMarker(UnivBuilding.The_21st_Century, locationName);
+                                setMapMarker(UnivBuilding.IT, locationName);
+                                setMapMarker(UnivBuilding.Law, locationName);
+                                setMapMarker(UnivBuilding.Library, locationName);
+                                setMapMarker(UnivBuilding.Dormitory, locationName);
+                                setMapMarker(UnivBuilding.International, locationName);
+                                break;
+                            case HEALTH:
+                                setMapMarker(UnivBuilding.Gymnaseum, locationName);
+                                setMapMarker(UnivBuilding.Dormitory, locationName);
+                                setMapMarker(UnivBuilding.Wellness, locationName);
+                                break;
+                            case TENNIS:
+                                setMapMarker(UnivBuilding.Wellness, locationName);
+                                break;
+                            case WRITING:
+                            case BOOK:
+                            case FASTFOOD:
+                            case POST:
+                            case SOUVENIR:
+                            case EYE:
+                            case HEALTH_CENTER:
+                                setMapMarker(UnivBuilding.Student_Hall, locationName);
+                                break;
+                            case REST:
+                                setMapMarker(UnivBuilding.Architecture_and_CivilEngineering, locationName);
+                                setMapMarker(UnivBuilding.Liberal_Arts, locationName);
+                                setMapMarker(UnivBuilding.Baebong, locationName);
+                                setMapMarker(UnivBuilding.Natural_Science, locationName);
+                                setMapMarker(UnivBuilding.Student_Hall, locationName);
+                                setMapMarker(UnivBuilding.The_21st_Century, locationName);
+                                setMapMarker(UnivBuilding.Design_and_Sculpture, locationName);
+                                setMapMarker(UnivBuilding.IT, locationName);
+                                setMapMarker(UnivBuilding.Law, locationName);
+                                setMapMarker(UnivBuilding.Library, locationName);
+                                setMapMarker(UnivBuilding.Dormitory, locationName);
+                                setMapMarker(UnivBuilding.Mirae, locationName);
+                                break;
+                            case RESTAURANT:
+                                setMapMarker(UnivBuilding.University_Center, locationName);
+                                setMapMarker(UnivBuilding.Natural_Science, locationName);
+                                setMapMarker(UnivBuilding.Student_Hall, locationName);
+                                setMapMarker(UnivBuilding.International, locationName);
+                                break;
+                            case SEARCH:
+                                setMapMarker(UnivBuilding.Architecture_and_CivilEngineering, locationName);
+                                setMapMarker(UnivBuilding.Changgong, locationName);
+                                setMapMarker(UnivBuilding.Natural_Science, locationName);
+                                setMapMarker(UnivBuilding.Science_and_Technology, locationName);
+                                setMapMarker(UnivBuilding.IT, locationName);
+                                setMapMarker(UnivBuilding.Library, locationName);
+                                setMapMarker(UnivBuilding.Dormitory, locationName);
+                                break;
+                            case STAND:
+                                setMapMarker(UnivBuilding.Student_Hall, locationName);
+                                setMapMarker(UnivBuilding.Library, locationName);
+                                setMapMarker(UnivBuilding.Mirae, locationName);
+                                break;
+                            default:
+                                break;
                         }
+                        dialog.dismiss();
                     })
                     .create();
 

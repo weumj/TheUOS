@@ -103,12 +103,9 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo>
                 AppUtil.getAttrValue(getActivity(), R.attr.colorAccent)
         );
         mSwipeRefreshLayout.setProgressBackgroundColorSchemeResource(AppUtil.getAttrValue(getActivity(), R.attr.colorPrimary));
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                sendTrackerEvent("swipe", "SwipeRefreshView");
-                execute();
-            }
+        mSwipeRefreshLayout.setOnRefreshListener(() -> {
+            sendTrackerEvent("swipe", "SwipeRefreshView");
+            execute();
         });
 
         SeatListAdapter mSeatAdapter = new SeatListAdapter(getActivity(), mSeatInfo.seatItemList);
@@ -137,8 +134,9 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo>
             return;
 
         isAdapterItemClicked = true;
-        Intent intent = new Intent(getActivity(), SubSeatWebActivity.class);
-        intent.putExtra(TabLibrarySeatFragment.ITEM, (Parcelable) viewHolder.getItem());
+        Intent intent = new Intent(getActivity(), SubSeatWebActivity.class)
+                .putExtra(TabLibrarySeatFragment.ITEM, (Parcelable) viewHolder.getItem())
+                .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
         // tracking 은 SubSeatWebActivity 에서 함.
         AppUtil.startActivityWithScaleUp(getActivity(), intent, v);

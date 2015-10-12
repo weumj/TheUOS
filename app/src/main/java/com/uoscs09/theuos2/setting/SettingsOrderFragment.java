@@ -10,7 +10,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
@@ -61,12 +60,9 @@ public class SettingsOrderFragment extends Fragment {
         mListView.setDrawingCacheEnabled(true);
         mListView.setAdapter(mAdapter);
         mListView.enableDragAndDrop();
-        mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(final AdapterView<?> parent, View view, int position, long id) {
-                mListView.startDragging(position);
-                return true;
-            }
+        mListView.setOnItemLongClickListener((parent, view, position, id) -> {
+            mListView.startDragging(position);
+            return true;
         });
 
         return rootView;
