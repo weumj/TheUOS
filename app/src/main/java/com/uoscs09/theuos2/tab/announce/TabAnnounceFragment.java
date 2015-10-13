@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -27,13 +28,14 @@ import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.async.Processor;
 import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
-import com.uoscs09.theuos2.customview.NestedListView;
 import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import java.util.ArrayList;
+
+import butterknife.Bind;
 
 public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceItem>>
         implements AdapterView.OnItemClickListener, AdapterView.OnItemSelectedListener, SearchView.OnQueryTextListener, Request.ErrorListener {
@@ -54,10 +56,15 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
     private Spinner mCategorySpinner;
     private ArrayAdapter<AnnounceItem> mAnnounceAdapter;
     private View mListFooterView;
-    private View mEmptyView;
+
+    @Bind(R.id.tab_announce_list_announce)
+    ListView mListView;
+    @Bind(R.id.tab_announce_empty_view)
+    View mEmptyView;
     private Dialog mPageSelectDialog;
     private NumberPicker mPageNumberPicker;
     private MenuItem mSearchMenu;
+    
 
     @AsyncData
     private ArrayList<AnnounceItem> mDataList;
@@ -113,13 +120,11 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
 
     }
 
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.tab_announce, container, false);
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        NestedListView mListView = (NestedListView) rootView.findViewById(R.id.tab_announce_list_announce);
-
-        mEmptyView = rootView.findViewById(R.id.tab_announce_empty_view);
         mEmptyView.setOnClickListener(v -> {
             mCategorySpinner.performClick();
             sendEmptyViewClickEvent();
@@ -127,7 +132,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
 
         mEmptyView.setVisibility(mDataList.size() != 0 ? View.INVISIBLE : View.VISIBLE);
 
-        mListFooterView = inflater.inflate(R.layout.view_tab_announce_bottom_more, mListView, false);
+        mListFooterView = LayoutInflater.from(view.getContext()).inflate(R.layout.view_tab_announce_bottom_more, mListView, false);
         mListView.addFooterView(mListFooterView);
         mListFooterView.setVisibility(View.GONE);
         mListFooterView.findViewById(android.R.id.text1).setOnClickListener(v -> {
@@ -139,9 +144,13 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
         mListView.setOnItemClickListener(this);
         mListView.setAdapter(mAnnounceAdapter);
 
-        registerProgressView(rootView.findViewById(R.id.progress_layout));
+        registerProgressView(view.findViewById(R.id.progress_layout));
 
-        return rootView;
+    }
+
+    @Override
+    protected int getLayout() {
+        return R.layout.tab_announce;
     }
 
     @Override

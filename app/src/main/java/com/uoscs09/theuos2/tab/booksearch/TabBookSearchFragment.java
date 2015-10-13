@@ -18,21 +18,19 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
+import android.widget.ListView;
 import android.widget.Spinner;
 
 import com.nhaarman.listviewanimations.appearance.AnimationAdapter;
 import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.UOSApplication;
 import com.uoscs09.theuos2.UosMainActivity;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.async.Processor;
 import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
-import com.uoscs09.theuos2.customview.NestedListView;
 import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
@@ -43,8 +41,10 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
+
 public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookItem>>
-        implements OnQueryTextListener, View.OnClickListener, UosMainActivity.OnBackPressListener, Request.ResultListener<ArrayList<BookItem>>, Request.ErrorListener {
+        implements OnQueryTextListener, View.OnClickListener, UosMainActivity.OnBackPressListener, Request.ResultListener<ArrayList<BookItem>>, Request.ErrorListener, BookItemListAdapter.OnItemClickListener {
 
     /**
      * 비동기 작업 결과가 비었는지 여부
@@ -64,10 +64,11 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
     private AnimationAdapter mAnimAdapter;
     @AsyncData
     private ArrayList<BookItem> mBookList;
-    /**
-     * ListView의 mEmptyView
-     */
-    private View mEmptyView;
+
+    @Bind(R.id.tab_book_list_search)
+    ListView mListView;
+    @Bind(R.id.tab_book_empty)
+    View mEmptyView;
     /**
      * option : catergory
      */
@@ -130,10 +131,9 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.tab_book_search, container, false);
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        mEmptyView = rootView.findViewById(R.id.tab_book_empty);
         mEmptyView.findViewById(R.id.tab_book_search_empty_info1).setOnClickListener(this);
         mEmptyView.findViewById(R.id.tab_book_search_empty_info2).setOnClickListener(this);
         if (mBookList.size() != 0) {
@@ -143,71 +143,11 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
             mEmptyView.setVisibility(View.VISIBLE);
         }
 
-        // 리스트 뷰
-        NestedListView mListView = (NestedListView) rootView.findViewById(R.id.tab_book_list_search);
-
-        mBookListAdapter = new BookItemListAdapter(getActivity(), mBookList, ((UOSApplication) getActivity().getApplication()).getImageLoader(),
-                new BookItemListAdapter.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(final BookItemViewHolder holder, final View v) {
-                        final BookItem item = holder.getItem();
-                        switch (v.getId()) {
-                            case R.id.tab_booksearch_list_book_image: {
-                                Intent i = AppUtil.getWebPageIntent("http://mlibrary.uos.ac.kr" + item.url);
-                                AppUtil.startActivityWithScaleUp(getActivity(), i, v);
-                                break;
-                            }
-                            case R.id.tab_booksearch_list_book_site:
-                                if (item.bookStateInt == BookItem.BOOK_STATE_ONLINE) {
-                                    Intent i = AppUtil.getWebPageIntent(item.site);
-                                    AppUtil.startActivityWithScaleUp(getActivity(), i, v);
-                                }
-                                break;
-
-                            default:
-                                break;
-                        }
-                    }
-
-                    @Override
-                    public boolean onItemLongClick(BookItemViewHolder holder, View v) {
-                        String title;
-                        switch (v.getId()) {
-                            case R.id.tab_booksearch_list_book_title:
-                                title = holder.getItem().title;
-                                break;
-
-                            case R.id.tab_booksearch_list_text_publish_and_year:
-                                title = holder.getItem().bookInfo;
-                                break;
-
-                            case R.id.tab_booksearch_list_book_writer:
-                                title = holder.getItem().writer;
-                                break;
-
-                            default:
-                                return false;
-                        }
-                        if (actionMode == null)
-                            actionMode = getAppCompatActivity().startSupportActionMode(mActionModeCallback);
-
-                        // View prevView = (View) actionMode.getTag();
-                        // if (prevView != null)
-                        // prevView.setSelected(false);
-                        // v.setSelected(true);
-                        if (actionMode != null) {
-                            //actionMode.setTag(v);
-                            actionMode.setTitle(title);
-                        }
-                        return true;
-                    }
-
-                }
-        );
+        mBookListAdapter = new BookItemListAdapter(getActivity(), mBookList, getUosApplication().getImageLoader(), this);
 
         mAnimAdapter = new AlphaInAnimationAdapter(mBookListAdapter);
 
-        View progressLayout = inflater.inflate(R.layout.view_tab_book_loading_layout, mListView, false);
+        View progressLayout = LayoutInflater.from(view.getContext()).inflate(R.layout.view_tab_book_loading_layout, mListView, false);
         registerProgressView(progressLayout);
         mListView.addFooterView(progressLayout);
 
@@ -239,8 +179,12 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
                 }
             }
         });
+    }
 
-        return rootView;
+
+    @Override
+    protected int getLayout() {
+        return R.layout.tab_book_search;
     }
 
     @Override
@@ -259,6 +203,60 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
             default:
                 break;
         }
+    }
+
+    @Override
+    public void onItemClick(final BookItemViewHolder holder, final View v) {
+        final BookItem item = holder.getItem();
+        switch (v.getId()) {
+            case R.id.tab_booksearch_list_book_image: {
+                Intent i = AppUtil.getWebPageIntent("http://mlibrary.uos.ac.kr" + item.url);
+                AppUtil.startActivityWithScaleUp(getActivity(), i, v);
+                break;
+            }
+            case R.id.tab_booksearch_list_book_site:
+                if (item.bookStateInt == BookItem.BOOK_STATE_ONLINE) {
+                    Intent i = AppUtil.getWebPageIntent(item.site);
+                    AppUtil.startActivityWithScaleUp(getActivity(), i, v);
+                }
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public boolean onItemLongClick(BookItemViewHolder holder, View v) {
+        String title;
+        switch (v.getId()) {
+            case R.id.tab_booksearch_list_book_title:
+                title = holder.getItem().title;
+                break;
+
+            case R.id.tab_booksearch_list_text_publish_and_year:
+                title = holder.getItem().bookInfo;
+                break;
+
+            case R.id.tab_booksearch_list_book_writer:
+                title = holder.getItem().writer;
+                break;
+
+            default:
+                return false;
+        }
+        if (actionMode == null)
+            actionMode = getAppCompatActivity().startSupportActionMode(mActionModeCallback);
+
+        // View prevView = (View) actionMode.getTag();
+        // if (prevView != null)
+        // prevView.setSelected(false);
+        // v.setSelected(true);
+        if (actionMode != null) {
+            //actionMode.setTag(v);
+            actionMode.setTitle(title);
+        }
+        return true;
     }
 
     @Override

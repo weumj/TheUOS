@@ -18,6 +18,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -28,7 +29,6 @@ import com.uoscs09.theuos2.async.AbstractRequest;
 import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.customview.CustomHorizontalScrollView;
-import com.uoscs09.theuos2.customview.NestedListView;
 import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.parse.XmlParserWrapper;
 import com.uoscs09.theuos2.util.AppUtil;
@@ -37,6 +37,8 @@ import com.uoscs09.theuos2.util.StringUtil;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
+
+import butterknife.Bind;
 
 public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<SubjectItem2>>
         implements AdapterView.OnItemClickListener, AdapterView.OnItemSelectedListener, Request.ResultListener<ArrayList<SubjectItem2>>, Request.ErrorListener {
@@ -50,8 +52,12 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
     private TextView[] textViews;
     private View[] tabStrips;
 
-    private CustomHorizontalScrollView mScrollView;
-    private View mEmptyView;
+    @Bind(R.id.tab_search_subject_scrollview)
+    CustomHorizontalScrollView mScrollView;
+    @Bind(R.id.tab_search_subject_empty_view)
+    View mEmptyView;
+    @Bind(R.id.tab_search_subject_list_view)
+    ListView mListView;
 
     private String mSearchConditionString;
     private int mTabSelection = 1;
@@ -101,15 +107,19 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Context context = getActivity();
+    protected int getLayout() {
+        return R.layout.tab_search_subj;
+    }
 
-        final View rootView = inflater.inflate(R.layout.tab_search_subj, container, false);
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        Context context = getActivity();
 
         //mTitleLayout = rootView.findViewById(R.id.tab_search_subject_head_layout);
         //mTitleLayout.setVisibility(View.INVISIBLE);
 
-        mEmptyView = rootView.findViewById(R.id.tab_search_subject_empty_view);
         mEmptyView.findViewById(R.id.empty1).setOnClickListener(v -> {
             sendEmptyViewClickEvent();
             mSearchDialog.show();
@@ -122,7 +132,6 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
             mSubjectList = new ArrayList<>();
         }
 
-        NestedListView mListView = (NestedListView) rootView.findViewById(R.id.tab_search_subject_list_view);
         mSubjectAdapter = new SubjectAdapter2(context, mSubjectList);
         mAminAdapter = new AlphaInAnimationAdapter(mSubjectAdapter);
         mAminAdapter.setAbsListView(mListView);
@@ -131,7 +140,6 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
         mListView.setOnItemClickListener(this);
         mListView.setEmptyView(mEmptyView);
 
-        mScrollView = (CustomHorizontalScrollView) rootView.findViewById(R.id.tab_search_subject_scrollview);
         final CustomHorizontalScrollView mTabParent = (CustomHorizontalScrollView) LayoutInflater.from(getActivity()).inflate(R.layout.view_tab_search_subject_toolbar_menu, getToolbarParent(), false);
         mTabParent.setOnScrollListener((l, t, oldl, oldt) -> {
             if (!mIsScrollViewScrolling) {
@@ -173,10 +181,9 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
 
         }
 
-        registerProgressView(rootView.findViewById(R.id.progress_layout));
-
-        return rootView;
+        registerProgressView(view.findViewById(R.id.progress_layout));
     }
+
 
     private void onTabClick(int index) {
         if (mSubjectList.isEmpty()) {

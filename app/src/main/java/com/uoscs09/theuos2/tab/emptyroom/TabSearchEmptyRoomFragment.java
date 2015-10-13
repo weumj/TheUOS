@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -19,7 +20,6 @@ import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.async.AbstractRequest;
 import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
-import com.uoscs09.theuos2.customview.NestedListView;
 import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.parse.XmlParserWrapper;
 import com.uoscs09.theuos2.util.AppUtil;
@@ -34,6 +34,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import butterknife.Bind;
+
 /**
  * 빈 강의실을 조회하는 fragment
  */
@@ -45,7 +47,10 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Em
     private Spinner mTermSpinner;
     private TextView[] textViews;
     private View[] tabStrips;
-    private View mEmptyView;
+    @Bind(R.id.tab_search_subject_empty_view)
+    View mEmptyView;
+    @Bind(R.id.etc_search_list)
+    ListView mListView;
 
     private ArrayAdapter<EmptyClassRoomItem> mAdapter;
     @AsyncData
@@ -114,25 +119,27 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Em
                 .create();
     }
 
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.tab_search_empty_room, container, false);
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         mAdapter = new SearchEmptyRoomAdapter(getActivity(), mClassRoomList);
-        NestedListView mListView = (NestedListView) root.findViewById(R.id.etc_search_list);
 
         mListView.setAdapter(mAdapter);
 
-        mEmptyView = root.findViewById(R.id.tab_search_subject_empty_view);
         mEmptyView.findViewById(R.id.empty1).setOnClickListener(v -> {
             sendEmptyViewClickEvent();
             mSearchDialog.show();
         });
         mListView.setEmptyView(mEmptyView);
 
-        registerProgressView(root.findViewById(R.id.progress_layout));
+        registerProgressView(view.findViewById(R.id.progress_layout));
+    }
 
-        return root;
+    @Override
+    protected int getLayout() {
+        return R.layout.tab_search_empty_room;
     }
 
     @Override

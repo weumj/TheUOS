@@ -20,6 +20,7 @@ import com.uoscs09.theuos2.base.BaseFragment;
 import com.uoscs09.theuos2.common.CustomWebViewClient;
 import com.uoscs09.theuos2.customview.NonLeakingWebView;
 
+@Deprecated
 @SuppressLint("ClickableViewAccessibility")
 public class TabMapFragment extends BaseFragment implements OnTouchListener, View.OnClickListener {
     private NonLeakingWebView mWebView;

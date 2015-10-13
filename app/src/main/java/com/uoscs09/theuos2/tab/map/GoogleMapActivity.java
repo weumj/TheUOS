@@ -224,6 +224,7 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
         }
     }
 
+
     private boolean checkLocationPermissionDenied() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M // Android M 이전 버전에는 permission check 메소드가 없음
                 && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED

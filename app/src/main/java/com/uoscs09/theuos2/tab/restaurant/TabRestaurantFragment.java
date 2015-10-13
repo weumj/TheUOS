@@ -32,27 +32,12 @@ import com.uoscs09.theuos2.util.PrefUtil;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import butterknife.Bind;
 import jp.wasabeef.recyclerview.animators.SlideInDownAnimator;
 import jp.wasabeef.recyclerview.animators.adapters.SlideInBottomAnimationAdapter;
 
 public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestItem>>
         implements Request.ResultListener<SparseArray<RestItem>>, Request.ErrorListener {
-
-    private SwipeRefreshLayout mSwipeRefreshLayout;
-    private RecyclerView mRecyclerView;
-    private RestItemAdapter mRestItemAdapter;
-    // 리스트의 한 아이템은 식당 정보 (아침 점심 저녁) 를 나타냄
-    @AsyncData
-    private SparseArray<RestItem> mRestTable;
-
-    private int mCurrentSelection;
-
-    private static final ParseRest REST_PARSER = new ParseRest();
-
-    //private String mCurrentRestName;
-    private final ArrayList<Tab> mTabList = new ArrayList<>();
-    private Tab mCurrentTab;
-
     private static final String BUTTON = "button";
     private static final String REST = "rest_list";
 
@@ -74,6 +59,26 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
 
     private static final int[] REST_TAB_MENU_STRING_ID = {R.string.tab_rest_students_hall, R.string.tab_rest_anekan, R.string.tab_rest_nature_science, R.string.tab_rest_main_8th, R.string.tab_rest_dormitory};
     private static final String[] REST_TAB_MENU_STRING_LABEL = {"학생회관 1층", "양식당 (아느칸)", "자연과학관", "본관 8층", "생활관"};
+
+    private static final ParseRest REST_PARSER = new ParseRest();
+
+    @Bind(R.id.tab_rest_swipe_layout)
+    SwipeRefreshLayout mSwipeRefreshLayout;
+    @Bind(R.id.tab_rest_recycler_view)
+    RecyclerView mRecyclerView;
+    private RestItemAdapter mRestItemAdapter;
+    // 리스트의 한 아이템은 식당 정보 (아침 점심 저녁) 를 나타냄
+    @AsyncData
+    private SparseArray<RestItem> mRestTable;
+
+    private int mCurrentSelection;
+
+    private RestRequest mRequest = new RestRequest();
+
+    //private String mCurrentRestName;
+    private final ArrayList<Tab> mTabList = new ArrayList<>();
+    private Tab mCurrentTab;
+
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -117,10 +122,14 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(R.layout.tab_restaurant, container, false);
+    protected int getLayout() {
+        return R.layout.tab_restaurant;
+    }
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.tab_rest_swipe_layout);
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
         mSwipeRefreshLayout.setColorSchemeResources(
                 AppUtil.getAttrValue(getActivity(), R.attr.color_actionbar_title),
                 AppUtil.getAttrValue(getActivity(), R.attr.colorAccent)
@@ -131,7 +140,6 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
             execute(true);
         });
 
-        mRecyclerView = (RecyclerView) mSwipeRefreshLayout.findViewById(R.id.tab_rest_recycler_view);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(layoutManager);
@@ -142,14 +150,12 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
 
         mRecyclerView.setItemAnimator(new SlideInDownAnimator());
 
-        registerProgressView(rootView.findViewById(R.id.progress_layout));
+        registerProgressView(view.findViewById(R.id.progress_layout));
 
         if (mRestTable.size() == 0)
             execute(false);
         else
             performTabClick(mCurrentSelection);
-
-        return rootView;
     }
 
     @Override
@@ -198,7 +204,7 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
         execute(true, mRequest, this, this, true);
     }
 
-    private RestRequest mRequest = new RestRequest();
+
 
     private class RestRequest extends AbstractRequest<SparseArray<RestItem>> {
         private boolean shouldForceUpdate = false;

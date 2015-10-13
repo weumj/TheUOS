@@ -8,12 +8,10 @@ import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.async.Processor;
@@ -29,6 +27,7 @@ import com.uoscs09.theuos2.util.TimeUtil;
 import java.util.ArrayList;
 import java.util.Date;
 
+import butterknife.Bind;
 import jp.wasabeef.recyclerview.animators.SlideInDownAnimator;
 
 /**
@@ -58,8 +57,10 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo>
     private StaggeredGridLayoutManager mLayoutManager;
     */
 
-    private SwipeRefreshLayout mSwipeRefreshLayout;
-    private RecyclerView mSeatListView;
+    @Bind(R.id.swipe_layout)
+    SwipeRefreshLayout mSwipeRefreshLayout;
+    @Bind(R.id.tab_library_list_seat)
+    RecyclerView mSeatListView;
     private SeatDismissDialogFragment mSeatDismissDialogFragment;
 
     private SeatInfo mSeatInfo;
@@ -94,10 +95,14 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo>
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.tab_libraryseat, container, false);
+    protected int getLayout() {
+        return R.layout.tab_libraryseat;
+    }
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_layout);
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
         mSwipeRefreshLayout.setColorSchemeResources(
                 AppUtil.getAttrValue(getActivity(), R.attr.color_actionbar_title),
                 AppUtil.getAttrValue(getActivity(), R.attr.colorAccent)
@@ -114,18 +119,15 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo>
         StaggeredGridLayoutManager mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
 
-        mSeatListView = (RecyclerView) rootView.findViewById(R.id.tab_library_list_seat);
         mSeatListView.setAdapter(mSeatAdapter);
         mSeatListView.setLayoutManager(mLayoutManager);
         mSeatListView.setItemAnimator(new SlideInDownAnimator());
 
-        registerProgressView(rootView.findViewById(R.id.progress_layout));
+        registerProgressView(view.findViewById(R.id.progress_layout));
 
         if (mSeatInfo.seatItemList.isEmpty()) {
             execute();
         }
-
-        return rootView;
     }
 
     @Override

@@ -1,11 +1,14 @@
 package com.uoscs09.theuos2.tab.schedule;
 
+import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -44,6 +47,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import butterknife.Bind;
 import se.emilsjolander.stickylistheaders.ExpandableStickyListHeadersListView;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 
@@ -54,7 +58,17 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
     private static final String FILE_NAME = "file_univ_schedule";
     private static final XmlParserWrapper<ArrayList<UnivScheduleItem>> UNIV_SCHEDULE_PARSER = OApiUtil.getUnivScheduleParser();
 
-    private ExpandableStickyListHeadersListView mListView;
+    private static final String SELECTION = "((" + CalendarContract.Calendars.ACCOUNT_NAME + " = ?) AND ("
+            + CalendarContract.Calendars.ACCOUNT_TYPE + " = ?) AND ("
+            + CalendarContract.Calendars.OWNER_ACCOUNT + " = ?))";
+    private static final String[] EVENT_PROJECTION = {
+            CalendarContract.Calendars._ID
+    };
+    private static boolean permissionChecked = false;
+    private static boolean permissionResult = false;
+
+    @Bind(R.id.list)
+    ExpandableStickyListHeadersListView mListView;
     private AlertDialog mItemSelectDialog;
     private Dialog mProgressDialog;
     private Adapter mAdapter;
@@ -67,12 +81,6 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
     private String[] selectionArgs;
     private String mAccount;
 
-    private static final String SELECTION = "((" + CalendarContract.Calendars.ACCOUNT_NAME + " = ?) AND ("
-            + CalendarContract.Calendars.ACCOUNT_TYPE + " = ?) AND ("
-            + CalendarContract.Calendars.OWNER_ACCOUNT + " = ?))";
-    private final String[] EVENT_PROJECTION = {
-            CalendarContract.Calendars._ID
-    };
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -82,7 +90,14 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    protected int getLayout() {
+        return R.layout.tab_univ_schedule;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
         if (savedInstanceState != null) {
             mList.clear();
 
@@ -94,11 +109,8 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
             setSubtitleWhenVisible(mSubTitle);
         }
 
-        View view = inflater.inflate(R.layout.tab_univ_schedule, container, false);
-
         mAdapter = new Adapter(getActivity(), mList);
 
-        mListView = (ExpandableStickyListHeadersListView) view.findViewById(R.id.list);
         mListView.setNestedScrollingEnabled(true);
 
         mListView.setOnItemClickListener((parent, view1, position, id) -> {
@@ -135,8 +147,6 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
 
         if (mList.isEmpty())
             execute();
-
-        return view;
     }
 
     private void getAccount() throws Exception {
@@ -154,7 +164,45 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
         }
     }
 
+    private boolean checkPermission() {
+        permissionChecked = true;
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.M || checkPermissionV22();
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    private boolean checkPermissionV22() {
+        return getActivity().checkSelfPermission(Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED
+                && getActivity().checkSelfPermission(Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private static final int PERMISSION_REQUEST_CALENDAR = 4822;
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+            case PERMISSION_REQUEST_CALENDAR:
+                for (int result : grantResults) {
+                    if (result == PackageManager.PERMISSION_DENIED) {
+                        AppUtil.showToast(getActivity(), R.string.tab_map_submap_permission_denied);
+                        return;
+                    }
+                }
+                break;
+
+            default:
+                break;
+        }
+    }
+
     private void addUnivScheduleToCalender() {
+        // permission 확인한 적이 없고, permission 요청 결과가 false 였고, permission 확인 결과가 false 인 경우
+        if (!permissionChecked && !permissionResult && !(permissionResult = checkPermission())) {
+            requestPermissions(new String[]{Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR}, PERMISSION_REQUEST_CALENDAR);
+            return;
+        }
+
         mProgressDialog.show();
 
         AsyncUtil.newRequest(
@@ -162,6 +210,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
                     getAccount();
 
                     ContentResolver cr = getActivity().getContentResolver();
+
                     Cursor c = cr.query(CalendarContract.Calendars.CONTENT_URI, EVENT_PROJECTION, SELECTION, selectionArgs, null);
 
                     if (c == null) {

@@ -2,9 +2,17 @@ package com.uoscs09.theuos2.base;
 
 
 import android.content.Context;
+import android.os.Bundle;
+import android.support.annotation.LayoutRes;
+import android.support.annotation.Nullable;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
+import com.uoscs09.theuos2.UOSApplication;
 import com.uoscs09.theuos2.UosMainActivity;
+
+import butterknife.ButterKnife;
 
 public abstract class BaseTabFragment extends BaseFragment {
     private ViewGroup mTabParent;
@@ -17,9 +25,30 @@ public abstract class BaseTabFragment extends BaseFragment {
             throw new RuntimeException("Activity != UosMainActivity");
     }
 
+    protected final UOSApplication getUosApplication() {
+        return (UOSApplication) getActivity().getApplication();
+    }
+
     protected UosMainActivity getUosMainActivity() {
         return (UosMainActivity) getActivity();
     }
+
+    @Nullable
+    @Override
+    public final View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        final View v = inflater.inflate(getLayout(), container, false);
+        ButterKnife.bind(this, v);
+        return v;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        ButterKnife.unbind(this);
+    }
+
+    @LayoutRes
+    protected abstract int getLayout();
 
     /*
     @Override

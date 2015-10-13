@@ -73,16 +73,13 @@ public abstract class AbsAsyncFragment<T> extends BaseTabFragment {
         sAsyncDataStoreMap.remove(getClass().getName());
 
         return mAsyncTask = request.getAsync(
-                new Request.ResultListener<T>() {
-                    @Override
-                    public void onResult(T result) {
-                        mAsyncTask = null;
-                        if (isVisible()) {
-                            onPostExecute();
-                            resultListener.onResult(result);
-                        } else {
-                            putAsyncData(getClass().getName(), result);
-                        }
+                (result) -> {
+                    mAsyncTask = null;
+                    if (isVisible()) {
+                        onPostExecute();
+                        resultListener.onResult(result);
+                    } else {
+                        putAsyncData(getClass().getName(), result);
                     }
                 },
                 e -> {

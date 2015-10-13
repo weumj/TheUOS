@@ -1,30 +1,6 @@
 package com.uoscs09.theuos2.tab.transport;
 
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseExpandableListAdapter;
-import android.widget.ExpandableListView;
-
-import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.annotation.AsyncData;
-import com.uoscs09.theuos2.async.AbstractRequest;
-import com.uoscs09.theuos2.async.Request;
-import com.uoscs09.theuos2.base.AbsProgressFragment;
-import com.uoscs09.theuos2.common.SerializableArrayMap;
-import com.uoscs09.theuos2.http.HttpRequest;
-import com.uoscs09.theuos2.util.AppUtil;
-import com.uoscs09.theuos2.util.SeoulOApiUtil;
-
-import java.util.ArrayList;
-import java.util.Map;
-
-public class TabTransportFragment extends AbsProgressFragment<Map<String, ArrayList<TransportItem>>>
+public class TabTransportFragment { /*extends AbsProgressFragment<Map<String, ArrayList<TransportItem>>>
         implements Request.ResultListener<Map<String, ArrayList<TransportItem>>>, Request.ErrorListener {
     private BaseExpandableListAdapter adapter;
     @AsyncData
@@ -144,4 +120,5 @@ public class TabTransportFragment extends AbsProgressFragment<Map<String, ArrayL
     public String getScreenNameForTracker() {
         return "TabTransportFragment";
     }
+    */
 }
