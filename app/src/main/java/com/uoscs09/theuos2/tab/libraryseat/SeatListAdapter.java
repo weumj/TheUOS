@@ -14,9 +14,12 @@ import com.uoscs09.theuos2.util.AppUtil;
 
 import java.util.List;
 
+import butterknife.Bind;
+
 class SeatListAdapter extends ListRecyclerAdapter<SeatItem, SeatListAdapter.ViewHolder> {
     private final int textColor;
 
+    @SuppressWarnings("deprecation")
     public SeatListAdapter(Context context, List<SeatItem> list) {
         super(list);
         textColor = context.getResources().getColor(AppUtil.getAttrValue(context, R.attr.color_primary_text));
@@ -28,25 +31,26 @@ class SeatListAdapter extends ListRecyclerAdapter<SeatItem, SeatListAdapter.View
     }
 
     static class ViewHolder extends ListRecyclerAdapter.ViewHolder<SeatItem> {
-        final TextView roomName;
-        final View ripple;
+        @Bind(R.id.tab_library_seat_list_text_room_name)
+        TextView roomName;
+        @Bind(R.id.ripple)
+        View ripple;
+        @Bind(R.id.tab_libray_seat_list_progress_img)
+        TextView progressImg;
+
         final PieProgressDrawable drawable = new PieProgressDrawable();
-        final TextView progressImg;
+
 
         @SuppressWarnings("deprecation")
         public ViewHolder(View convertView, int textColor) {
             super(convertView);
 
-            ripple = convertView.findViewById(R.id.ripple);
             ripple.setOnClickListener(this);
-
-            roomName = (TextView) convertView.findViewById(R.id.tab_library_seat_list_text_room_name);
 
             Context context = convertView.getContext();
             DisplayMetrics dm = context.getResources().getDisplayMetrics();
             drawable.setBorderWidth(2, dm);
 
-            progressImg = (TextView) convertView.findViewById(R.id.tab_libray_seat_list_progress_img);
             drawable.setTextSize(15 * dm.scaledDensity);
             drawable.setTextColor(textColor);
             drawable.setColor(context.getResources().getColor(R.color.gray_red));

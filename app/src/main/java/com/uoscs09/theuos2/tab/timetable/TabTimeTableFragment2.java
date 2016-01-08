@@ -10,7 +10,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
-import android.support.v4.util.SimpleArrayMap;
 import android.support.v7.app.AlertDialog;
 import android.text.method.TextKeyListener;
 import android.util.Log;
@@ -28,47 +27,38 @@ import android.widget.Spinner;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.async.AsyncUtil;
-import com.uoscs09.theuos2.async.Processor;
-import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
-import com.uoscs09.theuos2.common.SerializableArrayMap;
-import com.uoscs09.theuos2.http.TimeTableHttpRequest;
-import com.uoscs09.theuos2.parse.XmlParserWrapper;
+import com.uoscs09.theuos2.http.NetworkRequests;
+import com.uoscs09.theuos2.util.AppResources;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.IOUtil;
-import com.uoscs09.theuos2.util.ImageUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.OApiUtil.Semester;
 import com.uoscs09.theuos2.util.PrefUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import java.io.IOException;
-import java.util.Map;
 
 import butterknife.Bind;
+import butterknife.OnClick;
 
-public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable>
-        implements View.OnClickListener, Request.ResultListener<TimeTable>, Request.ErrorListener, Processor<TimeTable, TimeTable> {
+public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> {
     private AlertDialog mLoginDialog;
     View rootView;
     protected EditText mWiseIdView, mWisePasswdView;
     private Spinner mWiseTermSpinner, mWiseYearSpinner;
     private AlertDialog mDeleteDialog;
+
     @Bind(R.id.time_table_listView1)
     ListView mTimetableListView;
     @Bind(R.id.tab_timetable_empty)
     View emptyView;
+
     private Dialog mProgressDialog;
 
     @AsyncData
     private TimeTable mTimeTable;
     private TimeTableAdapter2 mTimeTableAdapter2;
-
-    private final SerializableArrayMap<String, Integer> colorTable = new SerializableArrayMap<>();
-
-
-    private static final ParseTimeTable2 TIME_TABLE_PARSER = new ParseTimeTable2();
-
 
     private final SubjectDetailDialogFragment mSubjectDetailDialog = new SubjectDetailDialogFragment();
 
@@ -76,16 +66,11 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable>
     @Override
     public void onCreate(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            Map<String, Integer> colorMap = (Map<String, Integer>) savedInstanceState.getSerializable("color");
-            if (colorMap != null)
-                colorTable.putAll(colorMap);
             mTimeTable = savedInstanceState.getParcelable(IOUtil.FILE_TIMETABLE);
-
         } else {
             mTimeTable = new TimeTable();
         }
 
-        mSubjectDetailDialog.setColorTable(colorTable);
         mSubjectDetailDialog.setColorSelectedListener(i -> mTimeTableAdapter2.notifyDataSetChanged());
 
         initDialog();
@@ -98,7 +83,7 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable>
 
         ViewGroup mTabParent = (ViewGroup) LayoutInflater.from(getActivity()).inflate(R.layout.view_tab_timetable_toolbar_menu, getToolbarParent(), false);
 
-        mTimeTableAdapter2 = new TimeTableAdapter2(getActivity(), mTimeTable, colorTable);
+        mTimeTableAdapter2 = new TimeTableAdapter2(getActivity(), mTimeTable);
         mTimeTableAdapter2.setOnItemClickListener((vh, v, subject) -> {
             if (subject.isEqualsTo(Subject.EMPTY))
                 return;
@@ -121,7 +106,6 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable>
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelable(IOUtil.FILE_TIMETABLE, mTimeTable);
-        outState.putSerializable("color", colorTable);
         super.onSaveInstanceState(outState);
     }
 
@@ -136,8 +120,6 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable>
         super.onViewCreated(view, savedInstanceState);
         rootView = view;
 
-        emptyView.findViewById(R.id.tab_timetable_empty_text).setOnClickListener(this);
-
         mTimetableListView.setEmptyView(emptyView);
         mTimetableListView.setAdapter(mTimeTableAdapter2);
 
@@ -147,6 +129,11 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable>
             readTimetableFromFileOnFragmentCreated();
     }
 
+    @OnClick(R.id.tab_timetable_empty_text)
+    void showLoginDialog() {
+        sendEmptyViewClickEvent();
+        mLoginDialog.show();
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -203,19 +190,13 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable>
 
         mTimeTableAdapter2.changeLayout(true);
 
-        final String picturePath = PrefUtil.getPicturePath(getActivity());
-        String savedPath = picturePath + "/timetable_" + mTimeTable.year + '_' + mTimeTable.semesterCode + '_' + String.valueOf(System.currentTimeMillis()) + ".png";
-
-        final AsyncTask<Void, ?, String> task = new ImageUtil.ListViewBitmapRequest.Builder(mTimetableListView, mTimeTableAdapter2)
-                .setHeaderView(getTabParentView())
-                .build()
-                .wrap(new ImageUtil.ImageWriteProcessor(savedPath))
+        final AsyncTask<Void, ?, String> task = TimetableUtil.saveTimetableToImage(mTimeTable, mTimetableListView, mTimeTableAdapter2, getTabParentView())
                 .getAsync(
                         result -> {
                             dismissProgressDialog();
                             mTimeTableAdapter2.changeLayout(false);
 
-                            String pictureDir = picturePath.substring(picturePath.lastIndexOf('/') + 1);
+                            String pictureDir = result.substring(result.lastIndexOf('/') + 1);
                             Snackbar.make(rootView, getString(R.string.tab_timetable_saved, pictureDir), Snackbar.LENGTH_LONG)
                                     .setAction(R.string.action_open, v -> {
                                         Intent intent = new Intent();
@@ -251,53 +232,37 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable>
         setSubtitleWhenVisible(timeTable.getYearAndSemester());
     }
 
-
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-
-        emptyView.setVisibility(View.INVISIBLE);
-    }
-
-    @Override
-    protected void onPostExecute() {
-        super.onPostExecute();
-        clearPassWd();
-    }
-
     void execute() {
+        emptyView.setVisibility(View.INVISIBLE);
+
         Semester semester = Semester.values()[mWiseTermSpinner.getSelectedItemPosition()];
         String mTimeTableYear = mWiseYearSpinner.getSelectedItem().toString();
-
-        execute(true, TimeTableHttpRequest.newRequest(mWiseIdView.getText(), mWisePasswdView.getText(), semester, mTimeTableYear)
-                .wrap(new XmlParserWrapper<>(TIME_TABLE_PARSER))
-                .wrap(IOUtil.<TimeTable>newFileWriteProcessor(getActivity(), IOUtil.FILE_TIMETABLE))
-                .wrap(this), this, this, true);
+/*
+        TimeTableHttpRequest.newRequest(mWiseIdView.getText(), mWisePasswdView.getText(), semester, mTimeTableYear).wrap(
+                httpURLConnection -> {
+                    String s = HttpRequest.readContentFromStream(httpURLConnection.getInputStream(), StringUtil.ENCODE_EUC_KR);
+                    httpURLConnection.disconnect();
+                    return s;
+                }
+        ).getAsync(
+                result -> {
+                    Log.d("timetable", result);
+                },
+                Throwable::printStackTrace
+        );
+*/
+        execute(true,
+                NetworkRequests.TimeTables.request(getActivity(), mWiseIdView.getText(), mWisePasswdView.getText(), semester, mTimeTableYear),
+                this::onResult,
+                this::onError,
+                true
+        );
     }
 
-    @Override
-    public TimeTable process(TimeTable timeTable) throws Exception {
-        // 시간표를 정상적으로 불러왔다면, 시간표를 저장하고,
-        // 시간표의 과목과 과목의 색을 Mapping 한다.
-        if (timeTable != null && !timeTable.isEmpty()) {
 
-            Context context = getActivity();
-            SerializableArrayMap<String, Integer> newColorTable = TimetableUtil.makeColorTable(timeTable);
-            TimetableUtil.saveColorTable(context, newColorTable);
-
-            colorTable.clear();
-            colorTable.putAll((SimpleArrayMap<String, Integer>) newColorTable);
-
-            timeTable.getClassTimeInformationTable();
-            //TimetableUtil.writeTimetable(context, result);
-
-        }
-        return timeTable;
-    }
-
-    @Override
     public void onResult(TimeTable result) {
-        if (result == null || result.isEmpty()) {
+        clearPassWd();
+        if (result == null /*|| result.isEmpty()*/) {
             AppUtil.showToast(getActivity(), R.string.tab_timetable_wise_login_warning_fail, isMenuVisible());
 
             if (mTimeTableAdapter2.isEmpty())
@@ -312,8 +277,9 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable>
         setTermTextViewText(mTimeTable);
     }
 
-    @Override
     public void onError(Exception e) {
+        //clearPassWd();
+
         if (mTimeTableAdapter2.isEmpty())
             emptyView.setVisibility(View.VISIBLE);
 
@@ -325,45 +291,22 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable>
         }
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.tab_timetable_empty_text:
-                sendEmptyViewClickEvent();
-                mLoginDialog.show();
-                break;
-
-            default:
-                break;
-        }
-    }
-
     private void readTimetableFromFileOnFragmentCreated() {
-        AsyncUtil.newRequest(() -> {
-                    TimeTable timeTable = TimetableUtil.readTimetable(getActivity());
-                    if (timeTable != null) {
-                        colorTable.clear();
-                        SimpleArrayMap<String, Integer> map = TimetableUtil.readColorTableFromFile(getActivity());
-                        if (map != null)
-                            colorTable.putAll(map);
-                        timeTable.getClassTimeInformationTable();
-                    }
+        AppResources.TimeTables.readFromFile(getActivity())
+                .getAsync(
+                        result -> {
+                            if (result == null || result.isEmpty()) {
+                                emptyView.setVisibility(View.VISIBLE);
 
-                    return timeTable;
-                }
-        ).getAsync(result -> {
-                    if (result == null || result.isEmpty()) {
-                        emptyView.setVisibility(View.VISIBLE);
+                            } else {
+                                mTimeTable.copyFrom(result);
+                                mTimeTableAdapter2.notifyDataSetChanged();
 
-                    } else {
-                        mTimeTable.copyFrom(result);
-                        mTimeTableAdapter2.notifyDataSetChanged();
-
-                        setTermTextViewText(mTimeTable);
-                    }
-                },
-                e -> Log.e("TimeTable", "cannot read timetable from file.", e)
-        );
+                                setTermTextViewText(mTimeTable);
+                            }
+                        },
+                        e -> Log.e("TimeTable", "cannot read timetable from file.", e)
+                );
     }
 
     private void initDialog() {

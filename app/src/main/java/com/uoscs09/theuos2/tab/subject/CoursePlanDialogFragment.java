@@ -11,7 +11,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
-import android.support.v4.util.ArrayMap;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -25,34 +24,33 @@ import com.nhaarman.listviewanimations.appearance.AnimationAdapter;
 import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.async.AsyncUtil;
-import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.base.BaseDialogFragment;
-import com.uoscs09.theuos2.http.HttpRequest;
-import com.uoscs09.theuos2.parse.XmlParserWrapper;
+import com.uoscs09.theuos2.http.NetworkRequests;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.ImageUtil;
-import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CoursePlanDialogFragment extends BaseDialogFragment implements Request.ErrorListener, Toolbar.OnMenuItemClickListener {
-    private final static String URL = "http://wise.uos.ac.kr/uosdoc/api.ApiApiCoursePlanView.oapi";
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
+public class CoursePlanDialogFragment extends BaseDialogFragment implements Toolbar.OnMenuItemClickListener {
     private final static String INFO = "info";
 
     private final static String TAG = "CoursePlanDialogFragment";
 
-    private final ArrayMap<String, String> mOApiParams;
-
-    private Toolbar mToolbar;
+    @Bind(R.id.toolbar)
+    Toolbar mToolbar;
     private View mCourseTitle;
     private TextView mCourseName, mCourseCode, mCourseProf, mCourseProfTel, mCourseEval, mCourseBook, mCourseLocation;
 
-    private ListView mListView;
+    @Bind(R.id.fragment_course_plan_listview)
+    ListView mListView;
     private ArrayAdapter<CoursePlanItem> mAdapter;
 
     private ArrayList<CoursePlanItem> infoList;
@@ -62,25 +60,15 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Requ
     private boolean isDataInvalid = false;
     private SubjectItem2 mSubject;
 
-    private static final XmlParserWrapper<ArrayList<CoursePlanItem>> COURSE_PLAN_PARSER = OApiUtil.getParser(CoursePlanItem.class);
 
     private AsyncTask<Void, ?, ArrayList<CoursePlanItem>> mAsyncTask;
 
     public void setSubjectItem(SubjectItem2 item) {
-
         mSubject = item;
         isDataInvalid = true;
 
-        mOApiParams.put(OApiUtil.TERM, item.term);
-        mOApiParams.put(OApiUtil.SUBJECT_NO, item.subject_no);
-        mOApiParams.put(OApiUtil.CLASS_DIV, item.class_div);
-        mOApiParams.put(OApiUtil.YEAR, item.year);
     }
 
-    public CoursePlanDialogFragment() {
-        mOApiParams = new ArrayMap<>(5);
-        mOApiParams.put(OApiUtil.API_KEY, OApiUtil.UOS_API_KEY);
-    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -128,14 +116,12 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Requ
 
     private View createView() {
         View v = View.inflate(getActivity(), R.layout.dialog_course_plan, null);
+        ButterKnife.bind(this, v);
 
-        mToolbar = (Toolbar) v.findViewById(R.id.toolbar);
         mToolbar.setTitle(R.string.tab_course_plan_title);
 
         mToolbar.inflateMenu(R.menu.dialog_courseplan);
         mToolbar.setOnMenuItemClickListener(this);
-
-        mListView = (ListView) v.findViewById(R.id.fragment_course_plan_listview);
 
         mCourseTitle = LayoutInflater.from(getActivity()).inflate(R.layout.view_course_plan_header, mListView, false);
         mCourseName = (TextView) mCourseTitle.findViewById(R.id.fragment_course_plan_subject_name);
@@ -203,19 +189,7 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Requ
         mProgressDialog.setOnCancelListener(mJobCanceler);
         mProgressDialog.show();
 
-        mAsyncTask = AsyncUtil.newRequest(
-                () -> {
-                    if (mSubject.classInformationList.isEmpty())
-                        mSubject.afterParsing();
-
-                    return HttpRequest.Builder.newConnectionRequestBuilder(URL)
-                            .setParams(mOApiParams)
-                            .setParamsEncoding(StringUtil.ENCODE_EUC_KR)
-                            .build()
-                            .checkNetworkState(getActivity())
-                            .wrap(COURSE_PLAN_PARSER)
-                            .get();
-                })
+        mAsyncTask = NetworkRequests.Subjects.requestCoursePlan(getActivity(), mSubject)
                 .getAsync(
                         result -> {
                             dismissProgressDialog();
@@ -242,7 +216,7 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Requ
                             aAdapter.notifyDataSetChanged();
                             isDataInvalid = false;
                         },
-                        this
+                        this::onError
                 );
     }
 
@@ -262,7 +236,6 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Requ
         mProgressDialog.setOnCancelListener(null);
     }
 
-    @Override
     public void onError(Exception e) {
         dismissProgressDialog();
 
@@ -302,7 +275,7 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Requ
                                     })
                                     .show();
                         },
-                        this
+                        this::onError
                 );
         mProgressDialog.setOnCancelListener(dialog -> AsyncUtil.cancelTask(task));
         mProgressDialog.show();
@@ -334,27 +307,27 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Requ
                             String docDir = docPath.substring(docPath.lastIndexOf('/') + 1);
                             Snackbar.make(mListView, getString(R.string.tab_course_plan_action_save_text_completed, docDir), Snackbar.LENGTH_LONG)
                                     .setAction(R.string.action_open, v -> {
-                                        Intent intent = new Intent();
-                                        intent.setAction(Intent.ACTION_VIEW);
-                                        intent.setDataAndType(Uri.parse("file://" + fileName), "text/*");
+                                                Intent intent = new Intent();
+                                                intent.setAction(Intent.ACTION_VIEW);
+                                                intent.setDataAndType(Uri.parse("file://" + fileName), "text/*");
 
-                                        try {
-                                            AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
-                                        } catch (ActivityNotFoundException e) {
-                                            //e.printStackTrace();
-                                            AppUtil.showToast(getActivity(), R.string.error_no_activity_found_to_handle_file);
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                            AppUtil.showErrorToast(getActivity(), e, true);
-                                        }
+                                                try {
+                                                    AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
+                                                } catch (ActivityNotFoundException e) {
+                                                    //e.printStackTrace();
+                                                    AppUtil.showToast(getActivity(), R.string.error_no_activity_found_to_handle_file);
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                    AppUtil.showErrorToast(getActivity(), e, true);
+                                                }
 
-                                        sendClickEvent("show course plan text");
-                                    }
+                                                sendClickEvent("show course plan text");
+                                            }
 
                                     )
                                     .show();
                         },
-                        this
+                        this::onError
                 );
         mProgressDialog.setOnCancelListener(dialog -> AsyncUtil.cancelTask(task));
         mProgressDialog.show();
@@ -446,7 +419,7 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Requ
         return TAG;
     }
 
-    private static class CoursePlanAdapter extends AbsArrayAdapter<CoursePlanItem, CoursePlanAdapter.ViewHolder> {
+    static class CoursePlanAdapter extends AbsArrayAdapter<CoursePlanItem, CoursePlanAdapter.ViewHolder> {
         public CoursePlanAdapter(Context context, List<CoursePlanItem> list) {
             super(context, R.layout.list_layout_course_plan, list);
         }
@@ -455,7 +428,7 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Requ
         public void onBindViewHolder(int position, ViewHolder holder) {
             CoursePlanItem item = getItem(position);
 
-            holder.week.setText(Integer.toString(item.week));
+            holder.week.setText(String.valueOf(item.week));
             holder.content.setText(item.class_cont);
             holder.meth.setText(item.class_meth);
             holder.book.setText(item.week_book);
@@ -468,19 +441,19 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Requ
         }
 
         static class ViewHolder extends AbsArrayAdapter.ViewHolder {
-            public final TextView week;
-            public final TextView content;
-            public final TextView meth;
-            public final TextView book;
-            public final TextView etc;
+            @Bind(R.id.course_plan_week)
+            public TextView week;
+            @Bind(R.id.course_plan_content)
+            public TextView content;
+            @Bind(R.id.course_plan_meth)
+            public TextView meth;
+            @Bind(R.id.course_plan_book)
+            public TextView book;
+            @Bind(R.id.course_plan_etc)
+            public TextView etc;
 
             public ViewHolder(View view) {
                 super(view);
-                week = (TextView) view.findViewById(R.id.course_plan_week);
-                content = (TextView) view.findViewById(R.id.course_plan_content);
-                meth = (TextView) view.findViewById(R.id.course_plan_meth);
-                book = (TextView) view.findViewById(R.id.course_plan_book);
-                etc = (TextView) view.findViewById(R.id.course_plan_etc);
             }
         }
     }

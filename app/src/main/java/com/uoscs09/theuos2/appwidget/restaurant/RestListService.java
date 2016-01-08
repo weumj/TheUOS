@@ -8,7 +8,7 @@ import android.widget.RemoteViewsService;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.tab.restaurant.RestItem;
-import com.uoscs09.theuos2.tab.restaurant.TabRestaurantFragment;
+import com.uoscs09.theuos2.util.AppResources;
 
 public class RestListService extends RemoteViewsService {
 
@@ -96,7 +96,7 @@ public class RestListService extends RemoteViewsService {
 
         @Override
         public void onDataSetChanged() {
-            mTable = TabRestaurantFragment.getRestMapFromFile(context);
+            mTable = AppResources.Restaurants.readFromFile(context);
         }
 
 

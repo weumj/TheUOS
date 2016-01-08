@@ -1,6 +1,5 @@
 package com.uoscs09.theuos2.tab.restaurant;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -19,25 +18,19 @@ import android.widget.TextView;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
-import com.uoscs09.theuos2.async.AbstractRequest;
-import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
-import com.uoscs09.theuos2.common.SerializableArrayMap;
-import com.uoscs09.theuos2.http.HttpRequest;
+import com.uoscs09.theuos2.util.AppResources;
 import com.uoscs09.theuos2.util.AppUtil;
-import com.uoscs09.theuos2.util.IOUtil;
-import com.uoscs09.theuos2.util.OApiUtil;
-import com.uoscs09.theuos2.util.PrefUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 
 import butterknife.Bind;
+import butterknife.ButterKnife;
+import jp.wasabeef.recyclerview.adapters.SlideInBottomAnimationAdapter;
 import jp.wasabeef.recyclerview.animators.SlideInDownAnimator;
-import jp.wasabeef.recyclerview.animators.adapters.SlideInBottomAnimationAdapter;
 
-public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestItem>>
-        implements Request.ResultListener<SparseArray<RestItem>>, Request.ErrorListener {
+public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestItem>> {
     private static final String BUTTON = "button";
     private static final String REST = "rest_list";
 
@@ -60,12 +53,11 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
     private static final int[] REST_TAB_MENU_STRING_ID = {R.string.tab_rest_students_hall, R.string.tab_rest_anekan, R.string.tab_rest_nature_science, R.string.tab_rest_main_8th, R.string.tab_rest_dormitory};
     private static final String[] REST_TAB_MENU_STRING_LABEL = {"학생회관 1층", "양식당 (아느칸)", "자연과학관", "본관 8층", "생활관"};
 
-    private static final ParseRest REST_PARSER = new ParseRest();
-
     @Bind(R.id.tab_rest_swipe_layout)
     SwipeRefreshLayout mSwipeRefreshLayout;
     @Bind(R.id.tab_rest_recycler_view)
     RecyclerView mRecyclerView;
+
     private RestItemAdapter mRestItemAdapter;
     // 리스트의 한 아이템은 식당 정보 (아침 점심 저녁) 를 나타냄
     @AsyncData
@@ -73,7 +65,6 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
 
     private int mCurrentSelection;
 
-    private RestRequest mRequest = new RestRequest();
 
     //private String mCurrentRestName;
     private final ArrayList<Tab> mTabList = new ArrayList<>();
@@ -191,85 +182,30 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
         sendClickEvent(REST_TAB_MENU_STRING_LABEL[mCurrentSelection]);
     }
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-        mRecyclerView.getAdapter().notifyItemRangeRemoved(0, 5);
-        mRestTable.clear();
-    }
-
 
     private void execute(boolean force) {
-        mRequest.shouldForceUpdate = force;
-        execute(true, mRequest, this, this, true);
+        mRecyclerView.getAdapter().notifyItemRangeRemoved(0, 5);
+        mRestTable.clear();
+
+        execute(true,
+                AppResources.Restaurants.request(getActivity(), force),
+                result -> {
+                    mRestTable = result;
+
+                    performTabClick(mCurrentSelection);
+
+                    mRestItemAdapter.mItems = mRestTable;
+                    mRestItemAdapter.notifyDataSetChanged();
+
+                    mSwipeRefreshLayout.setRefreshing(false);
+                },
+                this::onError,
+                true
+        );
     }
 
-
-
-    private class RestRequest extends AbstractRequest<SparseArray<RestItem>> {
-        private boolean shouldForceUpdate = false;
-
-        @Override
-        public SparseArray<RestItem> get() throws Exception {
-            Context context = getActivity();
-            if (!shouldForceUpdate && OApiUtil.getDateTime() - PrefUtil.getInstance(context).get(PrefUtil.KEY_REST_DATE_TIME, 0) < 3) {
-                try {
-                    SparseArray<RestItem> result = getRestMapFromFile(context);
-
-                    if (result.size() > 0l)
-                        return result;
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-            }
-            // web 에서 읽어온지 오래되었거나, 파일이 존재하지 않은경우 web 에서 읽어옴
-            return getRestListFromWeb(context);
-        }
-    }
-
-    @Override
-    public void onResult(SparseArray<RestItem> result) {
-        mRestTable = result;
-
-        performTabClick(mCurrentSelection);
-
-        mRestItemAdapter.mItems = mRestTable;
-        mRestItemAdapter.notifyDataSetChanged();
-
-        mSwipeRefreshLayout.setRefreshing(false);
-    }
-
-    @Override
     public void onError(Exception e) {
-    }
-
-    /**
-     * web 에서 식단표을 읽어온다.
-     */
-    public static SparseArray<RestItem> getRestListFromWeb(Context context) throws Exception {
-
-        SparseArray<RestItem> sparseArray = HttpRequest.Builder
-                .newStringRequestBuilder("http://m.uos.ac.kr/mkor/food/list.do")
-                .build()
-                .checkNetworkState(context)
-                .wrap(REST_PARSER)
-                .get();
-
-        SerializableArrayMap<Integer, RestItem> result = SerializableArrayMap.fromSparseArray(sparseArray);
-
-        IOUtil.writeObjectToFile(context, IOUtil.FILE_REST, result);
-        PrefUtil.getInstance(context).put(PrefUtil.KEY_REST_DATE_TIME, OApiUtil.getDate());
-
-        return sparseArray;
-    }
-
-
-    @NonNull
-    public static SparseArray<RestItem> getRestMapFromFile(Context context) {
-        SerializableArrayMap<Integer, RestItem> map = IOUtil.readFromFileSuppressed(context, IOUtil.FILE_REST);
-        return SerializableArrayMap.toSparseArray(map);
+        e.printStackTrace();
     }
 
     private void showWeekDialog() {
@@ -412,11 +348,14 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
         return mCurrentRestName;
     }
 */
-    private static class Tab {
+    protected static class Tab {
         public final FrameLayout tabView;
-        public final TextView mTextView;
-        public final View ripple;
-        private final View mStrip;
+        @Bind(R.id.tab_rest_tab_text)
+        public TextView mTextView;
+        @Bind(R.id.ripple)
+        public View ripple;
+        @Bind(R.id.tab_rest_tab_strip)
+        public View mStrip;
         // public int id;
 
         private final int mSelectedColor;
@@ -424,9 +363,8 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
 
         public Tab(LinearLayout parent) {
             tabView = (FrameLayout) LayoutInflater.from(parent.getContext()).inflate(R.layout.view_tab_rest_tab, parent, false);
-            ripple = tabView.findViewById(R.id.ripple);
-            mTextView = (TextView) tabView.findViewById(R.id.tab_rest_tab_text);
-            mStrip = tabView.findViewById(R.id.tab_rest_tab_strip);
+            ButterKnife.bind(this, tabView);
+
             mSelectedColor = AppUtil.getAttrColor(parent.getContext(), R.attr.color_actionbar_title);
             mNormalColor = mSelectedColor | 0xaa << 24;
         }

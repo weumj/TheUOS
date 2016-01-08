@@ -10,7 +10,7 @@ import android.text.style.URLSpan;
 import android.view.View;
 import android.widget.TextView;
 
-import com.android.volley.toolbox.ImageLoader;
+import com.bumptech.glide.Glide;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.util.StringUtil;
@@ -18,18 +18,16 @@ import com.uoscs09.theuos2.util.StringUtil;
 import java.util.List;
 
 class BookItemListAdapter extends AbsArrayAdapter<BookItem, BookItemViewHolder> {
-    interface OnItemClickListener extends com.uoscs09.theuos2.base.OnItemClickListener<BookItemViewHolder>{
+    interface OnItemClickListener extends com.uoscs09.theuos2.base.OnItemClickListener<BookItemViewHolder> {
         boolean onItemLongClick(BookItemViewHolder holder, View v);
     }
 
     private final OnItemClickListener onItemClickListener;
-    private final ImageLoader imageLoader;
     private static final int COLOR_AVAILABLE = Color.rgb(114, 213, 114) //R.color.material_green_200
             , COLOR_NOT_AVAILABLE = Color.rgb(246, 153, 136); // R.color.material_red_200
 
-    public BookItemListAdapter(Context context, List<BookItem> list, ImageLoader imageLoader, OnItemClickListener onItemClickListener) {
+    public BookItemListAdapter(Context context, List<BookItem> list, OnItemClickListener onItemClickListener) {
         super(context, R.layout.list_layout_book, list);
-        this.imageLoader = imageLoader;
         this.onItemClickListener = onItemClickListener;
     }
 
@@ -37,12 +35,12 @@ class BookItemListAdapter extends AbsArrayAdapter<BookItem, BookItemViewHolder> 
     public void onBindViewHolder(int position, final BookItemViewHolder holder) {
         final BookItem item = getItem(position);
 
-        if (holder.imageContainer != null)
-            holder.imageContainer.cancelRequest();
-
-        holder.coverImg.setImageResource(R.drawable.noimg_en);
         if (!item.coverSrc.equals(StringUtil.NULL))
-            holder.imageContainer = imageLoader.get(item.coverSrc, holder);
+            Glide.with(getContext())
+                    .load(item.coverSrc)
+                    .error(R.drawable.noimg_en)
+                    .into(holder.coverImg);
+
 
         holder.item = item;
         holder.onItemClickListener = onItemClickListener;

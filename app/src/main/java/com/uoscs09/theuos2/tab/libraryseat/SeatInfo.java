@@ -12,6 +12,8 @@ public class SeatInfo implements Parcelable {
     List<SeatDismissInfo> seatDismissInfoList;
 
     public SeatInfo() {
+        seatItemList = new ArrayList<>();
+        seatDismissInfoList = new ArrayList<>();
     }
 
     public void clearAndAddAll(SeatInfo info){

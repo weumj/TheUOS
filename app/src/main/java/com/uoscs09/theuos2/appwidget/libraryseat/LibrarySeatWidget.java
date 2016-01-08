@@ -11,8 +11,8 @@ import android.widget.RemoteViews;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsAsyncWidgetProvider;
+import com.uoscs09.theuos2.http.NetworkRequests;
 import com.uoscs09.theuos2.tab.libraryseat.SeatItem;
-import com.uoscs09.theuos2.tab.libraryseat.TabLibrarySeatFragment;
 import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
 import com.uoscs09.theuos2.util.TimeUtil;
@@ -74,7 +74,7 @@ public class LibrarySeatWidget extends AbsAsyncWidgetProvider<ArrayList<SeatItem
     @Override
     protected ArrayList<SeatItem> doInBackGround(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) throws Exception {
 
-        ArrayList<SeatItem> list = TabLibrarySeatFragment.requestSeatInfo(context).get().seatItemList;
+        ArrayList<SeatItem> list = NetworkRequests.LibrarySeats.request(context).get().seatItemList;
         ArrayList<SeatItem> newList = new ArrayList<>();
 
         if (PrefUtil.getInstance(context).get(PrefUtil.KEY_LIB_WIDGET_SEAT_SHOW_ALL, false)) {

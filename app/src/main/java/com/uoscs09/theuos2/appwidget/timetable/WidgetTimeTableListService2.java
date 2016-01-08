@@ -9,15 +9,16 @@ import android.widget.RemoteViewsService;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsListRemoteViewsFactory;
-import com.uoscs09.theuos2.common.SerializableArrayMap;
 import com.uoscs09.theuos2.tab.timetable.Subject;
 import com.uoscs09.theuos2.tab.timetable.TimeTable;
 import com.uoscs09.theuos2.tab.timetable.TimetableUtil;
+import com.uoscs09.theuos2.util.AppResources;
 import com.uoscs09.theuos2.util.PrefUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Map;
 
 public abstract class WidgetTimeTableListService2 extends RemoteViewsService {
 
@@ -30,7 +31,6 @@ public abstract class WidgetTimeTableListService2 extends RemoteViewsService {
 
     protected static abstract class ListRemoteViewsFactory extends AbsListRemoteViewsFactory<Subject[]> {
         private TimeTable mTimeTable;
-        private SerializableArrayMap<String, Integer> colorTable;
         private final int[] viewIds = {
                 R.id.widget_time_table_list_peroid,
                 R.id.widget_time_table_list_mon_frame,
@@ -81,9 +81,11 @@ public abstract class WidgetTimeTableListService2 extends RemoteViewsService {
 
             views.setTextViewText(viewIds[0], periodTimeArray[position]);
 
-            if (colorTable == null) {
+            if (mTimeTable == null) {
                 getData();
             }
+
+            Map<String, Integer> colorTable = mTimeTable.getColorTable();
 
             Subject[] subjects = getItem(position);
             int today = Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 1;
@@ -141,15 +143,17 @@ public abstract class WidgetTimeTableListService2 extends RemoteViewsService {
         @Override
         public void onDestroy() {
             mTimeTable = null;
-            colorTable = null;
         }
 
         private void getData() {
-            mTimeTable = TimetableUtil.readTimetable(getContext());
+            try {
+                mTimeTable = AppResources.TimeTables.readFromFile(getContext()).get();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             clear();
             if (mTimeTable != null) {
                 addAll(mTimeTable.subjects);
-                colorTable = TimetableUtil.getColorTable(mTimeTable, getContext());
             }
         }
 

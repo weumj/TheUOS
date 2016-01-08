@@ -22,8 +22,7 @@ import java.io.StreamCorruptedException;
 
 public class IOUtil {
     private static final String TAG = "IOUtil";
-    public static final String FILE_TIMETABLE = "timetable_file";
-    public static final String FILE_COLOR_TABLE = "color_table_file";
+    public static final String FILE_TIMETABLE = "timetable_file_v1.2";
     public static final String FILE_REST = "rest_file";
     public static final String FILE_LIBRARY_SEAT = "file_library_seat";
 

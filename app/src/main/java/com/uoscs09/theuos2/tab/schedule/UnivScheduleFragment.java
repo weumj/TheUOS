@@ -17,7 +17,6 @@ import android.provider.CalendarContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,18 +26,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.async.AbstractRequest;
 import com.uoscs09.theuos2.async.AsyncUtil;
-import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.common.PieProgressDrawable;
-import com.uoscs09.theuos2.http.HttpRequest;
-import com.uoscs09.theuos2.parse.XmlParserWrapper;
+import com.uoscs09.theuos2.util.AppResources;
 import com.uoscs09.theuos2.util.AppUtil;
-import com.uoscs09.theuos2.util.IOUtil;
-import com.uoscs09.theuos2.util.OApiUtil;
-import com.uoscs09.theuos2.util.PrefUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -52,11 +45,7 @@ import se.emilsjolander.stickylistheaders.ExpandableStickyListHeadersListView;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 
 
-public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivScheduleItem>>
-        implements Request.ResultListener<ArrayList<UnivScheduleItem>>, Request.ErrorListener {
-    private static final String URL = OApiUtil.URL_API_MAIN_DB + '?' + OApiUtil.API_KEY + '=' + OApiUtil.UOS_API_KEY;
-    private static final String FILE_NAME = "file_univ_schedule";
-    private static final XmlParserWrapper<ArrayList<UnivScheduleItem>> UNIV_SCHEDULE_PARSER = OApiUtil.getUnivScheduleParser();
+public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivScheduleItem>> {
 
     private static final String SELECTION = "((" + CalendarContract.Calendars.ACCOUNT_NAME + " = ?) AND ("
             + CalendarContract.Calendars.ACCOUNT_TYPE + " = ?) AND ("
@@ -185,7 +174,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
             case PERMISSION_REQUEST_CALENDAR:
                 for (int result : grantResults) {
                     if (result == PackageManager.PERMISSION_DENIED) {
-                        AppUtil.showToast(getActivity(), R.string.tab_map_submap_permission_denied);
+                        AppUtil.showToast(getActivity(), R.string.tab_univ_schedule_permission_denied);
                         return;
                     }
                 }
@@ -224,6 +213,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
                     ContentValues cv = mSelectedItem.toContentValues(calendarId);
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
+                        //noinspection deprecation
                         cv.put(CalendarContract.Events.EVENT_COLOR, getResources().getColor(AppUtil.getColor(mList.indexOf(mSelectedItem))));
 
                     Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, cv);
@@ -259,58 +249,21 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
     }
     */
 
-    private static ArrayList<UnivScheduleItem> readFromInternet(Context context) throws Exception {
-        ArrayList<UnivScheduleItem> result = HttpRequest.Builder.newConnectionRequestBuilder(URL)
-                .build()
-                .checkNetworkState(context)
-                .wrap(UNIV_SCHEDULE_PARSER)
-                .wrap(IOUtil.<ArrayList<UnivScheduleItem>>newFileWriteProcessor(context, FILE_NAME))
-                .get();
-
-        PrefUtil pref = PrefUtil.getInstance(context);
-        pref.put(PrefUtil.KEY_SCHEDULE_FETCH_MONTH, result.get(0).getDate(true).get(Calendar.MONTH));
-
-        return result;
-    }
-
     private void execute() {
-        execute(true, mRequest, this, this, true);
+        execute(true,
+                AppResources.UnivSchedules.request(getActivity()),
+                result -> {
+                    mList.clear();
+                    mList.addAll(result);
+                    mAdapter.notifyDataSetChanged();
+
+                    setSubtitleWhenVisible(mSubTitle = mDateFormat.format(mList.get(0).getDate(true).getTime()));
+                },
+                Throwable::printStackTrace,
+                true
+        );
     }
 
-    private Request<ArrayList<UnivScheduleItem>> mRequest = new AbstractRequest<ArrayList<UnivScheduleItem>>() {
-        @Override
-        public ArrayList<UnivScheduleItem> get() throws Exception {
-            Context context = getActivity();
-            PrefUtil pref = PrefUtil.getInstance(context);
-
-            // 이번 달의 일정이 기록된 파일이 있으면, 인터넷에서 가져오지 않고 그 파일을 읽음
-            if (pref.get(PrefUtil.KEY_SCHEDULE_FETCH_MONTH, -1) == Calendar.getInstance().get(Calendar.MONTH)) {
-                ArrayList<UnivScheduleItem> result = new IOUtil.Builder<ArrayList<UnivScheduleItem>>(FILE_NAME)
-                        .setContext(context)
-                        .build()
-                        .get();
-
-                if (result != null)
-                    return result;
-
-            }
-
-            return readFromInternet(context);
-        }
-    };
-
-    @Override
-    public void onResult(ArrayList<UnivScheduleItem> result) {
-        mList.clear();
-        mList.addAll(result);
-        mAdapter.notifyDataSetChanged();
-
-        setSubtitleWhenVisible(mSubTitle = mDateFormat.format(mList.get(0).getDate(true).getTime()));
-    }
-
-    @Override
-    public void onError(Exception e) {
-    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -359,6 +312,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
             holder.textView2.setText(item.sch_date);
 
 
+            //noinspection deprecation
             holder.drawable.setColor(getContext().getResources().getColor(AppUtil.getColor(position)));
             //holder.drawable.setCentorColor(getContext().getResources().getColor(AppUtil.getColor(position)));
 
@@ -390,7 +344,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
                 holder.textView.setText("");
                 holder.textView2.setText("");
             } else {
-                holder.textView.setText("" + date.day);
+                holder.textView.setText(String.valueOf(date.day));
                 holder.textView2.setText(dateFormat.format(new Date(c.getTimeInMillis())));
             }
 
@@ -408,20 +362,20 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
     }
 
     static class ViewHolder extends AbsArrayAdapter.ViewHolder {
-        final TextView textView1, textView2;
-        final CardView cardView;
+        @Bind(android.R.id.text1)
+        TextView textView1;
+        @Bind(android.R.id.text2)
+        TextView textView2;
+        /*
+        @Bind(R.id.card_view)
+        CardView cardView;
+        */
         //UnivScheduleItem item;
         final PieProgressDrawable drawable = new PieProgressDrawable();
 
         @SuppressWarnings("deprecation")
         public ViewHolder(View view) {
             super(view);
-
-            cardView = (CardView) view.findViewById(R.id.card_view);
-
-
-            textView1 = (TextView) view.findViewById(android.R.id.text1);
-            textView2 = (TextView) view.findViewById(android.R.id.text2);
 
             drawable.setLevel(100);
             drawable.setBorderWidth(-1f, view.getResources().getDisplayMetrics());
@@ -434,13 +388,13 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
     }
 
     static class HeaderViewHolder extends AbsArrayAdapter.SimpleViewHolder {
-        final TextView textView2;
+        @Bind(android.R.id.text2)
+        TextView textView2;
 
         public HeaderViewHolder(View view) {
             super(view);
-
-            textView2 = (TextView) view.findViewById(android.R.id.text2);
         }
+
     }
 
 }

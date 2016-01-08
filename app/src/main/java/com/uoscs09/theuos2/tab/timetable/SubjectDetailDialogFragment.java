@@ -8,7 +8,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.util.ArrayMap;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.AdapterView;
@@ -19,35 +18,33 @@ import android.widget.TextView;
 
 import com.gc.materialdesign.widgets.ColorSelector;
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.base.BaseDialogFragment;
 import com.uoscs09.theuos2.common.PieProgressDrawable;
-import com.uoscs09.theuos2.common.SerializableArrayMap;
-import com.uoscs09.theuos2.http.HttpRequest;
-import com.uoscs09.theuos2.parse.XmlParserWrapper;
+import com.uoscs09.theuos2.http.NetworkRequests;
 import com.uoscs09.theuos2.tab.map.GoogleMapActivity;
 import com.uoscs09.theuos2.tab.subject.CoursePlanDialogFragment;
 import com.uoscs09.theuos2.tab.subject.SubjectItem2;
 import com.uoscs09.theuos2.util.AppUtil;
-import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
-public class SubjectDetailDialogFragment extends BaseDialogFragment implements View.OnClickListener, ColorSelector.OnColorSelectedListener, Request.ErrorListener {
+
+public class SubjectDetailDialogFragment extends BaseDialogFragment implements ColorSelector.OnColorSelectedListener {
     private static final String TAG = "SubjectDetailDialogFragment";
-    private static final String URL = "http://wise.uos.ac.kr/uosdoc/api.ApiApiSubjectList.oapi";
 
-    private final ArrayMap<String, String> params;
-    private static final XmlParserWrapper<ArrayList<SubjectInfoItem>> SUBJECT_INFO_PARSER = OApiUtil.getParser(SubjectInfoItem.class);
-
-    private TextView mTimeTableDialogTitle;
+    @Bind(R.id.dialog_timetable_title)
+    TextView mTimeTableDialogTitle;
     private Dialog mProgress;
     private Dialog mClassDivSelectDialog;
-    private Spinner mAlarmTimeSelectSpinner;
+    @Bind(R.id.timetable_callback_alarm_spinner)
+    Spinner mAlarmTimeSelectSpinner;
 
     private ArrayAdapter<SubjectInfoItem> mClassDivSelectAdapter;
     private Subject mSubject;
@@ -59,17 +56,9 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements V
 
     @Nullable
     private ColorSelector.OnColorSelectedListener mColorSelectedListener;
-    private SerializableArrayMap<String, Integer> colorTable;
 
     public SubjectDetailDialogFragment() {
-        params = new ArrayMap<>();
-        params.put(OApiUtil.API_KEY, OApiUtil.UOS_API_KEY);
-
         pieProgressDrawable.setLevel(100);
-    }
-
-    public void setColorTable(SerializableArrayMap<String, Integer> colorTable) {
-        this.colorTable = colorTable;
     }
 
     public void setTimeTable(TimeTable timeTable) {
@@ -85,14 +74,22 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements V
         this.mColorSelectedListener = colorSelectedListener;
     }
 
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
+    }
+
     @Override
     public void onResume() {
         super.onResume();
 
         if (mSubject != null) {
             int color = getActivity().getResources().getColor(AppUtil.getAttrValue(getActivity(), R.attr.colorPrimary));
-            if (colorTable != null) {
-                Integer idx = colorTable.get(mSubject.subjectName);
+
+            if (mTimeTable.getColorTable().size() > 0) {
+                Integer idx = mTimeTable.getColorTable().get(mSubject.subjectName);
                 if (idx != null)
                     color = TimetableUtil.getTimeTableColor(getActivity(), idx);
             }
@@ -120,20 +117,15 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements V
         mProgress = AppUtil.getProgressDialog(getActivity(), false, null);
 
         View view = View.inflate(getActivity(), R.layout.dialog_timetable_subject, null);
-
-        view.findViewById(R.id.dialog_timetable_button_map).setOnClickListener(this);
-        view.findViewById(R.id.dialog_timetable_button_info).setOnClickListener(this);
-        view.findViewById(R.id.dialog_timetable_button_color).setOnClickListener(this);
+        ButterKnife.bind(this, view);
 
         int size = getResources().getDimensionPixelSize(R.dimen.timetable_color_icon_size);
         pieProgressDrawable.setBounds(0, 0, size, size);
 
-        mTimeTableDialogTitle = (TextView) view.findViewById(R.id.dialog_timetable_title);
         mTimeTableDialogTitle.setCompoundDrawables(pieProgressDrawable, null, null, null);
         mTimeTableDialogTitle.setCompoundDrawablePadding(40);
 
         //View alarmButton = view.findViewById(R.id.dialog_timetable_button_alarm);
-        mAlarmTimeSelectSpinner = (Spinner) view.findViewById(R.id.timetable_callback_alarm_spinner);
 
         mAlarmTimeSelectSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -176,8 +168,8 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements V
     @Override
     public void onColorSelected(int i) {
 
-        if (mSubject != null && colorTable != null) {
-            Integer idx = colorTable.get(mSubject.subjectName);
+        if (mSubject != null && mTimeTable.getColorTable() != null) {
+            Integer idx = mTimeTable.getColorTable().get(mSubject.subjectName);
             if (idx != null) {
                 TimetableUtil.putTimeTableColor(getActivity(), idx, i);
 
@@ -188,35 +180,15 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements V
         }
     }
 
-    @Override
-    public void onClick(View v) {
-        if(getActivity() == null) {
+    @OnClick(R.id.dialog_timetable_button_color)
+    void showColorSelector() {
+        if (getActivity() == null)
             return;
-        }
 
-        switch (v.getId()) {
-            case R.id.dialog_timetable_button_info:
-                showSubjectInfo();
-                break;
-
-            case R.id.dialog_timetable_button_map:
-                showMap(v);
-                break;
-
-            case R.id.dialog_timetable_button_color:
-                showColorSelector();
-                break;
-            default:
-                break;
-
-        }
-    }
-
-    private void showColorSelector() {
         int color;
 
-        if (mSubject != null && colorTable != null) {
-            Integer idx = colorTable.get(mSubject.subjectName);
+        if (mSubject != null && mTimeTable.getColorTable() != null) {
+            Integer idx = mTimeTable.getColorTable().get(mSubject.subjectName);
             color = idx != null ? TimetableUtil.getTimeTableColor(getActivity(), idx) : Color.BLACK;
         } else {
             color = Color.BLACK;
@@ -227,7 +199,10 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements V
         colorSelector.show();
     }
 
-    private void showMap(View v) {
+    @OnClick(R.id.dialog_timetable_button_map)
+    void showMap(View v) {
+        if (getActivity() == null)
+            return;
 
         if (mSubject != null && mSubject.univBuilding.code > 0) {
             Intent intent = new Intent(v.getContext(), GoogleMapActivity.class);
@@ -242,20 +217,17 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements V
         }
     }
 
-    private void showSubjectInfo() {
+    @OnClick(R.id.dialog_timetable_button_info)
+    void showSubjectInfo() {
+
+        if (getActivity() == null)
+            return;
 
         if (mSubject != null && !mSubject.subjectName.equals(StringUtil.NULL)) {
 
             sendClickEvent("course plan");
 
-            setUpParams();
-
-            HttpRequest.Builder.newConnectionRequestBuilder(URL)
-                    .setParams(params)
-                    .setParamsEncoding(StringUtil.ENCODE_EUC_KR)
-                    .build()
-                    .checkNetworkState(getActivity())
-                    .wrap(SUBJECT_INFO_PARSER)
+            NetworkRequests.Subjects.requestSubjectInfo(getActivity(), mSubject.subjectName, mTimeTable.year, mTimeTable.semesterCode.code)
                     .getAsync(
                             result -> {
                                 mProgress.dismiss();
@@ -277,7 +249,8 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements V
                                     mClassDivSelectDialog.show();
                                 }
 
-                            }, this
+                            },
+                            this::onError
                     );
 
             mProgress.show();
@@ -288,13 +261,6 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements V
 
     }
 
-    private void setUpParams() {
-        params.put(OApiUtil.SUBJECT_NAME, mSubject.subjectName);
-        params.put(OApiUtil.YEAR, Integer.toString(mTimeTable.year));
-        params.put(OApiUtil.TERM, mTimeTable.semesterCode.code);
-    }
-
-    @Override
     public void onError(Exception e) {
         mProgress.dismiss();
 

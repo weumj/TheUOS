@@ -8,24 +8,24 @@ import android.widget.TextView;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
-import com.uoscs09.theuos2.common.SerializableArrayMap;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import java.util.Locale;
+import java.util.Map;
+
+import butterknife.Bind;
 
 
 class TimeTableAdapter2 extends AbsArrayAdapter<Subject[], TimeTableAdapter2.TimeTableViewHolder> {
-    private final SerializableArrayMap<String, Integer> colorTable;
     private OnItemClickListener onItemClickListener;
     private final SparseBooleanArray mClickedArray = new SparseBooleanArray(15);
     private final String[] periodTimeArray;
     private final TimeTable mTimeTable;
 
-    public TimeTableAdapter2(Context context, TimeTable timeTable, SerializableArrayMap<String, Integer> colorTable) {
+    public TimeTableAdapter2(Context context, TimeTable timeTable) {
         super(context, R.layout.list_layout_timetable2, timeTable.subjects);
-        this.colorTable = colorTable;
         this.mTimeTable = timeTable;
         periodTimeArray = context.getResources().getStringArray(R.array.tab_timetable_timelist_only_time);
     }
@@ -52,7 +52,7 @@ class TimeTableAdapter2 extends AbsArrayAdapter<Subject[], TimeTableAdapter2.Tim
         holder.onItemClickListener = onItemClickListener;
         holder.periodTimeArray = periodTimeArray;
 
-        holder.setView(colorTable);
+        holder.setView(mTimeTable.getColorTable());
 
     }
 
@@ -72,7 +72,8 @@ class TimeTableAdapter2 extends AbsArrayAdapter<Subject[], TimeTableAdapter2.Tim
 
 
     static class TimeTableViewHolder extends AbsArrayAdapter.ViewHolder implements View.OnClickListener {
-        public final TextView period;
+        @Bind(R.id.tab_timetable_list_text_period)
+        public TextView period;
         public final SubjectViewHolder[] subjectViews;
         public Subject[] item;
         public int position;
@@ -96,9 +97,6 @@ class TimeTableAdapter2 extends AbsArrayAdapter<Subject[], TimeTableAdapter2.Tim
             super(itemView);
             subjectViews = new SubjectViewHolder[6];
 
-            View periodLayout = itemView.findViewById(R.id.tab_timetable_list_period);
-            //periodLayout.findViewById(R.id.tab_timetable_list_period_ripple).setOnClickListener(this);
-            period = (TextView) periodLayout.findViewById(R.id.tab_timetable_list_text_period);
             if (!forImage)
                 period.setOnClickListener(this);
 
@@ -122,7 +120,7 @@ class TimeTableAdapter2 extends AbsArrayAdapter<Subject[], TimeTableAdapter2.Tim
 
         }
 
-        void setView(SerializableArrayMap<String, Integer> colorTable) {
+        void setView(Map<String, Integer> colorTable) {
             setPeriodView();
 
             int i = 0;
@@ -155,7 +153,7 @@ class TimeTableAdapter2 extends AbsArrayAdapter<Subject[], TimeTableAdapter2.Tim
                 textView.setTypeface(Typeface.DEFAULT);
 
             } else {
-                textView.setText(Integer.toString(position + 1));
+                textView.setText(String.valueOf(position + 1));
                 textView.setTextSize(16);
                 textView.setTypeface(Typeface.DEFAULT_BOLD);
             }

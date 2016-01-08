@@ -12,8 +12,7 @@ import android.widget.RemoteViews;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsAsyncWidgetProvider;
 import com.uoscs09.theuos2.tab.restaurant.RestItem;
-import com.uoscs09.theuos2.tab.restaurant.TabRestaurantFragment;
-import com.uoscs09.theuos2.util.OApiUtil;
+import com.uoscs09.theuos2.util.AppResources;
 import com.uoscs09.theuos2.util.PrefUtil;
 
 public class RestWidget extends AbsAsyncWidgetProvider<SparseArray<RestItem>> {
@@ -38,7 +37,7 @@ public class RestWidget extends AbsAsyncWidgetProvider<SparseArray<RestItem>> {
 
             case REST_WIDGET_NEXT_ACTION: {
                 int position = intent.getIntExtra(REST_WIDGET_POSITION, 0) + 1;
-                if(position > 4)
+                if (position > 4)
                     position = 0;
 
                 PrefUtil.getInstance(context).put(REST_WIDGET_POSITION, position);
@@ -49,18 +48,18 @@ public class RestWidget extends AbsAsyncWidgetProvider<SparseArray<RestItem>> {
 
             case REST_WIDGET_PREV_ACTION: {
                 int position = intent.getIntExtra(REST_WIDGET_POSITION, 5) - 1;
-                if(position < 0)
+                if (position < 0)
                     position = 4;
 
                 PrefUtil.getInstance(context).put(REST_WIDGET_POSITION, position);
 
-               callOnUpdate(context);
+                callOnUpdate(context);
                 break;
             }
 
             case Intent.ACTION_BOOT_COMPLETED:
                 // 처음 부팅시 인터넷 접속이 되지 않으므로, 기존 파일에서 읽어온다.
-                SparseArray<RestItem> map = TabRestaurantFragment.getRestMapFromFile(context);
+                SparseArray<RestItem> map = AppResources.Restaurants.readFromFile(context);
                 if (map.size() == 0)
                     return;
 
@@ -74,14 +73,7 @@ public class RestWidget extends AbsAsyncWidgetProvider<SparseArray<RestItem>> {
 
     @Override
     protected SparseArray<RestItem> doInBackGround(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) throws Exception {
-        if (OApiUtil.getDateTime() - PrefUtil.getInstance(context).get(PrefUtil.KEY_REST_DATE_TIME, 0) < 3) {
-            SparseArray<RestItem> result = TabRestaurantFragment.getRestMapFromFile(context);
-            if (result.size() == 0)
-                result = TabRestaurantFragment.getRestListFromWeb(context);
-            return result;
-        } else {
-            return TabRestaurantFragment.getRestListFromWeb(context);
-        }
+        return AppResources.Restaurants.request(context, false).get();
     }
 
     @Override
@@ -100,7 +92,7 @@ public class RestWidget extends AbsAsyncWidgetProvider<SparseArray<RestItem>> {
             Intent intent = new Intent(context, RestListService.class)
                     .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id)
                     .putExtra(REST_WIDGET_POSITION, position);
-                    //.putExtra(REST_WIDGET_ITEM, bundle);
+            //.putExtra(REST_WIDGET_ITEM, bundle);
             intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
 
             rv.setRemoteAdapter(R.id.widget_rest_listview, intent);
@@ -108,10 +100,12 @@ public class RestWidget extends AbsAsyncWidgetProvider<SparseArray<RestItem>> {
 
             rv.setOnClickPendingIntent(
                     R.id.widget_rest_btn_next,
-                    getMoveIntent(context, id, REST_WIDGET_NEXT_ACTION, position));
+                    getMoveIntent(context, id, REST_WIDGET_NEXT_ACTION, position)
+            );
             rv.setOnClickPendingIntent(
                     R.id.widget_rest_btn_prev,
-                    getMoveIntent(context, id, REST_WIDGET_PREV_ACTION, position));
+                    getMoveIntent(context, id, REST_WIDGET_PREV_ACTION, position)
+            );
 
             appWidgetManager.updateAppWidget(id, rv);
             appWidgetManager.notifyAppWidgetViewDataChanged(id, R.id.widget_rest_listview);
@@ -145,11 +139,13 @@ public class RestWidget extends AbsAsyncWidgetProvider<SparseArray<RestItem>> {
         for (int id : appWidgetIds) {
             rv.setOnClickPendingIntent(
                     R.id.widget_rest_btn_next,
-                    getMoveIntent(context, id, REST_WIDGET_NEXT_ACTION, position));
+                    getMoveIntent(context, id, REST_WIDGET_NEXT_ACTION, position)
+            );
 
             rv.setOnClickPendingIntent(
                     R.id.widget_rest_btn_prev,
-                    getMoveIntent(context, id, REST_WIDGET_PREV_ACTION, position));
+                    getMoveIntent(context, id, REST_WIDGET_PREV_ACTION, position)
+            );
 
             appWidgetManager.updateAppWidget(id, rv);
         }

@@ -28,23 +28,20 @@ import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.UosMainActivity;
 import com.uoscs09.theuos2.annotation.AsyncData;
-import com.uoscs09.theuos2.async.Processor;
-import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
-import com.uoscs09.theuos2.http.HttpRequest;
+import com.uoscs09.theuos2.http.NetworkRequests;
 import com.uoscs09.theuos2.util.AppUtil;
-import com.uoscs09.theuos2.util.PrefUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.Bind;
+import butterknife.OnClick;
 
 public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookItem>>
-        implements OnQueryTextListener, View.OnClickListener, UosMainActivity.OnBackPressListener, Request.ResultListener<ArrayList<BookItem>>, Request.ErrorListener, BookItemListAdapter.OnItemClickListener {
+        implements OnQueryTextListener, UosMainActivity.OnBackPressListener, BookItemListAdapter.OnItemClickListener {
 
     /**
      * 비동기 작업 결과가 비었는지 여부
@@ -69,6 +66,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
     ListView mListView;
     @Bind(R.id.tab_book_empty)
     View mEmptyView;
+
     /**
      * option : catergory
      */
@@ -87,16 +85,11 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
     private MenuItem searchMenu;
     private ActionMode actionMode;
 
-    private final BookProcessor bookProcessor = new BookProcessor();
-    private static final ParseBook BOOK_PARSER = new ParseBook();
-
     private static final String BUNDLE_LIST = "BookList";
     private static final String BUNDLE_PAGE = "BookPage";
     private static final String QUERY = "Query";
     private static final String OI_SEL = "oi";
     private static final String OS_SEL = "os";
-    private static final String URL = "http://mlibrary.uos.ac.kr/search/tot/result?sm=&st=KWRD&websysdiv=tot&si=TOTAL&pn=";
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -134,8 +127,6 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mEmptyView.findViewById(R.id.tab_book_search_empty_info1).setOnClickListener(this);
-        mEmptyView.findViewById(R.id.tab_book_search_empty_info2).setOnClickListener(this);
         if (mBookList.size() != 0) {
             mEmptyView.setVisibility(View.INVISIBLE);
             isResultEmpty = false;
@@ -143,7 +134,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
             mEmptyView.setVisibility(View.VISIBLE);
         }
 
-        mBookListAdapter = new BookItemListAdapter(getActivity(), mBookList, getUosApplication().getImageLoader(), this);
+        mBookListAdapter = new BookItemListAdapter(getActivity(), mBookList, this);
 
         mAnimAdapter = new AlphaInAnimationAdapter(mBookListAdapter);
 
@@ -188,25 +179,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
     }
 
     @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.tab_book_search_empty_info1:
-                sendClickEvent("search menu from empty view");
-                searchMenu.expandActionView();
-                break;
-
-            case R.id.tab_book_search_empty_info2:
-                sendClickEvent("option menu from empty view");
-                optionDialog.show();
-                break;
-
-            default:
-                break;
-        }
-    }
-
-    @Override
-    public void onItemClick(final BookItemViewHolder holder, final View v) {
+    public void onItemClick(BookItemViewHolder holder, View v) {
         final BookItem item = holder.getItem();
         switch (v.getId()) {
             case R.id.tab_booksearch_list_book_image: {
@@ -224,6 +197,19 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
             default:
                 break;
         }
+    }
+
+
+    @OnClick(R.id.tab_book_search_empty_info1)
+    void expandSearchView() {
+        sendClickEvent("search menu from empty view");
+        searchMenu.expandActionView();
+    }
+
+    @OnClick(R.id.tab_book_search_empty_info2)
+    void showOptionDialog() {
+        sendClickEvent("option menu from empty view");
+        optionDialog.show();
     }
 
     @Override
@@ -348,139 +334,35 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
             mEmptyView.setVisibility(View.VISIBLE);
     }
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-        mEmptyView.setVisibility(View.GONE);
-    }
-
-    @Override
-    protected void onPostExecute() {
-        super.onPostExecute();
-        isResultEmpty = false;
-    }
 
     private void execute() {
+        mEmptyView.setVisibility(View.GONE);
+
         execute(true,
-                HttpRequest.Builder.newStringRequestBuilder(buildUrl())
-                        .build()
-                        .checkNetworkState(getActivity())
-                        .wrap(BOOK_PARSER)
-                        .wrap(bookProcessor),
-                this, this, true);
+                NetworkRequests.Books.request(getActivity(), mEncodedQuery, mCurrentPage, os.getSelectedItemPosition(), oi.getSelectedItemPosition()),
+                result -> {
+                    isResultEmpty = false;
+                    if (result.size() == 0) {
+                        AppUtil.showToast(getActivity(), R.string.search_result_empty, isMenuVisible());
+                        isResultEmpty = true;
+
+                        showEmptyView();
+
+                    } else {
+                        AppUtil.showToast(getActivity(), getString(R.string.search_found_amount, result.size()), isMenuVisible());
+                        mBookList.addAll(result);
+                        mBookListAdapter.notifyDataSetChanged();
+                    }
+                },
+                e -> {
+                    e.printStackTrace();
+                    isResultEmpty = false;
+                    showEmptyView();
+                },
+                true
+        );
     }
 
-    private class BookProcessor implements Processor<List<BookItem>, ArrayList<BookItem>> {
-
-        @Override
-        public ArrayList<BookItem> process(List<BookItem> bookItems) throws Exception {
-            ArrayList<BookItem> bookList = new ArrayList<>(bookItems);
-            // 대여 가능 도서만 가져옴
-            if (PrefUtil.getInstance(getActivity()).get(PrefUtil.KEY_CHECK_BORROW, false) && bookList.size() > 0) {
-                bookList = getFilteredList(bookList, getString(R.string.tab_book_not_found));
-            }
-
-            return bookList;
-        }
-    }
-
-    @Override
-    public void onResult(ArrayList<BookItem> result) {
-        if (result.size() == 0) {
-            AppUtil.showToast(getActivity(), R.string.search_result_empty, isMenuVisible());
-            isResultEmpty = true;
-
-            showEmptyView();
-
-        } else {
-            AppUtil.showToast(getActivity(), getString(R.string.search_found_amount, result.size()), isMenuVisible());
-            mBookList.addAll(result);
-            mBookListAdapter.notifyDataSetChanged();
-        }
-    }
-
-    @Override
-    public void onError(Exception e) {
-        showEmptyView();
-    }
-
-    private String buildUrl() {
-        String OS = getSpinnerItemString(1, os.getSelectedItemPosition());
-        String OI = getSpinnerItemString(0, oi.getSelectedItemPosition());
-
-        StringBuilder sb = new StringBuilder();
-        sb.append(URL).append(mCurrentPage).append("&q=").append(mEncodedQuery);
-        String finalURL = null;
-
-        String RM = "&websysdiv=tot";
-        boolean check = true;
-        if (!OI.equals(StringUtil.NULL)) {
-            sb.append("&oi=").append(OI);
-            finalURL = StringUtil.remove(sb.toString(), RM);
-            check = false;
-        }
-        if (!OS.equals(StringUtil.NULL)) {
-            sb.append("&os=").append(OS);
-            finalURL = sb.toString();
-            if (check) {
-                finalURL = StringUtil.remove(finalURL, RM);
-                check = false;
-            }
-        }
-
-        if (check) {
-            finalURL = sb.toString();
-        }
-
-        return finalURL;
-    }
-
-    private static String getSpinnerItemString(int which, int pos) {
-        switch (which) {
-            case 0:
-                switch (pos) {
-                    case 1:
-                        return "DISP01";
-                    case 2:
-                        return "DISP02";
-                    case 3:
-                        return "DISP03";
-                    case 4:
-                        return "DISP04";
-                    case 5:
-                        return "DISP06";
-                }
-            case 1:
-                switch (pos) {
-                    case 1:
-                        return "ASC";
-                    case 2:
-                        return "DESC";
-                }
-            default:
-                return StringUtil.NULL;
-        }
-    }
-
-    private static ArrayList<BookItem> getFilteredList(ArrayList<BookItem> originalList, String emptyMsg) {
-        ArrayList<BookItem> newList = new ArrayList<>();
-
-        final int N = originalList.size();
-        for (int i = 0; i < N; i++) {
-            BookItem item = originalList.get(i);
-            if (item.isBookAvailable()) {
-                newList.add(item);
-            }
-        }
-
-        if (newList.size() == 0) {
-            BookItem item = new BookItem();
-            item.bookInfo = emptyMsg;
-            newList.add(item);
-        }
-
-        return newList;
-    }
 
     private final ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
 

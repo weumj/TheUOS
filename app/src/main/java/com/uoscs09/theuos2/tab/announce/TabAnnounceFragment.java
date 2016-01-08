@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.util.ArrayMap;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
@@ -25,26 +24,22 @@ import android.widget.TextView;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
-import com.uoscs09.theuos2.async.Processor;
 import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
-import com.uoscs09.theuos2.http.HttpRequest;
+import com.uoscs09.theuos2.http.NetworkRequests;
 import com.uoscs09.theuos2.util.AppUtil;
-import com.uoscs09.theuos2.util.PrefUtil;
-import com.uoscs09.theuos2.util.StringUtil;
 
 import java.util.ArrayList;
 
 import butterknife.Bind;
+import butterknife.OnItemClick;
 
 public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceItem>>
-        implements AdapterView.OnItemClickListener, AdapterView.OnItemSelectedListener, SearchView.OnQueryTextListener, Request.ErrorListener {
+        implements AdapterView.OnItemSelectedListener, SearchView.OnQueryTextListener {
 
     static final String PAGE_NUM = "PAGE";
     static final String ITEM = "item";
     static final String INDEX_CATEGORY = "category_index";
-    private static final ParseAnnounce PARSER = ParseAnnounce.getParser();
-    private static final ParseAnnounce SCHOLARSHIP_PARSER = ParseAnnounce.getScholarshipParser();
 
     /**
      * 상단 액션바에 추가될 위젯, 페이지 인덱스
@@ -64,7 +59,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
     private Dialog mPageSelectDialog;
     private NumberPicker mPageNumberPicker;
     private MenuItem mSearchMenu;
-    
+
 
     @AsyncData
     private ArrayList<AnnounceItem> mDataList;
@@ -81,10 +76,6 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
      * 페이지의 최대값이 변경되어야 하는지를 가리키는 값
      */
     private boolean mShouldChangeMaxValueOfPage = false;
-    private ArrayMap<String, String> mQueryTable;
-
-    private final RequestHelper mRequestHelper = new RequestHelper(), mMoreRequestHelper = new MoreRequestHelper();
-
 
     /* TODO Fragment Callback */
     @Override
@@ -107,8 +98,6 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
             mDataList = new ArrayList<>();
             currentCategoryIndex = 0;
         }
-
-        mQueryTable = new ArrayMap<>();
 
         initPageSelectDialog();
 
@@ -141,7 +130,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
         });
 
         mListView.setEmptyView(mEmptyView);
-        mListView.setOnItemClickListener(this);
+        // mListView.setOnItemClickListener(this);
         mListView.setAdapter(mAnnounceAdapter);
 
         registerProgressView(view.findViewById(R.id.progress_layout));
@@ -163,6 +152,19 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
 
     private int getCurrentCategoryIndex() {
         return mCategorySpinner.getSelectedItemPosition();
+    }
+
+    @OnItemClick(R.id.tab_announce_list_announce)
+    void listItemClick(int position, View view) {
+        if (!isMenuVisible() || getCurrentCategoryIndex() < 1)
+            return;
+
+        Intent intent = new Intent(getActivity(), SubAnnounceWebActivity.class)
+                .putExtra(ITEM, mAnnounceAdapter.getItem(position))
+                .putExtra(INDEX_CATEGORY, getCurrentCategoryIndex())
+                .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+        AppUtil.startActivityWithScaleUp(getActivity(), intent, view);
     }
 
     @Override
@@ -221,7 +223,6 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
 
     /* TODO Listener Callback */
 
-    @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int pos, long itemId) {
         if (!isMenuVisible() || getCurrentCategoryIndex() < 1)
             return;
@@ -252,7 +253,6 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
         if (position < 1)
             return;
 
-        clearParams();
         executeJob(false, false, 1);
 
         sendTrackerEvent("category changed", "", position);
@@ -281,7 +281,6 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
             AppUtil.showToast(getActivity(), R.string.tab_announce_invalid_category, true);
 
         } else {
-            clearParams();
             mSearchQuery = query.trim();
             executeJob(true, false, 1);
         }
@@ -291,40 +290,106 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
 
 	/* TODO Listener end */
 
-    private void clearParams() {
-        mSearchQuery = null;
-        mCurrentPageIndex = 1;
-        mShouldChangeMaxValueOfPage = true;
-        mIsSearchRequesting = false;
 
-        // TODO 최적화 필요, 필요없이 지우고 쓰고 함
-        mQueryTable.clear();
-    }
+    private void executeJob(boolean search, boolean more, int newPage) {
+        mIsSearchRequesting = search;
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
         mEmptyView.setVisibility(View.INVISIBLE);
         mListFooterView.setClickable(false);
+
+        if (search) {
+            executeSearchJob(more, newPage, mSearchQuery);
+        } else
+            executeJob(more, newPage);
     }
 
-    @Override
-    protected void onPostExecute() {
-        super.onPostExecute();
-        mListFooterView.setClickable(true);
+    private void executeSearchJob(boolean moreRequest, int newPageIndex, String query) {
+        Request<ArrayList<AnnounceItem>> request = NetworkRequests.Announces.searchRequest(getActivity(), getCurrentCategoryIndex(), newPageIndex, query);
+
+        execute(true, request,
+                result -> {
+                    mListFooterView.setClickable(true);
+                    if (moreRequest) updateWithResultInMoreRequest(result, newPageIndex);
+                    else updateWithResult(result, true, newPageIndex);
+                },
+                this::onError,
+                true
+        );
     }
 
-    private void executeJob(boolean searchRequest, boolean moreRequest, int newPageIndex) {
-        RequestHelper requestHelper = moreRequest ? mMoreRequestHelper : this.mRequestHelper;
-        requestHelper.init(searchRequest, newPageIndex, getCurrentCategoryIndex());
+    private void executeJob(boolean moreRequest, int newPageIndex) {
+        Request<ArrayList<AnnounceItem>> request = NetworkRequests.Announces.normalRequest(getActivity(), getCurrentCategoryIndex(), newPageIndex);
 
-        execute(true, requestHelper.getRequest(), requestHelper, this, true);
+        execute(true, request,
+                result -> {
+                    mListFooterView.setClickable(true);
+                    if (moreRequest) updateWithResultInMoreRequest(result, newPageIndex);
+                    else updateWithResult(result, false, newPageIndex);
+                },
+                this::onError,
+                true
+        );
     }
 
-    @Override
+
     public void onError(Exception e) {
+        mListFooterView.setClickable(true);
         if (mAnnounceAdapter.isEmpty())
             mEmptyView.setVisibility(View.VISIBLE);
+    }
+
+
+    public void updateWithResult(ArrayList<AnnounceItem> result, boolean searchRequest, int newPageIndex) {
+        if (checkResultNotEmpty(result)) {
+
+            mAnnounceAdapter.clear();
+            mAnnounceAdapter.addAll(result);
+            mAnnounceAdapter.notifyDataSetChanged();
+
+            // 페이지 선택에서 이동 가능한 최대 페이지 번호를
+            // 공지사항의 인덱스를 기준으로 설정함
+            if (mShouldChangeMaxValueOfPage) {
+                mPageNumberPicker.setMaxValue(getMaximumAnnounceIndex(result) / 10 + 1);
+                mShouldChangeMaxValueOfPage = false;
+            }
+            mListFooterView.setVisibility(mAnnounceAdapter.isEmpty() ? View.GONE : View.VISIBLE);
+
+        } else if (searchRequest) {
+            mAnnounceAdapter.clear();
+            mAnnounceAdapter.notifyDataSetChanged();
+            mCategorySpinner.setSelection(0, true);
+        }
+
+        updatePageNumber(newPageIndex);
+    }
+
+    public void updateWithResultInMoreRequest(ArrayList<AnnounceItem> result, int newPage) {
+        if (checkResultNotEmpty(result)) {
+            mAnnounceAdapter.addAll(result);
+            mAnnounceAdapter.notifyDataSetChanged();
+
+            // 검색된 결과가 10개 이하이면, 마지막 페이지에 도달한 것 이므로
+            // '다음 페이지' 버튼을 보여주지 않는다.
+            mListFooterView.setVisibility(result.size() < 10 ? View.GONE : View.VISIBLE);
+
+            updatePageNumber(newPage);
+        }
+        // '다음 페이지 요청'의 경우 검색된 결과가 없다는 것은 마지막 페이지를 지났다는 것 이므로
+        // 페이지를 업데이트 하지 않는다.
+    }
+
+    private int getMaximumAnnounceIndex(ArrayList<AnnounceItem> announceItems) {
+        final int size = announceItems.size();
+
+        for (int i = 0; i < size; i++) {
+            AnnounceItem item = announceItems.get(i);
+            if (item.isTypeNotice())
+                continue;
+
+            return item.number;
+        }
+
+        return 0;
     }
 
     private boolean checkResultNotEmpty(ArrayList<AnnounceItem> result) {
@@ -341,7 +406,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
             return true;
     }
 
-	/* TODO AsyncJob end */
+    /* TODO AsyncJob end */
 
     /**
      * Toolbar 에 붙일 Tab (카테고리 Spinner & PageIndexView) 을 초기화 한다.
@@ -375,7 +440,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
 
     private void updatePageNumber(int pageIndex) {
         if (mPageIndexView != null)
-            mPageIndexView.setText(Integer.toString(pageIndex) + StringUtil.SPACE + PAGE_NUM);
+            mPageIndexView.setText(String.format("%d PAGE", pageIndex));
         mCurrentPageIndex = pageIndex;
     }
 
@@ -408,143 +473,4 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
         return "TabAnnounceFragment";
     }
 
-
-    private class RequestHelper implements Request.ResultListener<ArrayList<AnnounceItem>>, Processor<ArrayList<AnnounceItem>, ArrayList<AnnounceItem>> {
-        private boolean categoryScholarship = false;
-        private boolean searchRequest = false;
-        private int mCurrentCategoryIndex;
-        protected int mNewPageIndex;
-
-        void init(boolean searching, int mNewPageIndex, int category) {
-            this.mCurrentCategoryIndex = category;
-            this.mNewPageIndex = mNewPageIndex;
-            categoryScholarship = category == 3;
-            this.searchRequest = searching;
-        }
-
-        private ParseAnnounce getParser() {
-            return categoryScholarship ? SCHOLARSHIP_PARSER : PARSER;
-        }
-
-        private void initParams() {
-            mQueryTable.put("pageIndex", Integer.toString(mNewPageIndex));
-            if (categoryScholarship) {
-                mQueryTable.put("brdBbsseq", "1");
-                if (searchRequest) {
-                    mQueryTable.put("sword", mSearchQuery);
-                    mQueryTable.put("skind", "title");
-
-                }
-            } else {
-                mQueryTable.put("list_id", mCurrentCategoryIndex == 1 ? "FA1" : "FA2");
-                if (searchRequest) {
-                    mQueryTable.put("searchCnd", "1");
-                    mQueryTable.put("searchWrd", mSearchQuery);
-                }
-            }
-        }
-
-        private String getUrl() {
-            return categoryScholarship ? "http://scholarship.uos.ac.kr/scholarship/notice/notice/list.do" : "http://www.uos.ac.kr/korNotice/list.do";
-        }
-
-        Request<ArrayList<AnnounceItem>> getRequest() {
-            initParams();
-
-            return HttpRequest.Builder.newStringRequestBuilder(getUrl())
-                    .setHttpMethod(HttpRequest.HTTP_METHOD_POST)
-                    .setParams(mQueryTable)
-                    .build()
-                    .checkNetworkState(getActivity())
-                    .wrap(getParser())
-                    .wrap(this);
-        }
-
-        @Override
-        public ArrayList<AnnounceItem> process(ArrayList<AnnounceItem> result) throws Exception {
-            if (searchRequest || PrefUtil.getInstance(getContext()).get(PrefUtil.KEY_ANNOUNCE_EXCEPT_TYPE_NOTICE, false)) {
-                removeNoticeTypeAnnounce(result);
-            }
-            return result;
-        }
-
-        void removeNoticeTypeAnnounce(ArrayList<AnnounceItem> announceItems) {
-            final int size = announceItems.size();
-            for (int i = size - 1; i >= 0; i--) {
-                AnnounceItem item = announceItems.get(i);
-                if (item.isTypeNotice())
-                    announceItems.remove(i);
-            }
-        }
-
-        @Override
-        public void onResult(ArrayList<AnnounceItem> result) {
-            if (checkResultNotEmpty(result)) {
-
-                mAnnounceAdapter.clear();
-                mAnnounceAdapter.addAll(result);
-                mAnnounceAdapter.notifyDataSetChanged();
-
-                // 페이지 선택에서 이동 가능한 최대 페이지 번호를
-                // 공지사항의 인덱스를 기준으로 설정함
-                if (mShouldChangeMaxValueOfPage) {
-                    mPageNumberPicker.setMaxValue(getMaximumAnnounceIndex(result) / 10 + 1);
-                    mShouldChangeMaxValueOfPage = false;
-                }
-                mListFooterView.setVisibility(mAnnounceAdapter.isEmpty() ? View.GONE : View.VISIBLE);
-
-            } else if (searchRequest) {
-                mAnnounceAdapter.clear();
-                mAnnounceAdapter.notifyDataSetChanged();
-                clearParams();
-                mCategorySpinner.setSelection(0, true);
-            }
-
-            updatePageNumber();
-        }
-
-        private int getMaximumAnnounceIndex(ArrayList<AnnounceItem> announceItems) {
-            final int size = announceItems.size();
-
-            for (int i = 0; i < size; i++) {
-                AnnounceItem item = announceItems.get(i);
-                if (item.isTypeNotice())
-                    continue;
-
-                return item.number;
-            }
-
-            return 0;
-        }
-
-        protected void updatePageNumber() {
-            TabAnnounceFragment.this.updatePageNumber(mNewPageIndex);
-            TabAnnounceFragment.this.mIsSearchRequesting = searchRequest;
-        }
-    }
-
-    private class MoreRequestHelper extends RequestHelper {
-
-        @Override
-        public ArrayList<AnnounceItem> process(ArrayList<AnnounceItem> result) throws Exception {
-            removeNoticeTypeAnnounce(result);
-            return result;
-        }
-
-        @Override
-        public void onResult(ArrayList<AnnounceItem> result) {
-            if (checkResultNotEmpty(result)) {
-                mAnnounceAdapter.addAll(result);
-                mAnnounceAdapter.notifyDataSetChanged();
-
-                // 검색된 결과가 10개 이하이면, 마지막 페이지에 도달한 것 이므로
-                // '다음 페이지' 버튼을 보여주지 않는다.
-                mListFooterView.setVisibility(result.size() < 10 ? View.GONE : View.VISIBLE);
-
-                updatePageNumber();
-            }
-            // '다음 페이지 요청'의 경우 검색된 결과가 없다는 것은 마지막 페이지를 지났다는 것 이므로
-            // 페이지를 업데이트 하지 않는다.
-        }
-    }
 }

@@ -1,37 +1,46 @@
 apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
 
-buildscript {
-    repositories {
-        mavenLocal()
-        jcenter()
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath 'com.android.tools.build:gradle:1.3.0'
-        classpath 'me.tatarka.retrolambda.projectlombok:lombok.ast:0.2.3.a2'
-        classpath "me.tatarka:gradle-retrolambda:3.2.3"
-    }
-
-}
 
 android {
     compileSdkVersion 23
-    buildToolsVersion '22.0.1'
+    buildToolsVersion "23.0.2"
+
+
+    productFlavors {
+        dev {
+            minSdkVersion 21
+        }
+        prod {
+            minSdkVersion 14
+        }
+    }
 
     defaultConfig {
         applicationId "com.uoscs09.theuos2"
         minSdkVersion 14
         targetSdkVersion 23
     }
+    signingConfigs {
+
+        common {
+            def keyInfoList = file(project.getRootDir().getAbsolutePath() + project.property('TheUOS.KeyStoreInfo')).readLines()
+
+            storeFile file(project.getRootDir().getAbsolutePath() + project.property('TheUOS.KeyStore'))
+            storePassword keyInfoList[0]
+            keyAlias keyInfoList[1]
+            keyPassword keyInfoList[2]
+        }
+    }
 
     buildTypes {
-        debug{
-            minifyEnabled true
+        debug {
+            signingConfig signingConfigs.common
+            minifyEnabled Boolean.valueOf(project.property('TheUOS.Debug.Proguard').toString())
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         release {
+            signingConfig signingConfigs.common
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
@@ -43,6 +52,7 @@ android {
 
 }
 
+
 retrolambda {
     jdk System.getenv("JAVA8_HOME")
     defaultMethods true
@@ -53,32 +63,36 @@ dependencies {
 
     compile project(':stickylistheaders')
 
-    compile 'com.android.support:support-v13:23.0.1'
-    compile 'com.android.support:appcompat-v7:23.0.1'
-    compile 'com.android.support:recyclerview-v7:23.0.1'
-    compile 'com.android.support:cardview-v7:23.0.1'
-    compile 'com.android.support:design:23.0.1'
-    compile 'com.android.support:support-annotations:23.0.1'
+    compile 'com.android.support:support-v13:23.1.1'
+    compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.android.support:recyclerview-v7:23.1.1'
+    compile 'com.android.support:cardview-v7:23.1.1'
+    compile 'com.android.support:design:23.1.1'
+    compile 'com.android.support:support-annotations:23.1.1'
 
-    compile 'com.google.android.gms:play-services-maps:8.1.0'
-    compile 'com.google.android.gms:play-services-analytics:8.1.0'
+    compile 'com.google.android.gms:play-services-maps:8.4.0'
+    compile 'com.google.android.gms:play-services-analytics:8.4.0'
 
     compile 'com.jakewharton:butterknife:7.0.1'
 
-    compile 'com.mcxiaoke.volley:library:1.0.10@aar'
+    compile 'com.github.bumptech.glide:glide:3.6.0'
     compile 'com.nineoldandroids:library:2.4.0'
 
     compile 'com.nhaarman.listviewanimations:lib-core:3.1.0@aar'
     compile 'com.nhaarman.listviewanimations:lib-manipulation:3.1.0@aar'
     // compile 'com.nhaarman.listviewanimations:lib-core-slh:3.1.0@aar'
 
-    compile 'com.afollestad:material-dialogs:0.7.8.1'
+    compile('com.github.afollestad.material-dialogs:core:0.8.5.3@aar') {
+        transitive = true
+    }
     compile 'com.pnikosis:materialish-progress:1.4'
     compile 'com.getbase:floatingactionbutton:1.9.0'
     compile 'com.balysv:material-ripple:1.0.2'
 
     // compile 'com.github.navasmdc:MaterialDesign:1.+@aar'
     //compile 'se.emilsjolander:stickylistheaders:+'
-    compile 'jp.wasabeef:recyclerview-animators:1.1.2@aar'
+    compile 'jp.wasabeef:recyclerview-animators:2.1.0'
 
 }
+
+apply plugin: 'com.google.gms.google-services'

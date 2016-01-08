@@ -2,7 +2,6 @@ package com.uoscs09.theuos2.tab.emptyroom;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.util.ArrayMap;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,29 +16,21 @@ import android.widget.TextView;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
-import com.uoscs09.theuos2.async.AbstractRequest;
 import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
-import com.uoscs09.theuos2.http.HttpRequest;
-import com.uoscs09.theuos2.parse.XmlParserWrapper;
+import com.uoscs09.theuos2.http.NetworkRequests;
 import com.uoscs09.theuos2.util.AppUtil;
-import com.uoscs09.theuos2.util.OApiUtil;
-import com.uoscs09.theuos2.util.OApiUtil.Semester;
 import com.uoscs09.theuos2.util.StringUtil;
 
-import java.net.HttpURLConnection;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 
 import butterknife.Bind;
+import butterknife.OnClick;
 
 /**
  * 빈 강의실을 조회하는 fragment
  */
-public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<EmptyClassRoomItem>> implements Request.ResultListener<ArrayList<EmptyClassRoomItem>>, Request.ErrorListener {
+public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<EmptyClassRoomItem>> {
 
     private AlertDialog mSearchDialog;
     private Spinner mBuildingSpinner;
@@ -47,6 +38,7 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Em
     private Spinner mTermSpinner;
     private TextView[] textViews;
     private View[] tabStrips;
+
     @Bind(R.id.tab_search_subject_empty_view)
     View mEmptyView;
     @Bind(R.id.etc_search_list)
@@ -55,20 +47,15 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Em
     private ArrayAdapter<EmptyClassRoomItem> mAdapter;
     @AsyncData
     private ArrayList<EmptyClassRoomItem> mClassRoomList;
-    private final ArrayMap<String, String> params = new ArrayMap<>(9);
     private String mTermString;
     private boolean isReverse = false;
     private int mTabSelection = -1;
 
     private static final String BUILDING = "building";
-    private static final String URL = "http://wise.uos.ac.kr/uosdoc/api.ApiUcsFromToEmptyRoom.oapi";
 
-    private static final XmlParserWrapper<ArrayList<EmptyClassRoomItem>> EMPTY_ROOM_PARSER = OApiUtil.getParser(EmptyClassRoomItem.class);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        initParamsTable();
-
         initSearchDialog();
 
         if (savedInstanceState != null) {
@@ -128,13 +115,15 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Em
 
         mListView.setAdapter(mAdapter);
 
-        mEmptyView.findViewById(R.id.empty1).setOnClickListener(v -> {
-            sendEmptyViewClickEvent();
-            mSearchDialog.show();
-        });
         mListView.setEmptyView(mEmptyView);
 
         registerProgressView(view.findViewById(R.id.progress_layout));
+    }
+
+    @OnClick(R.id.empty1)
+    void emptyClick() {
+        sendEmptyViewClickEvent();
+        mSearchDialog.show();
     }
 
     @Override
@@ -148,17 +137,6 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Em
         outState.putString("time", mTermString);
         super.onSaveInstanceState(outState);
 
-    }
-
-    private void putParams() {
-        Calendar c = Calendar.getInstance();
-        int time = mTimeSpinner.getSelectedItemPosition() + 1;
-        String wdayTime = String.valueOf(c.get(Calendar.DAY_OF_WEEK)) + (time < 10 ? "0" : StringUtil.NULL) + String.valueOf(time);
-        String building = ((String) mBuildingSpinner.getSelectedItem()).split(StringUtil.SPACE)[0];
-
-        params.put(BUILDING, building);
-        params.put("wdayTime", wdayTime);
-        params.put(OApiUtil.TERM, Semester.values()[mTermSpinner.getSelectedItemPosition()].code);
     }
 
     @Override
@@ -179,90 +157,36 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Em
         }
     }
 
-
-    private void initParamsTable() {
-        String date = new SimpleDateFormat("yyyyMMdd", Locale.KOREAN).format(new Date());
-        params.put(OApiUtil.API_KEY, OApiUtil.UOS_API_KEY);
-        params.put(OApiUtil.YEAR, OApiUtil.getYear());
-        params.put(BUILDING, StringUtil.NULL);
-        params.put("dateFrom", date);
-        params.put("dateTo", date);
-        params.put("classRoomDiv", StringUtil.NULL);
-        params.put("wdayTime", StringUtil.NULL);
-        params.put("aplyPosbYn", "Y");
-    }
-
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-        mEmptyView.setVisibility(View.INVISIBLE);
-    }
-
-    @Override
-    protected void onPostExecute() {
-        super.onPostExecute();
-
-        if (mAdapter.isEmpty())
-            mEmptyView.setVisibility(View.VISIBLE);
-    }
-
     private void execute() {
-        execute(true, mRequest, this, this, true);
-    }
+        mEmptyView.setVisibility(View.INVISIBLE);
 
-    private final Request<ArrayList<EmptyClassRoomItem>> mRequest = new AbstractRequest<ArrayList<EmptyClassRoomItem>>() {
-        @Override
-        public ArrayList<EmptyClassRoomItem> get() throws Exception {
-            putParams();
+        String building = ((String) mBuildingSpinner.getSelectedItem()).split(StringUtil.SPACE)[0];
+        int time = mTimeSpinner.getSelectedItemPosition() + 1;
+        int term = mTermSpinner.getSelectedItemPosition();
+        Request<ArrayList<EmptyClassRoomItem>> request = NetworkRequests.EmptyRooms.request(getActivity(), building, time, term);
 
-            HttpRequest.Builder<HttpURLConnection> requestBuilder = HttpRequest.Builder.newConnectionRequestBuilder(URL)
-                    .setParams(params)
-                    .setParamsEncoding(StringUtil.ENCODE_EUC_KR);
+        execute(true,
+                request,
+                result -> {
+                    mClassRoomList.clear();
+                    mClassRoomList.addAll(result);
+                    mAdapter.notifyDataSetChanged();
+                    AppUtil.showToast(getActivity(), getString(R.string.search_found_amount, result.size()), true);
 
-            if (params.get(BUILDING).equals("00")) {
+                    mTermString = mTimeSpinner.getSelectedItem().toString().split(StringUtil.NEW_LINE)[1] + StringUtil.NEW_LINE + mTermSpinner.getSelectedItem();
+                    setSubtitleWhenVisible(mTermString);
 
-                final String[] buildings = {
-                        "01", "02", "03", "04", "05",
-                        "06", "08", "09", "10", "11",
-                        "13", "14", "15", "16", "17",
-                        "18", "19", "20", "23", "24", "25", "33"};
+                    if (mAdapter.isEmpty())
+                        mEmptyView.setVisibility(View.VISIBLE);
 
-                ArrayList<EmptyClassRoomItem> list = new ArrayList<>();
+                },
+                e -> {
+                    e.printStackTrace();
 
-                for (String bd : buildings) {
-                    params.put(BUILDING, bd);
-                    list.addAll(
-                            requestBuilder.build()
-                                    .checkNetworkState(getActivity())
-                                    .wrap(EMPTY_ROOM_PARSER)
-                                    .get()
-                    );
-                }
-
-                return list;
-
-            } else {
-                return requestBuilder.build()
-                        .checkNetworkState(getActivity())
-                        .wrap(EMPTY_ROOM_PARSER)
-                        .get();
-            }
-        }
-    };
-
-    @Override
-    public void onResult(ArrayList<EmptyClassRoomItem> result) {
-        mClassRoomList.clear();
-        mClassRoomList.addAll(result);
-        mAdapter.notifyDataSetChanged();
-        AppUtil.showToast(getActivity(), getString(R.string.search_found_amount, result.size()), true);
-
-        mTermString = mTimeSpinner.getSelectedItem().toString().split(StringUtil.NEW_LINE)[1] + StringUtil.NEW_LINE + mTermSpinner.getSelectedItem();
-        setSubtitleWhenVisible(mTermString);
-    }
-
-    @Override
-    public void onError(Exception e) {
+                    if (mAdapter.isEmpty())
+                        mEmptyView.setVisibility(View.VISIBLE);
+                },
+                true);
     }
 
     private void onTabClick(int field) {

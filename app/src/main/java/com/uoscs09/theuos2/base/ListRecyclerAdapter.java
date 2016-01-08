@@ -6,6 +6,8 @@ import android.view.View;
 
 import java.util.List;
 
+import butterknife.ButterKnife;
+
 public abstract class ListRecyclerAdapter<T, VH extends ListRecyclerAdapter.ViewHolder<T>> extends RecyclerView.Adapter<VH> {
     private final List<T> mDataSet;
     private OnItemClickListener<? extends VH> mListener;
@@ -40,6 +42,7 @@ public abstract class ListRecyclerAdapter<T, VH extends ListRecyclerAdapter.View
 
         public ViewHolder(View itemView) {
             super(itemView);
+            ButterKnife.bind(this, itemView);
         }
 
         protected abstract void setView();

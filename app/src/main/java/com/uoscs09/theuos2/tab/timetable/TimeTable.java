@@ -13,13 +13,14 @@ import java.io.Serializable;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Map;
 
 public class TimeTable implements Parcelable, Serializable, IParser.AfterParsable {
     private static final long serialVersionUID = 5134424815398243634L;
+    public static final int SUBJECT_AMOUNT_PER_WEEK = 6;
 
     public OApiUtil.Semester semesterCode;
     public StudentInfo studentInfoKor, studentInfoEng;
-    public static final int SUBJECT_AMOUNT_PER_WEEK = 6;
 
     /**
      * period - day
@@ -31,26 +32,27 @@ public class TimeTable implements Parcelable, Serializable, IParser.AfterParsabl
 
     // Key - 과목 이름 hashCode, Value - 과목의 시간 & 장소 정보(SubjectItem2.ClassInformation 클래스)의 리스트
     private SerializableArrayMap<String, ArrayList<SubjectItem2.ClassInformation>> mClassInformationTable;
-
+    private SerializableArrayMap<String, Integer> colorTable;
 
     public TimeTable() {
+        colorTable = new SerializableArrayMap<>();
+        mClassInformationTable = new SerializableArrayMap<>();
     }
 
     public TimeTable(int size) {
+        this();
         for (int i = 0; i < size; i++) {
             subjects.add(new Subject[SUBJECT_AMOUNT_PER_WEEK]);
         }
     }
 
-    public boolean isEmpty() {
-        for (Subject[] subjectArray : subjects) {
-            for (Subject subject : subjectArray) {
-                if (subject != null && !subject.equals(Subject.EMPTY))
-                    return false;
-            }
-        }
+    public void setColorTable(Map<String, Integer> colorMap) {
+        colorTable.clear();
+        colorTable.putAll(colorMap);
+    }
 
-        return true;
+    public Map<String, Integer> getColorTable() {
+        return colorTable;
     }
 
     public String getYearAndSemester() {
@@ -82,11 +84,24 @@ public class TimeTable implements Parcelable, Serializable, IParser.AfterParsabl
         return 1;
     }
 
-    public SerializableArrayMap<String, ArrayList<SubjectItem2.ClassInformation>> getClassTimeInformationTable() {
-        if (mClassInformationTable == null) {
-            mClassInformationTable = new SerializableArrayMap<>();
+
+    public boolean isEmpty() {
+        for (Subject[] subjectArray : subjects) {
+            for (Subject subject : subjectArray) {
+                if (subject != null && !subject.equals(Subject.EMPTY))
+                    return false;
+            }
         }
 
+        return true;
+    }
+
+    public Map<String, ArrayList<SubjectItem2.ClassInformation>> getClassTimeInformationTable() {
+        return mClassInformationTable;
+    }
+
+
+    private void buildClassTimeInformationTable() {
         if (mClassInformationTable.size() == 0) {
             setMaxTime();
 
@@ -154,11 +169,7 @@ public class TimeTable implements Parcelable, Serializable, IParser.AfterParsabl
                 }
 
             }
-
-
         }
-
-        return mClassInformationTable;
     }
 
     public void copyFrom(TimeTable another) {
@@ -169,12 +180,14 @@ public class TimeTable implements Parcelable, Serializable, IParser.AfterParsabl
         this.studentInfoEng = another.studentInfoEng;
         this.year = another.year;
         this.maxTime = another.maxTime;
+        this.colorTable = another.colorTable;
+        this.mClassInformationTable = another.mClassInformationTable;
     }
 
 
     @Override
     public void afterParsing() {
-        getClassTimeInformationTable();
+        buildClassTimeInformationTable();
     }
 
     @Override
@@ -189,6 +202,7 @@ public class TimeTable implements Parcelable, Serializable, IParser.AfterParsabl
         dest.writeParcelable(studentInfoKor, flags);
         dest.writeParcelable(studentInfoEng, flags);
         dest.writeInt(maxTime);
+        dest.writeMap(colorTable);
 
         int size = subjects.size();
         dest.writeInt(size);
@@ -216,6 +230,8 @@ public class TimeTable implements Parcelable, Serializable, IParser.AfterParsabl
         studentInfoKor = source.readParcelable(StudentInfo.class.getClassLoader());
         studentInfoEng = source.readParcelable(StudentInfo.class.getClassLoader());
         maxTime = source.readInt();
+        colorTable = new SerializableArrayMap<>();
+        source.readMap(colorTable, Integer.class.getClassLoader());
 
         int size = source.readInt();
         for (int i = 0; i < size; i++) {
@@ -232,7 +248,7 @@ public class TimeTable implements Parcelable, Serializable, IParser.AfterParsabl
         if (mClassInformationTable == null) {
             mClassInformationTable = new SerializableArrayMap<>();
 
-        } else if(!mClassInformationTable.isEmpty())
+        } else if (!mClassInformationTable.isEmpty())
             mClassInformationTable.clear();
 
         source.readMap(mClassInformationTable, SubjectItem2.ClassInformation.class.getClassLoader());
@@ -278,8 +294,16 @@ public class TimeTable implements Parcelable, Serializable, IParser.AfterParsabl
         }
 
         public StudentInfo(String rawInfo) throws ParseException {
-            int firstIndexOfParentheses = rawInfo.indexOf('(');
-            int lastIndexOfParentheses = rawInfo.lastIndexOf(')');
+            int firstIndexOfParentheses = -1, lastIndexOfParentheses = -1;
+            if (rawInfo != null) {
+                firstIndexOfParentheses = rawInfo.indexOf('(');
+                lastIndexOfParentheses = rawInfo.lastIndexOf(')');
+            } else {
+                name = "";
+                studentCode = "";
+                department = "";
+                return;
+            }
 
             if (firstIndexOfParentheses == -1 || lastIndexOfParentheses == -1)
                 throw new ParseException(rawInfo, 0);

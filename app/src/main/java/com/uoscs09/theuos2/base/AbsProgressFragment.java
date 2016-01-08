@@ -25,7 +25,7 @@ public abstract class AbsProgressFragment<T> extends AbsAsyncFragment<T> {
     }
 
     @Override
-    protected void onPostExecute() {
+    protected final void onPostExecute() {
         if (mProgressWheel != null)
             mProgressWheel.stopSpinning();
         if (mProgressLayout != null)
@@ -34,7 +34,7 @@ public abstract class AbsProgressFragment<T> extends AbsAsyncFragment<T> {
 
 
     @Override
-    protected void onPreExecute() {
+    protected final void onPreExecute() {
         if (mProgressWheel != null)
             mProgressLayout.setVisibility(View.VISIBLE);
         if (mProgressWheel != null)

@@ -9,6 +9,8 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import butterknife.ButterKnife;
+
 /**
  * View Holder 패턴을 사용하는 ArrayAdapter
  */
@@ -65,7 +67,7 @@ public abstract class AbsArrayAdapter<T, VH extends AbsArrayAdapter.ViewHoldable
 
     /**
      * @param convertView ViewHolder 객체를 만드는데 사용될 View
-     * @param viewType viewType
+     * @param viewType    viewType
      * @return AbsArrayAdapter 를 상속받은 클래스가 구현한 ViewHolder
      */
     public abstract VH onCreateViewHolder(View convertView, int viewType);
@@ -77,8 +79,9 @@ public abstract class AbsArrayAdapter<T, VH extends AbsArrayAdapter.ViewHoldable
     public static class ViewHolder implements ViewHoldable {
         public final View itemView;
 
-        public ViewHolder(View view){
+        public ViewHolder(View view) {
             this.itemView = view;
+            ButterKnife.bind(this, view);
         }
     }
 

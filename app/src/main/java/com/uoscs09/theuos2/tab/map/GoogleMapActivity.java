@@ -143,10 +143,6 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
 
             googleMap.setBuildingsEnabled(true);
             googleMap.setMyLocationEnabled(true);
-            googleMap.setOnMyLocationChangeListener(arg0 -> {
-                // location = arg0;
-            });
-
         }
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);

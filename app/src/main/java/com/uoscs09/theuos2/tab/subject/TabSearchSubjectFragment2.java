@@ -6,7 +6,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.util.ArrayMap;
-import android.support.v4.util.SimpleArrayMap;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -25,23 +24,21 @@ import android.widget.TextView;
 import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
-import com.uoscs09.theuos2.async.AbstractRequest;
 import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.customview.CustomHorizontalScrollView;
-import com.uoscs09.theuos2.http.HttpRequest;
-import com.uoscs09.theuos2.parse.XmlParserWrapper;
+import com.uoscs09.theuos2.http.NetworkRequests;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
-import com.uoscs09.theuos2.util.StringUtil;
 
-import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Map;
 
 import butterknife.Bind;
+import butterknife.OnItemClick;
 
 public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<SubjectItem2>>
-        implements AdapterView.OnItemClickListener, AdapterView.OnItemSelectedListener, Request.ResultListener<ArrayList<SubjectItem2>>, Request.ErrorListener {
+        implements AdapterView.OnItemSelectedListener {
     private AlertDialog mSearchDialog;
     private EditText mSearchEditText;
     private Spinner mDialogSpinner1, mDialogSpinner2, mDialogSpinner3, mDialogSpinner4, mDialogTermSpinner, mDialogYearSpinner;
@@ -66,19 +63,15 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
 
     @AsyncData
     private ArrayList<SubjectItem2> mSubjectList;
-    private ArrayMap<String, String> mOApiParams;
 
     private SubjectAdapter2 mSubjectAdapter;
     private AlphaInAnimationAdapter mAminAdapter;
 
     private final CoursePlanDialogFragment mCoursePlanDialogFragment = new CoursePlanDialogFragment();
 
-    private static final XmlParserWrapper<ArrayList<SubjectItem2>> SUBJECT_PARSER = OApiUtil.getParser(SubjectItem2.class);
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        mOApiParams = new ArrayMap<>();
         Context context = getActivity();
         View dialogView = View.inflate(context, R.layout.dialog_search_subject, null);
         initDialog(dialogView);
@@ -137,7 +130,6 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
         mAminAdapter.setAbsListView(mListView);
 
         mListView.setAdapter(mAminAdapter);
-        mListView.setOnItemClickListener(this);
         mListView.setEmptyView(mEmptyView);
 
         final CustomHorizontalScrollView mTabParent = (CustomHorizontalScrollView) LayoutInflater.from(getActivity()).inflate(R.layout.view_tab_search_subject_toolbar_menu, getToolbarParent(), false);
@@ -266,8 +258,8 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
     }
     */
 
-    @Override
-    public void onItemClick(AdapterView<?> ad, View v, int pos, long id) {
+    @OnItemClick(R.id.tab_search_subject_list_view)
+    public void onSubjectClicked(View v, int pos) {
         if (!mCoursePlanDialogFragment.isAdded()) {
             mCoursePlanDialogFragment.setSubjectItem(mSubjectList.get(pos));
             mCoursePlanDialogFragment.show(getFragmentManager(), "course");
@@ -289,71 +281,47 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
 
     private void execute() {
         mEmptyView.setVisibility(View.INVISIBLE);
-        execute(true, mRequest, this, this, true);
-    }
 
-    private Request<ArrayList<SubjectItem2>> mRequest = new AbstractRequest<ArrayList<SubjectItem2>>() {
-        @Override
-        public ArrayList<SubjectItem2> get() throws Exception {
-            String query;
-            mOApiParams.clear();
-            mOApiParams.put(OApiUtil.API_KEY, OApiUtil.UOS_API_KEY);
-            mOApiParams.put(OApiUtil.YEAR, mDialogYearSpinner.getSelectedItem().toString());
-            mOApiParams.put(OApiUtil.TERM, OApiUtil.Semester.values()[mDialogTermSpinner.getSelectedItemPosition()].code);
+        boolean culture = mDialogSpinner1.getSelectedItemPosition() == 0;
+        Request<ArrayList<SubjectItem2>> request;
 
-            switch (mDialogSpinner1.getSelectedItemPosition()) {
+        String year = mDialogYearSpinner.getSelectedItem().toString();
+        int term = mDialogTermSpinner.getSelectedItemPosition();
+        String subjectName = mSearchEditText.getText().toString();
+
+        if (culture)
+            request = NetworkRequests.Subjects.requestCulture(getActivity(), year, term, getCultSubjectDiv(mDialogSpinner2.getSelectedItemPosition()), subjectName);
+        else {
+            Map<String, String> additionalParams;
+            switch (selections[1]) {
+                case R.array.search_subj_major_2_0_0:
+                    additionalParams = getMajorDeptDiv(mDialogSpinner3.getSelectedItemPosition(), mDialogSpinner4.getSelectedItemPosition());
+                    break;
 
                 default:
-                case 0:// 교양
-                    query = "http://wise.uos.ac.kr/uosdoc/api.ApiUcrCultTimeInq.oapi";
-                    mOApiParams.put("subjectDiv", getCultSubjectDiv(mDialogSpinner2.getSelectedItemPosition()));
+                    additionalParams = getMajorDeptDiv2(selections[1], mDialogSpinner4.getSelectedItemPosition());
                     break;
 
-                case 1:// 전공
-                    query = "http://wise.uos.ac.kr/uosdoc/api.ApiUcrMjTimeInq.oapi";
-                    switch (selections[1]) {
-                        case R.array.search_subj_major_2_0_0:
-                            mOApiParams.putAll((SimpleArrayMap<? extends String, ? extends String>) getMajorDeptDiv(mDialogSpinner3.getSelectedItemPosition(), mDialogSpinner4.getSelectedItemPosition()));
-                            break;
-
-                        default:
-                            SimpleArrayMap<? extends String, ? extends String> map = getMajorDeptDiv2(selections[1], mDialogSpinner4.getSelectedItemPosition());
-                            if (map != null)
-                                mOApiParams.putAll(map);
-                            break;
-
-                    }
-                    break;
             }
-
-            mOApiParams.put("subjectNm", URLEncoder.encode(mSearchEditText.getText().toString(), StringUtil.ENCODE_EUC_KR));
-
-
-            return HttpRequest.Builder.newConnectionRequestBuilder(query)
-                    .setParamsEncoding(StringUtil.ENCODE_EUC_KR)
-                    .setParams(mOApiParams)
-                    .build()
-                    .checkNetworkState(getActivity())
-                    .wrap(SUBJECT_PARSER)
-                    .get();
+            request = NetworkRequests.Subjects.requestMajor(getActivity(), year, term, additionalParams, subjectName);
         }
-    };
 
-    @Override
-    public void onResult(ArrayList<SubjectItem2> result) {
-        mSubjectAdapter.clear();
-        mSubjectAdapter.addAll(result);
-        mAminAdapter.reset();
-        mAminAdapter.notifyDataSetChanged();
+        execute(true,
+                request,
+                result -> {
+                    mSubjectAdapter.clear();
+                    mSubjectAdapter.addAll(result);
+                    mAminAdapter.reset();
+                    mAminAdapter.notifyDataSetChanged();
 
-        //mSubjectAdapter.notifyDataSetChanged();
+                    //mSubjectAdapter.notifyDataSetChanged();
 
-        mScrollView.scrollTo(0, 0);
-        getTabParentView().scrollTo(0, 0);
+                    mScrollView.scrollTo(0, 0);
+                    getTabParentView().scrollTo(0, 0);
 
-        if (mSubjectAdapter.isEmpty()) {
-            mEmptyView.setVisibility(View.VISIBLE);
-        }
+                    if (mSubjectAdapter.isEmpty()) {
+                        mEmptyView.setVisibility(View.VISIBLE);
+                    }
             /*
             if (result.isEmpty()) {
                 mTitleLayout.setVisibility(View.INVISIBLE);
@@ -362,17 +330,16 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
             }
             */
 
-        AppUtil.showToast(getActivity(), getString(R.string.search_found_amount, result.size()), true);
+                    AppUtil.showToast(getActivity(), getString(R.string.search_found_amount, result.size()), true);
 
-        mSearchConditionString = mDialogYearSpinner.getSelectedItem().toString()
-                + " / "
-                + mDialogTermSpinner.getSelectedItem().toString();
-        setSubtitleWhenVisible(mSearchConditionString);
-    }
-
-    @Override
-    public void onError(Exception e) {
-
+                    mSearchConditionString = mDialogYearSpinner.getSelectedItem().toString()
+                            + " / "
+                            + mDialogTermSpinner.getSelectedItem().toString();
+                    setSubtitleWhenVisible(mSearchConditionString);
+                },
+                Throwable::printStackTrace,
+                true
+        );
     }
 
     @Override

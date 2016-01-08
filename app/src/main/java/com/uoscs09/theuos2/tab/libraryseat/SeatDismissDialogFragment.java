@@ -20,6 +20,8 @@ import com.uoscs09.theuos2.base.ListRecyclerAdapter;
 
 import java.util.List;
 
+import butterknife.Bind;
+
 public class SeatDismissDialogFragment extends BaseDialogFragment {
 
     private View mDismissDialogView, mDismissEmptyView;
@@ -103,12 +105,13 @@ public class SeatDismissDialogFragment extends BaseDialogFragment {
         }
 
         static class Holder extends ListRecyclerAdapter.ViewHolder<SeatDismissInfo> {
-            public final TextView time, count;
+            @Bind(R.id.tab_libray_seat_info_time)
+            public TextView time;
+            @Bind(R.id.tab_libray_seat_info_number)
+            public TextView count;
 
             public Holder(View v) {
                 super(v);
-                time = (TextView) v.findViewById(R.id.tab_libray_seat_info_time);
-                count = (TextView) v.findViewById(R.id.tab_libray_seat_info_number);
             }
 
             @Override
@@ -116,7 +119,7 @@ public class SeatDismissDialogFragment extends BaseDialogFragment {
                 SeatDismissInfo info = getItem();
 
                 time.setText(time.getContext().getString(R.string.tab_library_seat_dismiss_info_time_within, info.time));
-                count.setText(Integer.toString(info.seatCount));
+                count.setText(String.valueOf(info.seatCount));
             }
         }
     }

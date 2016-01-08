@@ -10,15 +10,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageLoader;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.common.PieProgressDrawable;
-import com.uoscs09.theuos2.http.HttpRequest;
-import com.uoscs09.theuos2.parse.XmlParser;
-import com.uoscs09.theuos2.parse.XmlParserWrapper;
+import com.uoscs09.theuos2.http.NetworkRequests;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 
@@ -26,63 +22,49 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements ImageLoader.ImageListener, View.OnClickListener, View.OnLongClickListener {
-    final View infoParentLayout;
-    final TextView title, writer, publish_year, location, bookState;
-    final ImageView coverImg;
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
+class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
+    @Bind(R.id.tab_booksearch_list_book_title)
+    TextView title;
+    @Bind(R.id.tab_booksearch_list_book_writer)
+    TextView writer;
+    @Bind(R.id.tab_booksearch_list_text_publish_and_year)
+    TextView publish_year;
+    @Bind(R.id.tab_booksearch_list_book_site)
+    TextView location;
+    @Bind(R.id.tab_booksearch_list_book_state)
+    TextView bookState;
+    @Bind(R.id.tab_booksearch_list_book_image)
+    ImageView coverImg;
     //final View ripple;
-    final LinearLayout stateInfoLayout;
+    @Bind(R.id.tab_booksearch_layout_book_state)
+    LinearLayout stateInfoLayout;
 
     /**
      * 책의 세부 위치 정보를 표현하는 뷰를 담은 리스트
      */
     final ArrayList<ChildHolder> mChildHolderList = new ArrayList<>();
 
-    ImageLoader.ImageContainer imageContainer;
     AsyncTask<Void, Integer, ArrayList<BookStateInfo>> asyncTask;
 
     BookItem item;
     BookItemListAdapter.OnItemClickListener onItemClickListener;
 
-    private static final XmlParserWrapper<ArrayList<BookStateInfo>> BOOK_STATE_INFO_PARSER = new XmlParserWrapper<>(XmlParser.newReflectionParser(BookStateInfo.class, "location", "noholding", "item"));
-
-
     public BookItemViewHolder(View v) {
         super(v);
-        coverImg = (ImageView) v.findViewById(R.id.tab_booksearch_list_book_image);
+
         coverImg.setOnClickListener(this);
-
-        infoParentLayout = v.findViewById(R.id.tab_booksearch_list_info_layout);
-        infoParentLayout.setOnClickListener(this);
-
-        bookState = (TextView) infoParentLayout.findViewById(R.id.tab_booksearch_list_book_state);
-        location = (TextView) infoParentLayout.findViewById(R.id.tab_booksearch_list_book_site);
         location.setOnClickListener(this);
 
-        title = (TextView) infoParentLayout.findViewById(R.id.tab_booksearch_list_book_title);
         title.setOnLongClickListener(this);
-        publish_year = (TextView) infoParentLayout.findViewById(R.id.tab_booksearch_list_text_publish_and_year);
         publish_year.setOnLongClickListener(this);
-        writer = (TextView) infoParentLayout.findViewById(R.id.tab_booksearch_list_book_writer);
         writer.setOnLongClickListener(this);
-
-        stateInfoLayout = (LinearLayout) infoParentLayout.findViewById(R.id.tab_booksearch_layout_book_state);
-
         //ripple = v.findViewById(R.id.ripple);
-
     }
 
-    @Override
-    public void onResponse(ImageLoader.ImageContainer imageContainer, boolean b) {
-        if (imageContainer.getBitmap() != null) {
-            coverImg.setImageBitmap(imageContainer.getBitmap());
-        }
-    }
-
-    @Override
-    public void onErrorResponse(VolleyError error) {
-        error.printStackTrace();
-    }
 
     public BookItem getItem() {
         return item;
@@ -93,11 +75,7 @@ class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements ImageLoad
         if (item == null)
             return;
 
-        if (v.getId() == R.id.tab_booksearch_list_info_layout)
-            changeBookStateLayoutVisibility();
-        else
-            onItemClickListener.onItemClick(this, v);
-
+        onItemClickListener.onItemClick(this, v);
     }
 
     @Override
@@ -112,6 +90,7 @@ class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements ImageLoad
         }
     }
 
+    @OnClick(R.id.tab_booksearch_list_info_layout)
     public void changeBookStateLayoutVisibility() {
         if (stateInfoLayout.getChildCount() > 0)
             removeAllBookStateInLayout();
@@ -129,12 +108,8 @@ class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements ImageLoad
             if (item.infoUrl.equals(StringUtil.NULL)) {
                 item.bookStateInfoList = Collections.emptyList();
                 removeAllBookStateInLayout();
-
             } else {
-                asyncTask = HttpRequest.Builder.newConnectionRequestBuilder(item.infoUrl)
-                        .build()
-                        .checkNetworkState(holder.itemView.getContext())
-                        .wrap(BOOK_STATE_INFO_PARSER)
+                asyncTask = NetworkRequests.Books.requestBookStateInfo(holder.itemView.getContext(), item.infoUrl)
                         .getAsyncOnExecutor(
                                 result -> {
                                     item.bookStateInfoList = result;
@@ -146,7 +121,6 @@ class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements ImageLoad
                                         Log.d("BookItemViewHolder", "request item != current item");
                                 },
                                 Throwable::printStackTrace
-
                         );
 
             }
@@ -194,7 +168,7 @@ class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements ImageLoad
         } else if (diff < 0) {
             // 홀더 삭제
             //TODO  ConcurrentModificationException
-            childHolderList. removeAll(childHolderList.subList(attachingViewsSize, availableRecyledHolderCount));
+            childHolderList.removeAll(childHolderList.subList(attachingViewsSize, availableRecyledHolderCount));
         }
 
         // 캐쉬된 홀더에 정보 입력
@@ -212,16 +186,18 @@ class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements ImageLoad
 
     static class ChildHolder {
         public final View itemView;
-        public final TextView location;
-        public final TextView code;
-        public final TextView state;
+        @Bind(R.id.tab_booksearch_bookstate_location)
+        public TextView location;
+        @Bind(R.id.tab_booksearch_bookstate_code)
+        public TextView code;
+        @Bind(R.id.tab_booksearch_bookstate_state)
+        public TextView state;
+
         private final PieProgressDrawable drawable = new PieProgressDrawable();
 
         ChildHolder(View v) {
             itemView = v;
-            location = (TextView) v.findViewById(R.id.tab_booksearch_bookstate_location);
-            code = (TextView) v.findViewById(R.id.tab_booksearch_bookstate_code);
-            state = (TextView) v.findViewById(R.id.tab_booksearch_bookstate_state);
+            ButterKnife.bind(this, itemView);
         }
 
         void setContent(BookStateInfo info) {

@@ -2,7 +2,6 @@ package com.uoscs09.theuos2.tab.restaurant;
 
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -21,21 +20,14 @@ import android.widget.TextView;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.async.AsyncUtil;
-import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.BaseDialogFragment;
-import com.uoscs09.theuos2.http.HttpRequest;
+import com.uoscs09.theuos2.util.AppResources;
 import com.uoscs09.theuos2.util.AppUtil;
-import com.uoscs09.theuos2.util.IOUtil;
-import com.uoscs09.theuos2.util.OApiUtil;
-import com.uoscs09.theuos2.util.PrefUtil;
 
 import java.util.ArrayList;
-import java.util.concurrent.Callable;
 
-public class WeekInformationDialogFragment extends BaseDialogFragment implements Callable<WeekRestItem>, Request.ResultListener<WeekRestItem>, Request.ErrorListener {
+public class WeekInformationDialogFragment extends BaseDialogFragment {
     private static final String TAG = "WeekInformationDialogFragment";
-    private static final String FILE_NAME = "FILE_REST_WEEK_ITEM";
-    private static final ParseRestaurantWeek RESTAURANT_WEEK_PARSER = new ParseRestaurantWeek();
 
     private Toolbar mToolbar;
     private SwipeRefreshLayout mSwipeRefreshLayout;
@@ -46,7 +38,6 @@ public class WeekInformationDialogFragment extends BaseDialogFragment implements
     private RestWeekAdapter mRestWeekAdapter;
     private int mCurrentSelectionId;
     private AsyncTask<Void, ?, WeekRestItem> mAsyncTask;
-    private boolean shouldUpdateUsingInternet;
 
     public void setSelection(int stringId) {
         this.mCurrentSelectionId = stringId;
@@ -116,56 +107,29 @@ public class WeekInformationDialogFragment extends BaseDialogFragment implements
             mFailView.setVisibility(View.GONE);
 
         AsyncUtil.cancelTask(mAsyncTask);
-        this.shouldUpdateUsingInternet = shouldUpdateUsingInternet;
 
-        mAsyncTask = AsyncUtil.newRequest(this).getAsync(this, this);
-    }
+        mAsyncTask = AppResources.Restaurants.readWeekInfo(getActivity(), getCode(mCurrentSelectionId), shouldUpdateUsingInternet)
+                .getAsync(
+                        result -> {
+                            postExecute();
 
-    @Override
-    public WeekRestItem call() throws Exception {
-        Context context = getActivity();
-        PrefUtil pref = PrefUtil.getInstance(context);
+                            ArrayList<RestItem> weekList = result.weekList;
+                            mRestWeekAdapter.restItemArrayList.clear();
+                            mRestWeekAdapter.restItemArrayList.addAll(weekList);
+                            mRestWeekAdapter.notifyDataSetChanged();
 
-        final int[] recodedDate = getValueFromPref(pref, mCurrentSelectionId);
-        final int today = OApiUtil.getDate();
-
-        // 이번주의 식단이 기록된 파일이 있으면, 인터넷에서 가져오지 않고 그 파일을 읽음
-        if (!shouldUpdateUsingInternet && ((recodedDate[0] <= today) && (today <= recodedDate[1]))) {
-
-            WeekRestItem result = new IOUtil.Builder<WeekRestItem>(getFileName(mCurrentSelectionId))
-                    .setContext(context)
-                    .build()
-                    .get();
-
-            if (result != null)
-                return result;
-
-        }
-
-        return readFromInternet(context, mCurrentSelectionId);
-    }
-
-    @Override
-    public void onResult(WeekRestItem result) {
-        postExecute();
-
-        ArrayList<RestItem> weekList = result.weekList;
-        mRestWeekAdapter.restItemArrayList.clear();
-        mRestWeekAdapter.restItemArrayList.addAll(weekList);
-        mRestWeekAdapter.notifyDataSetChanged();
-
-        if (weekList.isEmpty()) {
-            showEmptyView();
-        } else {
-            mToolbar.setSubtitle(result.getPeriodString());
-        }
-    }
-
-    @Override
-    public void onError(Exception e) {
-        postExecute();
-        AppUtil.showErrorToast(getActivity(), e, true);
-        showReloadView();
+                            if (weekList.isEmpty()) {
+                                showEmptyView();
+                            } else {
+                                mToolbar.setSubtitle(result.getPeriodString());
+                            }
+                        },
+                        e -> {
+                            postExecute();
+                            AppUtil.showErrorToast(getActivity(), e, true);
+                            showReloadView();
+                        }
+                );
     }
 
     private void postExecute() {
@@ -181,46 +145,6 @@ public class WeekInformationDialogFragment extends BaseDialogFragment implements
 
         mAsyncTask = null;
     }
-
-    /*
-
-        private static WeekRestItem readFile(Context context, int selectionId) throws IOException, ClassNotFoundException {
-            return IOUtil.readFromFile(context, getFileName(selectionId));
-        }
-
-        private static void writeFile(Context context, int selectionId, WeekRestItem object) throws IOException {
-            IOUtil.writeObjectToFile(context, getFileName(selectionId), object);
-        }
-    */
-    private static String getFileName(int selectionId) {
-        return FILE_NAME + getCode(selectionId);
-    }
-
-    private static WeekRestItem readFromInternet(Context context, int selectionId) throws Exception {
-
-        WeekRestItem result = HttpRequest.Builder.newStringRequestBuilder("http://www.uos.ac.kr/food/placeList.do?rstcde=" + getCode(selectionId))
-                .build()
-                .checkNetworkState(context)
-                .wrap(RESTAURANT_WEEK_PARSER)
-                .wrap(IOUtil.<WeekRestItem>newFileWriteProcessor(context, getFileName(selectionId)))
-                .get();
-
-        putValueIntoPref(PrefUtil.getInstance(context), selectionId, result);
-
-        return result;
-    }
-
-    private static int[] getValueFromPref(PrefUtil prefUtil, int selectionId) {
-        int today = OApiUtil.getDate();
-        return new int[]{prefUtil.get(PrefUtil.KEY_REST_WEEK_FETCH_TIME + "_START_" + getCode(selectionId), today + 1),
-                prefUtil.get(PrefUtil.KEY_REST_WEEK_FETCH_TIME + "_END_" + getCode(selectionId), today - 1)};
-    }
-
-    private static void putValueIntoPref(PrefUtil prefUtil, int selectionId, WeekRestItem item) {
-        prefUtil.put(PrefUtil.KEY_REST_WEEK_FETCH_TIME + "_START_" + getCode(selectionId), item.startDate);
-        prefUtil.put(PrefUtil.KEY_REST_WEEK_FETCH_TIME + "_END_" + getCode(selectionId), item.endDate);
-    }
-
 
     private static String getCode(int selection) {
         switch (selection) {

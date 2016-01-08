@@ -16,7 +16,7 @@ import android.webkit.WebSettings;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.common.WebViewActivity;
-import com.uoscs09.theuos2.http.HttpRequest;
+import com.uoscs09.theuos2.http.NetworkRequests;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
 import com.uoscs09.theuos2.util.StringUtil;
@@ -66,11 +66,10 @@ public class SubAnnounceWebActivity extends WebViewActivity {
             case 3:
                 url = mItem.pageURL;
                 break;
+            case 4:
             case 2:
-                url = mItem.pageURL + "FA2";
-                break;
             case 1:
-                url = mItem.pageURL + "FA1";
+                url = mItem.pageURL + NetworkRequests.Announces.Category.values()[category - 1].tag;
                 break;
             default:
                 supportFinishAfterTransition();
@@ -145,21 +144,17 @@ public class SubAnnounceWebActivity extends WebViewActivity {
             case 3:
                 url = mItem.attachedFileUrl;
                 break;
+            case 4:
             case 2:
-                url = mItem.attachedFileUrl + "FA2";
-                break;
             case 1:
-                url = mItem.attachedFileUrl + "FA1";
+                url = mItem.attachedFileUrl + NetworkRequests.Announces.Category.values()[category - 1].tag;
                 break;
             default:
                 return;
         }
 
         final String docPath = PrefUtil.getDocumentPath(this);
-        final AsyncTask<Void, ?, File> task = HttpRequest.Builder.newConnectionRequestBuilder(url)
-                .setHttpMethod(HttpRequest.HTTP_METHOD_POST)
-                .build()
-                .wrap(new HttpRequest.FileDownloadProcessor(new File(docPath)))
+        final AsyncTask<Void, ?, File> task = NetworkRequests.Announces.attachedFileDownloadRequest(this, url, docPath)
                 .getAsync(
                         result -> {
                             dismissProgressDialog();

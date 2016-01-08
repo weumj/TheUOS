@@ -35,10 +35,6 @@
             android:value="@string/google_map_v2_api_key" />
 
         <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
-
-        <meta-data
             android:name="com.sec.android.support.multiwindow"
             android:value="true" />
 

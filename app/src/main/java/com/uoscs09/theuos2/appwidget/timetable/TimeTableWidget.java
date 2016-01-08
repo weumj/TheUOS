@@ -12,7 +12,7 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.base.BaseAppWidgetProvider;
 import com.uoscs09.theuos2.tab.timetable.TimeTable;
-import com.uoscs09.theuos2.tab.timetable.TimetableUtil;
+import com.uoscs09.theuos2.util.AppResources;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
 
@@ -29,6 +29,13 @@ public abstract class TimeTableWidget extends BaseAppWidgetProvider {
 
         final PendingResult pendingResult = goAsync();
         AsyncUtil.execute(() -> {
+            TimeTable timeTable = null;
+            try {
+                timeTable = AppResources.TimeTables.readFromFile(context).get();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             RemoteViews views = getRemoteViews(context);
 
             for (int appWidgetId : appWidgetIds) {
@@ -52,7 +59,6 @@ public abstract class TimeTableWidget extends BaseAppWidgetProvider {
                 SimpleDateFormat date = new SimpleDateFormat("yyyy MMM dd E", Locale.getDefault());
                 views.setTextViewText(R.id.widget_time_date, date.format(new Date()));
 
-                TimeTable timeTable = TimetableUtil.readTimetable(context);
                 if (timeTable != null) {
                     views.setTextViewText(R.id.widget_time_term, timeTable.getYearAndSemester());
 
