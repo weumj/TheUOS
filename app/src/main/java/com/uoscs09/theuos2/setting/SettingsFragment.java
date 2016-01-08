@@ -1,20 +1,19 @@
 package com.uoscs09.theuos2.setting;
 
 import android.app.Dialog;
-import android.app.Fragment;
-import android.app.FragmentManager.OnBackStackChangedListener;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceScreen;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceFragmentCompat;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
@@ -38,13 +37,13 @@ import java.util.Formatter;
 /**
  * 메인 설정화면을 나타내는 {@code PreferenceFragment}
  */
-public class SettingsFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener {
+public class SettingsFragment extends PreferenceFragmentCompat implements OnSharedPreferenceChangeListener {
     private AlertDialog mThemeSelectorDialog;
 
     private static final String TAG = "SettingsFragment";
     private static final String APP_URL = "https://play.google.com/store/apps/details?id=com.uoscs09.theuos2";
 
-    private OnBackStackChangedListener onBackStackChangedListener = () -> {
+    private FragmentManager.OnBackStackChangedListener onBackStackChangedListener = () -> {
         if (getFragmentManager() != null) {
             if (getFragmentManager().getBackStackEntryCount() < 1) {
                 getFragmentManager().beginTransaction()
@@ -62,13 +61,20 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         getFragmentManager().addOnBackStackChangedListener(onBackStackChangedListener);
 
         setHasOptionsMenu(true);
-        addPreferencesFromResource(R.xml.prefrence);
-        bindPreferenceSummaryToValue();
 
         TrackerUtil.getInstance(this).sendVisibleEvent(TAG);
     }
 
+    @Override
+    public void onCreatePreferences(Bundle bundle, String s) {
+        addPreferencesFromResource(R.xml.prefrence);
+        bindPreferenceSummaryToValue();
+    }
+
+
     private void changeFragment(Class<? extends Fragment> clazz) {
+        ((SettingActivity) getActivity()).restoreToolbar();
+
         getFragmentManager().beginTransaction()
                 .hide(this)
                 .add(android.R.id.tabcontent, Fragment.instantiate(getActivity(), clazz.getName()), "front")
@@ -77,56 +83,51 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
     }
 
     @Override
-    public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, @NonNull Preference preference) {
-        switch (preference.getTitleRes()) {
-            case R.string.setting_order:
-                changeFragment(SettingsOrderFragment.class);
-                return true;
+    public boolean onPreferenceTreeClick(@NonNull Preference preference) {
 
-            case R.string.setting_theme:
-                showThemeDialog();
-                return true;
+        CharSequence title = preference.getTitle();
 
-            case R.string.setting_announce_except_type_notice:
-                TrackerUtil.getInstance(this).sendEvent(TAG, "announce_except_type_notice");
-                return true;
-            /*
-            case R.string.setting_announce_noti:
-                changeFragment(SettingsAnnounceNotificationFragment.class);
-                return true;
-            */
+        if (title.equals(getText(R.string.setting_order))) {
+            changeFragment(SettingsOrderFragment.class);
+            return true;
+        } else if (title.equals(getText(R.string.setting_theme))) {
+            showThemeDialog();
+            return true;
+        } else if (title.equals(getText(R.string.setting_announce_except_type_notice))) {
+            TrackerUtil.getInstance(this).sendEvent(TAG, "announce_except_type_notice");
+            return true;
+        } else if (title.equals(getText(R.string.setting_delete_cache))) {
+            TrackerUtil.getInstance(this).sendEvent(TAG, "delete cache");
+            deleteCache();
+            return true;
 
-            case R.string.setting_delete_cache:
-                TrackerUtil.getInstance(this).sendEvent(TAG, "delete cache");
-                deleteCache();
-                return true;
+        } else if (title.equals(getText(R.string.setting_timetable))) {
+            changeFragment(SettingsTimetableFragment.class);
+            return true;
 
-            case R.string.setting_timetable:
-                changeFragment(SettingsTimetableFragment.class);
-                return true;
-
-            case R.string.setting_save_image_sub_title:
-            case R.string.setting_save_text_sub_title:
-                int titleRes = preference.getTitleRes();
-                TrackerUtil.getInstance(this).sendEvent(TAG, "change directory - " + (titleRes == R.string.setting_save_image_sub_title ? "image" : "text"));
-                SettingsFileSelectDialogFragment f = new SettingsFileSelectDialogFragment();
-                f.setSavePathKey(preference.getKey());
-                f.setTitleId(titleRes);
-                f.show(getFragmentManager(), null);
-                return true;
-
-            case R.string.setting_web_page:
-                changeFragment(SettingsWebPageFragment.class);
-                return true;
-
-            case R.string.setting_app_version_update:
-                TrackerUtil.getInstance(this).sendEvent(TAG, "check app version");
-                showAppVersionDialog();
-                return true;
-
-            default:
-                return false;
+        } else if (title.equals(getText(R.string.setting_save_text_sub_title))) {
+            TrackerUtil.getInstance(this).sendEvent(TAG, "change directory - " + "text");
+            SettingsFileSelectDialogFragment f = new SettingsFileSelectDialogFragment();
+            f.setSavePathKey(preference.getKey());
+            f.setTitle(title);
+            f.show(getFragmentManager(), null);
+            return true;
+        } else if (title.equals(getText(R.string.setting_save_image_sub_title))) {
+            TrackerUtil.getInstance(this).sendEvent(TAG, "change directory - " + "image");
+            SettingsFileSelectDialogFragment f = new SettingsFileSelectDialogFragment();
+            f.setSavePathKey(preference.getKey());
+            f.setTitle(title);
+            f.show(getFragmentManager(), null);
+            return true;
+        } else if (title.equals(getText(R.string.setting_web_page))) {
+            changeFragment(SettingsWebPageFragment.class);
+            return true;
+        } else if (title.equals(getText(R.string.setting_app_version_update))) {
+            TrackerUtil.getInstance(this).sendEvent(TAG, "check app version");
+            showAppVersionDialog();
+            return true;
         }
+        return false;
     }
 
     private void showAppVersionDialog() {
@@ -234,9 +235,9 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
      * colorText, colorDrawableCenter, colorDrawableBorder
      */
     private static final int[][] THEME_COLORS_RES = {
-            {R.color.material_deep_teal_500, android.R.color.white, R.color.primary_material_light},
-            {R.color.primary_dark_material_dark, android.R.color.white, R.color.primary_dark_material_dark},
-            {R.color.primary_dark_material_dark, R.color.primary_material_dark, R.color.primary_dark_material_dark},
+            {R.color.material_deep_teal_500_1, android.R.color.white, R.color.primary_material_light_1},
+            {R.color.primary_dark_material_dark_1, android.R.color.white, R.color.primary_dark_material_dark_1},
+            {R.color.primary_dark_material_dark_1, R.color.primary_dark_material_dark_1, R.color.primary_dark_material_dark_1},
             {R.color.material_light_blue_500, R.color.material_light_blue_500, R.color.material_light_blue_700}
     };
 
@@ -260,6 +261,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 
         }
 
+        @SuppressWarnings("deprecation")
         void setView(AppTheme appTheme) {
             textView.setText(appTheme.toString());
 
@@ -308,6 +310,8 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         if (getFragmentManager().findFragmentByTag("front") != null) {
             getFragmentManager().beginTransaction().hide(this).commit();
         }
+
+        ((SettingActivity) getActivity()).restoreToolbar();
 
         super.onResume();
     }

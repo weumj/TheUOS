@@ -1,0 +1,72 @@
+<com.balysv.materialripple.MaterialRippleLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/ripple"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:mrl_rippleColor="?colorPrimaryDark">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:baselineAligned="false"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:minHeight="?android:attr/listPreferredItemHeight"
+        android:paddingEnd="?android:attr/scrollbarSize">
+
+        <FrameLayout
+            android:id="@+id/icon_frame"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@android:id/icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:contentDescription="@null" />
+        </FrameLayout>
+
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dip"
+            android:layout_marginEnd="6dip"
+            android:layout_marginStart="15dip"
+            android:layout_marginTop="6dip"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@android:id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:fadingEdge="horizontal"
+                android:singleLine="true"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="?color_primary_text" />
+
+            <TextView
+                android:id="@android:id/summary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@android:id/title"
+                android:layout_below="@android:id/title"
+                android:maxLines="4"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?android:attr/textColorSecondary" />
+
+        </RelativeLayout>
+
+
+        <!-- Preference should place its actual preference widget here. -->
+        <LinearLayout
+            android:id="@android:id/widget_frame"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="vertical" />
+
+    </LinearLayout>
+</com.balysv.materialripple.MaterialRippleLayout>

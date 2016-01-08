@@ -1,10 +1,13 @@
 package com.uoscs09.theuos2.setting;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.BaseActivity;
@@ -14,6 +17,11 @@ import com.uoscs09.theuos2.base.BaseActivity;
  */
 public class SettingActivity extends BaseActivity {
 
+
+    CoordinatorLayout coordinatorLayout;
+    private CoordinatorLayout.Behavior mAppBarBehavior;
+    View mToolBarParent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,9 +30,25 @@ public class SettingActivity extends BaseActivity {
         Toolbar toolBar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolBar);
 
-        getFragmentManager().beginTransaction()
+        if (Build.VERSION.SDK_INT > 20) {
+            coordinatorLayout = (CoordinatorLayout) findViewById(R.id.activity_setting_coordinator);
+            if(coordinatorLayout != null) {
+                mToolBarParent = findViewById(R.id.toolbar_parent);
+                CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) mToolBarParent.getLayoutParams();
+                mAppBarBehavior = params.getBehavior();
+            }
+        }
+
+        getSupportFragmentManager().beginTransaction()
                 .replace(android.R.id.tabcontent, new SettingsFragment(), "main")
                 .commit();
+    }
+
+    void restoreToolbar() {
+        if (mAppBarBehavior != null) {
+            //noinspection unchecked
+            mAppBarBehavior.onNestedFling(coordinatorLayout, mToolBarParent, null, 0, -1000, true);
+        }
     }
 
     @NonNull
@@ -55,14 +79,6 @@ public class SettingActivity extends BaseActivity {
     public void finish() {
         super.finish();
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
-    }
-
-    @Override
-    public void onBackPressed() {
-        // support v4와 일반 Api 와의 호환성을 위해 구현
-        if (!getFragmentManager().popBackStackImmediate()) {
-            super.onBackPressed();
-        }
     }
 
 }

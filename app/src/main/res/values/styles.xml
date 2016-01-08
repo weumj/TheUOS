@@ -3,6 +3,8 @@
 
     <!-- for all api theme-->
     <eat-comment/>
+    <style name="AppTheme"/>
+    <style name="AppTheme.Base"/>
 
     <style name="AppTheme.Light.DarkActionBar" parent="@style/AppTheme.Base.Light.DarkActionBar">
     </style>
@@ -14,6 +16,41 @@
     <style name="AppTheme.Dark" parent="@style/AppTheme.Base.Dark">
     </style>
 
+
+    <style name="AppTheme.Preference.ThemeOverlay" parent="PreferenceThemeOverlay">
+        <item name="preferenceScreenStyle">@style/AppTheme.Preference.PreferenceScreen</item>
+        <item name="preferenceFragmentStyle">@style/PreferenceFragment</item>
+        <item name="preferenceCategoryStyle">@style/AppTheme.Preference.Category</item>
+        <item name="preferenceStyle">@style/AppTheme.Preference</item>
+        <item name="preferenceInformationStyle">@style/AppTheme.Preference.Information</item>
+        <item name="checkBoxPreferenceStyle">@style/AppTheme.Preference.CheckBoxPreference</item>
+        <item name="switchPreferenceCompatStyle">@style/Preference.SwitchPreferenceCompat</item>
+        <item name="dialogPreferenceStyle">@style/Preference.DialogPreference</item>
+        <item name="editTextPreferenceStyle">@style/Preference.DialogPreference.EditTextPreference</item>
+        <item name="preferenceFragmentListStyle">@style/PreferenceFragmentList</item>
+    </style>
+
+
+    <style name="AppTheme.Preference">
+        <item name="android:layout">@layout/preference_1</item>
+    </style>
+
+    <style name="AppTheme.Preference.PreferenceScreen">
+    </style>
+
+    <style name="AppTheme.Preference.Category">
+        <item name="android:layout">@layout/preference_category_1</item>
+    </style>
+
+    <style name="AppTheme.Preference.Information" parent="Preference.Information">
+        <item name="android:layout">@layout/preference_information_1</item>
+        <item name="android:enabled">false</item>
+        <item name="android:shouldDisableView">false</item>
+    </style>
+
+    <style name="AppTheme.Preference.CheckBoxPreference">
+        <item name="android:widgetLayout">@layout/preference_widget_checkbox</item>
+    </style>
 
     <!-- Widget & etc -->
     <eat-comment/>
@@ -82,6 +119,7 @@
     <eat-comment/>
 
     <style name="AppTheme.Base.Light" parent="@style/Theme.AppCompat.Light">
+        <item name="preferenceTheme">@style/AppTheme.Preference.ThemeOverlay</item>
         <item name="actionBarStyle">@style/AppWidget.ActionBar.ActionBarStyle</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
@@ -100,8 +138,9 @@
         <item name="theme_inverse">@style/AppWidget.Inverse.Light</item>
 
         <item name="color_primary_text">?color_actionbar_title</item>
+        <item name="color_primary_text_dark">?colorPrimaryDark</item>
         <item name="color_tint_normal">@color/tint_gray</item>
-        <item name="android:textColorHighlight">?color_primary_text</item>
+        <item name="android:textColorHighlight">?color_primary_text_dark</item>
         <item name="android:textColorLink">?color_primary_text</item>
 
         <item name="menu_theme_ic_action_action_about" >@drawable/ic_action_action_about_gray</item>
@@ -224,6 +263,7 @@
         <item name="toolbar_actionbar_subtitle">@style/AppWidget.ActionBar.SubTitleTextStyle</item>
 
         <item name="color_primary_text">?colorPrimary</item>
+        <item name="color_primary_text_dark">?colorPrimaryDark</item>
         <item name="color_actionbar_title">@android:color/white</item>
         <item name="color_actionbar_subtitle">@android:color/white</item>
 
@@ -269,6 +309,7 @@
 
 
     <style name="AppTheme.Base.Dark" parent="@style/Theme.AppCompat">
+        <item name="preferenceTheme">@style/AppTheme.Preference.ThemeOverlay</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="windowActionBarOverlay">true</item>
@@ -285,6 +326,7 @@
         <item name="theme_inverse">@style/AppWidget.Inverse</item>
 
         <item name="color_primary_text">@android:color/white</item>
+        <item name="color_primary_text_dark">@android:color/white</item>
         <item name="color_tint_normal">@color/tint_white</item>
         <item name="color_actionbar_title">@android:color/white</item>
         <item name="color_actionbar_subtitle">@android:color/white</item>

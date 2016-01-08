@@ -10,6 +10,7 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
@@ -21,6 +22,8 @@ import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -32,14 +35,13 @@ import com.uoscs09.theuos2.util.OApiUtil.UnivBuilding;
 import com.uoscs09.theuos2.util.StringUtil;
 
 public class GoogleMapActivity extends BaseActivity implements LocationListener {
+    @Nullable
     private GoogleMap googleMap;
     private boolean isInit = true;
     private AlertDialog mWelfareBuildingDialog;
     private LocationManager locationManager;
     //private Location location;
     private Spinner mLocationSelectSpinner;
-
-    private int buildingNo;
 
     private static final int REQUEST_LOCATION_SOURCE_SETTINGS = 9643;
 
@@ -57,11 +59,15 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
         Toolbar toolbar = (Toolbar) toolbarParent.findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        if (!initMap()) {
+
+        int googlePlayAvailabilityResult = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
+        if (googlePlayAvailabilityResult != ConnectionResult.SUCCESS) {
             AppUtil.showToast(getApplicationContext(), R.string.tab_map_submap_device_without_googlemap, true);
             finish();
             return;
         }
+
+        initMap();
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -75,9 +81,12 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (isInit) {
                     isInit = false;
+                    return;
                 }
 
-                googleMap.clear();
+                if (googleMap != null) {
+                    googleMap.clear();
+                }
                 UnivBuilding univBuilding = UnivBuilding.fromNumber(position + 1);
                 moveCamera(univBuilding);
                 setMapMarker(univBuilding);
@@ -90,24 +99,6 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
         });
         toolbarParent.addView(spinnerLayout);
 
-        mLocationSelectSpinner.postDelayed(() -> {
-            buildingNo = getIntent().getIntExtra("building", -1);
-            if (buildingNo != -1) {
-                isInit = false;
-
-                // UnivBuilding univBuilding =  UnivBuilding.fromNumber(buildingNo);
-                mLocationSelectSpinner.setSelection(buildingNo - 1, false);
-                // moveCamera(univBuilding);
-                //moveCameraPositionAt(buildingNo);
-                buildingNo = -1;
-
-            } else {
-                moveCamera(UnivBuilding.Univ);
-                setMapMarker(UnivBuilding.Univ);
-                // moveCameraPositionAt(0);
-                //setMapMarker( UnivBuilding.fromNumber(0, getString(R.string.univ));
-            }
-        }, 500);
     }
 
     @NonNull
@@ -134,15 +125,27 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
     }
     */
 
-    private boolean initMap() {
-        if (googleMap == null) {
-            googleMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.tab_map_submap)).getMap();
-            if (googleMap == null) {
-                return false;
-            }
+    void initGoogleMapSetting(GoogleMap googleMap) {
+        this.googleMap = googleMap;
+        googleMap.setBuildingsEnabled(true);
 
-            googleMap.setBuildingsEnabled(true);
-            googleMap.setMyLocationEnabled(true);
+        googleMap.setMyLocationEnabled(true);
+
+        isInit = true;
+        int buildingNo = getIntent().getIntExtra("building", -1);
+        if (buildingNo != -1) {
+            // UnivBuilding univBuilding =  UnivBuilding.fromNumber(buildingNo);
+            mLocationSelectSpinner.setSelection(buildingNo - 1, false);
+            // moveCamera(univBuilding);
+            //moveCameraPositionAt(buildingNo);
+           // buildingNo = -1;
+
+        } else {
+            moveCamera(UnivBuilding.Univ);
+            setMapMarker(UnivBuilding.Univ);
+
+            // moveCameraPositionAt(0);
+            //setMapMarker( UnivBuilding.fromNumber(0, getString(R.string.univ));
         }
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -161,13 +164,18 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
 
         } else {
             // 위치 정보 설정이 되어 있으면 현재위치를 받아옴
-            if (checkLocationPermissionDenied()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_REQUEST_LOCATION);
             } else
                 locationManager.requestLocationUpdates(provider, 1, 1, this);
         }
+    }
 
-        return true;
+    private void initMap() {
+        if (googleMap == null) {
+            ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.tab_map_submap)).getMapAsync(this::initGoogleMapSetting);
+        }
     }
 
     private static final int PERMISSION_REQUEST_LOCATION = 4826;
@@ -207,7 +215,8 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
                     finish();
 
                     // 사용자가 위치설정 동의 했을때
-                } else if (checkLocationPermissionDenied()) {
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                        && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_REQUEST_LOCATION);
                 } else {
                     locationManager.requestLocationUpdates(provider, 1L, 2F, this);
@@ -218,13 +227,6 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
             default:
                 break;
         }
-    }
-
-
-    private boolean checkLocationPermissionDenied() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M // Android M 이전 버전에는 permission check 메소드가 없음
-                && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED;
     }
 
     @Override
@@ -293,7 +295,8 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
         }
 
         if (locationManager != null) {
-            if (!checkLocationPermissionDenied())
+            if (!(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED))
                 locationManager.removeUpdates(this);
             locationManager = null;
         }
@@ -305,7 +308,9 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
             mWelfareBuildingDialog = new AlertDialog.Builder(this)
                     .setTitle(R.string.tab_map_submap_welfare)
                     .setItems(R.array.tab_map_submap_buildings_welfare, (dialog, item) -> {
-                        googleMap.clear();
+                        if (googleMap != null) {
+                            googleMap.clear();
+                        }
 
                         //String locationName = getResources().getStringArray(R.array.tab_map_submap_buildings_welfare)[item];
                         String locationName = mWelfareBuildingDialog.getListView().getAdapter().getItem(item).toString();
@@ -413,7 +418,9 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
     }
 
     private void moveCamera(UnivBuilding building) {
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(building.latLng()));
+        if (googleMap != null) {
+            googleMap.moveCamera(CameraUpdateFactory.newLatLng(building.latLng()));
+        }
     }
 
     private void setMapMarker(UnivBuilding building) {
@@ -425,14 +432,17 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
     }
 
     private void setMapMarker(UnivBuilding building, String title, String snippet) {
-        googleMap.animateCamera(CameraUpdateFactory.zoomTo(17));
-        googleMap.addMarker(
-                new MarkerOptions()
-                        .position(building.latLng())
-                        .title(title)
-                        .snippet(snippet)
-                        .visible(true)
-        );
+        if (googleMap != null) {
+            googleMap.animateCamera(CameraUpdateFactory.zoomTo(17));
+
+            googleMap.addMarker(
+                    new MarkerOptions()
+                            .position(building.latLng())
+                            .title(title)
+                            .snippet(snippet)
+                            .visible(true)
+            );
+        }
     }
 
 }

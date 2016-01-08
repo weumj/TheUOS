@@ -1,5 +1,5 @@
 package com.uoscs09.theuos2.setting;
-
+@Deprecated
 public class SettingsAnnounceNotificationFragment /*extends PreferenceFragment implements OnSharedPreferenceChangeListener*/ {
     /*
     private TimePickerDialog timePicker;

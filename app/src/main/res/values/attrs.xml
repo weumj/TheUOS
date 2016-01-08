@@ -122,6 +122,7 @@
         <attr name="color_actionbar_title" format="reference|color" />
         <attr name="color_actionbar_subtitle" format="reference|color" />
         <attr name="color_primary_text" format="reference|color" />
+        <attr name="color_primary_text_dark" format="reference|color" />
         <!-- 일반적인 아이콘 tint color-->
         <attr name="color_tint_normal" format="reference|color" />
     </declare-styleable>

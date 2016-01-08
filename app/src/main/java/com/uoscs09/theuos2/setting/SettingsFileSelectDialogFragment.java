@@ -1,9 +1,10 @@
 package com.uoscs09.theuos2.setting;
 
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
@@ -30,11 +31,11 @@ import java.util.List;
  * 디렉토리 탐색 기능</li> <li>새 폴더 생성 기능</li> <li>디렉토리 경로 선택 기능</li><br>
  * <br>
  * <br>
- * <p/>
+ * <p>
  * 디렉토리 선택버튼을 눌렀을 시 디렉토리 경로가 preference 에 <br>
  * {@code PrefUtil.KEY_***_SAVE_PATH}를 키값으로 해서 저장되어야 한다. <br>
  * <br>
- * <p/>
+ * <p>
  * 취소한 경우 preference 의 값은 바뀌지 않는다.
  */
 public class SettingsFileSelectDialogFragment extends DialogFragment {
@@ -43,15 +44,15 @@ public class SettingsFileSelectDialogFragment extends DialogFragment {
     private ArrayAdapter<File> mFileArrayAdapter;
     private static final String ROOT = "/";
     private String PATH_KEY;
-    private int titleId;
+    private CharSequence title;
     private Toolbar mToolbar;
 
     public void setSavePathKey(String path) {
         this.PATH_KEY = path;
     }
 
-    public void setTitleId(int id) {
-        this.titleId = id;
+    public void setTitle(CharSequence title) {
+        this.title = title;
     }
 
     private static final String TAG = "SettingsFileSelectDialogFragment";
@@ -75,7 +76,7 @@ public class SettingsFileSelectDialogFragment extends DialogFragment {
         View rootView = View.inflate(getActivity(), R.layout.dialog_setting_save_route, null);
 
         mToolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
-        mToolbar.setTitle(titleId);
+        mToolbar.setTitle(title);
         mToolbar.inflateMenu(R.menu.dialog_file_select);
         mToolbar.setOnMenuItemClickListener(item -> {
 
@@ -137,12 +138,13 @@ public class SettingsFileSelectDialogFragment extends DialogFragment {
 
     private final Comparator<File> caseIgnoreComparator = (lhs, rhs) -> lhs.getName().compareToIgnoreCase(rhs.getName());
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return new AlertDialog.Builder(getActivity())
                 .setView(createView())
-                //.setIconAttribute(R.attr.theme_ic_action_image_image)
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> putPathToPref(getActivity(), path)                )
+                        //.setIconAttribute(R.attr.theme_ic_action_image_image)
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> putPathToPref(getActivity(), path))
                 .setNegativeButton(android.R.string.cancel, null)
                 .create();
     }
@@ -174,7 +176,7 @@ public class SettingsFileSelectDialogFragment extends DialogFragment {
         }
     }
 
-    private static class ViewHolder extends AbsArrayAdapter.SimpleViewHolder{
+    private static class ViewHolder extends AbsArrayAdapter.SimpleViewHolder {
 
         public ViewHolder(View view) {
             super(view);

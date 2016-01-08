@@ -3,27 +3,29 @@ package com.uoscs09.theuos2.setting;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceScreen;
-import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceFragmentCompat;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.util.PrefUtil;
 import com.uoscs09.theuos2.util.TrackerUtil;
 
-public class SettingsTimetableFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener {
+public class SettingsTimetableFragment extends PreferenceFragmentCompat implements OnSharedPreferenceChangeListener {
     private static final String TAG = "SettingsTimetableFragment";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addPreferencesFromResource(R.xml.prefrence_timetable);
-        bindPreferenceSummaryToValue();
 
         TrackerUtil.getInstance(this).sendVisibleEvent(TAG);
+    }
+
+    @Override
+    public void onCreatePreferences(Bundle bundle, String s) {
+        addPreferencesFromResource(R.xml.prefrence_timetable);
+        bindPreferenceSummaryToValue();
     }
 
     @Override
@@ -38,10 +40,11 @@ public class SettingsTimetableFragment extends PreferenceFragment implements OnS
     }
 
     @Override
-    public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, @NonNull Preference preference) {
+    public boolean onPreferenceTreeClick(Preference preference) {
+          /*
         switch (preference.getTitleRes()) {
 
-            /*
+
             case R.string.setting_timetable_clear_alarm_title:
                 final Dialog dialog = AppUtil.getProgressDialog(getActivity(), false, getString(R.string.progress_ongoing), null);
                 dialog.show();
@@ -65,11 +68,14 @@ public class SettingsTimetableFragment extends PreferenceFragment implements OnS
                         }
                 );
                 return true;
-            */
+
             default:
                 return false;
         }
+        */
+        return super.onPreferenceTreeClick(preference);
     }
+
 
     private void bindPreferenceSummaryToValue() {
         SharedPreferences pref = getPreferenceScreen().getSharedPreferences();

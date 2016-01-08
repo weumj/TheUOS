@@ -1,8 +1,8 @@
 package com.uoscs09.theuos2.setting;
 
-import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -18,6 +18,7 @@ import com.nhaarman.listviewanimations.itemmanipulation.DynamicListView;
 import com.nhaarman.listviewanimations.util.Swappable;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
+import com.uoscs09.theuos2.base.BaseFragment;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.ImageUtil;
 import com.uoscs09.theuos2.util.TrackerUtil;
@@ -25,13 +26,19 @@ import com.uoscs09.theuos2.util.TrackerUtil;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 /**
  * page 순서를 바꾸는 설정이 있는 fragment
  */
-public class SettingsOrderFragment extends Fragment {
+public class SettingsOrderFragment extends BaseFragment {
     private static final String TAG = "SettingsOrderFragment";
+
+    @Bind(R.id.setting_dynamiclistview)
+    DynamicListView mListView;
+
     private ArrayList<AppUtil.Page> orderList;
-    private DynamicListView mListView;
     private SwapAdapter mAdapter;
 
     @Override
@@ -55,7 +62,7 @@ public class SettingsOrderFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.setting_order, container, false);
-        mListView = (DynamicListView) rootView.findViewById(R.id.setting_dynamiclistview);
+        ButterKnife.bind(this, rootView);
 
         mListView.setDrawingCacheEnabled(true);
         mListView.setAdapter(mAdapter);
@@ -66,6 +73,12 @@ public class SettingsOrderFragment extends Fragment {
         });
 
         return rootView;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
     }
 
     @Override
@@ -81,7 +94,7 @@ public class SettingsOrderFragment extends Fragment {
             sb.append(p.order).append('-').append(p.isEnable).append('\n');
         }
 
-        TrackerUtil.getInstance(this).sendEvent(TAG, "change tab order", sb.toString());
+        sendTrackerEvent("change tab order", sb.toString());
 
         AppUtil.savePageOrder2(orderList, getActivity());
     }
@@ -121,6 +134,12 @@ public class SettingsOrderFragment extends Fragment {
         mAdapter.notifyDataSetChanged();
         mListView.destroyDrawingCache();
         mListView.setDrawingCacheEnabled(true);
+    }
+
+    @NonNull
+    @Override
+    public String getScreenNameForTracker() {
+        return TAG;
     }
 
     private class SwapAdapter extends AbsArrayAdapter<AppUtil.Page, ViewHolder> implements Swappable {
