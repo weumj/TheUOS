@@ -66,7 +66,8 @@ public class ParseBook extends JerichoParser<List<BookItem>> {
                 task2 = new FutureTask<>(new TaskCallable(bookHtmlList, halfSize, size));
 
         AsyncUtil.executeFor(task1);
-        AsyncUtil.executeFor(task2);
+        //AsyncUtil.executeFor(task2);
+        task2.run();
 
         ArrayList<BookItem> bookItemList = new ArrayList<>();
 

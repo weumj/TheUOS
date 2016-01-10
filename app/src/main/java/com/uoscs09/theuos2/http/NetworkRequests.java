@@ -352,7 +352,8 @@ public class NetworkRequests {
                     });
 
                     AsyncUtil.executeFor(task1);
-                    AsyncUtil.executeFor(task2);
+                    //AsyncUtil.executeFor(task2);
+                    task2.run();
 
                     for (; ; ) {
                         try {
@@ -365,6 +366,7 @@ public class NetworkRequests {
                             break;
                         }
                     }
+
 
                     for (; ; ) {
                         try {
