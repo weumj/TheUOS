@@ -777,11 +777,11 @@ public class AppUtil {
             case 7:
                 return R.color.material_green_700;
             case 8:
-                return R.color.material_deep_teal_500;
+                return R.color.material_deep_teal_500_1;
             case 9:
                 return R.color.material_blue_grey_200;
             case 10:
-                return R.color.material_deep_teal_200;
+                return R.color.material_deep_teal_200_1;
             case 11:
                 return R.color.material_grey_600_;
             case 12:

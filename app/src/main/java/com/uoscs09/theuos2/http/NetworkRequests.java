@@ -29,6 +29,7 @@ import com.uoscs09.theuos2.tab.timetable.SubjectInfoItem;
 import com.uoscs09.theuos2.tab.timetable.TimeTable;
 import com.uoscs09.theuos2.tab.timetable.TimetableUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
+import com.uoscs09.theuos2.util.OptimizeStrategy;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import java.io.File;
@@ -305,8 +306,6 @@ public class NetworkRequests {
 
         private static Request<ArrayList<EmptyClassRoomItem>> requestAllEmptyRoom(Context context, int time, int term) {
             return AsyncUtil.newRequest(() -> {
-                HttpRequest.checkNetworkStateAndThrowException(context);
-
                 ArrayList<EmptyClassRoomItem> list = new ArrayList<>();
                 final String[] buildings = {
                         "01", "02", "03", "04", "05",
@@ -327,9 +326,11 @@ public class NetworkRequests {
                     requests.add(requestBuilder.build().wrap(EMPTY_ROOM_PARSER));
                 }
 
+                HttpRequest.checkNetworkStateAndThrowException(context);
+
                 final int N = requests.size();
-                int half = N / 2;
-                if (Runtime.getRuntime().availableProcessors() > 2) {
+                final int half = N / 2;
+                if (OptimizeStrategy.isSafeToOptimize(context)) {
                     FutureTask<ArrayList<EmptyClassRoomItem>> task1, task2;
 
                     task1 = new FutureTask<>(() -> {

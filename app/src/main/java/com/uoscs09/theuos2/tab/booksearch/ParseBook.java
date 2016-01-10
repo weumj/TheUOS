@@ -6,6 +6,7 @@ import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.async.Processor;
 import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.parse.JerichoParser;
+import com.uoscs09.theuos2.util.OptimizeStrategy;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import net.htmlparser.jericho.Element;
@@ -50,7 +51,7 @@ public class ParseBook extends JerichoParser<List<BookItem>> {
         List<Element> bookHtmlList = briefList.get(0).getAllElements(LI);
 
         int size = bookHtmlList.size();
-        if (size > 7 && Runtime.getRuntime().availableProcessors() > 2) {
+        if (size > 7 && OptimizeStrategy.isSafeToOptimize()) {
             return parseListElementUsing2Thread(bookHtmlList, size);
 
         } else {
