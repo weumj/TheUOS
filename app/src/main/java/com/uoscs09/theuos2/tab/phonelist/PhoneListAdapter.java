@@ -68,7 +68,7 @@ class PhoneListAdapter{} /*extends AbsArrayAdapter<PhoneItem, PhoneListAdapter.H
         return new Holder(view);
     }
 
-    static class Holder implements AbsArrayAdapter.ViewHoldable {
+    static class Holder implements AbsArrayAdapter.IViewHolder {
         public final TextView siteView;
         public final TextView phoneView;
         public final ImageButton imgButton;

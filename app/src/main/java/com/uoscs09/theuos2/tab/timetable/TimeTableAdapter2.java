@@ -95,6 +95,9 @@ class TimeTableAdapter2 extends AbsArrayAdapter<Subject[], TimeTableAdapter2.Tim
 
         public TimeTableViewHolder(View itemView, boolean forImage) {
             super(itemView);
+
+            cardBackgroundColor = AppUtil.getAttrColor(itemView.getContext(), R.attr.cardBackgroundColor);
+
             subjectViews = new SubjectViewHolder[6];
 
             if (!forImage)
@@ -115,9 +118,6 @@ class TimeTableAdapter2 extends AbsArrayAdapter<Subject[], TimeTableAdapter2.Tim
                 //ripple.setOnClickListener(this);
                 i++;
             }
-
-            cardBackgroundColor = AppUtil.getAttrColor(itemView.getContext(), R.attr.cardBackgroundColor);
-
         }
 
         void setView(Map<String, Integer> colorTable) {

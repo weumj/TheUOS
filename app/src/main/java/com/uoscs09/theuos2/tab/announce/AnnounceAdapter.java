@@ -11,6 +11,8 @@ import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import butterknife.Bind;
+
 class AnnounceAdapter extends AbsArrayAdapter<AnnounceItem, AnnounceAdapter.Holder> {
 
     public AnnounceAdapter(Context context, List<AnnounceItem> list) {
@@ -48,14 +50,12 @@ class AnnounceAdapter extends AbsArrayAdapter<AnnounceItem, AnnounceAdapter.Hold
     }
 
 
-    static class Holder implements AbsArrayAdapter.ViewHoldable {
-        public final TextView[] textArray;
+    static class Holder extends AbsArrayAdapter.ViewHolder {
+        @Bind({R.id.tab_announce_list_text_type, R.id.tab_announce_list_text_title, R.id.tab_announce_list_text_date})
+        public TextView[] textArray;
 
         public Holder(View v) {
-            textArray = new TextView[3];
-            textArray[0] = (TextView) v.findViewById(R.id.tab_announce_list_text_type);
-            textArray[1] = (TextView) v.findViewById(R.id.tab_announce_list_text_title);
-            textArray[2] = (TextView) v.findViewById(R.id.tab_announce_list_text_date);
+            super(v);
         }
     }
 

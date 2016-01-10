@@ -14,7 +14,7 @@ import android.view.View;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
-import com.uoscs09.theuos2.http.NetworkRequests;
+import com.uoscs09.theuos2.util.AppResources;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 import com.uoscs09.theuos2.util.TimeUtil;
@@ -176,7 +176,7 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> {
         mSeatInfo.seatItemList.clear();
 
         execute(true,
-                NetworkRequests.LibrarySeats.request(getActivity()),
+                AppResources.LibrarySeats.request(getActivity()),
                 result -> {
                     if (mSwipeRefreshLayout != null)
                         mSwipeRefreshLayout.setRefreshing(false);

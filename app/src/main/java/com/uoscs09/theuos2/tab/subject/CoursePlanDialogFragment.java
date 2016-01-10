@@ -26,7 +26,7 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.base.BaseDialogFragment;
-import com.uoscs09.theuos2.http.NetworkRequests;
+import com.uoscs09.theuos2.util.AppResources;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.ImageUtil;
@@ -186,10 +186,13 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Tool
         if (mAsyncTask != null && mAsyncTask.getStatus() != AsyncTask.Status.FINISHED)
             mAsyncTask.cancel(true);
 
-        mProgressDialog.setOnCancelListener(mJobCanceler);
+        mProgressDialog.setOnCancelListener(dialog -> {
+            AsyncUtil.cancelTask(mAsyncTask);
+            dismiss();
+        });
         mProgressDialog.show();
 
-        mAsyncTask = NetworkRequests.Subjects.requestCoursePlan(getActivity(), mSubject)
+        mAsyncTask = AppResources.Subjects.requestCoursePlan(getActivity(), mSubject)
                 .getAsync(
                         result -> {
                             dismissProgressDialog();
@@ -219,14 +222,6 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Tool
                         this::onError
                 );
     }
-
-    private final DialogInterface.OnCancelListener mJobCanceler = new DialogInterface.OnCancelListener() {
-        @Override
-        public void onCancel(DialogInterface dialog) {
-            AsyncUtil.cancelTask(mAsyncTask);
-            dismiss();
-        }
-    };
 
     private void dismissProgressDialog() {
         if (mAsyncTask != null)

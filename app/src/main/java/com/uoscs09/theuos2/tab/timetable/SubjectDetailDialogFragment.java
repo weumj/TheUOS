@@ -21,10 +21,10 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.base.BaseDialogFragment;
 import com.uoscs09.theuos2.common.PieProgressDrawable;
-import com.uoscs09.theuos2.http.NetworkRequests;
 import com.uoscs09.theuos2.tab.map.GoogleMapActivity;
 import com.uoscs09.theuos2.tab.subject.CoursePlanDialogFragment;
 import com.uoscs09.theuos2.tab.subject.SubjectItem2;
+import com.uoscs09.theuos2.util.AppResources;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 
@@ -227,7 +227,7 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
 
             sendClickEvent("course plan");
 
-            NetworkRequests.Subjects.requestSubjectInfo(getActivity(), mSubject.subjectName, mTimeTable.year, mTimeTable.semesterCode.code)
+            AppResources.Subjects.requestSubjectInfo(getActivity(), mSubject.subjectName, mTimeTable.year, mTimeTable.semesterCode.code)
                     .getAsync(
                             result -> {
                                 mProgress.dismiss();
@@ -322,7 +322,7 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
         }
     }
 
-    private static class ViewHolder implements AbsArrayAdapter.ViewHoldable {
+    private static class ViewHolder implements AbsArrayAdapter.IViewHolder {
         public final TextView textView;
 
         public ViewHolder(View v) {

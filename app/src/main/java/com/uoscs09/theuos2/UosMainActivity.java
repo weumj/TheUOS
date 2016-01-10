@@ -37,42 +37,46 @@ import com.uoscs09.theuos2.util.PrefUtil;
 
 import java.util.ArrayList;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 /**
  * Main Activity, ViewPager 가 존재한다.
  */
 @SuppressWarnings("ConstantConditions")
 public class UosMainActivity extends BaseActivity {
 
-    /**
-     * ViewPager
-     */
-    private ViewPager mViewPager;
-    /**
-     * ViewPager Adapter
-     */
+    @Bind(R.id.activity_pager_viewpager)
+    ViewPager mViewPager;
     private IndexPagerAdapter mPagerAdapter;
-    /**
-     * 뒤로 두번눌러 종료
-     */
     private BackPressCloseHandler mBackCloseHandler;
+
     /**
      * 화면 순서를 나타내는 리스트
      */
     private ArrayList<Integer> mPageOrderList;
 
-    private DrawerLayout mDrawerLayout;
+    @Bind(R.id.activity_uos_drawer_layout)
+    DrawerLayout mDrawerLayout;
 
-    private View mLeftDrawerLayout;
-    private RecyclerView mDrawerListView;
+    @Bind(R.id.left_drawer)
+    View mLeftDrawerLayout;
+    @Bind(R.id.drawer_listview)
+    RecyclerView mDrawerListView;
     private DrawerAdapter mDrawerAdapter;
 
     /**
      * ActionBar Toggle
      */
     private ActionBarDrawerToggle mDrawerToggle;
-    private AppBarLayout mToolBarParent;
-    private Toolbar mToolbar;
-    private CoordinatorLayout mCoordinatorLayout;
+
+    @Bind(R.id.toolbar_parent)
+    AppBarLayout mToolBarParent;
+    @Bind(R.id.toolbar)
+    Toolbar mToolbar;
+    @Bind(R.id.activity_uos_coordinator)
+    CoordinatorLayout mCoordinatorLayout;
     private CoordinatorLayout.Behavior mAppBarBehavior;
 
     private OnBackPressListener onBackPressListener = null;
@@ -101,12 +105,9 @@ public class UosMainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_uosmain);
+        ButterKnife.bind(this);
 
-        mToolBarParent = (AppBarLayout) findViewById(R.id.toolbar_parent);
-        mToolbar = (Toolbar) mToolBarParent.findViewById(R.id.toolbar);
-
-        if (Build.VERSION.SDK_INT > 20) {
-            mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.activity_uos_coordinator);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) mToolBarParent.getLayoutParams();
             mAppBarBehavior = params.getBehavior();
         }
@@ -207,8 +208,6 @@ public class UosMainActivity extends BaseActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.activity_uos_drawer_layout);
-
         initDrawerDetail();
 
         // AppUtil.getStyledValue(this,R.attr.menu_ic_navigation_drawer)
@@ -254,7 +253,6 @@ public class UosMainActivity extends BaseActivity {
         mLeftDrawerLayout = mDrawerLayout.findViewById(R.id.left_drawer);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        mDrawerListView = (RecyclerView) mLeftDrawerLayout.findViewById(R.id.drawer_listview);
         mDrawerListView.setLayoutManager(layoutManager);
         mDrawerListView.setAdapter(mDrawerAdapter = new DrawerAdapter());
 
@@ -295,7 +293,6 @@ public class UosMainActivity extends BaseActivity {
     private void initPager() {
         mPagerAdapter = new IndexPagerAdapter(getSupportFragmentManager(), mPageOrderList, this);
 
-        mViewPager = (ViewPager) findViewById(R.id.activity_pager_viewpager);
         mViewPager.setAdapter(mPagerAdapter);
         mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
@@ -613,6 +610,7 @@ public class UosMainActivity extends BaseActivity {
         private final PorterDuffColorFilter mColorFilter;
         private int mCurrentSelection = 0;
         private final LayoutInflater mInflater;
+        private final boolean isHomeEnable;
 
         public DrawerAdapter() {
 
@@ -620,7 +618,7 @@ public class UosMainActivity extends BaseActivity {
             mSelectedTextColor = getResources().getColor(AppUtil.getAttrValue(UosMainActivity.this, R.attr.color_primary_text));
             mColorFilter = new PorterDuffColorFilter(mSelectedTextColor, PorterDuff.Mode.SRC_IN);
             mInflater = LayoutInflater.from(UosMainActivity.this);
-
+            isHomeEnable = PrefUtil.getInstance(UosMainActivity.this).get(PrefUtil.KEY_HOME, false);
         }
 
         @Override
@@ -639,7 +637,7 @@ public class UosMainActivity extends BaseActivity {
             // 표시해야할 아이템이 선택된 상태라면 특별한 컬러로 하이라이트 시켜주고
             // 아니면 일반 상태로 표시한다.
             if (mCurrentSelection == position) {
-                if (position != 0)
+                if (position != 0 || !isHomeEnable)
                     holder.img.setColorFilter(mColorFilter);
                 else
                     holder.img.setColorFilter(null);
@@ -671,21 +669,20 @@ public class UosMainActivity extends BaseActivity {
 
     }
 
-    private class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        final ImageView img;
-        final TextView text;
+    class ViewHolder extends RecyclerView.ViewHolder {
+        @Bind(R.id.drawer_list_img)
+        ImageView img;
+        @Bind(R.id.drawer_list_text)
+        TextView text;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            View ripple = itemView.findViewById(R.id.drawer_list_ripple);
-            ripple.setOnClickListener(this);
+            ButterKnife.bind(this, itemView);
 
-            img = (ImageView) ripple.findViewById(R.id.drawer_list_img);
-            text = (TextView) ripple.findViewById(R.id.drawer_list_text);
         }
 
-        @Override
-        public void onClick(View v) {
+        @OnClick(R.id.drawer_list_ripple)
+        void onViewClick() {
             navigateItem(getLayoutPosition(), false);
         }
     }

@@ -9,10 +9,12 @@ import com.uoscs09.theuos2.base.AbsArrayAdapter;
 
 import java.util.List;
 
-public class SearchEmptyRoomAdapter extends AbsArrayAdapter<EmptyClassRoomItem, SearchEmptyRoomAdapter.Holder> {
+import butterknife.Bind;
+
+class SearchEmptyRoomAdapter extends AbsArrayAdapter<EmptyClassRoomItem, SearchEmptyRoomAdapter.Holder> {
 
     public SearchEmptyRoomAdapter(Context context, List<EmptyClassRoomItem> list) {
-        super(context, R.layout.list_layout_empty_room,  list);
+        super(context, R.layout.list_layout_empty_room, list);
     }
 
     @Override
@@ -22,7 +24,7 @@ public class SearchEmptyRoomAdapter extends AbsArrayAdapter<EmptyClassRoomItem, 
         holder.building.setText(item.building);
         holder.room_no.setText(item.room_no);
         holder.room_div.setText(item.room_div);
-        holder.person_cnt.setText(Integer.toString(item.person_cnt));
+        holder.person_cnt.setText(String.valueOf(item.person_cnt));
 
     }
 
@@ -31,14 +33,18 @@ public class SearchEmptyRoomAdapter extends AbsArrayAdapter<EmptyClassRoomItem, 
         return new Holder(v);
     }
 
-    static class Holder implements AbsArrayAdapter.ViewHoldable {
-        public final TextView building, room_no, room_div, person_cnt;
+    static class Holder extends AbsArrayAdapter.ViewHolder {
+        @Bind(R.id.etc_search_empty_room_list_text_name)
+        public TextView building;
+        @Bind(R.id.etc_search_empty_room_list_text_room_no)
+        public TextView room_no;
+        @Bind(R.id.etc_search_empty_room_list_text_subj)
+        public TextView room_div;
+        @Bind(R.id.etc_search_empty_room_list_text_person)
+        public TextView person_cnt;
 
         public Holder(View convertView) {
-            building = (TextView) convertView.findViewById(R.id.etc_search_empty_room_list_text_name);
-            room_no = (TextView) convertView.findViewById(R.id.etc_search_empty_room_list_text_room_no);
-            room_div = (TextView) convertView.findViewById(R.id.etc_search_empty_room_list_text_subj);
-            person_cnt = (TextView) convertView.findViewById(R.id.etc_search_empty_room_list_text_person);
+            super(convertView);
         }
     }
 }

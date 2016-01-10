@@ -28,7 +28,6 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
-import com.uoscs09.theuos2.http.NetworkRequests;
 import com.uoscs09.theuos2.util.AppResources;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.IOUtil;
@@ -252,43 +251,38 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> {
         );
 */
         execute(true,
-                NetworkRequests.TimeTables.request(getActivity(), mWiseIdView.getText(), mWisePasswdView.getText(), semester, mTimeTableYear),
-                this::onResult,
-                this::onError,
+                AppResources.TimeTables.request(getActivity(), mWiseIdView.getText(), mWisePasswdView.getText(), semester, mTimeTableYear),
+                result -> {
+                    clearPassWd();
+                    if (result == null /*|| result.isEmpty()*/) {
+                        AppUtil.showToast(getActivity(), R.string.tab_timetable_wise_login_warning_fail, isMenuVisible());
+
+                        if (mTimeTableAdapter2.isEmpty())
+                            emptyView.setVisibility(View.VISIBLE);
+
+                        return;
+                    }
+
+                    mTimeTable.copyFrom(result);
+                    mTimeTableAdapter2.notifyDataSetChanged();
+
+                    setTermTextViewText(mTimeTable);
+                },
+                e -> {
+                    //clearPassWd();
+
+                    if (mTimeTableAdapter2.isEmpty())
+                        emptyView.setVisibility(View.VISIBLE);
+
+                    if (e instanceof IOException || e instanceof NullPointerException) {
+                        e.printStackTrace();
+                        AppUtil.showToast(getActivity(), R.string.tab_timetable_wise_login_warning_fail, isMenuVisible());
+                    } else {
+                        simpleErrorRespond(e);
+                    }
+                },
                 true
         );
-    }
-
-
-    public void onResult(TimeTable result) {
-        clearPassWd();
-        if (result == null /*|| result.isEmpty()*/) {
-            AppUtil.showToast(getActivity(), R.string.tab_timetable_wise_login_warning_fail, isMenuVisible());
-
-            if (mTimeTableAdapter2.isEmpty())
-                emptyView.setVisibility(View.VISIBLE);
-
-            return;
-        }
-
-        mTimeTable.copyFrom(result);
-        mTimeTableAdapter2.notifyDataSetChanged();
-
-        setTermTextViewText(mTimeTable);
-    }
-
-    public void onError(Exception e) {
-        //clearPassWd();
-
-        if (mTimeTableAdapter2.isEmpty())
-            emptyView.setVisibility(View.VISIBLE);
-
-        if (e instanceof IOException || e instanceof NullPointerException) {
-            e.printStackTrace();
-            AppUtil.showToast(getActivity(), R.string.tab_timetable_wise_login_warning_fail, isMenuVisible());
-        } else {
-            simpleErrorRespond(e);
-        }
     }
 
     private void readTimetableFromFileOnFragmentCreated() {

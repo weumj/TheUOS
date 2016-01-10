@@ -9,6 +9,8 @@ import com.uoscs09.theuos2.base.AbsArrayAdapter;
 
 import java.util.List;
 
+import butterknife.Bind;
+
 
 class SubjectAdapter2 extends AbsArrayAdapter<SubjectItem2, SubjectAdapter2.ViewHolder> {
 
@@ -51,8 +53,7 @@ class SubjectAdapter2 extends AbsArrayAdapter<SubjectItem2, SubjectAdapter2.View
     }
 
     static class ViewHolder extends AbsArrayAdapter.ViewHolder {
-        public final TextView[] tvArray;
-        private static final int[] ID_ARRAY = {
+        @Bind({
                 R.id.list_subject_text_sub_dept,
                 R.id.list_subject_text_sub_div,
                 R.id.list_subject_text_no,
@@ -63,20 +64,13 @@ class SubjectAdapter2 extends AbsArrayAdapter<SubjectItem2, SubjectAdapter2.View
                 R.id.list_subject_text_prof_nm,
                 R.id.list_subject_text_class_nm,
                 R.id.list_subject_text_tlsn_cnt,
-                R.id.list_subject_text_tlsn_limit};
+                R.id.list_subject_text_tlsn_limit})
+        public TextView[] tvArray;
 
-       // public SubjectItem2 item;
+        // public SubjectItem2 item;
 
         public ViewHolder(View view) {
             super(view);
-
-            tvArray = new TextView[11];
-
-            for (int i = 0; i < 11; i++) {
-                tvArray[i] = (TextView) view.findViewById(ID_ARRAY[i]);
-            }
         }
-
-
     }
 }

@@ -2,12 +2,11 @@ package com.uoscs09.theuos2.http;
 
 import android.content.Context;
 import android.support.v4.util.ArrayMap;
+import android.util.Log;
 import android.util.SparseArray;
 
-import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.async.Request;
-import com.uoscs09.theuos2.common.SerializableArrayMap;
 import com.uoscs09.theuos2.parse.XmlParser;
 import com.uoscs09.theuos2.parse.XmlParserWrapper;
 import com.uoscs09.theuos2.tab.announce.AnnounceItem;
@@ -18,7 +17,6 @@ import com.uoscs09.theuos2.tab.booksearch.ParseBook;
 import com.uoscs09.theuos2.tab.emptyroom.EmptyClassRoomItem;
 import com.uoscs09.theuos2.tab.libraryseat.ParseSeat;
 import com.uoscs09.theuos2.tab.libraryseat.SeatInfo;
-import com.uoscs09.theuos2.tab.libraryseat.SeatItem;
 import com.uoscs09.theuos2.tab.restaurant.ParseRest;
 import com.uoscs09.theuos2.tab.restaurant.ParseRestaurantWeek;
 import com.uoscs09.theuos2.tab.restaurant.RestItem;
@@ -30,10 +28,7 @@ import com.uoscs09.theuos2.tab.timetable.ParseTimeTable2;
 import com.uoscs09.theuos2.tab.timetable.SubjectInfoItem;
 import com.uoscs09.theuos2.tab.timetable.TimeTable;
 import com.uoscs09.theuos2.tab.timetable.TimetableUtil;
-import com.uoscs09.theuos2.util.AppResources;
-import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
-import com.uoscs09.theuos2.util.PrefUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import java.io.File;
@@ -44,9 +39,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.FutureTask;
 
+// 오직 네트워크와 파싱 관련된 작업만 수행하고, 파일 IO같은 작업은 AppResources에서 처리.
 public class NetworkRequests {
     public static class Announces {
         private static final ParseAnnounce PARSER = ParseAnnounce.getParser();
@@ -91,19 +89,7 @@ public class NetworkRequests {
                     .setParams(queryMap)
                     .build()
                     .checkNetworkState(context)
-                    .wrap(scholarship ? SCHOLARSHIP_PARSER : PARSER)
-                    .wrap(announceItems -> {
-                        if (PrefUtil.getInstance(context).get(PrefUtil.KEY_ANNOUNCE_EXCEPT_TYPE_NOTICE, false)) {
-                            final int size = announceItems.size();
-                            for (int i = size - 1; i >= 0; i--) {
-                                AnnounceItem item = announceItems.get(i);
-                                if (item.isTypeNotice())
-                                    announceItems.remove(i);
-                            }
-                        }
-
-                        return announceItems;
-                    });
+                    .wrap(scholarship ? SCHOLARSHIP_PARSER : PARSER);
         }
 
         public static Request<ArrayList<AnnounceItem>> searchRequest(Context context, int category, int pageIndex, String query) {
@@ -136,17 +122,7 @@ public class NetworkRequests {
                     .setParams(queryMap)
                     .build()
                     .checkNetworkState(context)
-                    .wrap(scholarship ? SCHOLARSHIP_PARSER : PARSER)
-                    .wrap(announceItems -> {
-                        final int size = announceItems.size();
-                        for (int i = size - 1; i >= 0; i--) {
-                            AnnounceItem item = announceItems.get(i);
-                            if (item.isTypeNotice())
-                                announceItems.remove(i);
-                        }
-
-                        return announceItems;
-                    });
+                    .wrap(scholarship ? SCHOLARSHIP_PARSER : PARSER);
         }
 
         public static Request<File> attachedFileDownloadRequest(Context context, String url, String docPath) {
@@ -171,35 +147,11 @@ public class NetworkRequests {
                     .wrap(BOOK_STATE_INFO_PARSER);
         }
 
-        public static Request<ArrayList<BookItem>> request(Context context, String query, int page, int os, int oi) {
+        public static Request<List<BookItem>> request(Context context, String query, int page, int os, int oi) {
             return HttpRequest.Builder.newStringRequestBuilder(buildUrl(query, page, os, oi))
                     .build()
                     .checkNetworkState(context)
-                    .wrap(BOOK_PARSER)
-                    .wrap(originalList -> {
-                                if (PrefUtil.getInstance(context).get(PrefUtil.KEY_CHECK_BORROW, false) && originalList.size() > 0) {
-                                    ArrayList<BookItem> newList = new ArrayList<>();
-                                    String emptyMsg = context.getString(R.string.tab_book_not_found);
-                                    final int N = originalList.size();
-                                    for (int i = 0; i < N; i++) {
-                                        BookItem item = originalList.get(i);
-                                        if (item.isBookAvailable()) {
-                                            newList.add(item);
-                                        }
-                                    }
-
-                                    if (newList.size() == 0) {
-                                        BookItem item = new BookItem();
-                                        item.bookInfo = emptyMsg;
-                                        newList.add(item);
-                                    }
-
-                                    return newList;
-                                } else {
-                                    return new ArrayList<>(originalList);
-                                }
-                            }
-                    );
+                    .wrap(BOOK_PARSER);
         }
 
         private static String buildUrl(String query, int page, int os, int oi) {
@@ -264,35 +216,20 @@ public class NetworkRequests {
     public static class Restaurants {
         private static final ParseRest REST_PARSER = new ParseRest();
         private static final ParseRestaurantWeek RESTAURANT_WEEK_PARSER = new ParseRestaurantWeek();
-        private static final String FILE_NAME = AppResources.Restaurants.WEEK_FILE_NAME;
 
         public static Request<SparseArray<RestItem>> request(Context context) {
             return HttpRequest.Builder
                     .newStringRequestBuilder("http://m.uos.ac.kr/mkor/food/list.do")
                     .build()
                     .checkNetworkState(context)
-                    .wrap(REST_PARSER)
-                    .wrap(restItemSparseArray -> {
-                        SerializableArrayMap<Integer, RestItem> result = SerializableArrayMap.fromSparseArray(restItemSparseArray);
-                        IOUtil.writeObjectToFile(context, IOUtil.FILE_REST, result);
-                        PrefUtil.getInstance(context).put(PrefUtil.KEY_REST_DATE_TIME, OApiUtil.getDate());
-                        return restItemSparseArray;
-                    });
+                    .wrap(REST_PARSER);
         }
 
         public static Request<WeekRestItem> requestWeekInfo(Context context, String code) {
             return HttpRequest.Builder.newStringRequestBuilder("http://www.uos.ac.kr/food/placeList.do?rstcde=" + code)
                     .build()
                     .checkNetworkState(context)
-                    .wrap(RESTAURANT_WEEK_PARSER)
-                    .wrap(IOUtil.<WeekRestItem>newFileWriteProcessor(context, FILE_NAME + code))
-                    .wrap(item -> {
-
-                        PrefUtil prefUtil = PrefUtil.getInstance(context);
-
-                        AppResources.Restaurants.putValueIntoPref(prefUtil, code, item);
-                        return item;
-                    });
+                    .wrap(RESTAURANT_WEEK_PARSER);
         }
 
     }
@@ -301,16 +238,14 @@ public class NetworkRequests {
         private static final XmlParserWrapper<TimeTable> PARSER = new XmlParserWrapper<>(new ParseTimeTable2());
 
         public static Request<TimeTable> request(Context context, CharSequence id, CharSequence passwd, OApiUtil.Semester semester, CharSequence year) {
-            return TimeTableHttpRequest.newRequest(id, passwd, semester, year)
+            return TimeTableHttpRequest.newRequest(context, id, passwd, semester, year)
                     .wrap(PARSER)
                     .wrap(timeTable -> {
                         TimetableUtil.makeColorTable(timeTable);
                         timeTable.getClassTimeInformationTable();
 
                         return timeTable;
-                    })
-                    .wrap(IOUtil.<TimeTable>newFileWriteProcessor(context, IOUtil.FILE_TIMETABLE));
-
+                    });
         }
 
     }
@@ -324,23 +259,7 @@ public class NetworkRequests {
                     .setResultEncoding(StringUtil.ENCODE_EUC_KR)
                     .build()
                     .checkNetworkState(context)
-                    .wrap(LIBRARY_SEAR_PARSER)
-                    .wrap(seatInfo -> {
-
-                        if (PrefUtil.getInstance(context).get(PrefUtil.KEY_CHECK_SEAT, false)) {
-                            ArrayList<SeatItem> list = seatInfo.seatItemList;
-                            // 스터디룸 인덱스
-                            final int[] filterArr = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 23, 24, 25, 26, 27, 28};
-                            final int size = filterArr.length;
-                            for (int i = size - 1; i > -1; i--) {
-                                SeatItem item = list.get(filterArr[i]);
-                                if (item.utilizationRate >= 50)
-                                    list.remove(item);
-                            }
-                        }
-
-                        return seatInfo;
-                    });
+                    .wrap(LIBRARY_SEAR_PARSER);
         }
     }
 
@@ -349,7 +268,7 @@ public class NetworkRequests {
 
         private static final XmlParserWrapper<ArrayList<EmptyClassRoomItem>> EMPTY_ROOM_PARSER = OApiUtil.getParser(EmptyClassRoomItem.class);
 
-        public static Request<ArrayList<EmptyClassRoomItem>> request(Context context, String building, int time, int term) {
+        private static Map<String, String> buildParamsMap(String building, int time, int term) {
             Calendar c = Calendar.getInstance();
             String wdayTime = String.valueOf(c.get(Calendar.DAY_OF_WEEK)) + (time < 10 ? "0" : StringUtil.NULL) + String.valueOf(time);
 
@@ -367,35 +286,105 @@ public class NetworkRequests {
             params.put(OApiUtil.TERM, OApiUtil.Semester.values()[term].code);
             params.put("building", building);
 
-            HttpRequest.Builder<HttpURLConnection> requestBuilder = HttpRequest.Builder.newConnectionRequestBuilder(URL)
-                    .setParams(params)
-                    .setParamsEncoding(StringUtil.ENCODE_EUC_KR);
+            return params;
+        }
 
+        public static Request<ArrayList<EmptyClassRoomItem>> request(Context context, String building, int time, int term) {
             if (building.equals("00")) {
-                return AsyncUtil.newRequest(() -> {
-                    ArrayList<EmptyClassRoomItem> list = new ArrayList<>();
-                    final String[] buildings = {
-                            "01", "02", "03", "04", "05",
-                            "06", "08", "09", "10", "11",
-                            "13", "14", "15", "16", "17",
-                            "18", "19", "20", "23", "24", "25", "33"};
-                    for (String bd : buildings) {
-                        params.put("building", bd);
-                        list.addAll(
-                                requestBuilder.build()
-                                        .checkNetworkState(context)
-                                        .wrap(EMPTY_ROOM_PARSER)
-                                        .get()
-                        );
-                    }
-                    return list;
-                });
+                return requestAllEmptyRoom(context, time, term);
             } else {
-                return requestBuilder.build()
+                return HttpRequest.Builder.newConnectionRequestBuilder(URL)
+                        .setParams(buildParamsMap(building, time, term))
+                        .setParamsEncoding(StringUtil.ENCODE_EUC_KR)
+                        .build()
                         .checkNetworkState(context)
                         .wrap(EMPTY_ROOM_PARSER);
             }
+        }
 
+
+        private static Request<ArrayList<EmptyClassRoomItem>> requestAllEmptyRoom(Context context, int time, int term) {
+            return AsyncUtil.newRequest(() -> {
+                HttpRequest.checkNetworkStateAndThrowException(context);
+
+                ArrayList<EmptyClassRoomItem> list = new ArrayList<>();
+                final String[] buildings = {
+                        "01", "02", "03", "04", "05",
+                        "06", "08", "09", "10", "11",
+                        "13", "14", "15", "16", "17",
+                        "18", "19", "20", "23", "24", "25", "33"};
+
+                ArrayList<Request<ArrayList<EmptyClassRoomItem>>> requests = new ArrayList<>(buildings.length);
+
+                Map<String, String> params = buildParamsMap("00", time, term);
+
+                HttpRequest.Builder<HttpURLConnection> requestBuilder = HttpRequest.Builder.newConnectionRequestBuilder(URL)
+                        .setParams(params)
+                        .setParamsEncoding(StringUtil.ENCODE_EUC_KR);
+
+                for (String bd : buildings) {
+                    params.put("building", bd);
+                    requests.add(requestBuilder.build().wrap(EMPTY_ROOM_PARSER));
+                }
+
+                final int N = requests.size();
+                int half = N / 2;
+                if (Runtime.getRuntime().availableProcessors() > 2) {
+                    FutureTask<ArrayList<EmptyClassRoomItem>> task1, task2;
+
+                    task1 = new FutureTask<>(() -> {
+                        List<Request<ArrayList<EmptyClassRoomItem>>> firstHalfRequests = requests.subList(0, half);
+                        ArrayList<EmptyClassRoomItem> results = new ArrayList<>();
+
+                        for (Request<ArrayList<EmptyClassRoomItem>> request : firstHalfRequests)
+                            results.addAll(request.get());
+                        return results;
+                    });
+
+                    task2 = new FutureTask<>(() -> {
+                        List<Request<ArrayList<EmptyClassRoomItem>>> secondHalfRequests = requests.subList(half, N);
+                        ArrayList<EmptyClassRoomItem> results = new ArrayList<>();
+
+                        for (Request<ArrayList<EmptyClassRoomItem>> request : secondHalfRequests)
+                            results.addAll(request.get());
+                        return results;
+                    });
+
+                    AsyncUtil.executeFor(task1);
+                    AsyncUtil.executeFor(task2);
+
+                    for (; ; ) {
+                        try {
+                            list.addAll(task1.get());
+                            break;
+                        } catch (InterruptedException e) {
+                            Log.e("EmptyRoomRequest", "interrupted TASK #1", e);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            break;
+                        }
+                    }
+
+                    for (; ; ) {
+                        try {
+                            list.addAll(task2.get());
+                            break;
+                        } catch (InterruptedException e) {
+                            Log.e("EmptyRoomRequest", "interrupted TASK #2", e);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            break;
+                        }
+                    }
+
+                } else {
+                    for (int i = 0; i < N; i++)
+                        list.addAll(requests.get(i).get());
+                }
+
+
+                return list;
+            });
         }
     }
 
@@ -501,14 +490,7 @@ public class NetworkRequests {
             return HttpRequest.Builder.newConnectionRequestBuilder(URL)
                     .build()
                     .checkNetworkState(context)
-                    .wrap(UNIV_SCHEDULE_PARSER)
-                    .wrap(IOUtil.<ArrayList<UnivScheduleItem>>newFileWriteProcessor(context, AppResources.UnivSchedules.FILE_NAME))
-                    .wrap(univScheduleItems -> {
-                                PrefUtil pref = PrefUtil.getInstance(context);
-                                pref.put(PrefUtil.KEY_SCHEDULE_FETCH_MONTH, univScheduleItems.get(0).getDate(true).get(Calendar.MONTH));
-                                return univScheduleItems;
-                            }
-                    );
+                    .wrap(UNIV_SCHEDULE_PARSER);
         }
     }
 }

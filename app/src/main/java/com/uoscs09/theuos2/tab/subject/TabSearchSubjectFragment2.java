@@ -27,7 +27,7 @@ import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.customview.CustomHorizontalScrollView;
-import com.uoscs09.theuos2.http.NetworkRequests;
+import com.uoscs09.theuos2.util.AppResources;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 
@@ -290,7 +290,7 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
         String subjectName = mSearchEditText.getText().toString();
 
         if (culture)
-            request = NetworkRequests.Subjects.requestCulture(getActivity(), year, term, getCultSubjectDiv(mDialogSpinner2.getSelectedItemPosition()), subjectName);
+            request = AppResources.Subjects.requestCulture(getActivity(), year, term, getCultSubjectDiv(mDialogSpinner2.getSelectedItemPosition()), subjectName);
         else {
             Map<String, String> additionalParams;
             switch (selections[1]) {
@@ -303,7 +303,7 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
                     break;
 
             }
-            request = NetworkRequests.Subjects.requestMajor(getActivity(), year, term, additionalParams, subjectName);
+            request = AppResources.Subjects.requestMajor(getActivity(), year, term, additionalParams, subjectName);
         }
 
         execute(true,

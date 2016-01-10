@@ -2,7 +2,6 @@ package com.uoscs09.theuos2.tab.timetable;
 
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -15,7 +14,6 @@ import com.uoscs09.theuos2.util.ImageUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class TimetableUtil {
@@ -29,20 +27,6 @@ public class TimetableUtil {
         //TimetableAlarmUtil.clearAllAlarm(context);
 
         return b;
-    }
-
-    /**
-     * 시간표 정보를 파일로부터 읽어온다.
-     *
-     * @return 시간표 정보 파일이 없다면 null
-     */
-    @Nullable
-    public static TimeTable readTimetable(Context context) {
-        return IOUtil.readFromFileSuppressed(context, IOUtil.FILE_TIMETABLE);
-    }
-
-    public static void writeTimetable(Context context, TimeTable timeTable) throws IOException {
-        IOUtil.writeObjectToFile(context, IOUtil.FILE_TIMETABLE, timeTable);
     }
 
 

@@ -14,7 +14,7 @@ import butterknife.ButterKnife;
 /**
  * View Holder 패턴을 사용하는 ArrayAdapter
  */
-public abstract class AbsArrayAdapter<T, VH extends AbsArrayAdapter.ViewHoldable> extends ArrayAdapter<T> {
+public abstract class AbsArrayAdapter<T, VH extends AbsArrayAdapter.IViewHolder> extends ArrayAdapter<T> {
     protected int layoutId;
 
     public AbsArrayAdapter(Context context, int layout, List<T> list) {
@@ -73,10 +73,10 @@ public abstract class AbsArrayAdapter<T, VH extends AbsArrayAdapter.ViewHoldable
     public abstract VH onCreateViewHolder(View convertView, int viewType);
 
 
-    public interface ViewHoldable {
+    public interface IViewHolder {
     }
 
-    public static class ViewHolder implements ViewHoldable {
+    public static class ViewHolder implements IViewHolder {
         public final View itemView;
 
         public ViewHolder(View view) {

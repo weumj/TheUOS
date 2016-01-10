@@ -116,7 +116,7 @@ public abstract class HttpRequest<T> extends AbstractRequest<T> {
         return networkInfo == null || !networkInfo.isConnected();
     }
 
-    static void checkNetworkStateAndThrowException(Context context) throws IOException {
+    public static void checkNetworkStateAndThrowException(Context context) throws IOException {
         context = context.getApplicationContext();
         if (checkNetworkUnable(context))
             throw new IOException("Failed to access current network.");

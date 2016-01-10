@@ -7,7 +7,6 @@ import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -17,32 +16,23 @@ import android.provider.CalendarContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.async.AsyncUtil;
-import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
-import com.uoscs09.theuos2.common.PieProgressDrawable;
 import com.uoscs09.theuos2.util.AppResources;
 import com.uoscs09.theuos2.util.AppUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import butterknife.Bind;
 import se.emilsjolander.stickylistheaders.ExpandableStickyListHeadersListView;
-import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 
 
 public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivScheduleItem>> {
@@ -60,7 +50,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
     ExpandableStickyListHeadersListView mListView;
     private AlertDialog mItemSelectDialog;
     private Dialog mProgressDialog;
-    private Adapter mAdapter;
+    private UnivScheduleAdapter mAdapter;
 
     private final ArrayList<UnivScheduleItem> mList = new ArrayList<>();
     private UnivScheduleItem mSelectedItem;
@@ -98,7 +88,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
             setSubtitleWhenVisible(mSubTitle);
         }
 
-        mAdapter = new Adapter(getActivity(), mList);
+        mAdapter = new UnivScheduleAdapter(getActivity(), mList);
 
         mListView.setNestedScrollingEnabled(true);
 
@@ -155,11 +145,11 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
 
     private boolean checkPermission() {
         permissionChecked = true;
-        return Build.VERSION.SDK_INT < Build.VERSION_CODES.M || checkPermissionV22();
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.M || checkPermissionV23();
     }
 
     @TargetApi(Build.VERSION_CODES.M)
-    private boolean checkPermissionV22() {
+    private boolean checkPermissionV23() {
         return getActivity().checkSelfPermission(Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED
                 && getActivity().checkSelfPermission(Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED;
     }
@@ -239,16 +229,6 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
 
     }
 
-    /*
-    private static void writeFile(Context context, ArrayList<UnivScheduleItem> object) throws IOException {
-        IOUtil.writeObjectToFile(context, FILE_NAME, object);
-    }
-
-    private static ArrayList<UnivScheduleItem> readFile(Context context) throws IOException, ClassNotFoundException {
-        return IOUtil.readFromFile(context, FILE_NAME);
-    }
-    */
-
     private void execute() {
         execute(true,
                 AppResources.UnivSchedules.request(getActivity()),
@@ -294,107 +274,6 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
     @Override
     public String getScreenNameForTracker() {
         return "UnivScheduleFragment";
-    }
-
-    private static class Adapter extends AbsArrayAdapter<UnivScheduleItem, ViewHolder> implements StickyListHeadersAdapter {
-
-        public Adapter(Context context, List<UnivScheduleItem> list) {
-            super(context, R.layout.list_layout_univ_schedule, list);
-        }
-
-        @Override
-        public void onBindViewHolder(int position, UnivScheduleFragment.ViewHolder holder) {
-            UnivScheduleItem item = getItem(position);
-
-            //holder.item = item;
-
-            holder.textView1.setText(item.content);
-            holder.textView2.setText(item.sch_date);
-
-
-            //noinspection deprecation
-            holder.drawable.setColor(getContext().getResources().getColor(AppUtil.getColor(position)));
-            //holder.drawable.setCentorColor(getContext().getResources().getColor(AppUtil.getColor(position)));
-
-            holder.textView1.invalidateDrawable(holder.drawable);
-
-        }
-
-        @Override
-        public UnivScheduleFragment.ViewHolder onCreateViewHolder(View convertView, int viewType) {
-            return new UnivScheduleFragment.ViewHolder(convertView);
-        }
-
-        @Override
-        public View getHeaderView(int position, View convertView, ViewGroup viewGroup) {
-            HeaderViewHolder holder;
-            if (convertView == null) {
-                holder = new HeaderViewHolder(LayoutInflater.from(getContext()).inflate(R.layout.list_layout_univ_schedule_header, viewGroup, false));
-                convertView = holder.itemView;
-                convertView.setTag(holder);
-
-            } else {
-                holder = (HeaderViewHolder) convertView.getTag();
-            }
-
-            UnivScheduleItem.ScheduleDate date = getItem(position).dateStart;
-            Calendar c = getItem(position).getDate(true);
-
-            if (c == null) {
-                holder.textView.setText("");
-                holder.textView2.setText("");
-            } else {
-                holder.textView.setText(String.valueOf(date.day));
-                holder.textView2.setText(dateFormat.format(new Date(c.getTimeInMillis())));
-            }
-
-            return convertView;
-        }
-
-        private final SimpleDateFormat dateFormat = new SimpleDateFormat("E", Locale.getDefault());
-
-        @Override
-        public long getHeaderId(int position) {
-            UnivScheduleItem.ScheduleDate date = getItem(position).dateStart;
-            return date.month * 100 + date.day;
-        }
-
-    }
-
-    static class ViewHolder extends AbsArrayAdapter.ViewHolder {
-        @Bind(android.R.id.text1)
-        TextView textView1;
-        @Bind(android.R.id.text2)
-        TextView textView2;
-        /*
-        @Bind(R.id.card_view)
-        CardView cardView;
-        */
-        //UnivScheduleItem item;
-        final PieProgressDrawable drawable = new PieProgressDrawable();
-
-        @SuppressWarnings("deprecation")
-        public ViewHolder(View view) {
-            super(view);
-
-            drawable.setLevel(100);
-            drawable.setBorderWidth(-1f, view.getResources().getDisplayMetrics());
-            int size = itemView.getResources().getDimensionPixelSize(R.dimen.univ_schedule_list_drawable_size);
-            drawable.setBounds(0, 0, size, size);
-
-            textView1.setCompoundDrawables(drawable, null, null, null);
-        }
-
-    }
-
-    static class HeaderViewHolder extends AbsArrayAdapter.SimpleViewHolder {
-        @Bind(android.R.id.text2)
-        TextView textView2;
-
-        public HeaderViewHolder(View view) {
-            super(view);
-        }
-
     }
 
 }

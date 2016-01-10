@@ -24,9 +24,8 @@ import android.widget.TextView;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
-import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
-import com.uoscs09.theuos2.http.NetworkRequests;
+import com.uoscs09.theuos2.util.AppResources;
 import com.uoscs09.theuos2.util.AppUtil;
 
 import java.util.ArrayList;
@@ -223,19 +222,6 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
 
     /* TODO Listener Callback */
 
-    public void onItemClick(AdapterView<?> adapterView, View view, int pos, long itemId) {
-        if (!isMenuVisible() || getCurrentCategoryIndex() < 1)
-            return;
-
-        Intent intent = new Intent(getActivity(), SubAnnounceWebActivity.class)
-                .putExtra(ITEM, mAnnounceAdapter.getItem(pos))
-                .putExtra(INDEX_CATEGORY, getCurrentCategoryIndex())
-                .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-        AppUtil.startActivityWithScaleUp(getActivity(), intent, view);
-    }
-
-
     /**
      * spinner 가 선택되면(카테고리 선택) 호출됨
      */
@@ -304,9 +290,8 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
     }
 
     private void executeSearchJob(boolean moreRequest, int newPageIndex, String query) {
-        Request<ArrayList<AnnounceItem>> request = NetworkRequests.Announces.searchRequest(getActivity(), getCurrentCategoryIndex(), newPageIndex, query);
-
-        execute(true, request,
+        execute(true,
+                AppResources.Announces.searchRequest(getActivity(), getCurrentCategoryIndex(), newPageIndex, query),
                 result -> {
                     mListFooterView.setClickable(true);
                     if (moreRequest) updateWithResultInMoreRequest(result, newPageIndex);
@@ -318,9 +303,8 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
     }
 
     private void executeJob(boolean moreRequest, int newPageIndex) {
-        Request<ArrayList<AnnounceItem>> request = NetworkRequests.Announces.normalRequest(getActivity(), getCurrentCategoryIndex(), newPageIndex);
-
-        execute(true, request,
+        execute(true,
+                AppResources.Announces.normalRequest(getActivity(), getCurrentCategoryIndex(), newPageIndex),
                 result -> {
                     mListFooterView.setClickable(true);
                     if (moreRequest) updateWithResultInMoreRequest(result, newPageIndex);
