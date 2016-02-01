@@ -15,6 +15,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -114,36 +115,23 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
                 .setPositiveButton(android.R.string.ok, (dialog, which) -> {
                     sendClickEvent("add schedule to calender");
 
-                    addUnivScheduleToCalender();
+                    checkCalenderConditionAndAddSchedule();
                 })
                 .setNegativeButton(android.R.string.no, null)
                 .setMessage("")
                 .create();
 
-        mProgressDialog = AppUtil.getProgressDialog(getActivity(), false, null);
+        mProgressDialog = AppUtil.getProgressDialog(getActivity(), false, getString(R.string.progress_ongoing), null);
 
 
         if (mList.isEmpty())
             execute();
     }
 
-
     @RequiresPermission(Manifest.permission.GET_ACCOUNTS)
-    private void getAccount() throws Exception {
-        if (mAccount == null) {
-            AccountManager accountManager = AccountManager.get(getActivity());
-            Account[] accounts = accountManager.getAccountsByType("com.google");
-
-            if (accounts.length < 1) {
-                throw new Exception(getString(R.string.tab_univ_schedule_google_account_not_exist));
-            }
-
-            mAccount = accounts[0].name;
-
-            selectionArgs = new String[]{mAccount, "com.google", mAccount};
-        }
+    private Account[] deviceAccounts() {
+        return AccountManager.get(getActivity()).getAccountsByType("com.google");
     }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -152,7 +140,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
         switch (requestCode) {
             case PERMISSION_REQUEST_CALENDAR:
                 if (checkPermissionResultAndShowToastIfFailed(permissions, grantResults, getString(R.string.tab_univ_schedule_permission_denied))) {
-                    addUnivScheduleToCalender();
+                    checkCalenderConditionAndAddSchedule();
                 }
                 break;
 
@@ -161,8 +149,13 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
         }
     }
 
-    @SuppressWarnings("ResourceType")
-    private void addUnivScheduleToCalender() {
+
+    private void checkCalenderConditionAndAddSchedule() {
+        if (mSelectedItem == null) {
+            AppUtil.showToast(getActivity(), R.string.tab_univ_schedule_schedule_selection_not_exist);
+            return;
+        }
+
         String[] permissions = {Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR, Manifest.permission.GET_ACCOUNTS};
 
         if (!checkSelfPermissions(permissions)) {
@@ -170,15 +163,51 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
             return;
         }
 
+        if (mAccount != null && selectionArgs != null) {
+            addUnivScheduleToCalender();
+            return;
+        }
+
+        Account[] accounts = deviceAccounts();
+        if (accounts.length < 1) {
+            AppUtil.showToast(getActivity(), R.string.tab_univ_schedule_google_account_not_exist);
+        } else if (accounts.length == 1) {
+            mAccount = accounts[0].name;
+            selectionArgs = new String[]{mAccount, "com.google", mAccount};
+            addUnivScheduleToCalender();
+        } else {
+            CharSequence[] accountOptions = new CharSequence[accounts.length];
+            int i = 0;
+            for (Account account : accounts)
+                accountOptions[i++] = account.name;
+
+            new AlertDialog.Builder(getActivity())
+                    .setIconAttribute(R.attr.theme_ic_action_calendar)
+                    .setTitle(R.string.tab_univ_schedule_select_google_accounts)
+                    .setSingleChoiceItems(accountOptions, 0, (dialog, which) -> {
+                        mAccount = accounts[which].name;
+                    })
+                    .setPositiveButton(android.R.string.ok, (dialog2, which1) -> {
+                        if (TextUtils.isEmpty(mAccount)) {
+                            AppUtil.showToast(getActivity(), R.string.tab_univ_schedule_google_account_selection_not_exist);
+                        } else {
+                            selectionArgs = new String[]{mAccount, "com.google", mAccount};
+                            addUnivScheduleToCalender();
+                        }
+                    })
+                    .setNegativeButton(android.R.string.no, (dialog1, which2) -> {
+                        selectionArgs = null;
+                        mAccount = null;
+                    })
+                    .show();
+        }
+    }
+
+    @SuppressWarnings("ResourceType")
+    private void addUnivScheduleToCalender() {
         mProgressDialog.show();
 
         AsyncUtil.newRequest(() -> {
-            if (mSelectedItem == null) {
-                throw new Exception("일정이 선택되지 않았습니다.");
-            }
-
-            getAccount();
-
             ContentResolver cr = getActivity().getContentResolver();
 
             Cursor c = cr.query(CalendarContract.Calendars.CONTENT_URI, EVENT_PROJECTION, SELECTION, selectionArgs, null);

@@ -6,8 +6,8 @@
     <string name="setting_app_version_name">1.13</string>
     <string name="setting_app_version_update">최신버전 확인</string>
     <string name="setting_app_version_update_desc">어플리케이션의 최신 버전을 확인합니다.</string>
-    <string name="setting_app_version_update_require">어플리케이션 업데이트 필요!</string>
-    <string name="setting_app_version_update_this_old">현재 사용하는 어플리케이션이 최신버전이 아닙니다.\n\n현재 버전 : %s\n최신 버전 :</string>
+    <string name="setting_app_version_update_exist">어플리케이션의 업데이트가 존재합니다.</string>
+    <string name="setting_app_version_update_this_old">현재 사용하는 어플리케이션이 최신버전이 아닙니다.\n\n현재 버전 : %1$s\n최신 버전 : %2$s</string>
     <string name="setting_app_version_update_this_new">현재 사용하는 어플리케이션이 최신버전입니다.</string>
 
     <string name="setting">설정</string>

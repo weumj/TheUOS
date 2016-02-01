@@ -32,8 +32,6 @@ import com.uoscs09.theuos2.util.TrackerUtil;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.Source;
 
-import java.util.Formatter;
-
 /**
  * 메인 설정화면을 나타내는 {@code PreferenceFragment}
  */
@@ -132,25 +130,22 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
 
     private void showAppVersionDialog() {
 
-        final Dialog progress = AppUtil.getProgressDialog(getActivity(), false, getText(R.string.progress_while_updating), null);
+        final Dialog progress = AppUtil.getProgressDialog(getActivity(), false, getText(R.string.progress_version_check), null);
         progress.show();
 
         HttpRequest.Builder.newStringRequestBuilder(APP_URL)
                 .build()
                 .checkNetworkState(getActivity())
-                .wrap(
-                        new JerichoParser<String>() {
-                            @Override
-                            protected String parseHtmlBody(Source source) throws Exception {
-                                Element e = source.getAllElementsByClass("details-section metadata").get(0)
-                                        .getAllElementsByClass("details-section-contents").get(0).getAllElementsByClass("meta-info").get(3)
-                                        .getAllElementsByClass("content").get(0);
-                                return e.getTextExtractor().toString().trim();
-                            }
-                        }
-                )
-                .getAsync(
-                        result -> {
+                .wrap(new JerichoParser<String>() {
+                    @Override
+                    protected String parseHtmlBody(Source source) throws Exception {
+                        Element e = source.getAllElementsByClass("details-section metadata").get(0)
+                                .getAllElementsByClass("details-section-contents").get(0).getAllElementsByClass("meta-info").get(3)
+                                .getAllElementsByClass("content").get(0);
+                        return e.getTextExtractor().toString().trim();
+                    }
+                })
+                .getAsync(result -> {
                             progress.dismiss();
                             String thisVersion = getString(R.string.setting_app_version_name);
                             if (thisVersion.equals(result)) {
@@ -161,13 +156,11 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
                                 tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
                                 tv.setPadding(100, 20, 20, 20);
 
-                                Formatter f = new Formatter();
-                                f.format(getString(R.string.setting_app_version_update_this_old), thisVersion);
-                                tv.setText(f.toString() + " " + result);
-                                f.close();
+                                tv.setText(getString(R.string.setting_app_version_update_this_old, thisVersion, result));
 
                                 AlertDialog d = new AlertDialog.Builder(getActivity())
-                                        .setTitle(R.string.setting_app_version_update_require)
+                                        .setView(tv)
+                                        .setTitle(R.string.setting_app_version_update_exist)
                                         .setIcon(R.drawable.theme_ic_action_action_about)
                                         .setPositiveButton(R.string.update, (dialog, which) -> {
                                             startActivity(AppUtil.getWebPageIntent(APP_URL));

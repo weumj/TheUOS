@@ -12,6 +12,7 @@ import android.support.annotation.StringRes;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.Toast;
@@ -33,7 +34,7 @@ import java.util.ArrayList;
 
 public class AppUtil {
     public static final int RESOURCE_NOT_EXIST = -1;
-    public static final String DB_PHONE = "PhoneNumberDB.db";
+    // public static final String DB_PHONE = "PhoneNumberDB.db";
     public static final int RELAUNCH_ACTIVITY = 6565;
 
     private static final int MAX_PAGE_SIZE_NORMAL = 9;
@@ -529,7 +530,7 @@ public class AppUtil {
     }
 
     public static int getAttrColor(Context context, @AttrRes int attrColorId) {
-        return context.getResources().getColor(getAttrValue(context, attrColorId));
+        return ContextCompat.getColor(context, getAttrValue(context, attrColorId));
     }
 
     /**
@@ -733,14 +734,7 @@ public class AppUtil {
                 .negativeText(android.R.string.cancel);
 
         if (cancelButtonListener != null)
-            builder.callback(new MaterialDialog.ButtonCallback() {
-                @Override
-                public void onNegative(MaterialDialog dialog) {
-                    super.onNegative(dialog);
-                    cancelButtonListener.onClick(dialog, DialogInterface.BUTTON_NEGATIVE);
-                }
-            });
-
+            builder.onNegative((dialog, which) -> cancelButtonListener.onClick(dialog, DialogInterface.BUTTON_NEGATIVE));
 
         return builder.build();
     }

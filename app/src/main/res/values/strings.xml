@@ -25,10 +25,11 @@
     <string name="progress_downloading">다운로드 중…</string>
     <string name="progress_while_updating">로딩중…</string>
     <string name="progress_while_loading" translatable="false">Loading…</string>
+    <string name="progress_version_check">최신 버전 확인중…</string>
     <string name="progress_ongoing">처리 중…</string>
     <string name="progress_wait">잠시 후에 시도하세요.</string>
     <string name="progress_fail">로딩 실패</string>
-    <string name="progress_ongoing_another">다른 작업이 진행중입니다.</string>
+    <string name="progress_failed_ongoing_another">다른 작업이 진행중입니다.</string>
     <string name="progress_retry">다시시도</string>
     <string name="before_finish">\'뒤로\'버튼을 한번 더 누르시면 종료됩니다.</string>
 
@@ -215,7 +216,10 @@
     <string name="tab_univ_schedule_calendar_not_exist">캘린더가 존재하지 않습니다.</string>
     <string name="tab_univ_schedule_add_to_calendar">캘린더에 일정 등록</string>
     <string name="tab_univ_schedule_add_schedule_to_calender">일정 \' %s \' 을(를) 캘린더에 추가합니다.</string>
+    <string name="tab_univ_schedule_select_google_accounts">일정을 추가할 계정을 선택해 주세요.</string>
     <string name="tab_univ_schedule_google_account_not_exist">등록된 구글계정이 존재하지 않습니다.</string>
+    <string name="tab_univ_schedule_google_account_selection_not_exist">계정이 선택되지 않았습니다.</string>
+    <string name="tab_univ_schedule_schedule_selection_not_exist">일정이 선택되지 않았습니다.</string>
     <string name="tab_univ_schedule_add_to_calendar_success">일정을 추가했습니다.</string>
     <string name="tab_univ_schedule_add_to_calendar_fail">일정을 추가하는데 실패하였습니다.</string>
     <string name="tab_univ_schedule_permission_denied">권한이 거절되어서 일정을 추가하는데 실패하였습니다.</string>
