@@ -27,12 +27,19 @@
         <item name="switchPreferenceCompatStyle">@style/Preference.SwitchPreferenceCompat</item>
         <item name="dialogPreferenceStyle">@style/Preference.DialogPreference</item>
         <item name="editTextPreferenceStyle">@style/Preference.DialogPreference.EditTextPreference</item>
-        <item name="preferenceFragmentListStyle">@style/PreferenceFragmentList</item>
+        <item name="preferenceFragmentListStyle">@style/AppTheme.PreferenceFragmentList</item>
     </style>
 
 
     <style name="AppTheme.Preference">
         <item name="android:layout">@layout/preference_1</item>
+    </style>
+
+
+    <!-- 16dp-->
+    <style name="AppTheme.PreferenceFragmentList">
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
     </style>
 
     <style name="AppTheme.Preference.PreferenceScreen">
@@ -140,6 +147,7 @@
         <item name="color_primary_text">?color_actionbar_title</item>
         <item name="color_primary_text_dark">?colorPrimaryDark</item>
         <item name="color_tint_normal">@color/tint_gray</item>
+        <item name="color_background">@android:color/white</item>
         <item name="android:textColorHighlight">?color_primary_text_dark</item>
         <item name="android:textColorLink">?color_primary_text</item>
 
@@ -328,6 +336,7 @@
         <item name="color_primary_text">@android:color/white</item>
         <item name="color_primary_text_dark">@android:color/white</item>
         <item name="color_tint_normal">@color/tint_white</item>
+        <item name="color_background">@android:color/black</item>
         <item name="color_actionbar_title">@android:color/white</item>
         <item name="color_actionbar_subtitle">@android:color/white</item>
 

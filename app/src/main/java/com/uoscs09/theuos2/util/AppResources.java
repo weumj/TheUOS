@@ -165,7 +165,7 @@ public class AppResources {
                 }
 
                 return NetworkRequests.Restaurants.requestWeekInfo(context, code)
-                        .wrap(IOUtil.<WeekRestItem>newFileWriteProcessor(context, WEEK_FILE_NAME + code))
+                        .wrap(IOUtil.<WeekRestItem>newInternalFileWriteProcessor(context, WEEK_FILE_NAME + code))
                         .wrap(item -> {
                             AppResources.Restaurants.putValueIntoPref(prefUtil, code, item);
                             return item;
@@ -182,7 +182,7 @@ public class AppResources {
 
         public static Request<TimeTable> request(Context context, CharSequence id, CharSequence passwd, OApiUtil.Semester semester, CharSequence year) {
             return NetworkRequests.TimeTables.request(context, id, passwd, semester, year)
-                    .wrap(IOUtil.<TimeTable>newFileWriteProcessor(context, IOUtil.FILE_TIMETABLE));
+                    .wrap(IOUtil.<TimeTable>newInternalFileWriteProcessor(context, IOUtil.FILE_TIMETABLE));
         }
 
         public static Request<TimeTable> readFromFile(Context context) {
@@ -263,7 +263,7 @@ public class AppResources {
                     }
 
                     return NetworkRequests.UnivSchedules.request(context)
-                            .wrap(IOUtil.<ArrayList<UnivScheduleItem>>newFileWriteProcessor(context, AppResources.UnivSchedules.FILE_NAME))
+                            .wrap(IOUtil.<ArrayList<UnivScheduleItem>>newInternalFileWriteProcessor(context, AppResources.UnivSchedules.FILE_NAME))
                             .wrap(univScheduleItems -> {
                                         pref.put(PrefUtil.KEY_SCHEDULE_FETCH_MONTH, univScheduleItems.get(0).getDate(true).get(Calendar.MONTH));
                                         return univScheduleItems;

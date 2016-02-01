@@ -637,7 +637,7 @@ public class UosMainActivity extends BaseActivity {
             // 표시해야할 아이템이 선택된 상태라면 특별한 컬러로 하이라이트 시켜주고
             // 아니면 일반 상태로 표시한다.
             if (mCurrentSelection == position) {
-                if (position != 0 || !isHomeEnable)
+                if (titleStringId != R.string.title_section0_home)
                     holder.img.setColorFilter(mColorFilter);
                 else
                     holder.img.setColorFilter(null);

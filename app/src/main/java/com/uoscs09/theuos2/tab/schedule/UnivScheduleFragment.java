@@ -3,11 +3,9 @@ package com.uoscs09.theuos2.tab.schedule;
 import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -15,6 +13,7 @@ import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresPermission;
 import android.support.v7.app.AlertDialog;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -37,14 +36,14 @@ import se.emilsjolander.stickylistheaders.ExpandableStickyListHeadersListView;
 
 public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivScheduleItem>> {
 
+    private static final int PERMISSION_REQUEST_CALENDAR = 12;
+
     private static final String SELECTION = "((" + CalendarContract.Calendars.ACCOUNT_NAME + " = ?) AND ("
             + CalendarContract.Calendars.ACCOUNT_TYPE + " = ?) AND ("
             + CalendarContract.Calendars.OWNER_ACCOUNT + " = ?))";
     private static final String[] EVENT_PROJECTION = {
             CalendarContract.Calendars._ID
     };
-    private static boolean permissionChecked = false;
-    private static boolean permissionResult = false;
 
     @Bind(R.id.list)
     ExpandableStickyListHeadersListView mListView;
@@ -128,6 +127,8 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
             execute();
     }
 
+
+    @RequiresPermission(Manifest.permission.GET_ACCOUNTS)
     private void getAccount() throws Exception {
         if (mAccount == null) {
             AccountManager accountManager = AccountManager.get(getActivity());
@@ -143,18 +144,6 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
         }
     }
 
-    private boolean checkPermission() {
-        permissionChecked = true;
-        return Build.VERSION.SDK_INT < Build.VERSION_CODES.M || checkPermissionV23();
-    }
-
-    @TargetApi(Build.VERSION_CODES.M)
-    private boolean checkPermissionV23() {
-        return getActivity().checkSelfPermission(Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED
-                && getActivity().checkSelfPermission(Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private static final int PERMISSION_REQUEST_CALENDAR = 4822;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -162,11 +151,8 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
 
         switch (requestCode) {
             case PERMISSION_REQUEST_CALENDAR:
-                for (int result : grantResults) {
-                    if (result == PackageManager.PERMISSION_DENIED) {
-                        AppUtil.showToast(getActivity(), R.string.tab_univ_schedule_permission_denied);
-                        return;
-                    }
+                if (checkPermissionResultAndShowToastIfFailed(permissions, grantResults, getString(R.string.tab_univ_schedule_permission_denied))) {
+                    addUnivScheduleToCalender();
                 }
                 break;
 
@@ -175,57 +161,62 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
         }
     }
 
+    @SuppressWarnings("ResourceType")
     private void addUnivScheduleToCalender() {
-        // permission 확인한 적이 없고, permission 요청 결과가 false 였고, permission 확인 결과가 false 인 경우
-        if (!permissionChecked && !permissionResult && !(permissionResult = checkPermission())) {
-            requestPermissions(new String[]{Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR}, PERMISSION_REQUEST_CALENDAR);
+        String[] permissions = {Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR, Manifest.permission.GET_ACCOUNTS};
+
+        if (!checkSelfPermissions(permissions)) {
+            requestPermissions(permissions, PERMISSION_REQUEST_CALENDAR);
             return;
         }
 
         mProgressDialog.show();
 
-        AsyncUtil.newRequest(
-                () -> {
-                    getAccount();
+        AsyncUtil.newRequest(() -> {
+            if (mSelectedItem == null) {
+                throw new Exception("일정이 선택되지 않았습니다.");
+            }
 
-                    ContentResolver cr = getActivity().getContentResolver();
+            getAccount();
 
-                    Cursor c = cr.query(CalendarContract.Calendars.CONTENT_URI, EVENT_PROJECTION, SELECTION, selectionArgs, null);
+            ContentResolver cr = getActivity().getContentResolver();
 
-                    if (c == null) {
-                        throw new Exception(getString(R.string.tab_univ_schedule_calendar_not_exist));
-                    } else if (!c.moveToFirst()) {
-                        c.close();
-                        throw new Exception(getString(R.string.tab_univ_schedule_calendar_not_exist));
-                    }
+            Cursor c = cr.query(CalendarContract.Calendars.CONTENT_URI, EVENT_PROJECTION, SELECTION, selectionArgs, null);
 
-                    long calendarId = c.getLong(0);
-                    ContentValues cv = mSelectedItem.toContentValues(calendarId);
+            if (c == null) {
+                throw new Exception(getString(R.string.tab_univ_schedule_calendar_not_exist));
+            } else if (!c.moveToFirst()) {
+                c.close();
+                throw new Exception(getString(R.string.tab_univ_schedule_calendar_not_exist));
+            }
 
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
-                        //noinspection deprecation
-                        cv.put(CalendarContract.Events.EVENT_COLOR, getResources().getColor(AppUtil.getColor(mList.indexOf(mSelectedItem))));
+            long calendarId = c.getLong(0);
+            ContentValues cv = mSelectedItem.toContentValues(calendarId);
 
-                    Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, cv);
-                    c.close();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
+                //noinspection deprecation
+                cv.put(CalendarContract.Events.EVENT_COLOR, getResources().getColor(AppUtil.getColor(mList.indexOf(mSelectedItem))));
 
-                    return uri;
-                })
-                .getAsync(
-                        result -> {
-                            mProgressDialog.dismiss();
-                            if (result != null)
-                                AppUtil.showToast(getActivity(), R.string.tab_univ_schedule_add_to_calendar_success, isMenuVisible());
-                            else
-                                AppUtil.showToast(getActivity(), R.string.tab_univ_schedule_add_to_calendar_fail, isMenuVisible());
-                        },
-                        e -> {
-                            mProgressDialog.dismiss();
-                            e.printStackTrace();
+            Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, cv);
+            c.close();
+            mSelectedItem = null;
 
-                            AppUtil.showErrorToast(getActivity(), e, isMenuVisible());
-                        }
-                );
+            return uri;
+        }).getAsync(
+                result -> {
+                    mProgressDialog.dismiss();
+                    if (result != null)
+                        AppUtil.showToast(getActivity(), R.string.tab_univ_schedule_add_to_calendar_success, isMenuVisible());
+                    else
+                        AppUtil.showToast(getActivity(), R.string.tab_univ_schedule_add_to_calendar_fail, isMenuVisible());
+                },
+                e -> {
+                    mProgressDialog.dismiss();
+                    e.printStackTrace();
+
+                    AppUtil.showErrorToast(getActivity(), e, isMenuVisible());
+                }
+        );
 
     }
 

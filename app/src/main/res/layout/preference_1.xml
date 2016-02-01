@@ -1,6 +1,7 @@
 <com.balysv.materialripple.MaterialRippleLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/ripple"
+    android:elevation="4dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:mrl_rippleColor="?colorPrimaryDark">
@@ -45,7 +46,7 @@
                 android:fadingEdge="horizontal"
                 android:singleLine="true"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="?color_primary_text" />
+                android:textColor="?android:attr/textColorPrimary" />
 
             <TextView
                 android:id="@android:id/summary"

@@ -1,9 +1,11 @@
 package com.uoscs09.theuos2.util;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.support.annotation.RequiresPermission;
 
 import com.uoscs09.theuos2.R;
 
@@ -209,6 +211,7 @@ public class PrefUtil {
      * <p/>
      * <b>반환되는 경로 끝에는 '/' 이 붙지 않으므로 사용할 때 주의하여야 한다.</b>
      */
+    @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     public static String getPicturePath(Context context) {
         return getInstance(context).get(KEY_IMAGE_SAVE_PATH, getDefaultPath(KEY_IMAGE_SAVE_PATH));
     }
@@ -218,6 +221,7 @@ public class PrefUtil {
      * <p/>
      * <b>반환되는 경로 끝에는 '/' 이 붙지 않으므로 사용할 때 주의하여야 한다.</b>
      */
+    @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     public static String getDocumentPath(Context context) {
         return getInstance(context).get(KEY_TXT_SAVE_PATH, getDefaultPath(KEY_TXT_SAVE_PATH));
     }

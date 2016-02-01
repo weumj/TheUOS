@@ -1,5 +1,6 @@
 package com.uoscs09.theuos2.tab.timetable;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -42,6 +43,9 @@ import butterknife.Bind;
 import butterknife.OnClick;
 
 public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> {
+
+    private static final int REQUEST_PERMISSION_SAVE_IMAGE = 10;
+
     private AlertDialog mLoginDialog;
     View rootView;
     protected EditText mWiseIdView, mWisePasswdView;
@@ -178,11 +182,33 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> {
         mProgressDialog.setOnCancelListener(null);
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+            case REQUEST_PERMISSION_SAVE_IMAGE:
+                if (checkPermissionResultAndShowToastIfFailed(permissions, grantResults, getString(R.string.tab_timetable_permission_image_reject))) {
+                    saveTimetableImage();
+                }
+                break;
+
+            default:
+                break;
+        }
+    }
+
     private void saveTimetableImage() {
         if (mTimeTableAdapter2.isEmpty()) {
             AppUtil.showToast(getActivity(), R.string.tab_timetable_not_exist, true);
             return;
         }
+
+        if (!checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSION_SAVE_IMAGE);
+            return;
+        }
+
 
         if (mProgressDialog == null)
             mProgressDialog = AppUtil.getProgressDialog(getActivity(), false, getText(R.string.progress_ongoing), null);

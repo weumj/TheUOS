@@ -178,24 +178,25 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
         mCurrentTab = mTabList.get(mCurrentSelection);
         mRestItemAdapter.setRestMenu(mCurrentSelection);
         mCurrentTab.setSelected(true);
-        mRecyclerView.getAdapter().notifyItemRangeChanged(0, 4);
+        //mRestItemAdapter.notifyItemRangeChanged(0, 5);
+        mRestItemAdapter.notifyDataSetChanged();
         sendClickEvent(REST_TAB_MENU_STRING_LABEL[mCurrentSelection]);
     }
 
 
     private void execute(boolean force) {
-        mRecyclerView.getAdapter().notifyItemRangeRemoved(0, 5);
         mRestTable.clear();
+        mRestItemAdapter.mItems.clear();
+        mRestItemAdapter.notifyItemRangeRemoved(0, 5);
 
         execute(true,
                 AppResources.Restaurants.request(getActivity(), force),
                 result -> {
                     mRestTable = result;
+                    mRestItemAdapter.mItems = mRestTable;
+                    //mRestItemAdapter.notifyItemRangeInserted(0, 5);
 
                     performTabClick(mCurrentSelection);
-
-                    mRestItemAdapter.mItems = mRestTable;
-                    mRestItemAdapter.notifyDataSetChanged();
 
                     mSwipeRefreshLayout.setRefreshing(false);
                 },

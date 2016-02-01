@@ -77,6 +77,7 @@
     <string name="tab_announce_show_next_page">다음 페이지</string>
     <string name="tab_announce_type_notice">공지</string>
     <string name="tab_announce_no_download_link">다운로드 할 파일이 없습니다.</string>
+    <string name="tab_announce_download_permission_reject">권한이 거절되어 파일을 다운로드할 수 없습니다.</string>
 
     <string name="tab_book_book_opt">도서 검색 옵션</string>
     <string name="tab_book_book_opt_sub">분류와 정렬 방식을 선택해 주세요</string>
@@ -150,6 +151,7 @@
     <string name="tab_timetable_not_exist">시간표 데이터가 없습니다.</string>
     <string name="tab_timetable_saved">%1$s 폴더에 시간표가 저장되었습니다.</string>
     <string name="tab_timetable_notify_subject">수업 (%1$s) 시작 %2$s 입니다.</string>
+    <string name="tab_timetable_permission_image_reject">권한이 거절되어 시간표 이미지를 저장할 수 없습니다.</string>
 
     <string name="tab_timetable_dialog_show_location_in_map">지도에서 건물 위치 보기</string>
     <string name="tab_timetable_dialog_show_subject_plan">수업계획서 보기</string>
@@ -204,6 +206,7 @@
     <string name="tab_course_plan_action_save_image_completed">%1$s 폴더에 수업계획서가 이미지로 저장되었습니다.</string>
     <string name="tab_course_plan_action_save_text_completed">%1$s 폴더에 수업계획서가 텍스트로 저장되었습니다.</string>
     <string name="tab_course_plan_result_empty">수업계획서 정보가 없습니다.</string>
+    <string name="tab_course_plan_permission_reject">권한이 거절되어 수업계획서를 저장할 수 없습니다.</string>
 
     <string name="tab_transport_empty">버튼을 눌러 정보를 불러오세요.</string>
 

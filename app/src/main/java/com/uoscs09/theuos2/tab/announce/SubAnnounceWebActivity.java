@@ -1,5 +1,6 @@
 package com.uoscs09.theuos2.tab.announce;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
@@ -24,6 +25,8 @@ import com.uoscs09.theuos2.util.StringUtil;
 import java.io.File;
 
 public class SubAnnounceWebActivity extends WebViewActivity {
+    private static final int REQUEST_PERMISSION_FILE = 40;
+
     private String url;
     private AnnounceItem mItem;
     private int category;
@@ -130,9 +133,30 @@ public class SubAnnounceWebActivity extends WebViewActivity {
         mProgressDialog.setOnCancelListener(null);
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+            case REQUEST_PERMISSION_FILE:
+                if (checkPermissionResultAndShowToastIfFailed(permissions, grantResults, getString(R.string.tab_announce_download_permission_reject))) {
+                    downloadFile();
+                }
+                break;
+
+            default:
+                break;
+        }
+    }
+
     private void downloadFile() {
         if (mItem.attachedFileUrl.equals(StringUtil.NULL)) {
             AppUtil.showToast(this, R.string.tab_announce_no_download_link);
+            return;
+        }
+
+        if (!checkSelfPermissionCompat(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            requestPermissionsCompat(REQUEST_PERMISSION_FILE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
             return;
         }
 
@@ -153,6 +177,7 @@ public class SubAnnounceWebActivity extends WebViewActivity {
                 return;
         }
 
+        //noinspection ResourceType
         final String docPath = PrefUtil.getDocumentPath(this);
         final AsyncTask<Void, ?, File> task = NetworkRequests.Announces.attachedFileDownloadRequest(this, url, docPath)
                 .getAsync(

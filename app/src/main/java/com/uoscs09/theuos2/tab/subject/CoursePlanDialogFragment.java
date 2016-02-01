@@ -1,6 +1,7 @@
 package com.uoscs09.theuos2.tab.subject;
 
 
+import android.Manifest;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -40,9 +41,11 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class CoursePlanDialogFragment extends BaseDialogFragment implements Toolbar.OnMenuItemClickListener {
-    private final static String INFO = "info";
 
     private final static String TAG = "CoursePlanDialogFragment";
+    private final static String INFO = "info";
+    private static final int REQUEST_PERMISSION_TXT = 40;
+    private static final int REQUEST_PERMISSION_IMAGE = 41;
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
@@ -237,8 +240,32 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Tool
         AppUtil.showErrorToast(getActivity(), e, true);
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode){
+            case REQUEST_PERMISSION_TXT:
+                if(checkPermissionResultAndShowToastIfFailed(permissions, grantResults, getString(R.string.tab_course_plan_permission_reject))){
+                    saveCoursePlanToText();
+                }
+                break;
+
+            case REQUEST_PERMISSION_IMAGE:
+                if(checkPermissionResultAndShowToastIfFailed(permissions, grantResults, getString(R.string.tab_course_plan_permission_reject))){
+                    saveCoursePlanToImage();
+                }
+                break;
+        }
+    }
+
     void saveCoursePlanToImage() {
         sendClickEvent("save course plan to image");
+
+        if (!checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSION_IMAGE);
+            return;
+        }
 
         final String picturePath = PrefUtil.getPicturePath(getActivity());
         String dir = picturePath + "/" + getString(R.string.tab_course_plan_title) + '_' + mSubject.subject_nm + '_' + mSubject.prof_nm + '_' + mSubject.class_div + ".jpeg";
@@ -280,6 +307,11 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Tool
     void saveCoursePlanToText() {
         sendClickEvent("save course plan to text");
 
+        if (!checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSION_TXT);
+            return;
+        }
+
         final String docPath = PrefUtil.getDocumentPath(getActivity());
         final String fileName = docPath + "/" + getString(R.string.tab_course_plan_title) + '_' + mSubject.subject_nm + '_' + mSubject.prof_nm + '_' + mSubject.class_div + ".txt";
 
@@ -294,32 +326,29 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Tool
                     }
                     return sb.toString();
                 })
-                .wrap(IOUtil.<String>newFileWriteProcessor(null, fileName))
-                .getAsync(
-                        result -> {
+                .wrap(IOUtil.<String>newExternalFileWriteProcessor(fileName))
+                .getAsync(result -> {
                             dismissProgressDialog();
 
                             String docDir = docPath.substring(docPath.lastIndexOf('/') + 1);
                             Snackbar.make(mListView, getString(R.string.tab_course_plan_action_save_text_completed, docDir), Snackbar.LENGTH_LONG)
                                     .setAction(R.string.action_open, v -> {
-                                                Intent intent = new Intent();
-                                                intent.setAction(Intent.ACTION_VIEW);
-                                                intent.setDataAndType(Uri.parse("file://" + fileName), "text/*");
+                                        Intent intent = new Intent();
+                                        intent.setAction(Intent.ACTION_VIEW);
+                                        intent.setDataAndType(Uri.parse("file://" + fileName), "text/*");
 
-                                                try {
-                                                    AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
-                                                } catch (ActivityNotFoundException e) {
-                                                    //e.printStackTrace();
-                                                    AppUtil.showToast(getActivity(), R.string.error_no_activity_found_to_handle_file);
-                                                } catch (Exception e) {
-                                                    e.printStackTrace();
-                                                    AppUtil.showErrorToast(getActivity(), e, true);
-                                                }
+                                        try {
+                                            AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
+                                        } catch (ActivityNotFoundException e) {
+                                            //e.printStackTrace();
+                                            AppUtil.showToast(getActivity(), R.string.error_no_activity_found_to_handle_file);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                            AppUtil.showErrorToast(getActivity(), e, true);
+                                        }
 
-                                                sendClickEvent("show course plan text");
-                                            }
-
-                                    )
+                                        sendClickEvent("show course plan text");
+                                    })
                                     .show();
                         },
                         this::onError

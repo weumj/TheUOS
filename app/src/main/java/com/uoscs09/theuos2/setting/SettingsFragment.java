@@ -364,6 +364,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
         super.onDetach();
     }
 
+    @SuppressWarnings("ResourceType")
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         switch (key) {

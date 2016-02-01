@@ -1,7 +1,10 @@
 package com.uoscs09.theuos2.util;
 
+import android.Manifest;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresPermission;
 import android.util.Log;
 
 import com.uoscs09.theuos2.async.AbstractRequest;
@@ -26,7 +29,36 @@ public class IOUtil {
     public static final String FILE_REST = "rest_file";
     public static final String FILE_LIBRARY_SEAT = "file_library_seat";
 
-    private IOUtil(){}
+    private IOUtil() {
+    }
+
+    private static <T> T readFromFileInternal(FileInputStream fis) throws IOException, ClassNotFoundException {
+        BufferedInputStream bis = null;
+        ObjectInputStream ois = null;
+        try {
+            bis = new BufferedInputStream(fis);
+            ois = new ObjectInputStream(bis);
+            //noinspection unchecked
+            return (T) ois.readObject();
+        } finally {
+            closeStream(ois);
+            closeStream(bis);
+            closeStream(fis);
+        }
+    }
+
+    /**
+     * 주어진 이름의 파일을 내부 저장소에서 읽어온다.
+     *
+     * @return 파일이 존재하고, 성공적으로 읽어왔을 경우 : 해당 객체 <br>
+     * 파일이 없거나 예외가 발생할 경우 : null
+     * @throws IOException
+     * @throws StreamCorruptedException
+     * @throws ClassNotFoundException
+     */
+    public static <T> T readFromFile(Context context, String fileName) throws IOException, ClassNotFoundException {
+        return readFromFileInternal(context.openFileInput(fileName));
+    }
 
     /**
      * 주어진 이름의 파일을 읽어온다.
@@ -37,24 +69,59 @@ public class IOUtil {
      * @throws StreamCorruptedException
      * @throws ClassNotFoundException
      */
-    @SuppressWarnings("unchecked")
-    public static <T> T readFromFile(Context context, String fileName) throws IOException, ClassNotFoundException {
-        FileInputStream fis = null;
-        BufferedInputStream bis = null;
-        ObjectInputStream ois = null;
-        T object;
-        try {
-            fis = context.openFileInput(fileName);
-            bis = new BufferedInputStream(fis);
-            ois = new ObjectInputStream(bis);
-            object = (T) ois.readObject();
-        } finally {
-            closeStream(ois);
-            closeStream(bis);
-            closeStream(fis);
-        }
-        return object;
+    public static <T> T readFromFile(File file) throws IOException, ClassNotFoundException {
+        return readFromFileInternal(new FileInputStream(file));
     }
+
+    /**
+     * 외부 저장소 (ex : storage)에 주어진 이름으로 파일을 저장한다.
+     *
+     * @param obj 저장할 객체
+     * @throws IOException
+     */
+    private static void writeObjectInternal(FileOutputStream fos, Object obj) throws IOException {
+        if (obj == null) {
+            throw new IOException("Cannot write null object.");
+        }
+
+        if (fos == null) {
+            throw new IOException("Cannot write object to null file.");
+        }
+
+        BufferedOutputStream bos = null;
+        ObjectOutputStream oos = null;
+        try {
+            bos = new BufferedOutputStream(fos);
+            oos = new ObjectOutputStream(bos);
+            oos.writeObject(obj);
+        } finally {
+            closeStream(oos);
+            closeStream(bos);
+            closeStream(fos);
+        }
+    }
+
+    /**
+     * 외부 저장소 (ex : storage)에 주어진 이름으로 파일을 저장한다.
+     *
+     * @param obj 저장할 객체
+     * @throws IOException
+     */
+    @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    public static void writeObjectToExternalFile(String fileName, Object obj) throws IOException {
+        writeObjectInternal(new FileOutputStream(fileName), obj);
+    }
+
+    /**
+     * 내부 저장소에 주어진 이름으로 파일을 저장한다.
+     *
+     * @param obj 저장할 객체
+     * @throws IOException
+     */
+    public static void writeObjectToFile(Context context, String fileName, Object obj) throws IOException {
+        writeObjectInternal(context.openFileOutput(fileName, Context.MODE_PRIVATE), obj);
+    }
+
 
     @Nullable
     public static <T> T readFromFileSuppressed(Context context, String fileName) {
@@ -79,33 +146,6 @@ public class IOUtil {
         }
     }
 
-    /**
-     * 내부 저장소에 주어진 이름으로 파일을 저장한다.
-     *
-     * @param obj 저장할 객체
-     * @throws IOException
-     */
-    public static void writeObjectToFile(Context context, String fileName, Object obj) throws IOException {
-        if (obj == null) {
-            Log.e(TAG, "Cannot write null object.");
-            return;
-        }
-
-        FileOutputStream fos = null;
-        BufferedOutputStream bos = null;
-        ObjectOutputStream oos = null;
-        try {
-            fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
-            bos = new BufferedOutputStream(fos);
-            oos = new ObjectOutputStream(bos);
-            oos.writeObject(obj);
-        } finally {
-            closeStream(oos);
-            closeStream(bos);
-            closeStream(fos);
-        }
-
-    }
 
     private static void closeStream(Closeable close) {
         if (close != null) {
@@ -116,32 +156,6 @@ public class IOUtil {
         }
     }
 
-    /**
-     * 외부 저장소 (ex : storage)에 주어진 이름으로 파일을 저장한다.
-     *
-     * @param obj 저장할 객체
-     * @throws IOException
-     */
-    public static void writeObjectToExternalFile(String fileName, Object obj) throws IOException {
-        if (obj == null) {
-            Log.e(TAG, "Cannot write null object.");
-            return;
-        }
-
-        FileOutputStream fos = null;
-        BufferedOutputStream bos = null;
-        ObjectOutputStream oos = null;
-        try {
-            fos = new FileOutputStream(fileName);
-            bos = new BufferedOutputStream(fos);
-            oos = new ObjectOutputStream(bos);
-            oos.writeObject(obj);
-        } finally {
-            closeStream(oos);
-            closeStream(bos);
-            closeStream(fos);
-        }
-    }
 
     /*
     /**
@@ -251,8 +265,12 @@ public class IOUtil {
         }
     }
 
+    @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    public static <T> Processor<T, T> newExternalFileWriteProcessor(String fileName) {
+        return new FileWriteProcessor<>(null, fileName);
+    }
 
-    public static <T> Processor<T, T> newFileWriteProcessor(@Nullable Context context, String fileName) {
+    public static <T> Processor<T, T> newInternalFileWriteProcessor(@NonNull Context context, String fileName) {
         return new FileWriteProcessor<>(context, fileName);
     }
 
@@ -268,6 +286,7 @@ public class IOUtil {
         @Override
         public T process(T t) throws Exception {
             if (context == null)
+                //noinspection ResourceType
                 writeObjectToExternalFile(fileName, t);
             else
                 writeObjectToFile(context, fileName, t);

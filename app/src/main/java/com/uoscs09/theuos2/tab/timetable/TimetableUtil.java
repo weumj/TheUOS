@@ -1,7 +1,10 @@
 package com.uoscs09.theuos2.tab.timetable;
 
 
+import android.Manifest;
 import android.content.Context;
+import android.support.annotation.RequiresPermission;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -70,7 +73,7 @@ public class TimetableUtil {
 
     public static int getTimeTableColor(Context context, int idx) {
         if (idx > -1 && idx < 10) {
-            return PrefUtil.getInstance(context).get("color" + idx, context.getResources().getColor(getTimeTableColorDefaultResource(idx)));
+            return PrefUtil.getInstance(context).get("color" + idx, ContextCompat.getColor(context, getTimeTableColorDefaultResource(idx)));
         }
 
         return 0;
@@ -105,14 +108,16 @@ public class TimetableUtil {
             case 8:
                 return R.color.material_green_700;
             case 9:
-                return R.color.material_deep_teal_500;
+                return R.color.material_deep_teal_500_1;
             default:
                 return 0;
         }
     }
 
 
+    @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     public static Request<String> saveTimetableToImage(TimeTable timeTable, ListView listView, ListAdapter originalAdapter, View header) {
+        //noinspection ResourceType
         final String picturePath = PrefUtil.getPicturePath(listView.getContext());
         String savedPath = picturePath + "/timetable_" + timeTable.year + '_' + timeTable.semesterCode + '_' + String.valueOf(System.currentTimeMillis()) + ".png";
 

@@ -1,7 +1,9 @@
 package com.uoscs09.theuos2.base;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.PermissionChecker;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 
@@ -29,6 +31,10 @@ public abstract class BaseFragment extends Fragment implements TrackerUtil.Track
 
     protected final AppCompatActivity getAppCompatActivity() {
         return (AppCompatActivity) getActivity();
+    }
+
+    protected final BaseActivity getBaseActivity() {
+        return (BaseActivity) getActivity();
     }
 
     /**
@@ -91,5 +97,24 @@ public abstract class BaseFragment extends Fragment implements TrackerUtil.Track
 
     protected void sendEmptyViewClickEvent() {
         sendClickEvent("emptyView");
+    }
+
+    @PermissionChecker.PermissionResult
+    protected boolean checkSelfPermission(String permission) {
+        return getBaseActivity().checkSelfPermissionCompat(permission);
+    }
+
+    // String...
+    @PermissionChecker.PermissionResult
+    protected boolean checkSelfPermissions(String[] permission) {
+        return getBaseActivity().checkSelfPermissionCompat(permission);
+    }
+
+    protected boolean checkPermissionResultAndShowToastIfFailed(@NonNull String[] permissions, @NonNull int[] grantResults, String message) {
+        return getBaseActivity().checkPermissionResultAndShowToastIfFailed(permissions, grantResults, message);
+    }
+
+    protected boolean checkPermissionResult(@NonNull String[] permissions, @NonNull int[] grantResults) {
+        return getBaseActivity().checkPermissionResult(permissions, grantResults);
     }
 }

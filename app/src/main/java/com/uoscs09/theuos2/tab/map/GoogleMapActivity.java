@@ -43,7 +43,8 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
     //private Location location;
     private Spinner mLocationSelectSpinner;
 
-    private static final int REQUEST_LOCATION_SOURCE_SETTINGS = 9643;
+    private static final int REQUEST_LOCATION_SOURCE_SETTINGS = 100;
+    private static final int REQUEST_PERMISSION_IN_INIT = 120;
 
     private enum WelfareCategory {
         CASH, BANK, COPY, PRINT, SEARCH, REST, ELEVATOR, HEALTH_CENTER, POST, RESTAURANT, FASTFOOD, STAND, EYE, BOOK, WRITING, SOUVENIR, HEALTH, TENNIS
@@ -125,11 +126,17 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
     }
     */
 
+    @SuppressWarnings("ResourceType")
     void initGoogleMapSetting(GoogleMap googleMap) {
         this.googleMap = googleMap;
-        googleMap.setBuildingsEnabled(true);
 
-        googleMap.setMyLocationEnabled(true);
+        String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+        if (!checkSelfPermissionCompat(permissions)) {
+            requestPermissionsCompat(REQUEST_PERMISSION_IN_INIT, permissions);
+        } else {
+            googleMap.setBuildingsEnabled(true);
+            googleMap.setMyLocationEnabled(true);
+        }
 
         isInit = true;
         int buildingNo = getIntent().getIntExtra("building", -1);
@@ -138,7 +145,7 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
             mLocationSelectSpinner.setSelection(buildingNo - 1, false);
             // moveCamera(univBuilding);
             //moveCameraPositionAt(buildingNo);
-           // buildingNo = -1;
+            // buildingNo = -1;
 
         } else {
             moveCamera(UnivBuilding.Univ);
@@ -164,11 +171,7 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
 
         } else {
             // 위치 정보 설정이 되어 있으면 현재위치를 받아옴
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                    && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_REQUEST_LOCATION);
-            } else
-                locationManager.requestLocationUpdates(provider, 1, 1, this);
+            locationManager.requestLocationUpdates(provider, 1, 1, this);
         }
     }
 
@@ -185,15 +188,11 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         switch (requestCode) {
+            case REQUEST_PERMISSION_IN_INIT:
             case PERMISSION_REQUEST_LOCATION:
-                for (int result : grantResults) {
-                    if (result == PackageManager.PERMISSION_DENIED) {
-                        AppUtil.showToast(this, R.string.tab_map_submap_permission_denied);
-                        finish();
-                        return;
-                    }
+                if (checkPermissionResultAndShowToastIfFailed(permissions, grantResults, getString(R.string.tab_map_submap_permission_denied))) {
+                    initMap();
                 }
-                initMap();
                 break;
 
             default:
