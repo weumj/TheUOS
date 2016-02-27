@@ -27,11 +27,11 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.base.BaseDialogFragment;
-import com.uoscs09.theuos2.util.AppResources;
+import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.ImageUtil;
-import com.uoscs09.theuos2.util.PrefUtil;
+import com.uoscs09.theuos2.util.PrefHelper;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import java.util.ArrayList;
@@ -195,7 +195,7 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Tool
         });
         mProgressDialog.show();
 
-        mAsyncTask = AppResources.Subjects.requestCoursePlan(getActivity(), mSubject)
+        mAsyncTask = AppRequests.Subjects.requestCoursePlan(getActivity(), mSubject)
                 .getAsync(
                         result -> {
                             dismissProgressDialog();
@@ -244,15 +244,15 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Tool
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        switch (requestCode){
+        switch (requestCode) {
             case REQUEST_PERMISSION_TXT:
-                if(checkPermissionResultAndShowToastIfFailed(permissions, grantResults, getString(R.string.tab_course_plan_permission_reject))){
+                if (checkPermissionResultAndShowToastIfFailed(permissions, grantResults, getString(R.string.tab_course_plan_permission_reject))) {
                     saveCoursePlanToText();
                 }
                 break;
 
             case REQUEST_PERMISSION_IMAGE:
-                if(checkPermissionResultAndShowToastIfFailed(permissions, grantResults, getString(R.string.tab_course_plan_permission_reject))){
+                if (checkPermissionResultAndShowToastIfFailed(permissions, grantResults, getString(R.string.tab_course_plan_permission_reject))) {
                     saveCoursePlanToImage();
                 }
                 break;
@@ -267,14 +267,13 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Tool
             return;
         }
 
-        final String picturePath = PrefUtil.getPicturePath(getActivity());
+        final String picturePath = PrefHelper.Data.getPicturePath();
         String dir = picturePath + "/" + getString(R.string.tab_course_plan_title) + '_' + mSubject.subject_nm + '_' + mSubject.prof_nm + '_' + mSubject.class_div + ".jpeg";
         final AsyncTask<Void, ?, String> task = new ImageUtil.ListViewBitmapRequest.Builder(mListView, mAdapter)
                 .setHeaderView(mCourseTitle)
                 .build()
                 .wrap(new ImageUtil.ImageWriteProcessor(dir))
-                .getAsync(
-                        result -> {
+                .getAsync(result -> {
                             dismissProgressDialog();
 
                             String pictureDir = picturePath.substring(picturePath.lastIndexOf('/') + 1);
@@ -312,7 +311,7 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Tool
             return;
         }
 
-        final String docPath = PrefUtil.getDocumentPath(getActivity());
+        final String docPath = PrefHelper.Data.getDocumentPath();
         final String fileName = docPath + "/" + getString(R.string.tab_course_plan_title) + '_' + mSubject.subject_nm + '_' + mSubject.prof_nm + '_' + mSubject.class_div + ".txt";
 
         final AsyncTask<Void, ?, String> task = AsyncUtil.newRequest(

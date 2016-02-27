@@ -15,7 +15,7 @@ import android.widget.ListView;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.util.AppUtil;
-import com.uoscs09.theuos2.util.PrefUtil;
+import com.uoscs09.theuos2.util.PrefHelper;
 import com.uoscs09.theuos2.util.TrackerUtil;
 
 import java.io.File;
@@ -64,7 +64,7 @@ public class SettingsFileSelectDialogFragment extends DialogFragment {
         TrackerUtil.getInstance(this).sendVisibleEvent(TAG);
 
         mFileList = new ArrayList<>();
-        path = getPathFromPref(getActivity());
+        path = getPathFromPref();
     }
 
     /**
@@ -150,12 +150,11 @@ public class SettingsFileSelectDialogFragment extends DialogFragment {
     }
 
     private void putPathToPref(Context context, String path) {
-        PrefUtil.getInstance(context).put(PATH_KEY, path);
+        PrefHelper.Data.putPath(PATH_KEY, path);
     }
 
-    private String getPathFromPref(Context context) {
-        String defaultRoute = PrefUtil.getDefaultPath(PATH_KEY);
-        return PrefUtil.getInstance(context).get(PATH_KEY, defaultRoute);
+    private String getPathFromPref() {
+        return PrefHelper.Data.getPath(PATH_KEY);
     }
 
 

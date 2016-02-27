@@ -8,24 +8,21 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.TextView;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.BaseDialogFragment;
-import com.uoscs09.theuos2.base.ListRecyclerAdapter;
-
-import java.util.List;
 
 import butterknife.Bind;
+import mj.android.utils.recyclerview.ListRecyclerAdapter;
+import mj.android.utils.recyclerview.ListRecyclerUtil;
 
 public class SeatDismissDialogFragment extends BaseDialogFragment {
 
     private View mDismissDialogView, mDismissEmptyView;
-    private SeatDismissInfoListAdapter mInfoAdapter;
+    private RecyclerView.Adapter mInfoAdapter;
     private SeatInfo mSeatInfo;
     private Dialog mDialog;
 
@@ -58,7 +55,7 @@ public class SeatDismissDialogFragment extends BaseDialogFragment {
 
             recyclerView.setLayoutManager(manager);
 
-            mInfoAdapter = new SeatDismissInfoListAdapter(mSeatInfo.seatDismissInfoList);
+            mInfoAdapter = ListRecyclerUtil.newSimpleAdapter(mSeatInfo.seatDismissInfoList, Holder.class, R.layout.list_layout_seat_dismiss_info);
             recyclerView.setAdapter(mInfoAdapter);
 
             if (mSeatInfo.seatDismissInfoList.isEmpty())
@@ -93,35 +90,22 @@ public class SeatDismissDialogFragment extends BaseDialogFragment {
         return "SeatDismissDialogFragment";
     }
 
-    static class SeatDismissInfoListAdapter extends ListRecyclerAdapter<SeatDismissInfo, SeatDismissInfoListAdapter.Holder> {
+    static class Holder extends ListRecyclerAdapter.ViewHolder<SeatDismissInfo> {
+        @Bind(R.id.tab_libray_seat_info_time)
+        public TextView time;
+        @Bind(R.id.tab_libray_seat_info_number)
+        public TextView count;
 
-        public SeatDismissInfoListAdapter(List<SeatDismissInfo> list) {
-            super(list);
+        public Holder(View v) {
+            super(v);
         }
 
         @Override
-        public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new Holder(LayoutInflater.from(parent.getContext()).inflate(R.layout.list_layout_seat_dismiss_info, parent, false));
-        }
+        protected void setView(int position) {
+            SeatDismissInfo info = getItem();
 
-        static class Holder extends ListRecyclerAdapter.ViewHolder<SeatDismissInfo> {
-            @Bind(R.id.tab_libray_seat_info_time)
-            public TextView time;
-            @Bind(R.id.tab_libray_seat_info_number)
-            public TextView count;
-
-            public Holder(View v) {
-                super(v);
-            }
-
-            @Override
-            protected void setView() {
-                SeatDismissInfo info = getItem();
-
-                time.setText(time.getContext().getString(R.string.tab_library_seat_dismiss_info_time_within, info.time));
-                count.setText(String.valueOf(info.seatCount));
-            }
+            time.setText(time.getContext().getString(R.string.tab_library_seat_dismiss_info_time_within, info.time));
+            count.setText(String.valueOf(info.seatCount));
         }
     }
-
 }

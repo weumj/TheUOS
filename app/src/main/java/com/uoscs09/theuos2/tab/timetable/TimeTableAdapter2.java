@@ -9,7 +9,7 @@ import android.widget.TextView;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.util.AppUtil;
-import com.uoscs09.theuos2.util.PrefUtil;
+import com.uoscs09.theuos2.util.PrefHelper;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import java.util.Locale;
@@ -41,7 +41,7 @@ class TimeTableAdapter2 extends AbsArrayAdapter<Subject[], TimeTableAdapter2.Tim
 
     @Override
     public int getCount() {
-        return PrefUtil.getInstance(getContext()).get(PrefUtil.KEY_TIMETABLE_LIMIT, false) ? mTimeTable.maxTime : super.getCount();
+        return PrefHelper.TimeTables.isShowingLastEmptyPeriod() ? mTimeTable.maxTime : super.getCount();
     }
 
     @Override

@@ -24,7 +24,7 @@ import android.view.View;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
-import com.uoscs09.theuos2.util.AppResources;
+import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
 
 import java.text.SimpleDateFormat;
@@ -223,8 +223,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
             ContentValues cv = mSelectedItem.toContentValues(calendarId);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
-                //noinspection deprecation
-                cv.put(CalendarContract.Events.EVENT_COLOR, getResources().getColor(AppUtil.getColor(mList.indexOf(mSelectedItem))));
+                cv.put(CalendarContract.Events.EVENT_COLOR, AppUtil.getOrderedColor(getActivity(), mList.indexOf(mSelectedItem)));
 
             Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, cv);
             c.close();
@@ -251,7 +250,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
 
     private void execute() {
         execute(true,
-                AppResources.UnivSchedules.request(getActivity()),
+                AppRequests.UnivSchedules.request(getActivity()),
                 result -> {
                     mList.clear();
                     mList.addAll(result);

@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.uoscs09.theuos2"
-    android:versionCode="6"
-    android:versionName="@string/setting_app_version_name">
+    package="com.uoscs09.theuos2">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -24,10 +22,10 @@
         android:required="true" />
 
     <application
-        android:fullBackupContent="true"
-        android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
         android:name=".UOSApplication"
+        android:allowBackup="true"
+        android:fullBackupContent="true"
+        android:icon="@drawable/ic_launcher"
         android:label="@string/app_name">
 
         <meta-data
@@ -126,8 +124,8 @@
 
         <receiver
             android:name=".appwidget.timetable.TimeTableWidget4x4"
-            android:label="@string/widget_timetable4x4"
-            android:exported="false">
+            android:exported="false"
+            android:label="@string/widget_timetable4x4">
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_conf_timetable_4x4" />
@@ -137,15 +135,15 @@
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.ACTION_EXTERNAL_APPLICATION_AVAILABLE" />
-                <action android:name="android.intent.action.TIMEZONE_CHANGED"/>
-                <action android:name="android.intent.action.DATE_CHANGED"/>
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.DATE_CHANGED" />
             </intent-filter>
         </receiver>
 
         <receiver
             android:name=".appwidget.timetable.TimeTableWidget5x4"
-            android:label="@string/widget_timetable5x4"
-            android:exported="false">
+            android:exported="false"
+            android:label="@string/widget_timetable5x4">
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_conf_timetable_5x4" />
@@ -155,15 +153,15 @@
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.ACTION_EXTERNAL_APPLICATION_AVAILABLE" />
-                <action android:name="android.intent.action.TIMEZONE_CHANGED"/>
-                <action android:name="android.intent.action.DATE_CHANGED"/>
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.DATE_CHANGED" />
             </intent-filter>
         </receiver>
 
         <receiver
             android:name=".appwidget.restaurant.RestWidget"
-            android:label="@string/widget_rest_desc"
-            android:exported="false">
+            android:exported="false"
+            android:label="@string/widget_rest_desc">
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_conf_rest" />
@@ -178,8 +176,8 @@
 
         <receiver
             android:name=".appwidget.libraryseat.LibrarySeatWidget"
-            android:label="@string/widget_library_seat_desc"
-            android:exported="false">
+            android:exported="false"
+            android:label="@string/widget_library_seat_desc">
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_conf_library_seat" />

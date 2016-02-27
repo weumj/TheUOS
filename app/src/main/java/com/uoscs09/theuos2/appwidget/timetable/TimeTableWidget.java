@@ -12,7 +12,7 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.base.BaseAppWidgetProvider;
 import com.uoscs09.theuos2.tab.timetable.TimeTable;
-import com.uoscs09.theuos2.util.AppResources;
+import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
 
@@ -31,7 +31,7 @@ public abstract class TimeTableWidget extends BaseAppWidgetProvider {
         AsyncUtil.execute(() -> {
             TimeTable timeTable = null;
             try {
-                timeTable = AppResources.TimeTables.readFromFile(context).get();
+                timeTable = AppRequests.TimeTables.readFromFile(context).get();
             } catch (Exception e) {
                 e.printStackTrace();
             }

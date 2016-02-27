@@ -12,7 +12,7 @@ import java.util.Locale;
 public class Subject implements Parcelable, Serializable {
     private static final long serialVersionUID = -5540327532775749251L;
 
-    public static final Subject EMPTY = new Subject();
+    public static final transient Subject EMPTY = new Subject();
 
     /**
      * 과목

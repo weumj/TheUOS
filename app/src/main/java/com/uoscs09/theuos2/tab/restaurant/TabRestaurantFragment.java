@@ -19,7 +19,7 @@ import android.widget.TextView;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
-import com.uoscs09.theuos2.util.AppResources;
+import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
 
 import java.util.ArrayList;
@@ -190,7 +190,7 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
         mRestItemAdapter.notifyItemRangeRemoved(0, 5);
 
         execute(true,
-                AppResources.Restaurants.request(getActivity(), force),
+                AppRequests.Restaurants.request(getActivity(), force),
                 result -> {
                     mRestTable = result;
                     mRestItemAdapter.mItems = mRestTable;

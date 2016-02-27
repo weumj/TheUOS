@@ -36,8 +36,7 @@ class UnivScheduleAdapter extends AbsArrayAdapter<UnivScheduleItem, UnivSchedule
         holder.textView2.setText(item.sch_date);
 
 
-        //noinspection deprecation
-        holder.drawable.setColor(getContext().getResources().getColor(AppUtil.getColor(position)));
+        holder.drawable.setColor(AppUtil.getOrderedColor(getContext(), position));
         //holder.drawable.setCentorColor(getContext().getResources().getColor(AppUtil.getColor(position)));
 
         holder.textView1.invalidateDrawable(holder.drawable);

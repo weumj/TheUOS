@@ -25,7 +25,7 @@ import android.widget.TextView;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
-import com.uoscs09.theuos2.util.AppResources;
+import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
 
 import java.util.ArrayList;
@@ -291,7 +291,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
 
     private void executeSearchJob(boolean moreRequest, int newPageIndex, String query) {
         execute(true,
-                AppResources.Announces.searchRequest(getActivity(), getCurrentCategoryIndex(), newPageIndex, query),
+                AppRequests.Announces.searchRequest(getActivity(), getCurrentCategoryIndex(), newPageIndex, query),
                 result -> {
                     mListFooterView.setClickable(true);
                     if (moreRequest) updateWithResultInMoreRequest(result, newPageIndex);
@@ -304,7 +304,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
 
     private void executeJob(boolean moreRequest, int newPageIndex) {
         execute(true,
-                AppResources.Announces.normalRequest(getActivity(), getCurrentCategoryIndex(), newPageIndex),
+                AppRequests.Announces.normalRequest(getActivity(), getCurrentCategoryIndex(), newPageIndex),
                 result -> {
                     mListFooterView.setClickable(true);
                     if (moreRequest) updateWithResultInMoreRequest(result, newPageIndex);

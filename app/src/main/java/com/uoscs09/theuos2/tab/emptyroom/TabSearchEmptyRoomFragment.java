@@ -17,7 +17,7 @@ import android.widget.TextView;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
-import com.uoscs09.theuos2.util.AppResources;
+import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 
@@ -164,7 +164,7 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Em
         int term = mTermSpinner.getSelectedItemPosition();
 
         execute(true,
-                AppResources.EmptyRooms.request(getActivity(), building, time, term),
+                AppRequests.EmptyRooms.request(getActivity(), building, time, term),
                 result -> {
                     mClassRoomList.clear();
                     mClassRoomList.addAll(result);

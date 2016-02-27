@@ -29,12 +29,11 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
-import com.uoscs09.theuos2.util.AppResources;
+import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.OApiUtil.Semester;
-import com.uoscs09.theuos2.util.PrefUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import java.io.IOException;
@@ -277,7 +276,7 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> {
         );
 */
         execute(true,
-                AppResources.TimeTables.request(getActivity(), mWiseIdView.getText(), mWisePasswdView.getText(), semester, mTimeTableYear),
+                AppRequests.TimeTables.request(getActivity(), mWiseIdView.getText(), mWisePasswdView.getText(), semester, mTimeTableYear),
                 result -> {
                     clearPassWd();
                     if (result == null /*|| result.isEmpty()*/) {
@@ -312,7 +311,7 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> {
     }
 
     private void readTimetableFromFileOnFragmentCreated() {
-        AppResources.TimeTables.readFromFile(getActivity())
+        AppRequests.TimeTables.readFromFile(getActivity())
                 .getAsync(
                         result -> {
                             if (result == null || result.isEmpty()) {
@@ -367,19 +366,6 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> {
     private void loginToWise() {
         String id = mWiseIdView.getText().toString();
         Context context = getActivity();
-
-        if (id.equals("123456789") && mWisePasswdView.length() < 1) {
-            if (AppUtil.test) {
-                AppUtil.test = false;
-            } else {
-                AppUtil.test = true;
-                AppUtil.showToast(context, "test", isVisible());
-            }
-
-            PrefUtil.getInstance(context).put("test", AppUtil.test);
-            clearText();
-            return;
-        }
 
         if (mWisePasswdView.length() < 1 || StringUtil.NULL.equals(id)) {
             AppUtil.showToast(context, R.string.tab_timetable_wise_login_warning_null, true);

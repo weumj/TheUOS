@@ -12,9 +12,9 @@ import android.widget.RemoteViews;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsAsyncWidgetProvider;
 import com.uoscs09.theuos2.tab.libraryseat.SeatItem;
-import com.uoscs09.theuos2.util.AppResources;
+import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.IOUtil;
-import com.uoscs09.theuos2.util.PrefUtil;
+import com.uoscs09.theuos2.util.PrefHelper;
 import com.uoscs09.theuos2.util.TimeUtil;
 
 import java.util.ArrayList;
@@ -74,10 +74,10 @@ public class LibrarySeatWidget extends AbsAsyncWidgetProvider<ArrayList<SeatItem
     @Override
     protected ArrayList<SeatItem> doInBackGround(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) throws Exception {
 
-        ArrayList<SeatItem> list = AppResources.LibrarySeats.request(context).get().seatItemList;
+        ArrayList<SeatItem> list = AppRequests.LibrarySeats.request(context).get().seatItemList;
         ArrayList<SeatItem> newList = new ArrayList<>();
 
-        if (PrefUtil.getInstance(context).get(PrefUtil.KEY_LIB_WIDGET_SEAT_SHOW_ALL, false)) {
+        if (PrefHelper.LibrarySeats.isShowingWidgetStudyRoom()) {
             for (int i : STUDY_ROOM_NUMBER_ARRAY) {
                 SeatItem item = list.get(i);
                 // if (Double.parseDouble(item.utilizationRateStr) < 50d)

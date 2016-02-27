@@ -24,7 +24,7 @@ import com.uoscs09.theuos2.common.PieProgressDrawable;
 import com.uoscs09.theuos2.tab.map.GoogleMapActivity;
 import com.uoscs09.theuos2.tab.subject.CoursePlanDialogFragment;
 import com.uoscs09.theuos2.tab.subject.SubjectItem2;
-import com.uoscs09.theuos2.util.AppResources;
+import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 
@@ -227,7 +227,7 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
 
             sendClickEvent("course plan");
 
-            AppResources.Subjects.requestSubjectInfo(getActivity(), mSubject.subjectName, mTimeTable.year, mTimeTable.semesterCode.code)
+            AppRequests.Subjects.requestSubjectInfo(getActivity(), mSubject.subjectName, mTimeTable.year, mTimeTable.semesterCode.code)
                     .getAsync(
                             result -> {
                                 mProgress.dismiss();

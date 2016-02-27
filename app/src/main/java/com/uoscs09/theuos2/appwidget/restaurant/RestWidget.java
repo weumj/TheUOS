@@ -12,7 +12,7 @@ import android.widget.RemoteViews;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsAsyncWidgetProvider;
 import com.uoscs09.theuos2.tab.restaurant.RestItem;
-import com.uoscs09.theuos2.util.AppResources;
+import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.PrefUtil;
 
 public class RestWidget extends AbsAsyncWidgetProvider<SparseArray<RestItem>> {
@@ -59,7 +59,7 @@ public class RestWidget extends AbsAsyncWidgetProvider<SparseArray<RestItem>> {
 
             case Intent.ACTION_BOOT_COMPLETED:
                 // 처음 부팅시 인터넷 접속이 되지 않으므로, 기존 파일에서 읽어온다.
-                SparseArray<RestItem> map = AppResources.Restaurants.readFromFile(context);
+                SparseArray<RestItem> map = AppRequests.Restaurants.readFromFile(context);
                 if (map.size() == 0)
                     return;
 
@@ -73,7 +73,7 @@ public class RestWidget extends AbsAsyncWidgetProvider<SparseArray<RestItem>> {
 
     @Override
     protected SparseArray<RestItem> doInBackGround(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) throws Exception {
-        return AppResources.Restaurants.request(context, false).get();
+        return AppRequests.Restaurants.request(context, false).get();
     }
 
     @Override

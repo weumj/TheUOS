@@ -1,8 +1,6 @@
 package com.uoscs09.theuos2.http;
 
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -24,6 +22,8 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import mj.android.utils.common.NetworkUtils;
 
 /**
  * Http 요청을 처리하는 Request 클래스
@@ -111,9 +111,7 @@ public abstract class HttpRequest<T> extends AbstractRequest<T> {
     }
 
     public static boolean checkNetworkUnable(Context context) {
-        ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
-        return networkInfo == null || !networkInfo.isConnected();
+        return !NetworkUtils.isConnectivityEnable(context);
     }
 
     public static void checkNetworkStateAndThrowException(Context context) throws IOException {

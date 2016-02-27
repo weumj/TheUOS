@@ -14,7 +14,7 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.common.PieProgressDrawable;
-import com.uoscs09.theuos2.util.AppResources;
+import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 
@@ -109,7 +109,7 @@ class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements View.OnCl
                 item.bookStateInfoList = Collections.emptyList();
                 removeAllBookStateInLayout();
             } else {
-                asyncTask = AppResources.Books.requestBookStateInfo(holder.itemView.getContext(), item.infoUrl)
+                asyncTask = AppRequests.Books.requestBookStateInfo(holder.itemView.getContext(), item.infoUrl)
                         .getAsyncOnExecutor(
                                 result -> {
                                     item.bookStateInfoList = result;

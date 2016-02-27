@@ -12,16 +12,12 @@ import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.async.Processor;
 import com.uoscs09.theuos2.async.Request;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.Closeable;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
+
+import mj.android.utils.common.IOUtils;
 
 public class IOUtil {
     private static final String TAG = "IOUtil";
@@ -32,20 +28,6 @@ public class IOUtil {
     private IOUtil() {
     }
 
-    private static <T> T readFromFileInternal(FileInputStream fis) throws IOException, ClassNotFoundException {
-        BufferedInputStream bis = null;
-        ObjectInputStream ois = null;
-        try {
-            bis = new BufferedInputStream(fis);
-            ois = new ObjectInputStream(bis);
-            //noinspection unchecked
-            return (T) ois.readObject();
-        } finally {
-            closeStream(ois);
-            closeStream(bis);
-            closeStream(fis);
-        }
-    }
 
     /**
      * 주어진 이름의 파일을 내부 저장소에서 읽어온다.
@@ -57,7 +39,7 @@ public class IOUtil {
      * @throws ClassNotFoundException
      */
     public static <T> T readFromFile(Context context, String fileName) throws IOException, ClassNotFoundException {
-        return readFromFileInternal(context.openFileInput(fileName));
+        return IOUtils.readFile(context, fileName);
     }
 
     /**
@@ -70,36 +52,9 @@ public class IOUtil {
      * @throws ClassNotFoundException
      */
     public static <T> T readFromFile(File file) throws IOException, ClassNotFoundException {
-        return readFromFileInternal(new FileInputStream(file));
+        return IOUtils.readFile(file);
     }
 
-    /**
-     * 외부 저장소 (ex : storage)에 주어진 이름으로 파일을 저장한다.
-     *
-     * @param obj 저장할 객체
-     * @throws IOException
-     */
-    private static void writeObjectInternal(FileOutputStream fos, Object obj) throws IOException {
-        if (obj == null) {
-            throw new IOException("Cannot write null object.");
-        }
-
-        if (fos == null) {
-            throw new IOException("Cannot write object to null file.");
-        }
-
-        BufferedOutputStream bos = null;
-        ObjectOutputStream oos = null;
-        try {
-            bos = new BufferedOutputStream(fos);
-            oos = new ObjectOutputStream(bos);
-            oos.writeObject(obj);
-        } finally {
-            closeStream(oos);
-            closeStream(bos);
-            closeStream(fos);
-        }
-    }
 
     /**
      * 외부 저장소 (ex : storage)에 주어진 이름으로 파일을 저장한다.
@@ -109,7 +64,8 @@ public class IOUtil {
      */
     @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     public static void writeObjectToExternalFile(String fileName, Object obj) throws IOException {
-        writeObjectInternal(new FileOutputStream(fileName), obj);
+        //noinspection ResourceType
+        IOUtils.writeObjectToExternalFile(fileName, obj);
     }
 
     /**
@@ -119,7 +75,7 @@ public class IOUtil {
      * @throws IOException
      */
     public static void writeObjectToFile(Context context, String fileName, Object obj) throws IOException {
-        writeObjectInternal(context.openFileOutput(fileName, Context.MODE_PRIVATE), obj);
+        IOUtils.writeObjectToFile(context, fileName, obj);
     }
 
 
@@ -294,37 +250,4 @@ public class IOUtil {
         }
     }
 
-    /*
-    public static byte[] toByteArray(Serializable obj) throws IOException {
-        ObjectOutputStream objectOutput = null;
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-
-        try {
-            objectOutput = new ObjectOutputStream(output);
-            objectOutput.writeObject(obj);
-            return output.toByteArray();
-        } finally {
-            closeStream(output);
-            closeStream(objectOutput);
-        }
-    }
-
-    public static <T extends Serializable> T fromByteArray(byte[] array)
-            throws IOException, ClassNotFoundException {
-        ObjectInputStream objectInputStream = null;
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(
-                array);
-
-        try {
-            objectInputStream = new ObjectInputStream(byteArrayInputStream);
-            @SuppressWarnings("unchecked")
-            T obj = (T) objectInputStream.readObject();
-            return obj;
-        } finally {
-            closeStream(objectInputStream);
-            closeStream(byteArrayInputStream);
-        }
-    }
-
-*/
 }

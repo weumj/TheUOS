@@ -5,6 +5,7 @@ import android.app.Application;
 
 import com.google.android.gms.analytics.ExceptionReporter;
 import com.google.android.gms.analytics.Tracker;
+import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.TrackerUtil;
 
 public class UOSApplication extends Application {
@@ -24,6 +25,8 @@ public class UOSApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        AppUtil.init(this);
 
         mTrackerUtil = TrackerUtil.newInstance(this);
 

@@ -29,7 +29,7 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.UosMainActivity;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
-import com.uoscs09.theuos2.util.AppResources;
+import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 
@@ -339,7 +339,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
         mEmptyView.setVisibility(View.GONE);
 
         execute(true,
-                AppResources.Books.request(getActivity(), mEncodedQuery, mCurrentPage, os.getSelectedItemPosition(), oi.getSelectedItemPosition()),
+                AppRequests.Books.request(getActivity(), mEncodedQuery, mCurrentPage, os.getSelectedItemPosition(), oi.getSelectedItemPosition()),
                 result -> {
                     isResultEmpty = false;
                     if (result.size() == 0) {

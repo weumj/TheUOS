@@ -26,6 +26,7 @@ import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.parse.JerichoParser;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.AppUtil.AppTheme;
+import com.uoscs09.theuos2.util.PrefHelper;
 import com.uoscs09.theuos2.util.PrefUtil;
 import com.uoscs09.theuos2.util.TrackerUtil;
 
@@ -186,14 +187,13 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
                     .setIconAttribute(R.attr.theme_ic_action_image_palette)
                     .setTitle(R.string.setting_plz_select_theme)
                     .setAdapter(new ThemeSelectAdapter(getActivity()), (dialog, i) -> {
-                        PrefUtil pref = PrefUtil.getInstance(getActivity());
-                        int originalValue = pref.get(PrefUtil.KEY_THEME, 0);
+                        int originalValue = PrefHelper.Screens.getAppTheme().ordinal();
 
                         if (originalValue != i) {
 
                             TrackerUtil.getInstance(SettingsFragment.this).sendEvent(TAG, "apply theme", AppTheme.values()[i].name(), i);
 
-                            pref.put(PrefUtil.KEY_THEME, i);
+                            PrefHelper.Screens.putAppTheme(i);
                             onSharedPreferenceChanged(getPreferenceScreen().getSharedPreferences(), PrefUtil.KEY_THEME);
                             getActivity().setResult(AppUtil.RELAUNCH_ACTIVITY);
                         }
@@ -374,11 +374,11 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
                 break;
 
             case PrefUtil.KEY_IMAGE_SAVE_PATH:
-                findPreference(key).setSummary(PrefUtil.getPicturePath(getActivity()));
+                findPreference(key).setSummary(PrefHelper.Data.getPicturePath());
                 break;
 
             case PrefUtil.KEY_TXT_SAVE_PATH:
-                findPreference(key).setSummary(PrefUtil.getDocumentPath(getActivity()));
+                findPreference(key).setSummary(PrefHelper.Data.getDocumentPath());
                 break;
 
             case PrefUtil.KEY_THEME:

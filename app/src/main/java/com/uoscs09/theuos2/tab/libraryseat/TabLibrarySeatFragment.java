@@ -1,20 +1,26 @@
 package com.uoscs09.theuos2.tab.libraryseat;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
-import com.uoscs09.theuos2.util.AppResources;
+import com.uoscs09.theuos2.base.ViewHolder;
+import com.uoscs09.theuos2.common.PieProgressDrawable;
+import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 import com.uoscs09.theuos2.util.TimeUtil;
@@ -23,6 +29,8 @@ import java.util.Date;
 
 import butterknife.Bind;
 import jp.wasabeef.recyclerview.animators.SlideInDownAnimator;
+import mj.android.utils.recyclerview.ListRecyclerAdapter;
+import mj.android.utils.recyclerview.ListRecyclerUtil;
 
 /**
  * 도서관 좌석 정보 현황을 보여주는 페이지
@@ -101,7 +109,7 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> {
             execute();
         });
 
-        SeatListAdapter mSeatAdapter = new SeatListAdapter(getActivity(), mSeatInfo.seatItemList);
+       ListRecyclerAdapter<SeatItem, SeatViewHolder> mSeatAdapter = ListRecyclerUtil.newSimpleAdapter(mSeatInfo.seatItemList, SeatViewHolder.class, R.layout.list_layout_seat);
         mSeatAdapter.setOnItemClickListener((viewHolder, v) -> {
             if (isAdapterItemClicked)
                 return;
@@ -176,7 +184,7 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> {
         mSeatInfo.seatItemList.clear();
 
         execute(true,
-                AppResources.LibrarySeats.request(getActivity()),
+                AppRequests.LibrarySeats.request(getActivity()),
                 result -> {
                     if (mSwipeRefreshLayout != null)
                         mSwipeRefreshLayout.setRefreshing(false);
@@ -221,4 +229,44 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> {
         return "TabLibrarySeatFragment";
     }
 
+
+    static class SeatViewHolder extends ViewHolder<SeatItem> {
+        @Bind(R.id.tab_library_seat_list_text_room_name)
+        TextView roomName;
+        @Bind(R.id.ripple)
+        View ripple;
+        @Bind(R.id.tab_libray_seat_list_progress_img)
+        TextView progressImg;
+
+        final PieProgressDrawable drawable = new PieProgressDrawable();
+
+        public SeatViewHolder(View convertView) {
+            super(convertView);
+
+            ripple.setOnClickListener(this);
+
+            Context context = convertView.getContext();
+            DisplayMetrics dm = context.getResources().getDisplayMetrics();
+            drawable.setBorderWidth(2, dm);
+
+            drawable.setTextSize(15 * dm.scaledDensity);
+            drawable.setTextColor(AppUtil.getAttrColor(context, R.attr.color_primary_text));
+            drawable.setColor(ContextCompat.getColor(context, R.color.gray_red));
+            drawable.setCenterColor(AppUtil.getAttrColor(context, R.attr.cardBackgroundColor));
+            //noinspection deprecation
+            progressImg.setBackgroundDrawable(drawable);
+        }
+
+        @Override
+        protected void setView(int position) {
+            super.setView(position);
+
+            SeatItem item = getItem();
+            roomName.setText(item.roomName);
+            int progress = Math.round(item.utilizationRate);
+            drawable.setText(item.vacancySeat.trim() + " / " + (Integer.parseInt(item.occupySeat.trim()) + Integer.parseInt(item.vacancySeat.trim())));
+            drawable.setLevel(progress);
+        }
+
+    }
 }

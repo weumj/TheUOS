@@ -10,10 +10,9 @@ import android.content.pm.PackageManager;
 import android.util.Log;
 
 import com.uoscs09.theuos2.async.AsyncUtil;
-import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
-import com.uoscs09.theuos2.util.PrefUtil;
+import com.uoscs09.theuos2.util.PrefHelper;
 import com.uoscs09.theuos2.util.TimeUtil;
 
 import java.util.Calendar;
@@ -57,8 +56,8 @@ public class TimetableAlarmUtil {
             cancelAlarm(context, subject.period, subject.day);
 
         } else {
-            if (!PrefUtil.getInstance(context).get(PrefUtil.KEY_CHECK_TIMETABLE_NOTIFY_SERVICE, false)) {
-                PrefUtil.getInstance(context).put(PrefUtil.KEY_CHECK_TIMETABLE_NOTIFY_SERVICE, true);
+            if (!PrefHelper.TimeTables.isNotifyServiceEnable()) {
+                PrefHelper.TimeTables.putNotifyServiceEnable(true);
                 setNotificationReceiverEnabled(context, true);
             }
 
@@ -106,7 +105,7 @@ public class TimetableAlarmUtil {
      * 기록되어 있는 모든 알람을 AlarmManager 에 등록한다.
      */
     public static void initAllAlarm(Context context) {
-        if (!PrefUtil.getInstance(context).get(PrefUtil.KEY_CHECK_TIMETABLE_NOTIFY_SERVICE, false))
+        if (!PrefHelper.TimeTables.isNotifyServiceEnable())
             return;
 
         final Context appContext = context.getApplicationContext();
@@ -156,20 +155,7 @@ public class TimetableAlarmUtil {
 
     }
 
-    /**
-     * 현재 설정된 시간표 알림을 모두 취소한다.
-     */
-    public static void clearAllAlarmWithResult(Context context, Request.ResultListener<Boolean> resultListener, Request.ErrorListener errorListener) {
-        final Context appContext = context.getApplicationContext();
-
-        AsyncUtil.newRequest(() -> clearAllAlarmInner(appContext)).getAsync(resultListener, errorListener);
-
-    }
-
-    /**
-     * @return 모든 알람이 성공적으로 삭제되었는지 여부
-     */
-    private static boolean clearAllAlarmInner(Context appContext) {
+    private static void clearAllAlarmInner(Context appContext) {
         AlarmManager am = (AlarmManager) appContext.getSystemService(Context.ALARM_SERVICE);
 
         Intent intent = new Intent(appContext.getApplicationContext(), TimeTableNotificationReceiver.class)
@@ -192,7 +178,7 @@ public class TimetableAlarmUtil {
         deleteAlarmCount(appContext);
         setNotificationReceiverEnabled(appContext, false);
 
-        return PrefUtil.getInstance(appContext).put(PrefUtil.KEY_CHECK_TIMETABLE_NOTIFY_SERVICE, false);
+     PrefHelper.TimeTables.putNotifyServiceEnable(false);
     }
 
     private static void cancelAlarm(Context context, int period, int day) {

@@ -14,6 +14,7 @@ import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.common.SerializableArrayMap;
 import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.ImageUtil;
+import com.uoscs09.theuos2.util.PrefHelper;
 import com.uoscs09.theuos2.util.PrefUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 
@@ -118,7 +119,7 @@ public class TimetableUtil {
     @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     public static Request<String> saveTimetableToImage(TimeTable timeTable, ListView listView, ListAdapter originalAdapter, View header) {
         //noinspection ResourceType
-        final String picturePath = PrefUtil.getPicturePath(listView.getContext());
+        final String picturePath = PrefHelper.Data.getPicturePath();
         String savedPath = picturePath + "/timetable_" + timeTable.year + '_' + timeTable.semesterCode + '_' + String.valueOf(System.currentTimeMillis()) + ".png";
 
         return new ImageUtil.ListViewBitmapRequest.Builder(listView, originalAdapter)

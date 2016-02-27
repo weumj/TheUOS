@@ -9,7 +9,7 @@ android {
 
     productFlavors {
         dev {
-            minSdkVersion 21
+            minSdkVersion 14//21
         }
         prod {
             minSdkVersion 14
@@ -20,13 +20,24 @@ android {
         applicationId "com.uoscs09.theuos2"
         minSdkVersion 14
         targetSdkVersion 23
+        versionCode 6
+        versionName "1.13"
+        resValue "string", "setting_app_version_name", "${versionName}"
     }
+
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            output.outputFile = new File(output.outputFile.parent, "theuos_v_" + defaultConfig.versionName + ".apk")
+        }
+    }
+
+
     signingConfigs {
 
         common {
-            def keyInfoList = file(project.getRootDir().getAbsolutePath() + project.property('TheUOS.KeyStoreInfo')).readLines()
+            def keyInfoList = propertyDesignatedFile('TheUOS.KeyStoreInfo').readLines()
 
-            storeFile file(project.getRootDir().getAbsolutePath() + project.property('TheUOS.KeyStore'))
+            storeFile propertyDesignatedFile('TheUOS.KeyStore')
             storePassword keyInfoList[0]
             keyAlias keyInfoList[1]
             keyPassword keyInfoList[2]
@@ -45,10 +56,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
 
 }
 
@@ -61,15 +74,19 @@ retrolambda {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
 
+    compile(name: 'utils_common', ext: 'aar')
+    compile(name: 'utils_recyclerview', ext: 'aar')
+    compile(name: 'utils_task', ext: 'aar')
+
     compile project(':stickylistheaders')
 
-    compile 'com.android.support:support-v13:23.1.1'
-    compile 'com.android.support:appcompat-v7:23.1.1'
-    compile 'com.android.support:recyclerview-v7:23.1.1'
-    compile 'com.android.support:cardview-v7:23.1.1'
-    compile 'com.android.support:preference-v7:23.1.1'
-    compile 'com.android.support:design:23.1.1'
-    compile 'com.android.support:support-annotations:23.1.1'
+    compile 'com.android.support:support-v13:23.2.0'
+    compile 'com.android.support:appcompat-v7:23.2.0'
+    compile 'com.android.support:recyclerview-v7:23.2.0'
+    compile 'com.android.support:cardview-v7:23.2.0'
+    compile 'com.android.support:preference-v7:23.2.0'
+    compile 'com.android.support:design:23.2.0'
+    compile 'com.android.support:support-annotations:23.2.0'
 
     compile 'com.google.android.gms:play-services-maps:8.4.0'
     compile 'com.google.android.gms:play-services-analytics:8.4.0'
@@ -83,11 +100,10 @@ dependencies {
     compile 'com.nhaarman.listviewanimations:lib-manipulation:3.1.0@aar'
     // compile 'com.nhaarman.listviewanimations:lib-core-slh:3.1.0@aar'
 
-    compile('com.github.afollestad.material-dialogs:core:0.8.5.3@aar') {
+    compile('com.github.afollestad.material-dialogs:core:0.8.5.5@aar') {
         transitive = true
     }
     compile 'com.pnikosis:materialish-progress:1.4'
-    compile 'com.getbase:floatingactionbutton:1.9.0'
     compile 'com.balysv:material-ripple:1.0.2'
 
     // compile 'com.github.navasmdc:MaterialDesign:1.+@aar'
@@ -97,3 +113,7 @@ dependencies {
 }
 
 apply plugin: 'com.google.gms.google-services'
+
+def propertyDesignatedFile(String property) {
+    return file(project.getRootDir().getAbsolutePath() + project.property(property));
+}

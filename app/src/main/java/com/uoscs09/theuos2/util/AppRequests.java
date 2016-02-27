@@ -28,13 +28,13 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Map;
 
-public class AppResources {
+public class AppRequests {
 
     public static class Announces {
         public static Request<ArrayList<AnnounceItem>> normalRequest(Context context, int category, int page) {
             return NetworkRequests.Announces.normalRequest(context, category, page)
                     .wrap(announceItems -> {
-                        if (PrefUtil.getInstance(context).get(PrefUtil.KEY_ANNOUNCE_EXCEPT_TYPE_NOTICE, false)) {
+                        if (PrefHelper.Announces.isAnnounceExceptNoticeType()) {
                             final int size = announceItems.size();
                             for (int i = size - 1; i >= 0; i--) {
                                 AnnounceItem item = announceItems.get(i);
@@ -71,7 +71,7 @@ public class AppResources {
         public static Request<ArrayList<BookItem>> request(Context context, String query, int page, int os, int oi) {
             return NetworkRequests.Books.request(context, query, page, os, oi)
                     .wrap(originalList -> {
-                                if (PrefUtil.getInstance(context).get(PrefUtil.KEY_CHECK_BORROW, false) && originalList.size() > 0) {
+                                if (PrefHelper.Books.isFilterUnavailableBook() && originalList.size() > 0) {
                                     ArrayList<BookItem> newList = new ArrayList<>();
                                     String emptyMsg = context.getString(R.string.tab_book_not_found);
                                     final int N = originalList.size();
@@ -104,7 +104,7 @@ public class AppResources {
             return new AbstractRequest<SparseArray<RestItem>>() {
                 @Override
                 public SparseArray<RestItem> get() throws Exception {
-                    if (!shouldForceUpdate && OApiUtil.getDateTime() - PrefUtil.getInstance(context).get(PrefUtil.KEY_REST_DATE_TIME, 0) < 3) {
+                    if (!shouldForceUpdate && PrefHelper.Restaurants.isDownloadTimeWithin(3)) {
                         try {
                             SparseArray<RestItem> result = readFromFile(context);
 
@@ -120,10 +120,9 @@ public class AppResources {
                             .wrap(restItemSparseArray -> {
                                 SerializableArrayMap<Integer, RestItem> writingObject = SerializableArrayMap.fromSparseArray(restItemSparseArray);
                                 IOUtil.writeObjectToFile(context, IOUtil.FILE_REST, writingObject);
-                                PrefUtil.getInstance(context).put(PrefUtil.KEY_REST_DATE_TIME, OApiUtil.getDate());
+                                PrefHelper.Restaurants.putDownloadTime(OApiUtil.getDateTime());
                                 return restItemSparseArray;
-                            })
-                            .get();
+                            }).get();
                 }
             };
         }
@@ -132,24 +131,20 @@ public class AppResources {
             return SerializableArrayMap.toSparseArray(IOUtil.readFromFileSuppressed(context, IOUtil.FILE_REST));
         }
 
-        private static int[] getValueFromPref(PrefUtil prefUtil, String code) {
-            int today = OApiUtil.getDate();
-            return new int[]{prefUtil.get(PrefUtil.KEY_REST_WEEK_FETCH_TIME + "_START_" + code, today + 1),
-                    prefUtil.get(PrefUtil.KEY_REST_WEEK_FETCH_TIME + "_END_" + code, today - 1)};
+        private static int[] getValueFromPref(String code) {
+            return PrefHelper.Restaurants.getWeekItemFetchTime(code, OApiUtil.getDate());
         }
 
-        public static void putValueIntoPref(PrefUtil prefUtil, String code, WeekRestItem item) {
-            prefUtil.put(PrefUtil.KEY_REST_WEEK_FETCH_TIME + "_START_" + code, item.startDate);
-            prefUtil.put(PrefUtil.KEY_REST_WEEK_FETCH_TIME + "_END_" + code, item.endDate);
+        public static void putValueIntoPref(String code, WeekRestItem item) {
+            PrefHelper.Restaurants.putWeekItemFetchTime(code, item);
         }
 
         public static final String WEEK_FILE_NAME = "FILE_REST_WEEK_ITEM";
 
         public static Request<WeekRestItem> readWeekInfo(Context context, String code, boolean shouldUpdateUsingInternet) {
-            PrefUtil prefUtil = PrefUtil.getInstance(context);
 
             int today = OApiUtil.getDate();
-            final int[] recodedDate = getValueFromPref(prefUtil, code);
+            final int[] recodedDate = getValueFromPref(code);
 
             return AsyncUtil.newRequest(() -> {
                 // 이번주의 식단이 기록된 파일이 있으면, 인터넷에서 가져오지 않고 그 파일을 읽음
@@ -167,7 +162,7 @@ public class AppResources {
                 return NetworkRequests.Restaurants.requestWeekInfo(context, code)
                         .wrap(IOUtil.<WeekRestItem>newInternalFileWriteProcessor(context, WEEK_FILE_NAME + code))
                         .wrap(item -> {
-                            AppResources.Restaurants.putValueIntoPref(prefUtil, code, item);
+                            AppRequests.Restaurants.putValueIntoPref(code, item);
                             return item;
                         })
                         .get();
@@ -196,8 +191,7 @@ public class AppResources {
         public static Request<SeatInfo> request(Context context) {
             return NetworkRequests.LibrarySeats.request(context)
                     .wrap(seatInfo -> {
-
-                        if (PrefUtil.getInstance(context).get(PrefUtil.KEY_CHECK_SEAT, false)) {
+                        if (PrefHelper.LibrarySeats.isFilterOccupyingRoom()) {
                             ArrayList<SeatItem> list = seatInfo.seatItemList;
                             // 스터디룸 인덱스
                             final int[] filterArr = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 23, 24, 25, 26, 27, 28};
@@ -248,10 +242,8 @@ public class AppResources {
             return new AbstractRequest<ArrayList<UnivScheduleItem>>() {
                 @Override
                 public ArrayList<UnivScheduleItem> get() throws Exception {
-                    PrefUtil pref = PrefUtil.getInstance(context);
-
                     // 이번 달의 일정이 기록된 파일이 있으면, 인터넷에서 가져오지 않고 그 파일을 읽음
-                    if (pref.get(PrefUtil.KEY_SCHEDULE_FETCH_MONTH, -1) == Calendar.getInstance().get(Calendar.MONTH)) {
+                    if (PrefHelper.UnivSchedules.isMonthEqualToFetchMonth()) {
                         ArrayList<UnivScheduleItem> result = new IOUtil.Builder<ArrayList<UnivScheduleItem>>(FILE_NAME)
                                 .setContext(context)
                                 .build()
@@ -263,9 +255,9 @@ public class AppResources {
                     }
 
                     return NetworkRequests.UnivSchedules.request(context)
-                            .wrap(IOUtil.<ArrayList<UnivScheduleItem>>newInternalFileWriteProcessor(context, AppResources.UnivSchedules.FILE_NAME))
+                            .wrap(IOUtil.<ArrayList<UnivScheduleItem>>newInternalFileWriteProcessor(context, AppRequests.UnivSchedules.FILE_NAME))
                             .wrap(univScheduleItems -> {
-                                        pref.put(PrefUtil.KEY_SCHEDULE_FETCH_MONTH, univScheduleItems.get(0).getDate(true).get(Calendar.MONTH));
+                                        PrefHelper.UnivSchedules.putFetchMonth(univScheduleItems.get(0).getDate(true).get(Calendar.MONTH));
                                         return univScheduleItems;
                                     }
                             )

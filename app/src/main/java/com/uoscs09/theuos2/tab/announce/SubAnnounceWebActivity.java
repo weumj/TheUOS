@@ -19,7 +19,7 @@ import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.common.WebViewActivity;
 import com.uoscs09.theuos2.http.NetworkRequests;
 import com.uoscs09.theuos2.util.AppUtil;
-import com.uoscs09.theuos2.util.PrefUtil;
+import com.uoscs09.theuos2.util.PrefHelper;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import java.io.File;
@@ -178,7 +178,7 @@ public class SubAnnounceWebActivity extends WebViewActivity {
         }
 
         //noinspection ResourceType
-        final String docPath = PrefUtil.getDocumentPath(this);
+        final String docPath = PrefHelper.Data.getDocumentPath();
         final AsyncTask<Void, ?, File> task = NetworkRequests.Announces.attachedFileDownloadRequest(this, url, docPath)
                 .getAsync(
                         result -> {

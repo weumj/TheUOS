@@ -19,7 +19,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,13 +32,15 @@ import com.uoscs09.theuos2.setting.SettingActivity;
 import com.uoscs09.theuos2.tab.map.GoogleMapActivity;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.ImageUtil;
-import com.uoscs09.theuos2.util.PrefUtil;
+import com.uoscs09.theuos2.util.PrefHelper;
 
 import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import mj.android.utils.recyclerview.ListRecyclerAdapter;
+import mj.android.utils.recyclerview.ListRecyclerUtil;
 
 /**
  * Main Activity, ViewPager 가 존재한다.
@@ -87,10 +88,9 @@ public class UosMainActivity extends BaseActivity {
 
     private void initValues() {
 
-        PrefUtil pref = PrefUtil.getInstance(this);
-        AppUtil.initStaticValues(pref);
+        AppUtil.initStaticValues();
         mPageOrderList = AppUtil.loadEnabledPageOrder(this);
-        if (pref.get(PrefUtil.KEY_HOME, true) || mPageOrderList.isEmpty()) {
+        if (PrefHelper.Screens.isHomeEnable() || mPageOrderList.isEmpty()) {
             mPageOrderList.add(0, R.string.title_section0_home);
         }
     }
@@ -225,7 +225,7 @@ public class UosMainActivity extends BaseActivity {
             }
         };
 
-        mDrawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
+        mDrawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
 
             @Override
             public void onDrawerClosed(View drawerView) {
@@ -250,37 +250,26 @@ public class UosMainActivity extends BaseActivity {
     }
 
     private void initDrawerDetail() {
-        mLeftDrawerLayout = mDrawerLayout.findViewById(R.id.left_drawer);
-
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mDrawerListView.setLayoutManager(layoutManager);
         mDrawerListView.setAdapter(mDrawerAdapter = new DrawerAdapter());
+    }
 
-        View.OnClickListener l = v -> {
-            switch (v.getId()) {
-                case R.id.drawer_btn_setting:
-                    mDrawerLayout.closeDrawer(mLeftDrawerLayout);
-                    startSettingActivity();
-                    break;
+    @OnClick(R.id.drawer_btn_setting)
+    void toSetting() {
+        mDrawerLayout.closeDrawer(mLeftDrawerLayout);
+        startSettingActivity();
+    }
 
-                case R.id.drawer_btn_map:
-                    AppUtil.startActivityWithScaleUp(UosMainActivity.this, new Intent(UosMainActivity.this, GoogleMapActivity.class), v);
-                    break;
+    @OnClick(R.id.drawer_btn_map)
+    void toMap(View v) {
+        AppUtil.startActivityWithScaleUp(UosMainActivity.this, new Intent(this, GoogleMapActivity.class), v);
+    }
 
-                case R.id.drawer_btn_exit:
-                    mDrawerLayout.closeDrawer(mLeftDrawerLayout);
-                    AppUtil.exit(UosMainActivity.this);
-                    break;
-
-                default:
-                    break;
-            }
-        };
-
-        mLeftDrawerLayout.findViewById(R.id.drawer_btn_setting).setOnClickListener(l);
-        mLeftDrawerLayout.findViewById(R.id.drawer_btn_map).setOnClickListener(l);
-        mLeftDrawerLayout.findViewById(R.id.drawer_btn_exit).setOnClickListener(l);
-
+    @OnClick(R.id.drawer_btn_exit)
+    void goExit() {
+        mDrawerLayout.closeDrawer(mLeftDrawerLayout);
+        AppUtil.exit(this);
     }
 
     private void openOrCloseDrawer() {
@@ -483,7 +472,7 @@ public class UosMainActivity extends BaseActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         switch (keyCode) {
             case KeyEvent.KEYCODE_MENU:
-                if (!PrefUtil.getInstance(this).get(PrefUtil.KEY_HOME, true)) {
+                if (!PrefHelper.Screens.isHomeEnable()) {
                     openOrCloseDrawer();
                 } else if (getCurrentPageIndex() != 0) {
                     openOrCloseDrawer();
@@ -604,30 +593,22 @@ public class UosMainActivity extends BaseActivity {
     }
 */
 
-
-    private class DrawerAdapter extends RecyclerView.Adapter<ViewHolder> {
+    private class DrawerAdapter extends ListRecyclerAdapter<Integer, DrawerViewHolder> {
         private final int mDefaultTextColor, mSelectedTextColor;
         private final PorterDuffColorFilter mColorFilter;
         private int mCurrentSelection = 0;
-        private final LayoutInflater mInflater;
-        private final boolean isHomeEnable;
+        //private final boolean isHomeEnable;
 
         public DrawerAdapter() {
-
-            mDefaultTextColor = getResources().getColor(AppUtil.getAttrValue(UosMainActivity.this, R.attr.colorControlNormal));
-            mSelectedTextColor = getResources().getColor(AppUtil.getAttrValue(UosMainActivity.this, R.attr.color_primary_text));
+            super(mPageOrderList, new ListRecyclerUtil.InnerClassViewHolderFactory<>(UosMainActivity.this, DrawerViewHolder.class, R.layout.list_layout_drawer));
+            mDefaultTextColor = AppUtil.getAttrColor(UosMainActivity.this, R.attr.colorControlNormal);
+            mSelectedTextColor = AppUtil.getAttrColor(UosMainActivity.this, R.attr.color_primary_text);
             mColorFilter = new PorterDuffColorFilter(mSelectedTextColor, PorterDuff.Mode.SRC_IN);
-            mInflater = LayoutInflater.from(UosMainActivity.this);
-            isHomeEnable = PrefUtil.getInstance(UosMainActivity.this).get(PrefUtil.KEY_HOME, false);
+            // isHomeEnable = PrefHelper.isHomeEnable();
         }
 
         @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new ViewHolder(mInflater.inflate(R.layout.list_layout_drawer, parent, false));
-        }
-
-        @Override
-        public void onBindViewHolder(ViewHolder holder, int position) {
+        public void onBindViewHolder(DrawerViewHolder holder, int position) {
             int titleStringId = mPageOrderList.get(position);
 
             Drawable drawable = ImageUtil.getPageIcon(holder.itemView.getContext(), titleStringId);
@@ -669,16 +650,14 @@ public class UosMainActivity extends BaseActivity {
 
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    class DrawerViewHolder extends com.uoscs09.theuos2.base.ViewHolder<Integer> {
         @Bind(R.id.drawer_list_img)
         ImageView img;
         @Bind(R.id.drawer_list_text)
         TextView text;
 
-        public ViewHolder(View itemView) {
+        public DrawerViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
-
         }
 
         @OnClick(R.id.drawer_list_ripple)

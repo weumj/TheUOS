@@ -1,11 +1,8 @@
 package com.uoscs09.theuos2.util;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.support.annotation.RequiresPermission;
 
 import com.uoscs09.theuos2.R;
 
@@ -15,24 +12,11 @@ import java.util.Set;
 //FIXME 모든 설정값에 default preference 를 쓰지 말고, 설정에 따라 분리할 필요가 있음
 public class PrefUtil {
     /**
-     * 공지사항 알리미를 사용 할 것인지 여부, {@code boolean}
-     *
-     * @see R.string#pref_key_check_anounce_service
-     */
-    public static final String KEY_CHECK_ANNOUNCE_SERVICE = "ACTIVE_SERVICE_ANOUNCE";
-    // public static final String KEY_ORDER = "ORDER";
-    /**
      * 홈 화면을 보여줄 것인지 여부, {@code boolean}
      *
      * @see R.string#pref_key_home
      */
     public static final String KEY_HOME = "SCREEN_HOME";
-    /**
-     * 공지사항 알리미의 키워드, {@code String}
-     *
-     * @see R.string#pref_key_keyword_anounce
-     */
-    public static final String KEY_KEYWORD_ANOUNCE = "KEYWORD_ANOUNCE";
     /**
      * '공지' 타입 표시안함 여부, {@code boolean}
      *
@@ -57,12 +41,6 @@ public class PrefUtil {
      * @see R.string#pref_key_widget_seat_show_all
      */
     public static final String KEY_LIB_WIDGET_SEAT_SHOW_ALL = "LIB_WIDGET_SEAT_SHOW_ALL";
-    /**
-     * 공지사항 알리미의 알림 시간, {@code String}
-     *
-     * @see R.string#pref_key_noti_time
-     */
-    public static final String KEY_NOTI_TIME = "NOTI_TIME";
     /**
      * 이미지가 저장되는 경로, {@code String}
      *
@@ -206,39 +184,4 @@ public class PrefUtil {
         return pref.getAll();
     }
 
-    /**
-     * 그림파일이 저장되는 경로를 얻는다.
-     * <p/>
-     * <b>반환되는 경로 끝에는 '/' 이 붙지 않으므로 사용할 때 주의하여야 한다.</b>
-     */
-    @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-    public static String getPicturePath(Context context) {
-        return getInstance(context).get(KEY_IMAGE_SAVE_PATH, getDefaultPath(KEY_IMAGE_SAVE_PATH));
-    }
-
-    /**
-     * 문서파일이 저장되는 경로를 얻는다.
-     * <p/>
-     * <b>반환되는 경로 끝에는 '/' 이 붙지 않으므로 사용할 때 주의하여야 한다.</b>
-     */
-    @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-    public static String getDocumentPath(Context context) {
-        return getInstance(context).get(KEY_TXT_SAVE_PATH, getDefaultPath(KEY_TXT_SAVE_PATH));
-    }
-
-    /**
-     * 파일이 저장되는 경로를 얻는다.
-     * <p/>
-     * <b>반환되는 경로 끝에는 '/' 이 붙지 않으므로 사용할 때 주의하여야 한다.</b>
-     *
-     * @param key 파일에 해당하는 키키     */
-    public static String getDefaultPath(final String key) {
-        switch (key) {
-            default:
-            case KEY_IMAGE_SAVE_PATH:
-                return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
-            case KEY_TXT_SAVE_PATH:
-                return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
-        }
-    }
 }

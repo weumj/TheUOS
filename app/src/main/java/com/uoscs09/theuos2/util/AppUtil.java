@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.net.Uri;
 import android.support.annotation.AttrRes;
 import android.support.annotation.StringRes;
 import android.support.v4.app.ActivityCompat;
@@ -32,6 +31,8 @@ import com.uoscs09.theuos2.tab.timetable.TabTimeTableFragment2;
 
 import java.util.ArrayList;
 
+import mj.android.utils.common.CommonUtils;
+
 public class AppUtil {
     public static final int RESOURCE_NOT_EXIST = -1;
     // public static final String DB_PHONE = "PhoneNumberDB.db";
@@ -40,8 +41,14 @@ public class AppUtil {
     private static final int MAX_PAGE_SIZE_NORMAL = 9;
 
     private static int PAGE_SIZE = MAX_PAGE_SIZE_NORMAL;
-    public static boolean test;
     public static AppTheme theme;
+
+    static Context context;
+
+    public static void init(Context context) {
+        if (context != null)
+            AppUtil.context = context.getApplicationContext();
+    }
 
     /**
      * 어플리케이션의 테마를 나타내는 enum<br>
@@ -74,15 +81,14 @@ public class AppUtil {
         }
     }
 
-    public static void initStaticValues(PrefUtil pref) {
-        int v = pref.get(PrefUtil.KEY_THEME, 0);
+    public static void initStaticValues( ) {
+        int v = PrefHelper.Screens.getAppTheme().ordinal();
         AppTheme[] vals = AppTheme.values();
         if (v >= vals.length) {
             v = 0;
-            pref.put(PrefUtil.KEY_THEME, v);
+            PrefHelper.Screens.putAppTheme(v);
         }
         AppUtil.theme = vals[v];
-        AppUtil.test = pref.get("test", false);
 
         PAGE_SIZE = MAX_PAGE_SIZE_NORMAL;//test ? 13 : MAX_PAGE_SIZE_NORMAL;
     }
@@ -664,9 +670,7 @@ public class AppUtil {
      * @return url이 설정된 intent
      */
     public static Intent getWebPageIntent(String webURL) {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(Uri.parse(webURL));
-        return intent;
+        return CommonUtils.getWebPageIntent(webURL);
     }
 
     public static void startActivityWithScaleUp(Activity activity, Intent intent, View v) {
@@ -745,13 +749,17 @@ public class AppUtil {
      */
     public static void applyTheme(Context appContext) {
         if (theme == null) {
-            theme = AppTheme.values()[PrefUtil.getInstance(appContext).get(PrefUtil.KEY_THEME, 0)];
+            theme = PrefHelper.Screens.getAppTheme();
         }
 
         appContext.setTheme(theme.styleId);
     }
 
-    public static int getColor(int index) {
+    public static int getOrderedColor(Context context, int index) {
+        return ContextCompat.getColor(context, getOrderedColorRes(index));
+    }
+
+    public static int getOrderedColorRes(int index) {
         switch (index % 17) {
             case 0:
             default:

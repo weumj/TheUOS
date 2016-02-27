@@ -12,8 +12,8 @@ import com.uoscs09.theuos2.base.AbsListRemoteViewsFactory;
 import com.uoscs09.theuos2.tab.timetable.Subject;
 import com.uoscs09.theuos2.tab.timetable.TimeTable;
 import com.uoscs09.theuos2.tab.timetable.TimetableUtil;
-import com.uoscs09.theuos2.util.AppResources;
-import com.uoscs09.theuos2.util.PrefUtil;
+import com.uoscs09.theuos2.util.AppRequests;
+import com.uoscs09.theuos2.util.PrefHelper;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import java.util.Calendar;
@@ -67,8 +67,7 @@ public abstract class WidgetTimeTableListService2 extends RemoteViewsService {
 
         @Override
         public int getCount() {
-            return PrefUtil.getInstance(getContext()).get(PrefUtil.KEY_TIMETABLE_LIMIT, false) ?
-                    (mTimeTable != null ? mTimeTable.maxTime : 0) : super.getCount();
+            return PrefHelper.TimeTables.isShowingLastEmptyPeriod() ? (mTimeTable != null ? mTimeTable.maxTime : 0) : super.getCount();
         }
 
 
@@ -147,7 +146,7 @@ public abstract class WidgetTimeTableListService2 extends RemoteViewsService {
 
         private void getData() {
             try {
-                mTimeTable = AppResources.TimeTables.readFromFile(getContext()).get();
+                mTimeTable = AppRequests.TimeTables.readFromFile(getContext()).get();
             } catch (Exception e) {
                 e.printStackTrace();
             }

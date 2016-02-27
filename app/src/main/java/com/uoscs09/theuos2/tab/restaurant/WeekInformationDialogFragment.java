@@ -21,7 +21,7 @@ import com.pnikosis.materialishprogress.ProgressWheel;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.base.BaseDialogFragment;
-import com.uoscs09.theuos2.util.AppResources;
+import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
 
 import java.util.ArrayList;
@@ -108,7 +108,7 @@ public class WeekInformationDialogFragment extends BaseDialogFragment {
 
         AsyncUtil.cancelTask(mAsyncTask);
 
-        mAsyncTask = AppResources.Restaurants.readWeekInfo(getActivity(), getCode(mCurrentSelectionId), shouldUpdateUsingInternet)
+        mAsyncTask = AppRequests.Restaurants.readWeekInfo(getActivity(), getCode(mCurrentSelectionId), shouldUpdateUsingInternet)
                 .getAsync(
                         result -> {
                             postExecute();
