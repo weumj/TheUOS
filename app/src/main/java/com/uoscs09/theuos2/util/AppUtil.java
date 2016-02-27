@@ -705,7 +705,7 @@ public class AppUtil {
         showToast(context, R.string.canceled, isVisible);
     }
 
-    public static void showErrorToast(Context context, Exception e, boolean isVisible) {
+    public static void showErrorToast(Context context,Throwable e, boolean isVisible) {
         if (context != null) {
             showToast(context, context.getText(R.string.error_occur) + " : " + e.getMessage(), isVisible);
         }

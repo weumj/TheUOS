@@ -1,32 +1,30 @@
-package com.uoscs09.theuos2;
+package com.uoscs09.theuos2.base;
 
 
 import android.app.Application;
 
 import com.google.android.gms.analytics.ExceptionReporter;
 import com.google.android.gms.analytics.Tracker;
+import com.uoscs09.theuos2.BuildConfig;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.TrackerUtil;
+
+import mj.android.utils.task.TaskQueue;
 
 public class UOSApplication extends Application {
     private TrackerUtil mTrackerUtil;
 
+    private TaskQueue taskQueue;
+
     public static final boolean DEBUG = BuildConfig.DEBUG;
-
-
-    public TrackerUtil getTrackerUtil() {
-        if (mTrackerUtil == null)
-            mTrackerUtil = TrackerUtil.newInstance(this);
-
-        return mTrackerUtil;
-    }
-
 
     @Override
     public void onCreate() {
         super.onCreate();
 
         AppUtil.init(this);
+
+        taskQueue = new TaskQueue();
 
         mTrackerUtil = TrackerUtil.newInstance(this);
 
@@ -43,6 +41,19 @@ public class UOSApplication extends Application {
             }
 
         }
+    }
+
+
+    public final TrackerUtil getTrackerUtil() {
+        if (mTrackerUtil == null)
+            mTrackerUtil = TrackerUtil.newInstance(this);
+
+        return mTrackerUtil;
+    }
+
+
+    final TaskQueue taskQueue() {
+        return taskQueue;
     }
 
 }

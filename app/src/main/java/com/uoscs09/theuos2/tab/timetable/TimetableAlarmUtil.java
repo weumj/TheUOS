@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.util.Log;
 
-import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.PrefHelper;
@@ -17,6 +16,8 @@ import com.uoscs09.theuos2.util.TimeUtil;
 
 import java.util.Calendar;
 import java.util.Date;
+
+import mj.android.utils.task.Tasks;
 
 public class TimetableAlarmUtil {
     private static final String TAG = "TimetableAlarmUtil";
@@ -65,9 +66,7 @@ public class TimetableAlarmUtil {
 
         }
 
-        AsyncUtil.executeFor(() -> {
-            recordAlarmInfo(context, subject, alarmType);
-        });
+       Tasks.execute(() -> recordAlarmInfo(context, subject, alarmType));
     }
 
 
@@ -110,7 +109,7 @@ public class TimetableAlarmUtil {
 
         final Context appContext = context.getApplicationContext();
 
-        AsyncUtil.executeFor(() -> {
+        Tasks.execute(() -> {
 
             for (int period = 0; period < 15; period++) {
                 for (int day = 0; day < 7; day++) {
@@ -149,9 +148,7 @@ public class TimetableAlarmUtil {
     public static void clearAllAlarm(Context context) {
         final Context appContext = context.getApplicationContext();
 
-        AsyncUtil.executeFor(() -> {
-            clearAllAlarmInner(appContext);
-        });
+        Tasks.execute(() -> clearAllAlarmInner(appContext));
 
     }
 

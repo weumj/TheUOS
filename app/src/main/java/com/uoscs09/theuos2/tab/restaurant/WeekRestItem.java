@@ -8,7 +8,7 @@ import com.uoscs09.theuos2.parse.IParser;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class WeekRestItem implements Parcelable, Serializable, IParser.AfterParsable {
+public class WeekRestItem implements Parcelable, Serializable, IParser.IPostParsing {
 
     public ArrayList<RestItem> weekList = new ArrayList<>();
     public int startDate, endDate;

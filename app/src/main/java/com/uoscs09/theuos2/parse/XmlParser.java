@@ -164,8 +164,8 @@ public abstract class XmlParser<T> extends IParser.Base<InputStream, T> {
     protected static <Data> Data readListAndFillDataUsingReflection(XmlPullParser parser, @NonNull Data newInstance) throws IOException, XmlPullParserException {
         readListAndFillObject(parser, newInstance);
 
-        if (newInstance instanceof AfterParsable) {
-            ((AfterParsable) newInstance).afterParsing();
+        if (newInstance instanceof IPostParsing) {
+            ((IPostParsing) newInstance).afterParsing();
         }
 
         return newInstance;
@@ -209,8 +209,8 @@ public abstract class XmlParser<T> extends IParser.Base<InputStream, T> {
 
             }
 
-            if (item instanceof AfterParsable) {
-                ((AfterParsable) item).afterParsing();
+            if (item instanceof IPostParsing) {
+                ((IPostParsing) item).afterParsing();
             }
 
             return item;

@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
 
-public class TimeTable implements Parcelable, Serializable, IParser.AfterParsable {
+public class TimeTable implements Parcelable, Serializable, IParser.IPostParsing {
     private static final long serialVersionUID = 5134424815398243634L;
     public static final int SUBJECT_AMOUNT_PER_WEEK = 6;
 

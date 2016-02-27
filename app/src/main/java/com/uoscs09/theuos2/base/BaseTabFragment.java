@@ -9,10 +9,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.uoscs09.theuos2.UOSApplication;
 import com.uoscs09.theuos2.UosMainActivity;
 
 import butterknife.ButterKnife;
+import mj.android.utils.task.TaskQueue;
 
 public abstract class BaseTabFragment extends BaseFragment {
     private ViewGroup mTabParent;
@@ -27,6 +27,10 @@ public abstract class BaseTabFragment extends BaseFragment {
 
     protected final UOSApplication getUosApplication() {
         return (UOSApplication) getActivity().getApplication();
+    }
+
+    protected final TaskQueue taskQueue(){
+        return getUosApplication().taskQueue();
     }
 
     protected UosMainActivity getUosMainActivity() {

@@ -57,8 +57,8 @@ public abstract class ParseUosRSS<T> extends XmlParser<T> {
         }
 
 
-        if (item instanceof AfterParsable) {
-            ((AfterParsable) item).afterParsing();
+        if (item instanceof IPostParsing) {
+            ((IPostParsing) item).afterParsing();
         }
 
         return item;
@@ -92,7 +92,7 @@ public abstract class ParseUosRSS<T> extends XmlParser<T> {
 
     protected abstract void readList(XmlPullParser parser, int count, T item) throws IOException, XmlPullParserException;
 
-    public static class Item implements AfterParsable, Parcelable {
+    public static class Item implements IPostParsing, Parcelable {
         public String title, link, description, author, pubDate;
 
         public Item() {

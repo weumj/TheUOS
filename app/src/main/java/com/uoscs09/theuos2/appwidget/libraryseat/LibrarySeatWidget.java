@@ -72,9 +72,9 @@ public class LibrarySeatWidget extends AbsAsyncWidgetProvider<ArrayList<SeatItem
     }
 
     @Override
-    protected ArrayList<SeatItem> doInBackGround(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) throws Exception {
+    protected ArrayList<SeatItem> doInBackGround(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) throws Throwable {
 
-        ArrayList<SeatItem> list = AppRequests.LibrarySeats.request(context).get().seatItemList;
+        ArrayList<SeatItem> list = AppRequests.LibrarySeats.request().get().seatItemList;
         ArrayList<SeatItem> newList = new ArrayList<>();
 
         if (PrefHelper.LibrarySeats.isShowingWidgetStudyRoom()) {
@@ -143,7 +143,7 @@ public class LibrarySeatWidget extends AbsAsyncWidgetProvider<ArrayList<SeatItem
     }
 
     @Override
-    protected void exceptionOccurred(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds, Exception e) {
+    protected void exceptionOccurred(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds, Throwable e) {
         super.exceptionOccurred(context, appWidgetManager, appWidgetIds, e);
         setWidgetDefaultLayout(context, appWidgetManager, appWidgetIds, R.string.progress_fail);
     }

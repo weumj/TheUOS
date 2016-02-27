@@ -15,15 +15,15 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.async.AbstractRequest;
-import com.uoscs09.theuos2.async.Processor;
-import com.uoscs09.theuos2.async.Request;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+
+import mj.android.utils.task.Func;
+import mj.android.utils.task.Task;
 
 public class ImageUtil {
 
@@ -178,7 +178,7 @@ public class ImageUtil {
 
     }
 
-    public static class ImageWriteProcessor implements Processor<Bitmap, String> {
+    public static class ImageWriteProcessor implements Func<Bitmap, String> {
         private final String fileName;
 
         public ImageWriteProcessor(String fileName) {
@@ -186,7 +186,7 @@ public class ImageUtil {
         }
 
         @Override
-        public String process(Bitmap bitmap) throws Exception {
+        public String func(Bitmap bitmap) throws Exception {
             try {
                 ImageUtil.saveImageToFile(fileName, bitmap);
                 return fileName;
@@ -197,7 +197,7 @@ public class ImageUtil {
         }
     }
 
-    public static class ListViewBitmapRequest extends AbstractRequest<Bitmap> {
+    public static class ListViewBitmapRequest extends TaskUtil.AbstractTask<Bitmap> {
         private final WeakReference<ListView> listViewRef;
         private final ListAdapter adapter;
         private final WeakReference<View> headerViewRef;
@@ -208,8 +208,7 @@ public class ImageUtil {
             this.headerViewRef = headerViewRef;
         }
 
-        @Override
-        public Bitmap get() throws Exception {
+        public Bitmap get() {
 
             ListView listView = listViewRef.get();
             if (listView == null)
@@ -258,7 +257,7 @@ public class ImageUtil {
 
         }
 
-        public static final class Builder implements Request.Builder<Bitmap> {
+        public static final class Builder {
             private final WeakReference<ListView> listViewRef;
             private final ListAdapter adapter;
             private WeakReference<View> headerViewRef;
@@ -273,8 +272,7 @@ public class ImageUtil {
                 return this;
             }
 
-            @Override
-            public Request<Bitmap> build() {
+            public Task<Bitmap> build() {
                 return new ListViewBitmapRequest(adapter, listViewRef, headerViewRef);
             }
         }

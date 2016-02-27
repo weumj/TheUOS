@@ -109,7 +109,7 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> {
             execute();
         });
 
-       ListRecyclerAdapter<SeatItem, SeatViewHolder> mSeatAdapter = ListRecyclerUtil.newSimpleAdapter(mSeatInfo.seatItemList, SeatViewHolder.class, R.layout.list_layout_seat);
+        ListRecyclerAdapter<SeatItem, SeatViewHolder> mSeatAdapter = ListRecyclerUtil.newSimpleAdapter(mSeatInfo.seatItemList, SeatViewHolder.class, R.layout.list_layout_seat);
         mSeatAdapter.setOnItemClickListener((viewHolder, v) -> {
             if (isAdapterItemClicked)
                 return;
@@ -163,10 +163,10 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> {
                 return true;
 
             case R.id.action_info:
-                if (isTaskRunning()) {
-                    AppUtil.showToast(getActivity(), R.string.progress_while_loading, true);
-                    return true;
-                }
+              //  if (isTaskRunning()) {
+              //      AppUtil.showToast(getActivity(), R.string.progress_while_loading, true);
+              //      return true;
+             //   }
 
                 sendClickEvent("dismiss info");
                 if (!mSeatDismissDialogFragment.isAdded())
@@ -183,8 +183,7 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> {
         mSeatListView.getAdapter().notifyItemRangeRemoved(0, mSeatInfo.seatItemList.size());
         mSeatInfo.seatItemList.clear();
 
-        execute(true,
-                AppRequests.LibrarySeats.request(getActivity()),
+        execute(AppRequests.LibrarySeats.request(),
                 result -> {
                     if (mSwipeRefreshLayout != null)
                         mSwipeRefreshLayout.setRefreshing(false);
@@ -200,8 +199,9 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> {
                     e.printStackTrace();
                     if (mSwipeRefreshLayout != null)
                         mSwipeRefreshLayout.setRefreshing(false);
-                },
-                true
+
+                    simpleErrorRespond(e);
+                }
         );
     }
 
@@ -209,7 +209,7 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> {
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
 
-        if (isVisibleToUser && mSwipeRefreshLayout != null && isTaskRunning())
+        if (isVisibleToUser && mSwipeRefreshLayout != null)
             mSwipeRefreshLayout.setRefreshing(true);
     }
 

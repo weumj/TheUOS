@@ -88,6 +88,7 @@
     <string name="tab_book_empty_text2"> 버튼을 터치하여 도서 검색 옵션을 설정하세요.</string>
     <string name="tab_book_empty_text3"> 리스트나 책 이미지를 터치하면 자세한 정보를 볼 수 있습니다.</string>
     <string name="tab_book_available_in_online">온라인 이용 가능</string>
+    <string name="tab_book_image_transition_name">book_image_transition</string>
 
     <string name="tab_library_seat_last_update">최근 조회 시간\n</string>
     <string name="tab_library_seat_vacancy"> 잔여 좌석수 : </string>

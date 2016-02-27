@@ -16,7 +16,7 @@ import java.util.Comparator;
 import java.util.List;
 
 @KeepName
-public class SubjectItem2 implements Parcelable, IParser.AfterParsable {
+public class SubjectItem2 implements Parcelable, IParser.IPostParsing {
 
     /**
      * 학부

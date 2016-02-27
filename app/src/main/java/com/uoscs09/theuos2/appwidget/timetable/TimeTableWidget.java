@@ -9,7 +9,6 @@ import android.support.annotation.NonNull;
 import android.widget.RemoteViews;
 
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.base.BaseAppWidgetProvider;
 import com.uoscs09.theuos2.tab.timetable.TimeTable;
 import com.uoscs09.theuos2.util.AppRequests;
@@ -20,6 +19,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import mj.android.utils.task.Tasks;
+
 public abstract class TimeTableWidget extends BaseAppWidgetProvider {
     public final static String WIDGET_TIMETABLE_REFRESH = "com.uoscs09.theuos2.widget.timetable.refresh";
 
@@ -28,11 +29,11 @@ public abstract class TimeTableWidget extends BaseAppWidgetProvider {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
 
         final PendingResult pendingResult = goAsync();
-        AsyncUtil.execute(() -> {
+        Tasks.execute(() -> {
             TimeTable timeTable = null;
             try {
                 timeTable = AppRequests.TimeTables.readFromFile(context).get();
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 e.printStackTrace();
             }
 

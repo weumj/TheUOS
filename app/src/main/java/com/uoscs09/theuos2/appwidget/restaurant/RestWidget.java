@@ -72,7 +72,7 @@ public class RestWidget extends AbsAsyncWidgetProvider<SparseArray<RestItem>> {
     }
 
     @Override
-    protected SparseArray<RestItem> doInBackGround(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) throws Exception {
+    protected SparseArray<RestItem> doInBackGround(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) throws Throwable {
         return AppRequests.Restaurants.request(context, false).get();
     }
 
@@ -124,7 +124,7 @@ public class RestWidget extends AbsAsyncWidgetProvider<SparseArray<RestItem>> {
     }
 
     @Override
-    protected void exceptionOccurred(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds, Exception e) {
+    protected void exceptionOccurred(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds, Throwable e) {
         super.exceptionOccurred(context, appWidgetManager, appWidgetIds, e);
         setWidgetDefaultLayout(context, appWidgetManager, appWidgetIds);
     }

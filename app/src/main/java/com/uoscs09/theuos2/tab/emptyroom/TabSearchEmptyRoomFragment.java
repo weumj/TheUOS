@@ -163,7 +163,7 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Em
         int time = mTimeSpinner.getSelectedItemPosition() + 1;
         int term = mTermSpinner.getSelectedItemPosition();
 
-        execute(true,
+        execute(
                 AppRequests.EmptyRooms.request(getActivity(), building, time, term),
                 result -> {
                     mClassRoomList.clear();
@@ -183,8 +183,10 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Em
 
                     if (mAdapter.isEmpty())
                         mEmptyView.setVisibility(View.VISIBLE);
-                },
-                true);
+
+                    simpleErrorRespond(e);
+                }
+        );
     }
 
     private void onTabClick(int field) {

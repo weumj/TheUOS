@@ -2,7 +2,6 @@ package com.uoscs09.theuos2.tab.booksearch;
 
 
 import android.content.res.Resources;
-import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +10,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.common.PieProgressDrawable;
 import com.uoscs09.theuos2.util.AppRequests;
@@ -25,6 +23,7 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import mj.android.utils.task.Task;
 
 class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
     @Bind(R.id.tab_booksearch_list_book_title)
@@ -48,7 +47,7 @@ class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements View.OnCl
      */
     final ArrayList<ChildHolder> mChildHolderList = new ArrayList<>();
 
-    AsyncTask<Void, Integer, ArrayList<BookStateInfo>> asyncTask;
+    Task<ArrayList<BookStateInfo>> task;
 
     BookItem item;
     BookItemListAdapter.OnItemClickListener onItemClickListener;
@@ -84,9 +83,9 @@ class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements View.OnCl
     }
 
     private void cancelBookStateLoadingTask() {
-        if (AsyncUtil.isTaskRunning(asyncTask)) {
-            AsyncUtil.cancelTask(asyncTask);
-            asyncTask = null;
+        if (task != null) {
+            task.cancel();
+            task = null;
         }
     }
 
@@ -109,19 +108,19 @@ class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements View.OnCl
                 item.bookStateInfoList = Collections.emptyList();
                 removeAllBookStateInLayout();
             } else {
-                asyncTask = AppRequests.Books.requestBookStateInfo(holder.itemView.getContext(), item.infoUrl)
-                        .getAsyncOnExecutor(
-                                result -> {
-                                    item.bookStateInfoList = result;
+                task = AppRequests.Books.requestBookStateInfo(item.infoUrl);
+                task.getAsync(
+                        result -> {
+                            item.bookStateInfoList = result;
 
-                                    // 처리 후, ViewHolder item 과 결과 item 이 다르다면 무시
-                                    if (holder.item.equals(item))
-                                        drawBookStateLayout(holder);
-                                    else
-                                        Log.d("BookItemViewHolder", "request item != current item");
-                                },
-                                Throwable::printStackTrace
-                        );
+                            // 처리 후, ViewHolder item 과 결과 item 이 다르다면 무시
+                            if (holder.item.equals(item))
+                                drawBookStateLayout(holder);
+                            else
+                                Log.d("BookItemViewHolder", "request item != current item");
+                        },
+                        t -> AppUtil.showErrorToast(holder.itemView.getContext(), t, true)
+                );
 
             }
 
@@ -146,6 +145,8 @@ class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements View.OnCl
     }
 
     static void drawBookStateLayout(BookItemViewHolder holder) {
+        //if (holder.itemView.getContext() instanceof Activity)
+         //   BookDetailActivity.start((Activity) holder.itemView.getContext(), holder.coverImg, holder.item);
         holder.stateInfoLayout.setVisibility(View.VISIBLE);
 
         List<BookStateInfo> list = holder.item.bookStateInfoList;

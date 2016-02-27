@@ -7,7 +7,7 @@ import com.uoscs09.theuos2.annotation.KeepName;
 import com.uoscs09.theuos2.parse.IParser;
 
 @KeepName
-public class BookStateInfo implements Parcelable, IParser.AfterParsable {
+public class BookStateInfo implements Parcelable, IParser.IPostParsing {
 
     /**
      * 도서 코드

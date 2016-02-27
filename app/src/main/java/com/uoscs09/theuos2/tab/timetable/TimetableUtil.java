@@ -10,7 +10,6 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.common.SerializableArrayMap;
 import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.ImageUtil;
@@ -19,6 +18,8 @@ import com.uoscs09.theuos2.util.PrefUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import java.util.ArrayList;
+
+import mj.android.utils.task.Task;
 
 public class TimetableUtil {
 
@@ -117,7 +118,7 @@ public class TimetableUtil {
 
 
     @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-    public static Request<String> saveTimetableToImage(TimeTable timeTable, ListView listView, ListAdapter originalAdapter, View header) {
+    public static Task<String> saveTimetableToImage(TimeTable timeTable, ListView listView, ListAdapter originalAdapter, View header) {
         //noinspection ResourceType
         final String picturePath = PrefHelper.Data.getPicturePath();
         String savedPath = picturePath + "/timetable_" + timeTable.year + '_' + timeTable.semesterCode + '_' + String.valueOf(System.currentTimeMillis()) + ".png";

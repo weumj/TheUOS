@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -15,7 +14,6 @@ import android.webkit.MimeTypeMap;
 import android.webkit.WebSettings;
 
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.common.WebViewActivity;
 import com.uoscs09.theuos2.http.NetworkRequests;
 import com.uoscs09.theuos2.util.AppUtil;
@@ -23,6 +21,8 @@ import com.uoscs09.theuos2.util.PrefHelper;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import java.io.File;
+
+import mj.android.utils.task.Task;
 
 public class SubAnnounceWebActivity extends WebViewActivity {
     private static final int REQUEST_PERMISSION_FILE = 40;
@@ -179,43 +179,42 @@ public class SubAnnounceWebActivity extends WebViewActivity {
 
         //noinspection ResourceType
         final String docPath = PrefHelper.Data.getDocumentPath();
-        final AsyncTask<Void, ?, File> task = NetworkRequests.Announces.attachedFileDownloadRequest(this, url, docPath)
-                .getAsync(
-                        result -> {
-                            dismissProgressDialog();
+        final Task<File> task = NetworkRequests.Announces.attachedFileDownloadRequest(url, docPath);
+        task.getAsync(result -> {
+                    dismissProgressDialog();
 
-                            String docDir = docPath.substring(docPath.lastIndexOf('/') + 1);
-                            Snackbar.make(mWebView, getString(R.string.saved_file, docDir, result.getName()), Snackbar.LENGTH_LONG)
-                                    .setAction(R.string.action_open, v -> {
+                    String docDir = docPath.substring(docPath.lastIndexOf('/') + 1);
+                    Snackbar.make(mWebView, getString(R.string.saved_file, docDir, result.getName()), Snackbar.LENGTH_LONG)
+                            .setAction(R.string.action_open, v -> {
 
-                                        sendClickEvent("open file");
+                                sendClickEvent("open file");
 
-                                        Uri fileUri = Uri.fromFile(result);
-                                        String fileExtension = MimeTypeMap.getFileExtensionFromUrl(fileUri.toString());
-                                        String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension);
+                                Uri fileUri = Uri.fromFile(result);
+                                String fileExtension = MimeTypeMap.getFileExtensionFromUrl(fileUri.toString());
+                                String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension);
 
-                                        Intent intent = new Intent()
-                                                .setAction(Intent.ACTION_VIEW)
-                                                .setDataAndType(fileUri, mimeType);
-                                        try {
-                                            AppUtil.startActivityWithScaleUp(SubAnnounceWebActivity.this, intent, v);
-                                        } catch (ActivityNotFoundException e) {
-                                            //e.printStackTrace();
-                                            AppUtil.showToast(SubAnnounceWebActivity.this, R.string.error_no_activity_found_to_handle_file);
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                            AppUtil.showErrorToast(SubAnnounceWebActivity.this, e, true);
-                                        }
-                                    })
-                                    .show();
-                        },
-                        e -> {
-                            dismissProgressDialog();
-                            AppUtil.showErrorToast(SubAnnounceWebActivity.this, e, true);
-                        }
-                );
+                                Intent intent = new Intent()
+                                        .setAction(Intent.ACTION_VIEW)
+                                        .setDataAndType(fileUri, mimeType);
+                                try {
+                                    AppUtil.startActivityWithScaleUp(SubAnnounceWebActivity.this, intent, v);
+                                } catch (ActivityNotFoundException e) {
+                                    //e.printStackTrace();
+                                    AppUtil.showToast(SubAnnounceWebActivity.this, R.string.error_no_activity_found_to_handle_file);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    AppUtil.showErrorToast(SubAnnounceWebActivity.this, e, true);
+                                }
+                            })
+                            .show();
+                },
+                e -> {
+                    dismissProgressDialog();
+                    AppUtil.showErrorToast(SubAnnounceWebActivity.this, e, true);
+                }
+        );
 
-        mProgressDialog.setOnCancelListener(dialog -> AsyncUtil.cancelTask(task));
+        mProgressDialog.setOnCancelListener(dialog -> task.cancel());
         mProgressDialog.show();
 
         sendClickEvent("download file");

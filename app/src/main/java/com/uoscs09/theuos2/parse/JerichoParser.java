@@ -5,9 +5,9 @@ import net.htmlparser.jericho.Source;
 /** JerichoParser 를 사용하는 파서 */
 public abstract class JerichoParser<T> extends IParser.Base<String, T> {
 
-	public T parse(String param) throws Exception {
+	public T parse(String param) throws Throwable {
 		return parseHtmlBody(new Source(param));
 	}
 
-	protected abstract T parseHtmlBody(Source source) throws Exception;
+	protected abstract T parseHtmlBody(Source source) throws Throwable;
 }

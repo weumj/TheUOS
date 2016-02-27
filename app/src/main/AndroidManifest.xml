@@ -22,7 +22,7 @@
         android:required="true" />
 
     <application
-        android:name=".UOSApplication"
+        android:name=".base.UOSApplication"
         android:allowBackup="true"
         android:fullBackupContent="true"
         android:icon="@drawable/ic_launcher"
@@ -63,6 +63,7 @@
 
         <activity android:name=".tab.announce.SubAnnounceWebActivity" />
 
+        <activity android:name=".tab.booksearch.BookDetailActivity" />
         <activity
             android:name=".setting.SettingActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"

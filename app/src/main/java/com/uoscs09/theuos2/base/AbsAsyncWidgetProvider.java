@@ -3,8 +3,9 @@ package com.uoscs09.theuos2.base;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 
-import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.util.AppUtil;
+
+import mj.android.utils.task.Tasks;
 
 /**
  * 비 동기 작업이 필요한 AppWidget 을 위한 Abstract Class
@@ -15,7 +16,7 @@ public abstract class AbsAsyncWidgetProvider<Data> extends BaseAppWidgetProvider
     public void onUpdate(final Context context, final AppWidgetManager appWidgetManager, final int[] appWidgetIds) {
 
         final PendingResult pendingResult = goAsync();
-        AsyncUtil.newRequest(() -> doInBackGround(context, appWidgetManager, appWidgetIds)).getAsync(
+        Tasks.newTask(() -> doInBackGround(context, appWidgetManager, appWidgetIds)).getAsync(
                 result -> {
                     AbsAsyncWidgetProvider.this.onBackgroundTaskResult(context, appWidgetManager, appWidgetIds, result);
                     pendingResult.finish();
@@ -33,7 +34,7 @@ public abstract class AbsAsyncWidgetProvider<Data> extends BaseAppWidgetProvider
      *
      * @return 작업한 결과
      */
-    protected abstract Data doInBackGround(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) throws Exception;
+    protected abstract Data doInBackGround(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) throws Throwable;
 
     /**
      * 다른 Thread 에서의 작업이 성공적으로 끝나고, 메인 Thread 에서 호출된다.
@@ -48,7 +49,7 @@ public abstract class AbsAsyncWidgetProvider<Data> extends BaseAppWidgetProvider
      *
      * @param e 발생한 Exception
      */
-    protected void exceptionOccurred(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds, Exception e) {
+    protected void exceptionOccurred(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds, Throwable e) {
         AppUtil.showErrorToast(context, e, true);
     }
 }

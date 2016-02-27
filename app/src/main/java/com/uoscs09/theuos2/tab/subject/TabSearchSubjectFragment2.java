@@ -24,7 +24,6 @@ import android.widget.TextView;
 import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
-import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.customview.CustomHorizontalScrollView;
 import com.uoscs09.theuos2.util.AppRequests;
@@ -36,6 +35,7 @@ import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.OnItemClick;
+import mj.android.utils.task.Task;
 
 public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<SubjectItem2>>
         implements AdapterView.OnItemSelectedListener {
@@ -283,14 +283,14 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
         mEmptyView.setVisibility(View.INVISIBLE);
 
         boolean culture = mDialogSpinner1.getSelectedItemPosition() == 0;
-        Request<ArrayList<SubjectItem2>> request;
+        Task<ArrayList<SubjectItem2>> request;
 
         String year = mDialogYearSpinner.getSelectedItem().toString();
         int term = mDialogTermSpinner.getSelectedItemPosition();
         String subjectName = mSearchEditText.getText().toString();
 
         if (culture)
-            request = AppRequests.Subjects.requestCulture(getActivity(), year, term, getCultSubjectDiv(mDialogSpinner2.getSelectedItemPosition()), subjectName);
+            request = AppRequests.Subjects.requestCulture(year, term, getCultSubjectDiv(mDialogSpinner2.getSelectedItemPosition()), subjectName);
         else {
             Map<String, String> additionalParams;
             switch (selections[1]) {
@@ -303,11 +303,10 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
                     break;
 
             }
-            request = AppRequests.Subjects.requestMajor(getActivity(), year, term, additionalParams, subjectName);
+            request = AppRequests.Subjects.requestMajor(year, term, additionalParams, subjectName);
         }
 
-        execute(true,
-                request,
+        execute(request,
                 result -> {
                     mSubjectAdapter.clear();
                     mSubjectAdapter.addAll(result);
@@ -337,8 +336,7 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
                             + mDialogTermSpinner.getSelectedItem().toString();
                     setSubtitleWhenVisible(mSearchConditionString);
                 },
-                Throwable::printStackTrace,
-                true
+                this::simpleErrorRespond
         );
     }
 

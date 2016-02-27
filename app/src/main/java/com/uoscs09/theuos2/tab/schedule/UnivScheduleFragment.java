@@ -22,7 +22,6 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
@@ -32,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import butterknife.Bind;
+import mj.android.utils.task.Tasks;
 import se.emilsjolander.stickylistheaders.ExpandableStickyListHeadersListView;
 
 
@@ -207,7 +207,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
     private void addUnivScheduleToCalender() {
         mProgressDialog.show();
 
-        AsyncUtil.newRequest(() -> {
+        Tasks.newTask(() -> {
             ContentResolver cr = getActivity().getContentResolver();
 
             Cursor c = cr.query(CalendarContract.Calendars.CONTENT_URI, EVENT_PROJECTION, SELECTION, selectionArgs, null);
@@ -249,8 +249,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
     }
 
     private void execute() {
-        execute(true,
-                AppRequests.UnivSchedules.request(getActivity()),
+        execute(AppRequests.UnivSchedules.request(getActivity()),
                 result -> {
                     mList.clear();
                     mList.addAll(result);
@@ -258,8 +257,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
 
                     setSubtitleWhenVisible(mSubTitle = mDateFormat.format(mList.get(0).getDate(true).getTime()));
                 },
-                Throwable::printStackTrace,
-                true
+                this::simpleErrorRespond
         );
     }
 

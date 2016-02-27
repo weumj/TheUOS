@@ -14,13 +14,13 @@ public class ParseRestaurantWeek extends JerichoParser<WeekRestItem> {
     private static final String BR = "*br*";
 
     @Override
-    public WeekRestItem parse(String param) throws Exception {
+    public WeekRestItem parse(String param) throws Throwable {
         param = param.replaceAll("<br*+/>", BR);
         return super.parse(param);
     }
 
     @Override
-    protected WeekRestItem parseHtmlBody(Source source) throws Exception {
+    protected WeekRestItem parseHtmlBody(Source source) throws Throwable{
         Element restTable = source.getFirstElementByClass("tblType03 mt10");
 
         WeekRestItem weekRestItem = new WeekRestItem();

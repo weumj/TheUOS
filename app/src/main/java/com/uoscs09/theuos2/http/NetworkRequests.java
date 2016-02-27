@@ -2,11 +2,8 @@ package com.uoscs09.theuos2.http;
 
 import android.content.Context;
 import android.support.v4.util.ArrayMap;
-import android.util.Log;
 import android.util.SparseArray;
 
-import com.uoscs09.theuos2.async.AsyncUtil;
-import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.parse.XmlParser;
 import com.uoscs09.theuos2.parse.XmlParserWrapper;
 import com.uoscs09.theuos2.tab.announce.AnnounceItem;
@@ -43,7 +40,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.FutureTask;
+
+import mj.android.utils.task.Task;
+import mj.android.utils.task.Tasks;
 
 // 오직 네트워크와 파싱 관련된 작업만 수행하고, 파일 IO같은 작업은 AppResources에서 처리.
 public class NetworkRequests {
@@ -67,11 +66,11 @@ public class NetworkRequests {
 
         }
 
-        public static Request<ArrayList<AnnounceItem>> normalRequest(Context context, int category, int page) {
-            return normalRequest(context, Category.values()[category - 1], page);
+        public static Task<ArrayList<AnnounceItem>> normalRequest(int category, int page) {
+            return normalRequest(Category.values()[category - 1], page);
         }
 
-        public static Request<ArrayList<AnnounceItem>> normalRequest(Context context, Category category, int pageIndex) {
+        public static Task<ArrayList<AnnounceItem>> normalRequest(Category category, int pageIndex) {
             ArrayMap<String, String> queryMap = new ArrayMap<>();
 
             String url;
@@ -89,15 +88,14 @@ public class NetworkRequests {
                     .setHttpMethod(HttpRequest.HTTP_METHOD_POST)
                     .setParams(queryMap)
                     .build()
-                    .checkNetworkState(context)
                     .wrap(scholarship ? SCHOLARSHIP_PARSER : PARSER);
         }
 
-        public static Request<ArrayList<AnnounceItem>> searchRequest(Context context, int category, int pageIndex, String query) {
-            return searchRequest(context, Category.values()[category - 1], pageIndex, query);
+        public static Task<ArrayList<AnnounceItem>> searchRequest(int category, int pageIndex, String query) {
+            return searchRequest(Category.values()[category - 1], pageIndex, query);
         }
 
-        public static Request<ArrayList<AnnounceItem>> searchRequest(Context context, Category category, int pageIndex, String query) {
+        public static Task<ArrayList<AnnounceItem>> searchRequest(Category category, int pageIndex, String query) {
             ArrayMap<String, String> queryMap = new ArrayMap<>();
 
             String url;
@@ -122,15 +120,13 @@ public class NetworkRequests {
                     .setHttpMethod(HttpRequest.HTTP_METHOD_POST)
                     .setParams(queryMap)
                     .build()
-                    .checkNetworkState(context)
                     .wrap(scholarship ? SCHOLARSHIP_PARSER : PARSER);
         }
 
-        public static Request<File> attachedFileDownloadRequest(Context context, String url, String docPath) {
+        public static Task<File> attachedFileDownloadRequest(String url, String docPath) {
             return HttpRequest.Builder.newConnectionRequestBuilder(url)
                     .setHttpMethod(HttpRequest.HTTP_METHOD_POST)
                     .build()
-                    .checkNetworkState(context)
                     .wrap(new HttpRequest.FileDownloadProcessor(new File(docPath)));
         }
     }
@@ -141,17 +137,15 @@ public class NetworkRequests {
 
         private static final XmlParserWrapper<ArrayList<BookStateInfo>> BOOK_STATE_INFO_PARSER = new XmlParserWrapper<>(XmlParser.newReflectionParser(BookStateInfo.class, "location", "noholding", "item"));
 
-        public static Request<ArrayList<BookStateInfo>> requestBookStateInfo(Context context, String url) {
+        public static Task<ArrayList<BookStateInfo>> requestBookStateInfo(String url) {
             return HttpRequest.Builder.newConnectionRequestBuilder(url)
                     .build()
-                    .checkNetworkState(context)
                     .wrap(BOOK_STATE_INFO_PARSER);
         }
 
-        public static Request<List<BookItem>> request(Context context, String query, int page, int os, int oi) {
+        public static Task<List<BookItem>> request(String query, int page, int os, int oi) {
             return HttpRequest.Builder.newStringRequestBuilder(buildUrl(query, page, os, oi))
                     .build()
-                    .checkNetworkState(context)
                     .wrap(BOOK_PARSER);
         }
 
@@ -218,18 +212,16 @@ public class NetworkRequests {
         private static final ParseRest REST_PARSER = new ParseRest();
         private static final ParseRestaurantWeek RESTAURANT_WEEK_PARSER = new ParseRestaurantWeek();
 
-        public static Request<SparseArray<RestItem>> request(Context context) {
+        public static Task<SparseArray<RestItem>> request() {
             return HttpRequest.Builder
                     .newStringRequestBuilder("http://m.uos.ac.kr/mkor/food/list.do")
                     .build()
-                    .checkNetworkState(context)
                     .wrap(REST_PARSER);
         }
 
-        public static Request<WeekRestItem> requestWeekInfo(Context context, String code) {
+        public static Task<WeekRestItem> requestWeekInfo(String code) {
             return HttpRequest.Builder.newStringRequestBuilder("http://www.uos.ac.kr/food/placeList.do?rstcde=" + code)
                     .build()
-                    .checkNetworkState(context)
                     .wrap(RESTAURANT_WEEK_PARSER);
         }
 
@@ -238,8 +230,8 @@ public class NetworkRequests {
     public static class TimeTables {
         private static final XmlParserWrapper<TimeTable> PARSER = new XmlParserWrapper<>(new ParseTimeTable2());
 
-        public static Request<TimeTable> request(Context context, CharSequence id, CharSequence passwd, OApiUtil.Semester semester, CharSequence year) {
-            return TimeTableHttpRequest.newRequest(context, id, passwd, semester, year)
+        public static Task<TimeTable> request(CharSequence id, CharSequence passwd, OApiUtil.Semester semester, CharSequence year) {
+            return TimeTableHttpRequest.newRequest(id, passwd, semester, year)
                     .wrap(PARSER)
                     .wrap(timeTable -> {
                         TimetableUtil.makeColorTable(timeTable);
@@ -255,11 +247,10 @@ public class NetworkRequests {
         private static final ParseSeat LIBRARY_SEAR_PARSER = new ParseSeat();
         private final static String URL = "http://203.249.102.34:8080/seat/domian5.asp";
 
-        public static Request<SeatInfo> request(Context context) {
+        public static Task<SeatInfo> request() {
             return HttpRequest.Builder.newStringRequestBuilder(URL)
                     .setResultEncoding(StringUtil.ENCODE_EUC_KR)
                     .build()
-                    .checkNetworkState(context)
                     .wrap(LIBRARY_SEAR_PARSER);
         }
     }
@@ -290,7 +281,7 @@ public class NetworkRequests {
             return params;
         }
 
-        public static Request<ArrayList<EmptyClassRoomItem>> request(Context context, String building, int time, int term) {
+        public static Task<ArrayList<EmptyClassRoomItem>> request(Context context, String building, int time, int term) {
             if (building.equals("00")) {
                 return requestAllEmptyRoom(context, time, term);
             } else {
@@ -298,22 +289,21 @@ public class NetworkRequests {
                         .setParams(buildParamsMap(building, time, term))
                         .setParamsEncoding(StringUtil.ENCODE_EUC_KR)
                         .build()
-                        .checkNetworkState(context)
                         .wrap(EMPTY_ROOM_PARSER);
             }
         }
 
 
-        private static Request<ArrayList<EmptyClassRoomItem>> requestAllEmptyRoom(Context context, int time, int term) {
-            return AsyncUtil.newRequest(() -> {
-                ArrayList<EmptyClassRoomItem> list = new ArrayList<>();
+        private static Task<ArrayList<EmptyClassRoomItem>> requestAllEmptyRoom(Context context, int time, int term) {
+            return Tasks.newTask(() -> {
+
                 final String[] buildings = {
                         "01", "02", "03", "04", "05",
                         "06", "08", "09", "10", "11",
                         "13", "14", "15", "16", "17",
                         "18", "19", "20", "23", "24", "25", "33"};
 
-                ArrayList<Request<ArrayList<EmptyClassRoomItem>>> requests = new ArrayList<>(buildings.length);
+                ArrayList<Task<ArrayList<EmptyClassRoomItem>>> requests = new ArrayList<>(buildings.length);
 
                 Map<String, String> params = buildParamsMap("00", time, term);
 
@@ -326,67 +316,41 @@ public class NetworkRequests {
                     requests.add(requestBuilder.build().wrap(EMPTY_ROOM_PARSER));
                 }
 
-                HttpRequest.checkNetworkStateAndThrowException(context);
-
                 final int N = requests.size();
-                final int half = N / 2;
                 if (OptimizeStrategy.isSafeToOptimize(context)) {
-                    FutureTask<ArrayList<EmptyClassRoomItem>> task1, task2;
+                    final int half = N / 2;
+                    Task[] tasks = {
+                            subTask(requests.subList(0, half)),
+                            subTask(requests.subList(half, N))
+                    };
 
-                    task1 = new FutureTask<>(() -> {
-                        List<Request<ArrayList<EmptyClassRoomItem>>> firstHalfRequests = requests.subList(0, half);
-                        ArrayList<EmptyClassRoomItem> results = new ArrayList<>();
-
-                        for (Request<ArrayList<EmptyClassRoomItem>> request : firstHalfRequests)
-                            results.addAll(request.get());
-                        return results;
-                    });
-
-                    task2 = new FutureTask<>(() -> {
-                        List<Request<ArrayList<EmptyClassRoomItem>>> secondHalfRequests = requests.subList(half, N);
-                        ArrayList<EmptyClassRoomItem> results = new ArrayList<>();
-
-                        for (Request<ArrayList<EmptyClassRoomItem>> request : secondHalfRequests)
-                            results.addAll(request.get());
-                        return results;
-                    });
-
-                    AsyncUtil.executeFor(task1);
-                    //AsyncUtil.executeFor(task2);
-                    task2.run();
-
-                    for (; ; ) {
-                        try {
-                            list.addAll(task1.get());
-                            break;
-                        } catch (InterruptedException e) {
-                            Log.e("EmptyRoomRequest", "interrupted TASK #1", e);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            break;
+                    return Tasks.parallelTask(tasks).wrap(objects -> {
+                        ArrayList<EmptyClassRoomItem> roomItems = new ArrayList<>();
+                        for (Object o : objects) {
+                            if (o instanceof ArrayList && ((ArrayList) o).size() > 0 && ((ArrayList) o).get(0) instanceof EmptyClassRoomItem) {
+                                //noinspection unchecked
+                                roomItems.addAll((ArrayList<EmptyClassRoomItem>) o);
+                            }
                         }
-                    }
-
-
-                    for (; ; ) {
-                        try {
-                            list.addAll(task2.get());
-                            break;
-                        } catch (InterruptedException e) {
-                            Log.e("EmptyRoomRequest", "interrupted TASK #2", e);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            break;
-                        }
-                    }
-
+                        return roomItems;
+                    }).get();
                 } else {
+                    ArrayList<EmptyClassRoomItem> list = new ArrayList<>();
                     for (int i = 0; i < N; i++)
                         list.addAll(requests.get(i).get());
+
+                    return list;
                 }
+            });
+        }
 
+        private static Task<ArrayList<EmptyClassRoomItem>> subTask(List<Task<ArrayList<EmptyClassRoomItem>>> tasks) {
+            return Tasks.newTask(() -> {
+                ArrayList<EmptyClassRoomItem> results = new ArrayList<>();
 
-                return list;
+                for (Task<ArrayList<EmptyClassRoomItem>> request : tasks)
+                    results.addAll(request.get());
+                return results;
             });
         }
     }
@@ -396,7 +360,7 @@ public class NetworkRequests {
         private static final String SUBJECT_CULTURE = "http://wise.uos.ac.kr/uosdoc/api.ApiUcrCultTimeInq.oapi";
         private static final String SUBJECT_MAJOR = "http://wise.uos.ac.kr/uosdoc/api.ApiUcrMjTimeInq.oapi";
 
-        public static Request<ArrayList<SubjectItem2>> requestCulture(Context context, String year, int term, String subjectDiv, String subjectName) {
+        public static Task<ArrayList<SubjectItem2>> requestCulture(String year, int term, String subjectDiv, String subjectName) {
             ArrayMap<String, String> map = new ArrayMap<>(5);
 
             map.put(OApiUtil.API_KEY, OApiUtil.UOS_API_KEY);
@@ -415,11 +379,10 @@ public class NetworkRequests {
                     .setParamsEncoding(StringUtil.ENCODE_EUC_KR)
                     .setParams(map)
                     .build()
-                    .checkNetworkState(context)
                     .wrap(SUBJECT_PARSER);
         }
 
-        public static Request<ArrayList<SubjectItem2>> requestMajor(Context context, String year, int term, Map<String, String> majorParams, String subjectName) {
+        public static Task<ArrayList<SubjectItem2>> requestMajor(String year, int term, Map<String, String> majorParams, String subjectName) {
             ArrayMap<String, String> map = new ArrayMap<>();
 
             map.put(OApiUtil.API_KEY, OApiUtil.UOS_API_KEY);
@@ -439,7 +402,6 @@ public class NetworkRequests {
                     .setParamsEncoding(StringUtil.ENCODE_EUC_KR)
                     .setParams(map)
                     .build()
-                    .checkNetworkState(context)
                     .wrap(SUBJECT_PARSER);
         }
 
@@ -447,7 +409,7 @@ public class NetworkRequests {
         private final static String COURSE_PLAN_URL = "http://wise.uos.ac.kr/uosdoc/api.ApiApiCoursePlanView.oapi";
         private static final XmlParserWrapper<ArrayList<CoursePlanItem>> COURSE_PLAN_PARSER = OApiUtil.getParser(CoursePlanItem.class);
 
-        public static Request<ArrayList<CoursePlanItem>> requestCoursePlan(Context context, SubjectItem2 item) {
+        public static Task<ArrayList<CoursePlanItem>> requestCoursePlan(SubjectItem2 item) {
             ArrayMap<String, String> params = new ArrayMap<>(5);
 
             params.put(OApiUtil.API_KEY, OApiUtil.UOS_API_KEY);
@@ -460,14 +422,13 @@ public class NetworkRequests {
                     .setParams(params)
                     .setParamsEncoding(StringUtil.ENCODE_EUC_KR)
                     .build()
-                    .checkNetworkState(context)
                     .wrap(COURSE_PLAN_PARSER);
         }
 
         private static final String SUBJECT_INFO_URL = "http://wise.uos.ac.kr/uosdoc/api.ApiApiSubjectList.oapi";
         private static final XmlParserWrapper<ArrayList<SubjectInfoItem>> SUBJECT_INFO_PARSER = OApiUtil.getParser(SubjectInfoItem.class);
 
-        public static Request<ArrayList<SubjectInfoItem>> requestSubjectInfo(Context context, String subjectName, int year, String termCode) {
+        public static Task<ArrayList<SubjectInfoItem>> requestSubjectInfo(String subjectName, int year, String termCode) {
             ArrayMap<String, String> params = new ArrayMap<>();
             params.put(OApiUtil.API_KEY, OApiUtil.UOS_API_KEY);
             params.put(OApiUtil.SUBJECT_NAME, subjectName);
@@ -478,7 +439,6 @@ public class NetworkRequests {
                     .setParams(params)
                     .setParamsEncoding(StringUtil.ENCODE_EUC_KR)
                     .build()
-                    .checkNetworkState(context)
                     .wrap(SUBJECT_INFO_PARSER);
         }
 
@@ -489,10 +449,9 @@ public class NetworkRequests {
 
         private static final String URL = OApiUtil.URL_API_MAIN_DB + '?' + OApiUtil.API_KEY + '=' + OApiUtil.UOS_API_KEY;
 
-        public static Request<ArrayList<UnivScheduleItem>> request(Context context) {
+        public static Task<ArrayList<UnivScheduleItem>> request() {
             return HttpRequest.Builder.newConnectionRequestBuilder(URL)
                     .build()
-                    .checkNetworkState(context)
                     .wrap(UNIV_SCHEDULE_PARSER);
         }
     }

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.design.widget.AppBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/toolbar_parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:fitsSystemWindows="true"
+        android:orientation="vertical"
+        app:layout_behavior="android.support.design.widget.AppBarLayout$Behavior">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            android:theme="?actionBarStyle"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:popupTheme="?android:attr/theme"
+            app:subtitleTextAppearance="?attr/toolbar_actionbar_subtitle"
+            app:titleTextAppearance="?attr/toolbar_actionbar_title" />
+    </android.support.design.widget.AppBarLayout>
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <ImageView
+            android:id="@+id/book"
+            android:layout_width="90dp"
+            android:layout_height="128dp"
+            android:layout_gravity="center_horizontal"
+            android:scaleType="fitXY"
+            android:transitionName="@string/tab_book_image_transition_name" />
+
+        <include layout="@layout/view_toolbar_shadow" />
+    </FrameLayout>
+</LinearLayout>

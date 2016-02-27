@@ -19,7 +19,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.common.PieProgressDrawable;
 import com.uoscs09.theuos2.http.HttpRequest;
@@ -32,6 +31,8 @@ import com.uoscs09.theuos2.util.TrackerUtil;
 
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.Source;
+
+import mj.android.utils.task.Tasks;
 
 /**
  * 메인 설정화면을 나타내는 {@code PreferenceFragment}
@@ -136,7 +137,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
 
         HttpRequest.Builder.newStringRequestBuilder(APP_URL)
                 .build()
-                .checkNetworkState(getActivity())
                 .wrap(new JerichoParser<String>() {
                     @Override
                     protected String parseHtmlBody(Source source) throws Exception {
@@ -278,16 +278,13 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
      * 어플리케이션의 모든 캐쉬를 삭제한다.
      */
     private void deleteCache() {
-        AsyncUtil.newRequest(
-                () -> {
-                    AppUtil.clearCache(getActivity());
-                    return null;
-                })
-                .getAsync(
-                        result -> AppUtil.showToast(getActivity(), R.string.execute_delete),
-                        e -> AppUtil.showErrorToast(getActivity(), e, true)
-                );
-
+        Tasks.newTask(() -> {
+            AppUtil.clearCache(getActivity());
+            return null;
+        }).getAsync(
+                result -> AppUtil.showToast(getActivity(), R.string.execute_delete),
+                e -> AppUtil.showErrorToast(getActivity(), e, true)
+        );
     }
 
     @Override

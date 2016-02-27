@@ -15,7 +15,8 @@
         android:layout_marginRight="3dp"
         android:contentDescription="@string/tab_book_book_opt"
         android:scaleType="fitXY"
-        android:src="@drawable/noimg_en" />
+        android:src="@drawable/noimg_en"
+        android:transitionName="@string/tab_book_image_transition_name" />
 
     <com.balysv.materialripple.MaterialRippleLayout
         android:id="@+id/ripple"

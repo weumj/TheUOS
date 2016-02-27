@@ -7,17 +7,15 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
 import android.util.Log;
 
-import com.uoscs09.theuos2.async.AbstractRequest;
-import com.uoscs09.theuos2.async.AsyncUtil;
-import com.uoscs09.theuos2.async.Processor;
-import com.uoscs09.theuos2.async.Request;
-
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.StreamCorruptedException;
 
 import mj.android.utils.common.IOUtils;
+import mj.android.utils.task.Func;
+import mj.android.utils.task.Task;
+import mj.android.utils.task.Tasks;
 
 public class IOUtil {
     private static final String TAG = "IOUtil";
@@ -148,17 +146,6 @@ public class IOUtil {
     */
 
 
-    public static void writeObjectToFileAsync(Context context, final String fileName, final Object obj) {
-        final Context appContext = context.getApplicationContext();
-        AsyncUtil.execute(() -> {
-            try {
-                writeObjectToFile(appContext, fileName, obj);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-    }
-
     /**
      * 파일 또는 폴더를 삭제한다. 폴더의 경우 재귀적으로 탐색하여 내부의 파일까지 모두 삭제한다.
      */
@@ -184,53 +171,27 @@ public class IOUtil {
         }
     }
 
-    public static final class Builder<T> implements Request.Builder<T> {
-        private final String fileName;
-        private Context context;
-
-        public Builder(String fileName) {
-            this.fileName = fileName;
-        }
-
-        public Builder<T> setContext(Context context) {
-            this.context = context.getApplicationContext();
-            return this;
-        }
-
-        @Override
-        public Request<T> build() {
-            return new FileOpenRequest<>(context, fileName);
-        }
+    public static <T> Task<T> externalFileOpenTask(String fileName) {
+        //noinspection unchecked
+        return Tasks.newTask(() -> (T) readFromFile(new File(fileName)));
     }
 
-    private static class FileOpenRequest<T> extends AbstractRequest<T> {
-        private final String fileName;
-        private final Context context;
-
-        public FileOpenRequest(@Nullable Context context, String fileName) {
-            this.fileName = fileName;
-            this.context = context != null ? context.getApplicationContext() : null;
-        }
-
-        @Override
-        public T get() throws Exception {
-            if (context != null)
-                return readFromFile(context, fileName);
-            else
-                return null;
-        }
+    public static <T> Task<T> internalFileOpenTask(Context context, String fileName) {
+        //noinspection unchecked
+        return Tasks.newTask(() -> (T) readFromFile(context, fileName));
     }
+
 
     @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-    public static <T> Processor<T, T> newExternalFileWriteProcessor(String fileName) {
+    public static <T> Func<T, T> newExternalFileWriteProcessor(String fileName) {
         return new FileWriteProcessor<>(null, fileName);
     }
 
-    public static <T> Processor<T, T> newInternalFileWriteProcessor(@NonNull Context context, String fileName) {
+    public static <T> Func<T, T> newInternalFileWriteProcessor(@NonNull Context context, String fileName) {
         return new FileWriteProcessor<>(context, fileName);
     }
 
-    static class FileWriteProcessor<T> implements Processor<T, T> {
+    static class FileWriteProcessor<T> implements Func<T, T> {
         private final String fileName;
         private final Context context;
 
@@ -240,7 +201,7 @@ public class IOUtil {
         }
 
         @Override
-        public T process(T t) throws Exception {
+        public T func(T t) throws Exception {
             if (context == null)
                 //noinspection ResourceType
                 writeObjectToExternalFile(fileName, t);

@@ -1,13 +1,11 @@
 package com.uoscs09.theuos2.base;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.uoscs09.theuos2.annotation.AsyncData;
-import com.uoscs09.theuos2.async.AsyncUtil;
-import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.util.AppUtil;
 
 import java.io.IOException;
@@ -15,10 +13,13 @@ import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import mj.android.utils.task.ErrorListener;
+import mj.android.utils.task.ResultListener;
+import mj.android.utils.task.Task;
+
 public abstract class AbsAsyncFragment<T> extends BaseTabFragment {
 
     private final static Map<String, Object> sAsyncDataStoreMap = new ConcurrentHashMap<>();
-    private AsyncTask<Void, ?, T> mAsyncTask;
 
     /**
      * {@code super.onCreate()}를 호출하면, 이전의 비 동기 작업 처리 결과에 따라<br>
@@ -48,33 +49,24 @@ public abstract class AbsAsyncFragment<T> extends BaseTabFragment {
 
     }
 
-    protected boolean isTaskRunning() {
-        return AsyncUtil.isTaskRunning(mAsyncTask);
-    }
-
     /**
      * 비동기 작업이 실행되기 전 호출된다.
      */
     protected void onPreExecute() {
     }
 
+    protected void onPostExecute() {
+    }
+
     /**
      * 주어진 작업을 비 동기로 실행한다.
      */
-    protected final AsyncTask<Void, ?, T> execute(boolean cancelPrevRequest, @NonNull Request<T> request,
-                                                  @NonNull final Request.ResultListener<T> resultListener,
-                                                  @Nullable final Request.ErrorListener errorListener,
-                                                  final boolean callBaseErrorListener) {
-        if (cancelPrevRequest)
-            AsyncUtil.cancelTask(mAsyncTask);
-
+    protected final void execute(@NonNull Task<T> task, @NonNull final ResultListener<T> resultListener, @Nullable final ErrorListener errorListener) {
         onPreExecute();
 
         sAsyncDataStoreMap.remove(getClass().getName());
 
-        return mAsyncTask = request.getAsync(
-                (result) -> {
-                    mAsyncTask = null;
+        task.getAsync(result -> {
                     if (isVisible()) {
                         onPostExecute();
                         resultListener.onResult(result);
@@ -83,24 +75,20 @@ public abstract class AbsAsyncFragment<T> extends BaseTabFragment {
                     }
                 },
                 e -> {
-                    mAsyncTask = null;
                     if (isVisible()) {
                         onPostExecute();
-                        if (callBaseErrorListener) {
-                            simpleErrorRespond(e);
-                        }
                         if (errorListener != null) {
                             errorListener.onError(e);
+                        } else {
+                            Log.w(getTag(), "error", e);
                         }
                     }
                 }
         );
     }
 
-    protected void onPostExecute() {
-    }
 
-    protected void simpleErrorRespond(Exception e) {
+    protected void simpleErrorRespond(Throwable e) {
         if (e instanceof IOException) {
             AppUtil.showInternetConnectionErrorToast(getActivity(), isMenuVisible());
         } else {

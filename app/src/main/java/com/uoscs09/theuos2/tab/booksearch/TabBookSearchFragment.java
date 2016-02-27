@@ -338,7 +338,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
     private void execute() {
         mEmptyView.setVisibility(View.GONE);
 
-        execute(true,
+        execute(
                 AppRequests.Books.request(getActivity(), mEncodedQuery, mCurrentPage, os.getSelectedItemPosition(), oi.getSelectedItemPosition()),
                 result -> {
                     isResultEmpty = false;
@@ -358,8 +358,8 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
                     e.printStackTrace();
                     isResultEmpty = false;
                     showEmptyView();
-                },
-                true
+                    simpleErrorRespond(e);
+                }
         );
     }
 

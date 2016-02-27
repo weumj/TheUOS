@@ -12,7 +12,7 @@ import java.io.Serializable;
 import java.util.Calendar;
 
 @KeepName
-public class UnivScheduleItem implements Serializable, Parcelable, IParser.AfterParsable {
+public class UnivScheduleItem implements Serializable, Parcelable, IParser.IPostParsing {
     private static final long serialVersionUID = 7439069212336214033L;
     public String content, sch_date, year, month;
 

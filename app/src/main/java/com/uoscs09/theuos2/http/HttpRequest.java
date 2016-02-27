@@ -1,12 +1,11 @@
 package com.uoscs09.theuos2.http;
 
-import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.uoscs09.theuos2.async.AbstractRequest;
-import com.uoscs09.theuos2.async.Processor;
+import com.uoscs09.theuos2.util.NetworkUtil;
 import com.uoscs09.theuos2.util.StringUtil;
+import com.uoscs09.theuos2.util.TaskUtil;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -23,12 +22,12 @@ import java.net.URLEncoder;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import mj.android.utils.common.NetworkUtils;
+import mj.android.utils.task.Func;
 
 /**
  * Http 요청을 처리하는 Request 클래스
  */
-public abstract class HttpRequest<T> extends AbstractRequest<T> {
+public abstract class HttpRequest<T> extends TaskUtil.AbstractTask<T> {
     //public static final int RETURN_TYPE_STRING = 0;
     // public static final int RETURN_TYPE_CONNECTION = 1;
     public static final int HTTP_METHOD_GET = 0;
@@ -38,7 +37,6 @@ public abstract class HttpRequest<T> extends AbstractRequest<T> {
     private final String encodedParams;
     final String resultEncoding;
     private final int method;
-    private Context mContext;
 
     HttpRequest(String url, String encodedParams, String resultEncoding, int method) {
         this.url = url;
@@ -48,19 +46,10 @@ public abstract class HttpRequest<T> extends AbstractRequest<T> {
     }
 
     /**
-     * 네트워크 요청을 전송하기 전, 네트워크 상태를 검사하여 적절하지 않은 상태 일 경우 예외를 발생시킨다.
-     */
-    public HttpRequest<T> checkNetworkState(Context context) {
-        mContext = context != null ? context.getApplicationContext() : null;
-        return this;
-    }
-
-    /**
      * Http 요청을 전송한다.
      */
     HttpURLConnection getHttpResult() throws IOException {
-        if (mContext != null)
-            checkNetworkStateAndThrowException(mContext);
+        checkNetworkStateAndThrowException();
 
         HttpURLConnection connection;
         if (method == HTTP_METHOD_GET && encodedParams != null)
@@ -110,13 +99,8 @@ public abstract class HttpRequest<T> extends AbstractRequest<T> {
         return connection;
     }
 
-    public static boolean checkNetworkUnable(Context context) {
-        return !NetworkUtils.isConnectivityEnable(context);
-    }
-
-    public static void checkNetworkStateAndThrowException(Context context) throws IOException {
-        context = context.getApplicationContext();
-        if (checkNetworkUnable(context))
+    public static void checkNetworkStateAndThrowException() throws IOException {
+        if (!NetworkUtil.isConnectivityEnable())
             throw new IOException("Failed to access current network.");
     }
 
@@ -169,7 +153,6 @@ public abstract class HttpRequest<T> extends AbstractRequest<T> {
             super(url, encodedParams, resultEncoding, method);
         }
 
-        @Override
         public String get() throws IOException {
 
             HttpURLConnection connection = null;
@@ -191,7 +174,6 @@ public abstract class HttpRequest<T> extends AbstractRequest<T> {
             super(url, encodedParams, resultEncoding, method);
         }
 
-        @Override
         public HttpURLConnection get() throws IOException {
             return getHttpResult();
         }
@@ -200,7 +182,7 @@ public abstract class HttpRequest<T> extends AbstractRequest<T> {
 
     //** Request Builder
 
-    public static abstract class Builder<T> implements com.uoscs09.theuos2.async.Request.Builder<T> {
+    public static abstract class Builder<T> {
         String url;
         String resultEncoding = StringUtil.ENCODE_UTF_8, paramsEncoding = StringUtil.ENCODE_UTF_8;
         Map<? extends CharSequence, ? extends CharSequence> params = null;
@@ -259,7 +241,6 @@ public abstract class HttpRequest<T> extends AbstractRequest<T> {
 
         }
 
-        @Override
         public abstract HttpRequest<T> build();
 
         private static class StringBuilder extends Builder<String> {
@@ -289,7 +270,7 @@ public abstract class HttpRequest<T> extends AbstractRequest<T> {
 
     //** FileDownloadProcessor
 
-    public static class FileDownloadProcessor implements Processor<HttpURLConnection, File> {
+    public static class FileDownloadProcessor implements Func<HttpURLConnection, File> {
         private File downloadDir;
 
         public FileDownloadProcessor(File downloadDir) {
@@ -297,7 +278,7 @@ public abstract class HttpRequest<T> extends AbstractRequest<T> {
         }
 
         @Override
-        public File process(HttpURLConnection connection) throws Exception {
+        public File func(HttpURLConnection connection) throws IOException {
             String fileNameAndExtension = getFileName(connection);
             File downloadFile = makeFile(fileNameAndExtension);
 

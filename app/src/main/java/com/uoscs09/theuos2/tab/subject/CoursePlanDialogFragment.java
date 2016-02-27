@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -24,7 +23,6 @@ import android.widget.TextView;
 import com.nhaarman.listviewanimations.appearance.AnimationAdapter;
 import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.base.BaseDialogFragment;
 import com.uoscs09.theuos2.util.AppRequests;
@@ -33,12 +31,15 @@ import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.ImageUtil;
 import com.uoscs09.theuos2.util.PrefHelper;
 import com.uoscs09.theuos2.util.StringUtil;
+import com.uoscs09.theuos2.util.TaskUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import mj.android.utils.task.Task;
+import mj.android.utils.task.Tasks;
 
 public class CoursePlanDialogFragment extends BaseDialogFragment implements Toolbar.OnMenuItemClickListener {
 
@@ -64,7 +65,7 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Tool
     private SubjectItem2 mSubject;
 
 
-    private AsyncTask<Void, ?, ArrayList<CoursePlanItem>> mAsyncTask;
+    private Task<ArrayList<CoursePlanItem>> task;
 
     public void setSubjectItem(SubjectItem2 item) {
         mSubject = item;
@@ -186,55 +187,54 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Tool
     }
 
     void execute() {
-        if (mAsyncTask != null && mAsyncTask.getStatus() != AsyncTask.Status.FINISHED)
-            mAsyncTask.cancel(true);
+        TaskUtil.cancel(task);
 
         mProgressDialog.setOnCancelListener(dialog -> {
-            AsyncUtil.cancelTask(mAsyncTask);
+            TaskUtil.cancel(task);
             dismiss();
         });
         mProgressDialog.show();
 
-        mAsyncTask = AppRequests.Subjects.requestCoursePlan(getActivity(), mSubject)
-                .getAsync(
-                        result -> {
-                            dismissProgressDialog();
+        task = AppRequests.Subjects.requestCoursePlan(mSubject);
+        task.getAsync(
+                result -> {
+                    dismissProgressDialog();
 
-                            if (getActivity() == null) {
-                                dismiss();
-                                return;
-                            }
+                    if (getActivity() == null) {
+                        dismiss();
+                        return;
+                    }
 
-                            if (result.isEmpty()) {
-                                AppUtil.showToast(getActivity(), R.string.tab_course_plan_result_empty);
-                                dismiss();
-                                return;
-                            } else {
-                                setCourseTitle(result.get(0));
-                            }
+                    if (result.isEmpty()) {
+                        AppUtil.showToast(getActivity(), R.string.tab_course_plan_result_empty);
+                        dismiss();
+                        return;
+                    } else {
+                        setCourseTitle(result.get(0));
+                    }
 
-                            infoList.clear();
-                            infoList.addAll(result);
+                    infoList.clear();
+                    infoList.addAll(result);
 
-                            mAdapter.notifyDataSetChanged();
+                    mAdapter.notifyDataSetChanged();
 
-                            aAdapter.reset();
-                            aAdapter.notifyDataSetChanged();
-                            isDataInvalid = false;
-                        },
-                        this::onError
-                );
+                    aAdapter.reset();
+                    aAdapter.notifyDataSetChanged();
+                    isDataInvalid = false;
+                },
+                this::onError
+        );
     }
 
     private void dismissProgressDialog() {
-        if (mAsyncTask != null)
-            mAsyncTask = null;
+        if (task != null)
+            task = null;
 
         mProgressDialog.dismiss();
         mProgressDialog.setOnCancelListener(null);
     }
 
-    public void onError(Exception e) {
+    public void onError(Throwable e) {
         dismissProgressDialog();
 
         AppUtil.showErrorToast(getActivity(), e, true);
@@ -269,36 +269,36 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Tool
 
         final String picturePath = PrefHelper.Data.getPicturePath();
         String dir = picturePath + "/" + getString(R.string.tab_course_plan_title) + '_' + mSubject.subject_nm + '_' + mSubject.prof_nm + '_' + mSubject.class_div + ".jpeg";
-        final AsyncTask<Void, ?, String> task = new ImageUtil.ListViewBitmapRequest.Builder(mListView, mAdapter)
+        final Task<String> task = new ImageUtil.ListViewBitmapRequest.Builder(mListView, mAdapter)
                 .setHeaderView(mCourseTitle)
                 .build()
-                .wrap(new ImageUtil.ImageWriteProcessor(dir))
-                .getAsync(result -> {
-                            dismissProgressDialog();
+                .wrap(new ImageUtil.ImageWriteProcessor(dir));
+        task.getAsync(result -> {
+                    dismissProgressDialog();
 
-                            String pictureDir = picturePath.substring(picturePath.lastIndexOf('/') + 1);
-                            Snackbar.make(mListView, getString(R.string.tab_course_plan_action_save_image_completed, pictureDir), Snackbar.LENGTH_LONG)
-                                    .setAction(R.string.action_open, v -> {
-                                        Intent intent = new Intent();
-                                        intent.setAction(Intent.ACTION_VIEW);
-                                        intent.setDataAndType(Uri.parse("file://" + result), "image/*");
+                    String pictureDir = picturePath.substring(picturePath.lastIndexOf('/') + 1);
+                    Snackbar.make(mListView, getString(R.string.tab_course_plan_action_save_image_completed, pictureDir), Snackbar.LENGTH_LONG)
+                            .setAction(R.string.action_open, v -> {
+                                Intent intent = new Intent();
+                                intent.setAction(Intent.ACTION_VIEW);
+                                intent.setDataAndType(Uri.parse("file://" + result), "image/*");
 
-                                        try {
-                                            AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
-                                        } catch (ActivityNotFoundException e) {
-                                            //e.printStackTrace();
-                                            AppUtil.showToast(getActivity(), R.string.error_no_activity_found_to_handle_file);
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                            AppUtil.showErrorToast(getActivity(), e, true);
-                                        }
-                                        sendClickEvent("show course plan image");
-                                    })
-                                    .show();
-                        },
-                        this::onError
-                );
-        mProgressDialog.setOnCancelListener(dialog -> AsyncUtil.cancelTask(task));
+                                try {
+                                    AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
+                                } catch (ActivityNotFoundException e) {
+                                    //e.printStackTrace();
+                                    AppUtil.showToast(getActivity(), R.string.error_no_activity_found_to_handle_file);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    AppUtil.showErrorToast(getActivity(), e, true);
+                                }
+                                sendClickEvent("show course plan image");
+                            })
+                            .show();
+                },
+                this::onError
+        );
+        mProgressDialog.setOnCancelListener(dialog -> TaskUtil.cancel(task));
         mProgressDialog.show();
 
     }
@@ -314,45 +314,43 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Tool
         final String docPath = PrefHelper.Data.getDocumentPath();
         final String fileName = docPath + "/" + getString(R.string.tab_course_plan_title) + '_' + mSubject.subject_nm + '_' + mSubject.prof_nm + '_' + mSubject.class_div + ".txt";
 
-        final AsyncTask<Void, ?, String> task = AsyncUtil.newRequest(
-                () -> {
-                    StringBuilder sb = new StringBuilder();
-                    writeHeader(sb);
+        final Task<String> task = Tasks.newTask(() -> {
+            StringBuilder sb = new StringBuilder();
+            writeHeader(sb);
 
-                    int size = infoList.size();
-                    for (int i = 0; i < size; i++) {
-                        writeWeek(sb, infoList.get(i));
-                    }
-                    return sb.toString();
-                })
-                .wrap(IOUtil.<String>newExternalFileWriteProcessor(fileName))
-                .getAsync(result -> {
-                            dismissProgressDialog();
+            int size = infoList.size();
+            for (int i = 0; i < size; i++) {
+                writeWeek(sb, infoList.get(i));
+            }
+            return sb.toString();
+        }).wrap(IOUtil.<String>newExternalFileWriteProcessor(fileName));
+        task.getAsync(result -> {
+                    dismissProgressDialog();
 
-                            String docDir = docPath.substring(docPath.lastIndexOf('/') + 1);
-                            Snackbar.make(mListView, getString(R.string.tab_course_plan_action_save_text_completed, docDir), Snackbar.LENGTH_LONG)
-                                    .setAction(R.string.action_open, v -> {
-                                        Intent intent = new Intent();
-                                        intent.setAction(Intent.ACTION_VIEW);
-                                        intent.setDataAndType(Uri.parse("file://" + fileName), "text/*");
+                    String docDir = docPath.substring(docPath.lastIndexOf('/') + 1);
+                    Snackbar.make(mListView, getString(R.string.tab_course_plan_action_save_text_completed, docDir), Snackbar.LENGTH_LONG)
+                            .setAction(R.string.action_open, v -> {
+                                Intent intent = new Intent();
+                                intent.setAction(Intent.ACTION_VIEW);
+                                intent.setDataAndType(Uri.parse("file://" + fileName), "text/*");
 
-                                        try {
-                                            AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
-                                        } catch (ActivityNotFoundException e) {
-                                            //e.printStackTrace();
-                                            AppUtil.showToast(getActivity(), R.string.error_no_activity_found_to_handle_file);
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                            AppUtil.showErrorToast(getActivity(), e, true);
-                                        }
+                                try {
+                                    AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
+                                } catch (ActivityNotFoundException e) {
+                                    //e.printStackTrace();
+                                    AppUtil.showToast(getActivity(), R.string.error_no_activity_found_to_handle_file);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    AppUtil.showErrorToast(getActivity(), e, true);
+                                }
 
-                                        sendClickEvent("show course plan text");
-                                    })
-                                    .show();
-                        },
-                        this::onError
-                );
-        mProgressDialog.setOnCancelListener(dialog -> AsyncUtil.cancelTask(task));
+                                sendClickEvent("show course plan text");
+                            })
+                            .show();
+                },
+                this::onError
+        );
+        mProgressDialog.setOnCancelListener(dialog -> TaskUtil.cancel(task));
         mProgressDialog.show();
 
     }

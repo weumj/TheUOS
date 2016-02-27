@@ -12,16 +12,15 @@ import android.widget.Toast;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-import com.uoscs09.theuos2.UOSApplication;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.TrackerUtil;
 
 public abstract class BaseActivity extends AppCompatActivity implements TrackerUtil.TrackerScreen {
 
     @Override
-    protected void onCreate(Bundle arg0) {
+    protected void onCreate(Bundle savedInstanceState) {
         AppUtil.applyTheme(this);
-        super.onCreate(arg0);
+        super.onCreate(savedInstanceState);
 
         if (!UOSApplication.DEBUG) {
             Tracker t = TrackerUtil.getInstance(this).getTracker();

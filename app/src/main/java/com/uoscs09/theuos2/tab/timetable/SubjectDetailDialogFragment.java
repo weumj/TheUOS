@@ -86,7 +86,7 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
         super.onResume();
 
         if (mSubject != null) {
-            int color = getActivity().getResources().getColor(AppUtil.getAttrValue(getActivity(), R.attr.colorPrimary));
+            int color = AppUtil.getAttrColor(getActivity(), R.attr.colorPrimary);
 
             if (mTimeTable.getColorTable().size() > 0) {
                 Integer idx = mTimeTable.getColorTable().get(mSubject.subjectName);
@@ -227,7 +227,7 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
 
             sendClickEvent("course plan");
 
-            AppRequests.Subjects.requestSubjectInfo(getActivity(), mSubject.subjectName, mTimeTable.year, mTimeTable.semesterCode.code)
+            AppRequests.Subjects.requestSubjectInfo(mSubject.subjectName, mTimeTable.year, mTimeTable.semesterCode.code)
                     .getAsync(
                             result -> {
                                 mProgress.dismiss();
@@ -261,7 +261,7 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
 
     }
 
-    public void onError(Exception e) {
+    public void onError(Throwable e) {
         mProgress.dismiss();
 
         e.printStackTrace();

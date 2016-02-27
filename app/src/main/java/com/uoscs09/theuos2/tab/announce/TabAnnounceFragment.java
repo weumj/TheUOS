@@ -31,6 +31,7 @@ import com.uoscs09.theuos2.util.AppUtil;
 import java.util.ArrayList;
 
 import butterknife.Bind;
+import butterknife.OnClick;
 import butterknife.OnItemClick;
 
 public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceItem>>
@@ -113,11 +114,6 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mEmptyView.setOnClickListener(v -> {
-            mCategorySpinner.performClick();
-            sendEmptyViewClickEvent();
-        });
-
         mEmptyView.setVisibility(mDataList.size() != 0 ? View.INVISIBLE : View.VISIBLE);
 
         mListFooterView = LayoutInflater.from(view.getContext()).inflate(R.layout.view_tab_announce_bottom_more, mListView, false);
@@ -134,6 +130,12 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
 
         registerProgressView(view.findViewById(R.id.progress_layout));
 
+    }
+
+    @OnClick(R.id.tab_announce_empty_view)
+    void emptyViewClick() {
+        mCategorySpinner.performClick();
+        sendEmptyViewClickEvent();
     }
 
     @Override
@@ -290,33 +292,32 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
     }
 
     private void executeSearchJob(boolean moreRequest, int newPageIndex, String query) {
-        execute(true,
-                AppRequests.Announces.searchRequest(getActivity(), getCurrentCategoryIndex(), newPageIndex, query),
+        execute(AppRequests.Announces.searchRequest(getCurrentCategoryIndex(), newPageIndex, query),
                 result -> {
                     mListFooterView.setClickable(true);
                     if (moreRequest) updateWithResultInMoreRequest(result, newPageIndex);
                     else updateWithResult(result, true, newPageIndex);
                 },
-                this::onError,
-                true
+                this::onError
         );
     }
 
     private void executeJob(boolean moreRequest, int newPageIndex) {
-        execute(true,
-                AppRequests.Announces.normalRequest(getActivity(), getCurrentCategoryIndex(), newPageIndex),
+        execute(
+                AppRequests.Announces.normalRequest(getCurrentCategoryIndex(), newPageIndex),
                 result -> {
                     mListFooterView.setClickable(true);
                     if (moreRequest) updateWithResultInMoreRequest(result, newPageIndex);
                     else updateWithResult(result, false, newPageIndex);
                 },
-                this::onError,
-                true
+                this::onError
         );
     }
 
 
-    public void onError(Exception e) {
+    public void onError(Throwable e) {
+        simpleErrorRespond(e);
+
         mListFooterView.setClickable(true);
         if (mAnnounceAdapter.isEmpty())
             mEmptyView.setVisibility(View.VISIBLE);

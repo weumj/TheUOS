@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="AppTheme.Light.DarkActionBar" parent="@style/AppTheme.Base.Light.DarkActionBar">
+        <item name="android:windowContentTransitions">true</item>
         <item name="menu_theme_ic_action_action_about" >@drawable/theme_ic_action_action_about_menu</item>
         <item name="menu_theme_ic_action_action_alarm" >@drawable/theme_ic_action_action_alarm_menu</item>
         <item name="menu_theme_ic_action_action_assignment" >@drawable/theme_ic_action_action_assignment_menu</item>
@@ -118,6 +119,7 @@
 
 
     <style name="AppTheme.Light" parent="@style/AppTheme.Base.Light">
+        <item name="android:windowContentTransitions">true</item>
         <item name="menu_theme_ic_action_action_about" >@drawable/theme_ic_action_action_about_menu</item>
         <item name="menu_theme_ic_action_action_alarm" >@drawable/theme_ic_action_action_alarm_menu</item>
         <item name="menu_theme_ic_action_action_assignment" >@drawable/theme_ic_action_action_assignment_menu</item>
@@ -234,6 +236,7 @@
     </style>
 
     <style name="AppTheme.Dark" parent="@style/AppTheme.Base.Dark">
+        <item name="android:windowContentTransitions">true</item>
     </style>
 
 </resources>

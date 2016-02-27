@@ -12,7 +12,7 @@ import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.UOSApplication;
+import com.uoscs09.theuos2.base.UOSApplication;
 
 import java.util.HashMap;
 

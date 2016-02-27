@@ -6,7 +6,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.uoscs09.theuos2.UOSApplication;
 import com.uoscs09.theuos2.util.TrackerUtil;
 
 

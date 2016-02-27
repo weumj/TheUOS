@@ -3,7 +3,6 @@ package com.uoscs09.theuos2.tab.restaurant;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -19,12 +18,13 @@ import android.widget.TextView;
 
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.async.AsyncUtil;
 import com.uoscs09.theuos2.base.BaseDialogFragment;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
 
 import java.util.ArrayList;
+
+import mj.android.utils.task.Task;
 
 public class WeekInformationDialogFragment extends BaseDialogFragment {
     private static final String TAG = "WeekInformationDialogFragment";
@@ -37,7 +37,7 @@ public class WeekInformationDialogFragment extends BaseDialogFragment {
 
     private RestWeekAdapter mRestWeekAdapter;
     private int mCurrentSelectionId;
-    private AsyncTask<Void, ?, WeekRestItem> mAsyncTask;
+    private Task<WeekRestItem> mTask;
 
     public void setSelection(int stringId) {
         this.mCurrentSelectionId = stringId;
@@ -106,30 +106,29 @@ public class WeekInformationDialogFragment extends BaseDialogFragment {
         if (mFailView != null)
             mFailView.setVisibility(View.GONE);
 
-        AsyncUtil.cancelTask(mAsyncTask);
 
-        mAsyncTask = AppRequests.Restaurants.readWeekInfo(getActivity(), getCode(mCurrentSelectionId), shouldUpdateUsingInternet)
-                .getAsync(
-                        result -> {
-                            postExecute();
+        mTask = AppRequests.Restaurants.readWeekInfo(getActivity(), getCode(mCurrentSelectionId), shouldUpdateUsingInternet);
+        mTask.getAsync(
+                result -> {
+                    postExecute();
 
-                            ArrayList<RestItem> weekList = result.weekList;
-                            mRestWeekAdapter.restItemArrayList.clear();
-                            mRestWeekAdapter.restItemArrayList.addAll(weekList);
-                            mRestWeekAdapter.notifyDataSetChanged();
+                    ArrayList<RestItem> weekList = result.weekList;
+                    mRestWeekAdapter.restItemArrayList.clear();
+                    mRestWeekAdapter.restItemArrayList.addAll(weekList);
+                    mRestWeekAdapter.notifyDataSetChanged();
 
-                            if (weekList.isEmpty()) {
-                                showEmptyView();
-                            } else {
-                                mToolbar.setSubtitle(result.getPeriodString());
-                            }
-                        },
-                        e -> {
-                            postExecute();
-                            AppUtil.showErrorToast(getActivity(), e, true);
-                            showReloadView();
-                        }
-                );
+                    if (weekList.isEmpty()) {
+                        showEmptyView();
+                    } else {
+                        mToolbar.setSubtitle(result.getPeriodString());
+                    }
+                },
+                e -> {
+                    postExecute();
+                    AppUtil.showErrorToast(getActivity(), e, true);
+                    showReloadView();
+                }
+        );
     }
 
     private void postExecute() {
@@ -143,7 +142,7 @@ public class WeekInformationDialogFragment extends BaseDialogFragment {
         if (mSwipeRefreshLayout.isRefreshing())
             mSwipeRefreshLayout.setRefreshing(false);
 
-        mAsyncTask = null;
+        mTask = null;
     }
 
     private static String getCode(int selection) {
@@ -166,8 +165,9 @@ public class WeekInformationDialogFragment extends BaseDialogFragment {
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
 
-        AsyncUtil.cancelTask(mAsyncTask);
-        mAsyncTask = null;
+        if(mTask != null)
+            mTask.cancel();
+        mTask = null;
 
     }
 

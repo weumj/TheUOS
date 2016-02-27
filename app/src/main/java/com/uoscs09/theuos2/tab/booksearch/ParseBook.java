@@ -1,9 +1,5 @@
 package com.uoscs09.theuos2.tab.booksearch;
 
-import android.util.Log;
-
-import com.uoscs09.theuos2.async.AsyncUtil;
-import com.uoscs09.theuos2.async.Processor;
 import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.parse.JerichoParser;
 import com.uoscs09.theuos2.util.OptimizeStrategy;
@@ -13,12 +9,12 @@ import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.FutureTask;
+
+import mj.android.utils.task.Func;
+import mj.android.utils.task.Task;
+import mj.android.utils.task.Tasks;
 
 public class ParseBook extends JerichoParser<List<BookItem>> {
     private static final String LOG_TAG = "ParseBook";
@@ -29,84 +25,47 @@ public class ParseBook extends JerichoParser<List<BookItem>> {
     private static final String COVER = "cover";
     private static final String LI = "li";
 
-    private static class TaskCallable implements Callable<List<BookItem>> {
-        final List<Element> bookHtmlList;
-        final int start, end;
-
-        TaskCallable(List<Element> bookHtmlList, int start, int end) {
-            this.bookHtmlList = bookHtmlList;
-            this.start = start;
-            this.end = end;
-        }
-
-        @Override
-        public List<BookItem> call() throws Exception {
-            return parseListElement(bookHtmlList, start, end);
-        }
-    }
-
     @Override
-    protected List<BookItem> parseHtmlBody(Source source) throws IOException {
+    protected List<BookItem> parseHtmlBody(Source source) throws Throwable {
         List<Element> briefList = source.getAllElementsByClass("briefList");
         List<Element> bookHtmlList = briefList.get(0).getAllElements(LI);
 
-        int size = bookHtmlList.size();
+        Task<List<BookItem>> task;
+        final int size = bookHtmlList.size();
         if (size > 7 && OptimizeStrategy.isSafeToOptimize()) {
-            return parseListElementUsing2Thread(bookHtmlList, size);
-
+            task = parseListElementUsing2Thread(bookHtmlList, size);
         } else {
-            return parseListElement(bookHtmlList, 0, size);
-
+            task = parseTask(bookHtmlList);
         }
+
+        return task.get();
     }
 
-    private static List<BookItem> parseListElementUsing2Thread(List<Element> bookHtmlList, int size) {
-        int halfSize = size / 2;
-        FutureTask<List<BookItem>> task1 = new FutureTask<>(new TaskCallable(bookHtmlList, 0, halfSize)),
-                task2 = new FutureTask<>(new TaskCallable(bookHtmlList, halfSize, size));
+    private static Task<List<BookItem>> parseListElementUsing2Thread(List<Element> bookHtmlList, int size) {
+        final int halfSize = size / 2;
+        Task[] tasks = {parseTask(bookHtmlList.subList(0, halfSize)), parseTask(bookHtmlList.subList(halfSize, size))};
 
-        AsyncUtil.executeFor(task1);
-        //AsyncUtil.executeFor(task2);
-        task2.run();
-
-        ArrayList<BookItem> bookItemList = new ArrayList<>();
-
-        // AsyncTask 를 사용한다면 현재 Thread 가 interrupt 될 가능성이 존재함.
-        for (; ; ) {
-            try {
-                bookItemList.addAll(task1.get());
-                break;
-            } catch (InterruptedException e) {
-                Log.e(LOG_TAG, "interrupted TASK #1", e);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                break;
+        return Tasks.parallelTask(tasks).wrap(objects -> {
+            ArrayList<BookItem> bookItems = new ArrayList<>();
+            for (Object o : objects) {
+                if (o != null && o instanceof List && ((List) o).size() > 0 && ((List) o).get(0) instanceof BookItem) {
+                    //noinspection unchecked
+                    bookItems.addAll((List<BookItem>) o);
+                }
             }
-        }
-        for (; ; ) {
-            try {
-                bookItemList.addAll(task2.get());
-                break;
-            } catch (InterruptedException e) {
-                Log.e(LOG_TAG, "interrupted TASK #2", e);
 
-            } catch (Exception e) {
-                e.printStackTrace();
-                break;
-            }
-        }
-        return bookItemList;
+            return bookItems;
+        });
     }
 
-    private static List<BookItem> parseListElement(List<Element> bookHtmlList, int start, int end) {
-        if (start >= end)
-            return Collections.emptyList();
+    private static Task<List<BookItem>> parseTask(List<Element> bookHtmlList) {
+        return Tasks.newTask(() -> parseListElement(bookHtmlList));
+    }
 
+    private static List<BookItem> parseListElement(List<Element> bookHtmlList) {
         ArrayList<BookItem> bookItemList = new ArrayList<>();
-        for (int i = start; i < end; i++) {
-            Element rawBookHtml = bookHtmlList.get(i);
-            BookItem item = parseElement(rawBookHtml);
+        for (Element element : bookHtmlList) {
+            BookItem item = parseElement(element);
             if (item != null)
                 bookItemList.add(item);
         }
@@ -207,14 +166,14 @@ public class ParseBook extends JerichoParser<List<BookItem>> {
                     .wrap(imageHtmlParser)
                     .get();
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             e.printStackTrace();
         }
 
         return imgSrc;
     }
 
-    private static final Processor<String, String> imageHtmlParser = new JerichoParser<String>() {
+    private static final Func<String, String> imageHtmlParser = new JerichoParser<String>() {
         @Override
         protected String parseHtmlBody(Source source) throws Exception {
             return source.getAllElements(HTMLElementName.IMG)

@@ -4,9 +4,6 @@ import android.content.Context;
 import android.util.SparseArray;
 
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.async.AbstractRequest;
-import com.uoscs09.theuos2.async.AsyncUtil;
-import com.uoscs09.theuos2.async.Request;
 import com.uoscs09.theuos2.common.SerializableArrayMap;
 import com.uoscs09.theuos2.http.NetworkRequests;
 import com.uoscs09.theuos2.tab.announce.AnnounceItem;
@@ -28,11 +25,14 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Map;
 
+import mj.android.utils.task.Task;
+import mj.android.utils.task.Tasks;
+
 public class AppRequests {
 
     public static class Announces {
-        public static Request<ArrayList<AnnounceItem>> normalRequest(Context context, int category, int page) {
-            return NetworkRequests.Announces.normalRequest(context, category, page)
+        public static Task<ArrayList<AnnounceItem>> normalRequest(int category, int page) {
+            return NetworkRequests.Announces.normalRequest(category, page)
                     .wrap(announceItems -> {
                         if (PrefHelper.Announces.isAnnounceExceptNoticeType()) {
                             final int size = announceItems.size();
@@ -47,8 +47,8 @@ public class AppRequests {
                     });
         }
 
-        public static Request<ArrayList<AnnounceItem>> searchRequest(Context context, int category, int pageIndex, String query) {
-            return NetworkRequests.Announces.searchRequest(context, category, pageIndex, query)
+        public static Task<ArrayList<AnnounceItem>> searchRequest(int category, int pageIndex, String query) {
+            return NetworkRequests.Announces.searchRequest(category, pageIndex, query)
                     .wrap(announceItems -> {
                         final int size = announceItems.size();
                         for (int i = size - 1; i >= 0; i--) {
@@ -64,12 +64,12 @@ public class AppRequests {
 
 
     public static class Books {
-        public static Request<ArrayList<BookStateInfo>> requestBookStateInfo(Context context, String url) {
-            return NetworkRequests.Books.requestBookStateInfo(context, url);
+        public static Task<ArrayList<BookStateInfo>> requestBookStateInfo(String url) {
+            return NetworkRequests.Books.requestBookStateInfo(url);
         }
 
-        public static Request<ArrayList<BookItem>> request(Context context, String query, int page, int os, int oi) {
-            return NetworkRequests.Books.request(context, query, page, os, oi)
+        public static Task<ArrayList<BookItem>> request(Context context, String query, int page, int os, int oi) {
+            return NetworkRequests.Books.request(query, page, os, oi)
                     .wrap(originalList -> {
                                 if (PrefHelper.Books.isFilterUnavailableBook() && originalList.size() > 0) {
                                     ArrayList<BookItem> newList = new ArrayList<>();
@@ -100,31 +100,28 @@ public class AppRequests {
 
     public static class Restaurants {
 
-        public static Request<SparseArray<RestItem>> request(Context context, boolean shouldForceUpdate) {
-            return new AbstractRequest<SparseArray<RestItem>>() {
-                @Override
-                public SparseArray<RestItem> get() throws Exception {
-                    if (!shouldForceUpdate && PrefHelper.Restaurants.isDownloadTimeWithin(3)) {
-                        try {
-                            SparseArray<RestItem> result = readFromFile(context);
+        public static Task<SparseArray<RestItem>> request(Context context, boolean shouldForceUpdate) {
+            return Tasks.newTask(() -> {
+                if (!shouldForceUpdate && PrefHelper.Restaurants.isDownloadTimeWithin(3)) {
+                    try {
+                        SparseArray<RestItem> result = readFromFile(context);
 
-                            if (result.size() > 0)
-                                return result;
+                        if (result.size() > 0)
+                            return result;
 
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-
-                    return NetworkRequests.Restaurants.request(context)
-                            .wrap(restItemSparseArray -> {
-                                SerializableArrayMap<Integer, RestItem> writingObject = SerializableArrayMap.fromSparseArray(restItemSparseArray);
-                                IOUtil.writeObjectToFile(context, IOUtil.FILE_REST, writingObject);
-                                PrefHelper.Restaurants.putDownloadTime(OApiUtil.getDateTime());
-                                return restItemSparseArray;
-                            }).get();
                 }
-            };
+
+                return NetworkRequests.Restaurants.request()
+                        .wrap(restItemSparseArray -> {
+                            SerializableArrayMap<Integer, RestItem> writingObject = SerializableArrayMap.fromSparseArray(restItemSparseArray);
+                            IOUtil.writeObjectToFile(context, IOUtil.FILE_REST, writingObject);
+                            PrefHelper.Restaurants.putDownloadTime(OApiUtil.getDateTime());
+                            return restItemSparseArray;
+                        }).get();
+            });
         }
 
         public static SparseArray<RestItem> readFromFile(Context context) {
@@ -141,25 +138,22 @@ public class AppRequests {
 
         public static final String WEEK_FILE_NAME = "FILE_REST_WEEK_ITEM";
 
-        public static Request<WeekRestItem> readWeekInfo(Context context, String code, boolean shouldUpdateUsingInternet) {
+        public static Task<WeekRestItem> readWeekInfo(Context context, String code, boolean shouldUpdateUsingInternet) {
 
             int today = OApiUtil.getDate();
             final int[] recodedDate = getValueFromPref(code);
 
-            return AsyncUtil.newRequest(() -> {
+            return Tasks.newTask(() -> {
                 // 이번주의 식단이 기록된 파일이 있으면, 인터넷에서 가져오지 않고 그 파일을 읽음
                 if (!shouldUpdateUsingInternet && ((recodedDate[0] <= today) && (today <= recodedDate[1]))) {
 
-                    WeekRestItem result = new IOUtil.Builder<WeekRestItem>(WEEK_FILE_NAME + code)
-                            .setContext(context)
-                            .build()
-                            .get();
+                    WeekRestItem result = (WeekRestItem) IOUtil.internalFileOpenTask(context, WEEK_FILE_NAME + code).get();
 
                     if (result != null)
                         return result;
                 }
 
-                return NetworkRequests.Restaurants.requestWeekInfo(context, code)
+                return NetworkRequests.Restaurants.requestWeekInfo(code)
                         .wrap(IOUtil.<WeekRestItem>newInternalFileWriteProcessor(context, WEEK_FILE_NAME + code))
                         .wrap(item -> {
                             AppRequests.Restaurants.putValueIntoPref(code, item);
@@ -175,21 +169,21 @@ public class AppRequests {
 
     public static class TimeTables {
 
-        public static Request<TimeTable> request(Context context, CharSequence id, CharSequence passwd, OApiUtil.Semester semester, CharSequence year) {
-            return NetworkRequests.TimeTables.request(context, id, passwd, semester, year)
+        public static Task<TimeTable> request(Context context, CharSequence id, CharSequence passwd, OApiUtil.Semester semester, CharSequence year) {
+            return NetworkRequests.TimeTables.request(id, passwd, semester, year)
                     .wrap(IOUtil.<TimeTable>newInternalFileWriteProcessor(context, IOUtil.FILE_TIMETABLE));
         }
 
-        public static Request<TimeTable> readFromFile(Context context) {
-            return AsyncUtil.newRequest(() -> IOUtil.readFromFileSuppressed(context, IOUtil.FILE_TIMETABLE));
+        public static Task<TimeTable> readFromFile(Context context) {
+            return Tasks.newTask(() -> IOUtil.readFromFileSuppressed(context, IOUtil.FILE_TIMETABLE));
         }
 
     }
 
 
     public static class LibrarySeats {
-        public static Request<SeatInfo> request(Context context) {
-            return NetworkRequests.LibrarySeats.request(context)
+        public static Task<SeatInfo> request() {
+            return NetworkRequests.LibrarySeats.request()
                     .wrap(seatInfo -> {
                         if (PrefHelper.LibrarySeats.isFilterOccupyingRoom()) {
                             ArrayList<SeatItem> list = seatInfo.seatItemList;
@@ -210,27 +204,27 @@ public class AppRequests {
 
 
     public static class EmptyRooms {
-        public static Request<ArrayList<EmptyClassRoomItem>> request(Context context, String building, int time, int term) {
+        public static Task<ArrayList<EmptyClassRoomItem>> request(Context context, String building, int time, int term) {
             return NetworkRequests.EmptyRooms.request(context, building, time, term);
         }
     }
 
 
     public static class Subjects {
-        public static Request<ArrayList<SubjectItem2>> requestCulture(Context context, String year, int term, String subjectDiv, String subjectName) {
-            return NetworkRequests.Subjects.requestCulture(context, year, term, subjectDiv, subjectName);
+        public static Task<ArrayList<SubjectItem2>> requestCulture(String year, int term, String subjectDiv, String subjectName) {
+            return NetworkRequests.Subjects.requestCulture(year, term, subjectDiv, subjectName);
         }
 
-        public static Request<ArrayList<SubjectItem2>> requestMajor(Context context, String year, int term, Map<String, String> majorParams, String subjectName) {
-            return NetworkRequests.Subjects.requestMajor(context, year, term, majorParams, subjectName);
+        public static Task<ArrayList<SubjectItem2>> requestMajor(String year, int term, Map<String, String> majorParams, String subjectName) {
+            return NetworkRequests.Subjects.requestMajor(year, term, majorParams, subjectName);
         }
 
-        public static Request<ArrayList<CoursePlanItem>> requestCoursePlan(Context context, SubjectItem2 item) {
-            return NetworkRequests.Subjects.requestCoursePlan(context, item);
+        public static Task<ArrayList<CoursePlanItem>> requestCoursePlan(SubjectItem2 item) {
+            return NetworkRequests.Subjects.requestCoursePlan(item);
         }
 
-        public static Request<ArrayList<SubjectInfoItem>> requestSubjectInfo(Context context, String subjectName, int year, String termCode) {
-            return NetworkRequests.Subjects.requestSubjectInfo(context, subjectName, year, termCode);
+        public static Task<ArrayList<SubjectInfoItem>> requestSubjectInfo(String subjectName, int year, String termCode) {
+            return NetworkRequests.Subjects.requestSubjectInfo(subjectName, year, termCode);
         }
     }
 
@@ -238,32 +232,26 @@ public class AppRequests {
     public static class UnivSchedules {
         public static final String FILE_NAME = "file_univ_schedule";
 
-        public static Request<ArrayList<UnivScheduleItem>> request(Context context) {
-            return new AbstractRequest<ArrayList<UnivScheduleItem>>() {
-                @Override
-                public ArrayList<UnivScheduleItem> get() throws Exception {
-                    // 이번 달의 일정이 기록된 파일이 있으면, 인터넷에서 가져오지 않고 그 파일을 읽음
-                    if (PrefHelper.UnivSchedules.isMonthEqualToFetchMonth()) {
-                        ArrayList<UnivScheduleItem> result = new IOUtil.Builder<ArrayList<UnivScheduleItem>>(FILE_NAME)
-                                .setContext(context)
-                                .build()
-                                .get();
+        public static Task<ArrayList<UnivScheduleItem>> request(Context context) {
+            return Tasks.newTask(() -> {
+                if (PrefHelper.UnivSchedules.isMonthEqualToFetchMonth()) {
+                    //noinspection unchecked
+                    ArrayList<UnivScheduleItem> result = (ArrayList<UnivScheduleItem>) IOUtil.internalFileOpenTask(context, FILE_NAME).get();
 
-                        if (result != null)
-                            return result;
+                    if (result != null)
+                        return result;
 
-                    }
-
-                    return NetworkRequests.UnivSchedules.request(context)
-                            .wrap(IOUtil.<ArrayList<UnivScheduleItem>>newInternalFileWriteProcessor(context, AppRequests.UnivSchedules.FILE_NAME))
-                            .wrap(univScheduleItems -> {
-                                        PrefHelper.UnivSchedules.putFetchMonth(univScheduleItems.get(0).getDate(true).get(Calendar.MONTH));
-                                        return univScheduleItems;
-                                    }
-                            )
-                            .get();
                 }
-            }.wrap(univScheduleItems -> {
+
+                return NetworkRequests.UnivSchedules.request()
+                        .wrap(IOUtil.<ArrayList<UnivScheduleItem>>newInternalFileWriteProcessor(context, AppRequests.UnivSchedules.FILE_NAME))
+                        .wrap(univScheduleItems -> {
+                                    PrefHelper.UnivSchedules.putFetchMonth(univScheduleItems.get(0).getDate(true).get(Calendar.MONTH));
+                                    return univScheduleItems;
+                                }
+                        )
+                        .get();
+            }).wrap(univScheduleItems -> {
                 Collections.sort(univScheduleItems, (lhs, rhs) -> {
                     int lDay = lhs.dateStart.day, rDay = rhs.dateStart.day;
                     if (lDay == rDay)
