@@ -29,12 +29,13 @@ import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.OnClick;
 import butterknife.OnItemClick;
 
-public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceItem>>
+public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>>
         implements AdapterView.OnItemSelectedListener, SearchView.OnQueryTextListener {
 
     static final String PAGE_NUM = "PAGE";
@@ -324,7 +325,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
     }
 
 
-    public void updateWithResult(ArrayList<AnnounceItem> result, boolean searchRequest, int newPageIndex) {
+    public void updateWithResult(List<AnnounceItem> result, boolean searchRequest, int newPageIndex) {
         if (checkResultNotEmpty(result)) {
 
             mAnnounceAdapter.clear();
@@ -348,7 +349,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
         updatePageNumber(newPageIndex);
     }
 
-    public void updateWithResultInMoreRequest(ArrayList<AnnounceItem> result, int newPage) {
+    public void updateWithResultInMoreRequest(List<AnnounceItem> result, int newPage) {
         if (checkResultNotEmpty(result)) {
             mAnnounceAdapter.addAll(result);
             mAnnounceAdapter.notifyDataSetChanged();
@@ -363,7 +364,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
         // 페이지를 업데이트 하지 않는다.
     }
 
-    private int getMaximumAnnounceIndex(ArrayList<AnnounceItem> announceItems) {
+    private int getMaximumAnnounceIndex(List<AnnounceItem> announceItems) {
         final int size = announceItems.size();
 
         for (int i = 0; i < size; i++) {
@@ -377,7 +378,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<ArrayList<AnnounceI
         return 0;
     }
 
-    private boolean checkResultNotEmpty(ArrayList<AnnounceItem> result) {
+    private boolean checkResultNotEmpty(List<AnnounceItem> result) {
         if (result == null || result.size() == 0) {
             AppUtil.showToast(getActivity(), R.string.search_result_empty, true);
 

@@ -61,7 +61,7 @@ public abstract class AbsAsyncFragment<T> extends BaseTabFragment {
     /**
      * 주어진 작업을 비 동기로 실행한다.
      */
-    protected final void execute(@NonNull Task<T> task, @NonNull final ResultListener<T> resultListener, @Nullable final ErrorListener errorListener) {
+    protected final void execute(@NonNull Task<? extends T> task, @NonNull final ResultListener<T> resultListener, @Nullable final ErrorListener errorListener) {
         onPreExecute();
 
         sAsyncDataStoreMap.remove(getClass().getName());
@@ -88,7 +88,9 @@ public abstract class AbsAsyncFragment<T> extends BaseTabFragment {
     }
 
 
-    protected void simpleErrorRespond(Throwable e) {
+    //protected
+    public void simpleErrorRespond(Throwable e) {
+        e.printStackTrace();
         if (e instanceof IOException) {
             AppUtil.showInternetConnectionErrorToast(getActivity(), isMenuVisible());
         } else {

@@ -1,5 +1,7 @@
 package com.uoscs09.theuos2.tab.booksearch;
 
+import android.text.TextUtils;
+
 import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.parse.JerichoParser;
 import com.uoscs09.theuos2.util.OptimizeStrategy;
@@ -43,19 +45,11 @@ public class ParseBook extends JerichoParser<List<BookItem>> {
 
     private static Task<List<BookItem>> parseListElementUsing2Thread(List<Element> bookHtmlList, int size) {
         final int halfSize = size / 2;
-        Task[] tasks = {parseTask(bookHtmlList.subList(0, halfSize)), parseTask(bookHtmlList.subList(halfSize, size))};
+        ArrayList<Task<List<BookItem>>> tasks = new ArrayList<>();
+        tasks.add(parseTask(bookHtmlList.subList(0, halfSize)));
+        tasks.add(parseTask(bookHtmlList.subList(halfSize, size)));
 
-        return Tasks.parallelTask(tasks).wrap(objects -> {
-            ArrayList<BookItem> bookItems = new ArrayList<>();
-            for (Object o : objects) {
-                if (o != null && o instanceof List && ((List) o).size() > 0 && ((List) o).get(0) instanceof BookItem) {
-                    //noinspection unchecked
-                    bookItems.addAll((List<BookItem>) o);
-                }
-            }
-
-            return bookItems;
-        });
+        return Tasks.Parallel.parallelTaskTypedCollection(tasks);
     }
 
     private static Task<List<BookItem>> parseTask(List<Element> bookHtmlList) {
@@ -157,7 +151,7 @@ public class ParseBook extends JerichoParser<List<BookItem>> {
      */
     private static String getImgSrc(String imgUrl) {
         String imgSrc = StringUtil.NULL;
-        if (imgUrl == null || imgUrl.equals(StringUtil.NULL))
+        if (TextUtils.isEmpty(imgUrl))
             return imgSrc;
 
         try {

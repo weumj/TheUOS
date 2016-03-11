@@ -17,8 +17,8 @@
         android:scrollbarStyle="outsideOverlay"
         android:indicatorRight="5dp"
         android:listSelector="@android:color/transparent"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
+        android:paddingLeft="@dimen/list_side_margin"
+        android:paddingRight="@dimen/list_side_margin"
         android:paddingTop="5dp"
         android:scrollingCache="true" />
 

@@ -8,7 +8,7 @@ import com.uoscs09.theuos2.annotation.KeepName;
 import java.util.Comparator;
 
 @KeepName
-public class EmptyClassRoomItem implements Parcelable {
+public class EmptyRoom implements Parcelable {
 
     public int person_cnt;
 
@@ -23,10 +23,10 @@ public class EmptyClassRoomItem implements Parcelable {
     public int assign_time;
 
 
-    public EmptyClassRoomItem() {
+    public EmptyRoom() {
     }
 
-    private EmptyClassRoomItem(Parcel p) {
+    private EmptyRoom(Parcel p) {
         person_cnt = p.readInt();
         room_no = p.readString();
         room_div = p.readString();
@@ -50,16 +50,16 @@ public class EmptyClassRoomItem implements Parcelable {
         dest.writeInt(assign_time);
     }
 
-    public static final Parcelable.Creator<EmptyClassRoomItem> CREATOR = new Parcelable.Creator<EmptyClassRoomItem>() {
+    public static final Parcelable.Creator<EmptyRoom> CREATOR = new Parcelable.Creator<EmptyRoom>() {
 
         @Override
-        public EmptyClassRoomItem createFromParcel(Parcel p) {
-            return new EmptyClassRoomItem(p);
+        public EmptyRoom createFromParcel(Parcel p) {
+            return new EmptyRoom(p);
         }
 
         @Override
-        public EmptyClassRoomItem[] newArray(int size) {
-            return new EmptyClassRoomItem[size];
+        public EmptyRoom[] newArray(int size) {
+            return new EmptyRoom[size];
         }
 
     };
@@ -69,7 +69,7 @@ public class EmptyClassRoomItem implements Parcelable {
      *
      * @param field - 정렬 주체가 될 문자열 필드<br>
      */
-    public static Comparator<EmptyClassRoomItem> getComparator(final int field, final boolean isReverse) {
+    public static Comparator<EmptyRoom> getComparator(final int field, final boolean isReverse) {
 
         switch (field) {
             case 0:

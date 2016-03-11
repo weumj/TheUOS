@@ -73,7 +73,7 @@
 ##### Android Support Library
 -keep class android.support.** { *; }
 -keep interface android.support.** { *; }
--keep class !android.support.v7.internal.view.menu.**, ** { *; }
+#-keep class !android.support.v7.internal.view.menu.**, ** { *; }
 
 
 
@@ -91,14 +91,22 @@
 }
 
 
+##### okhttp
+-keep class com.squareup.okhttp.**
 
 
-#### Volley
--keep class com.android.volley.** { *; }
--keep class org.apache.commons.logging.**
--keep class android.net.http.AndroidHttpClient
--keep class com.android.volley.toolbox.HttpClientStatck$HttpPatch {*;}
+##### retrofit
+-dontwarn retrofit2.**
+-keep class retrofit2.** { *; }
+-keepattributes Signature
+-keepattributes Exceptions
 
+##### glide
+-keep public class * implements com.bumptech.glide.module.GlideModule
+-keep public enum com.bumptech.glide.load.resource.bitmap.ImageHeaderParser$** {
+    **[] $VALUES;
+    public *;
+}
 
 # Library Jars
 #-libraryjars libs/jericho-html-3.3.jar

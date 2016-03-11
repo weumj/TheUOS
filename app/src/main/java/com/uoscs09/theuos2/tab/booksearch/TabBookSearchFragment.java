@@ -13,6 +13,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,11 +37,12 @@ import com.uoscs09.theuos2.util.StringUtil;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.OnClick;
 
-public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookItem>>
+public class TabBookSearchFragment extends AbsProgressFragment<List<BookItem>>
         implements OnQueryTextListener, UosMainActivity.OnBackPressListener, BookItemListAdapter.OnItemClickListener {
 
     /**
@@ -296,7 +298,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
     public boolean onQueryTextSubmit(String q) {
         mRawQuery = q.trim();
 
-        if (mRawQuery.equals(StringUtil.NULL)) {
+        if (TextUtils.isEmpty(mRawQuery)) {
             AppUtil.showToast(getActivity(), R.string.search_input_empty, isMenuVisible());
 
         } else {
@@ -338,8 +340,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
     private void execute() {
         mEmptyView.setVisibility(View.GONE);
 
-        execute(
-                AppRequests.Books.request(getActivity(), mEncodedQuery, mCurrentPage, os.getSelectedItemPosition(), oi.getSelectedItemPosition()),
+        execute(AppRequests.Books.request(getActivity(), mEncodedQuery, mCurrentPage, os.getSelectedItemPosition(), oi.getSelectedItemPosition()),
                 result -> {
                     isResultEmpty = false;
                     if (result.size() == 0) {
@@ -461,7 +462,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<ArrayList<BookIte
     }
 
     @Override
-    protected boolean putAsyncData(String key, ArrayList<BookItem> obj) {
+    protected boolean putAsyncData(String key, List<BookItem> obj) {
         mBookList.addAll(obj);
         return super.putAsyncData(key, mBookList);
     }

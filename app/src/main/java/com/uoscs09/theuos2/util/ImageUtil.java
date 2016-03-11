@@ -208,11 +208,11 @@ public class ImageUtil {
             this.headerViewRef = headerViewRef;
         }
 
+        @Override
         public Bitmap get() {
-
             ListView listView = listViewRef.get();
             if (listView == null)
-                return null;
+                throw new IllegalArgumentException();
 
             Bitmap listViewBitmap = getWholeListViewItemsToBitmap(listView, adapter, AppUtil.getAttrColor(listView.getContext(), R.attr.cardBackgroundColor));
 

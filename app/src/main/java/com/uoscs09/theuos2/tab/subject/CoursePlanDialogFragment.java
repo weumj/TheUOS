@@ -65,7 +65,7 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Tool
     private SubjectItem2 mSubject;
 
 
-    private Task<ArrayList<CoursePlanItem>> task;
+    private Task<List<CoursePlanItem>> task;
 
     public void setSubjectItem(SubjectItem2 item) {
         mSubject = item;

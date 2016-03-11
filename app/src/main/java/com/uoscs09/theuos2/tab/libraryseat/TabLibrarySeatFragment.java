@@ -79,6 +79,7 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> {
             mSearchTime = savedInstanceState.getString(COMMIT_TIME);
             mSeatInfo = savedInstanceState.getParcelable(INFO_LIST);
 
+            setSubtitleWhenVisible(mSearchTime);
         } else {
             mSeatInfo = new SeatInfo();
         }
@@ -205,12 +206,13 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> {
         );
     }
 
+
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
 
-        if (isVisibleToUser && mSwipeRefreshLayout != null)
-            mSwipeRefreshLayout.setRefreshing(true);
+       // if (isVisibleToUser && mSwipeRefreshLayout != null)
+        //    mSwipeRefreshLayout.setRefreshing(true);
     }
 
     private void updateTimeView() {

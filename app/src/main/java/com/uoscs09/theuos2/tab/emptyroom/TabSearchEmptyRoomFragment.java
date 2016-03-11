@@ -22,6 +22,7 @@ import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.OnClick;
@@ -29,7 +30,7 @@ import butterknife.OnClick;
 /**
  * 빈 강의실을 조회하는 fragment
  */
-public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<EmptyClassRoomItem>> {
+public class TabSearchEmptyRoomFragment extends AbsProgressFragment<List<EmptyRoom>> {
 
     private AlertDialog mSearchDialog;
     private Spinner mBuildingSpinner;
@@ -43,9 +44,9 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Em
     @Bind(R.id.etc_search_list)
     ListView mListView;
 
-    private ArrayAdapter<EmptyClassRoomItem> mAdapter;
+    private ArrayAdapter<EmptyRoom> mAdapter;
     @AsyncData
-    private ArrayList<EmptyClassRoomItem> mClassRoomList;
+    private ArrayList<EmptyRoom> mClassRoomList;
     private String mTermString;
     private boolean isReverse = false;
     private int mTabSelection = -1;
@@ -163,8 +164,7 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Em
         int time = mTimeSpinner.getSelectedItemPosition() + 1;
         int term = mTermSpinner.getSelectedItemPosition();
 
-        execute(
-                AppRequests.EmptyRooms.request(getActivity(), building, time, term),
+        execute(AppRequests.EmptyRooms.request(building, time, term),
                 result -> {
                     mClassRoomList.clear();
                     mClassRoomList.addAll(result);
@@ -229,7 +229,7 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<ArrayList<Em
                         R.attr.menu_theme_ic_action_navigation_arrow_drop_up : R.attr.menu_theme_ic_action_navigation_arrow_drop_down), 0, 0, 0);
         tabStrips[field].setVisibility(View.VISIBLE);
 
-        mAdapter.sort(EmptyClassRoomItem.getComparator(field, isReverse));
+        mAdapter.sort(EmptyRoom.getComparator(field, isReverse));
     }
 
     @Override

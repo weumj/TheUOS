@@ -31,13 +31,14 @@ import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.OnItemClick;
 import mj.android.utils.task.Task;
 
-public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<SubjectItem2>>
+public class TabSearchSubjectFragment2 extends AbsProgressFragment<List<SubjectItem2>>
         implements AdapterView.OnItemSelectedListener {
     private AlertDialog mSearchDialog;
     private EditText mSearchEditText;
@@ -283,7 +284,7 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<ArrayList<Sub
         mEmptyView.setVisibility(View.INVISIBLE);
 
         boolean culture = mDialogSpinner1.getSelectedItemPosition() == 0;
-        Task<ArrayList<SubjectItem2>> request;
+        Task<List<SubjectItem2>> request;
 
         String year = mDialogYearSpinner.getSelectedItem().toString();
         int term = mDialogTermSpinner.getSelectedItemPosition();

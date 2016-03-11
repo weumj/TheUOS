@@ -5,8 +5,8 @@ import com.uoscs09.theuos2.parse.XmlParser;
 import com.uoscs09.theuos2.parse.XmlParserWrapper;
 import com.uoscs09.theuos2.tab.schedule.UnivScheduleItem;
 
-import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -16,15 +16,15 @@ public class OApiUtil {
 
     //********** Parser *******************
 
-    public static XmlParserWrapper<ArrayList<UnivScheduleItem>> getUnivScheduleParser() {
-        return new XmlParserWrapper<>(XmlParser.newReflectionParser(UnivScheduleItem.class, "root", "schList", "list"));
+    public static XmlParserWrapper<List<UnivScheduleItem>> getUnivScheduleParser() {
+        return new XmlParserWrapper<>(XmlParser.newReflectionParser(UnivScheduleItem.class, "euc-kr", "root", "schList", "list"));
     }
 
     /**
-     * for CoursePlan, EmptyClassRoomItem, SubjectItem2, SubjectInfoItem,
+     * for CoursePlan, EmptyRoom, SubjectItem2, SubjectInfoItem,
      */
-    public static <T> XmlParserWrapper<ArrayList<T>> getParser(Class<? extends T> clazz) {
-        return new XmlParserWrapper<>(XmlParser.newReflectionParser(clazz, "root", "mainlist", "list"));
+    public static <T> XmlParserWrapper<List<T>> getParser(Class<? extends T> clazz) {
+        return new XmlParserWrapper<>(XmlParser.newReflectionParser(clazz, "euc-kr", "root", "mainlist", "list"));
     }
 
     //********** Parser end *******************
@@ -42,8 +42,10 @@ public class OApiUtil {
     public static final String URL_API_MAIN_DB = "http://wise.uos.ac.kr/uosdoc/api.ApiApiMainBd.oapi";
 
     public enum Semester {
-        SPRING(10, "1학기", "Spring"), AUTUMN(20, "2학기", "Autumn"),
-        SUMMER(11, "여름계절학기", "Summer"), WINTER(21, "겨울계절학기", "Winter");
+        SPRING(10, "1학기", "Spring"),
+        AUTUMN(20, "2학기", "Autumn"),
+        SUMMER(11, "여름계절학기", "Summer"),
+        WINTER(21, "겨울계절학기", "Winter");
 
         public final String code;
         public final int intCode;
@@ -71,6 +73,10 @@ public class OApiUtil {
                 default:
                     return null;
             }
+        }
+
+        public static String getCodeByTermIndex(int termIndex) {
+            return values()[termIndex].code;
         }
     }
 

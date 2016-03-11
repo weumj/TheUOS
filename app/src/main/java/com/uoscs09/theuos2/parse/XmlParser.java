@@ -14,8 +14,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.List;
 
 public abstract class XmlParser<T> extends IParser.Base<InputStream, T> {
+
+    private String encoding;
+
+    protected XmlParser(@Nullable String encoding) {
+        this.encoding = encoding;
+    }
 
     @Override
     public T parse(InputStream is) throws Exception {
@@ -23,7 +30,7 @@ public abstract class XmlParser<T> extends IParser.Base<InputStream, T> {
             XmlPullParser pullParser = XmlPullParserFactory.newInstance().newPullParser();
 
             pullParser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-            pullParser.setInput(is, null);
+            pullParser.setInput(is, encoding);
             pullParser.nextTag();
 
             return parseContent(pullParser);
@@ -171,14 +178,11 @@ public abstract class XmlParser<T> extends IParser.Base<InputStream, T> {
         return newInstance;
     }
 
-    public static <T> XmlParser<ArrayList<T>> newReflectionParser(Class<? extends T> clazz, String docRootTag, String listParentTag, String listItemTag) {
-        return new SimpleReflectionParser<>(clazz, docRootTag, listParentTag, listItemTag);
-    }
-
     abstract static class SimpleListParser<T> extends XmlParser<T> {
         private final String TAG_LIST_PARENT, TAG_LIST_ITEM, TAG_DOC_ROOT;
 
-        public SimpleListParser(String docRootTag, String listParentTag, String listItemTag) {
+        public SimpleListParser(String encoding, String docRootTag, String listParentTag, String listItemTag) {
+            super(encoding);
             TAG_DOC_ROOT = docRootTag;
             TAG_LIST_PARENT = listParentTag;
             TAG_LIST_ITEM = listItemTag;
@@ -244,17 +248,17 @@ public abstract class XmlParser<T> extends IParser.Base<InputStream, T> {
     }
 
 
-    static class SimpleReflectionParser<T> extends SimpleListParser<ArrayList<T>> {
+    static class SimpleReflectionParser<T> extends SimpleListParser<List<T>> {
 
         private final Class<? extends T> clazz;
 
-        public SimpleReflectionParser(Class<? extends T> clazz, String docRootTag, String listParentTag, String listItemTag) {
-            super(docRootTag, listParentTag, listItemTag);
+        public SimpleReflectionParser(Class<? extends T> clazz, String encoding, String docRootTag, String listParentTag, String listItemTag) {
+            super(encoding, docRootTag, listParentTag, listItemTag);
             this.clazz = clazz;
         }
 
         @Override
-        protected ArrayList<T> initItem() {
+        protected List<T> initItem() {
             return new ArrayList<>();
         }
 
@@ -268,10 +272,14 @@ public abstract class XmlParser<T> extends IParser.Base<InputStream, T> {
         }
 
         @Override
-        protected void readList(XmlPullParser parser, int count, ArrayList<T> item) throws IOException, XmlPullParserException {
+        protected void readList(XmlPullParser parser, int count, List<T> item) throws IOException, XmlPullParserException {
             item.add(readListAndFillDataUsingReflection(parser, newInstance()));
         }
 
+    }
+
+    public static <T> XmlParser<List<T>> newReflectionParser(Class<? extends T> clazz, String encoding, String docRootTag, String listParentTag, String listItemTag) {
+        return new SimpleReflectionParser<>(clazz, encoding, docRootTag, listParentTag, listItemTag);
     }
 
 }

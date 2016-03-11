@@ -14,8 +14,8 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:clipToPadding="false"
-            android:paddingLeft="20dp"
-            android:paddingRight="20dp" />
+            android:paddingLeft="@dimen/list_side_margin"
+            android:paddingRight="@dimen/list_side_margin" />
     </android.support.v4.widget.SwipeRefreshLayout>
 
     <include

@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -26,7 +27,6 @@ import com.uoscs09.theuos2.tab.subject.CoursePlanDialogFragment;
 import com.uoscs09.theuos2.tab.subject.SubjectItem2;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
-import com.uoscs09.theuos2.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -223,13 +223,12 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
         if (getActivity() == null)
             return;
 
-        if (mSubject != null && !mSubject.subjectName.equals(StringUtil.NULL)) {
+        if (mSubject != null && !TextUtils.isEmpty(mSubject.subjectName)) {
 
             sendClickEvent("course plan");
 
             AppRequests.Subjects.requestSubjectInfo(mSubject.subjectName, mTimeTable.year, mTimeTable.semesterCode.code)
-                    .getAsync(
-                            result -> {
+                    .getAsync(result -> {
                                 mProgress.dismiss();
 
                                 int size;

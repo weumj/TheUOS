@@ -11,15 +11,15 @@ import java.util.List;
 
 import butterknife.Bind;
 
-class SearchEmptyRoomAdapter extends AbsArrayAdapter<EmptyClassRoomItem, SearchEmptyRoomAdapter.Holder> {
+class SearchEmptyRoomAdapter extends AbsArrayAdapter<EmptyRoom, SearchEmptyRoomAdapter.Holder> {
 
-    public SearchEmptyRoomAdapter(Context context, List<EmptyClassRoomItem> list) {
+    public SearchEmptyRoomAdapter(Context context, List<EmptyRoom> list) {
         super(context, R.layout.list_layout_empty_room, list);
     }
 
     @Override
     public void onBindViewHolder(int position, Holder holder) {
-        EmptyClassRoomItem item = getItem(position);
+        EmptyRoom item = getItem(position);
 
         holder.building.setText(item.building);
         holder.room_no.setText(item.room_no);

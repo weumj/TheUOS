@@ -4,16 +4,18 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
+    android:layout_marginBottom="10dp"
+    android:layout_marginTop="10dp"
     app:cardBackgroundColor="?attr/cardBackgroundColor"
     app:cardCornerRadius="4dp">
 
     <com.balysv.materialripple.MaterialRippleLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:mrl_rippleInAdapter="true"
+        app:mrl_rippleColor="?color_primary_text"
         app:mrl_rippleDelayClick="true"
         app:mrl_rippleFadeDuration="50"
-        app:mrl_rippleColor="?color_primary_text">
+        app:mrl_rippleInAdapter="true">
 
         <RelativeLayout
             android:layout_width="wrap_content"
@@ -36,8 +38,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignLeft="@+id/tab_announce_list_text_title"
                 android:layout_below="@id/tab_announce_list_text_title"
-                android:textColor="?color_primary_text"
                 android:layout_marginTop="10dp"
+                android:textColor="?color_primary_text"
                 android:textSize="12sp" />
 
             <TextView

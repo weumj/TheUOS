@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.text.Spannable;
+import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.text.style.URLSpan;
@@ -13,7 +14,6 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
-import com.uoscs09.theuos2.util.StringUtil;
 
 import java.util.List;
 
@@ -35,7 +35,7 @@ class BookItemListAdapter extends AbsArrayAdapter<BookItem, BookItemViewHolder> 
     public void onBindViewHolder(int position, final BookItemViewHolder holder) {
         final BookItem item = getItem(position);
 
-        if (!item.coverSrc.equals(StringUtil.NULL))
+        if (!TextUtils.isEmpty(item.coverSrc))
             Glide.with(getContext())
                     .load(item.coverSrc)
                     .error(R.drawable.noimg_en)

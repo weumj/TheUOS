@@ -13,7 +13,13 @@ import java.util.ArrayList;
 
 public abstract class ParseUosRSS<T> extends XmlParser<T> {
 
+
+
     private /*static*/ final ParseUosRSS<ArrayList<Item>> parser = new ParseUOSRSSImpl();
+
+    protected ParseUosRSS() {
+        super(null);
+    }
 
     public /*static*/ ParseUosRSS<ArrayList<Item>> getParser() {
         return parser;

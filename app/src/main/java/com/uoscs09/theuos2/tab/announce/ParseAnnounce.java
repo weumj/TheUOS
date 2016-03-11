@@ -9,7 +9,7 @@ import net.htmlparser.jericho.Source;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class ParseAnnounce extends JerichoParser<ArrayList<AnnounceItem>> {
+public abstract class ParseAnnounce extends JerichoParser<List<AnnounceItem>> {
 
     public static ParseAnnounce getParser() {
         return new Normal();

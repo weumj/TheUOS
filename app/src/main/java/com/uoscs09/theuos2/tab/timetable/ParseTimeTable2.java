@@ -18,6 +18,10 @@ public class ParseTimeTable2 extends XmlParser<TimeTable> {
     private static final String LIST = "list";
     private TimeTable timeTable;
 
+    public ParseTimeTable2() {
+        super("euc-kr");
+    }
+
     @Override
     protected TimeTable parseContent(XmlPullParser parser) throws IOException, XmlPullParserException {
         parser.require(XmlPullParser.START_TAG, null, "root");

@@ -1,9 +1,11 @@
 package com.uoscs09.theuos2.http;
 
-import android.content.Context;
 import android.support.v4.util.ArrayMap;
+import android.text.TextUtils;
 import android.util.SparseArray;
 
+import com.uoscs09.theuos2.oapi.UosOApi;
+import com.uoscs09.theuos2.oapi.UosOApiService;
 import com.uoscs09.theuos2.parse.XmlParser;
 import com.uoscs09.theuos2.parse.XmlParserWrapper;
 import com.uoscs09.theuos2.tab.announce.AnnounceItem;
@@ -11,7 +13,7 @@ import com.uoscs09.theuos2.tab.announce.ParseAnnounce;
 import com.uoscs09.theuos2.tab.booksearch.BookItem;
 import com.uoscs09.theuos2.tab.booksearch.BookStateInfo;
 import com.uoscs09.theuos2.tab.booksearch.ParseBook;
-import com.uoscs09.theuos2.tab.emptyroom.EmptyClassRoomItem;
+import com.uoscs09.theuos2.tab.emptyroom.EmptyRoom;
 import com.uoscs09.theuos2.tab.libraryseat.ParseSeat;
 import com.uoscs09.theuos2.tab.libraryseat.SeatInfo;
 import com.uoscs09.theuos2.tab.restaurant.ParseRest;
@@ -30,9 +32,6 @@ import com.uoscs09.theuos2.util.OptimizeStrategy;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -46,6 +45,11 @@ import mj.android.utils.task.Tasks;
 
 // 오직 네트워크와 파싱 관련된 작업만 수행하고, 파일 IO같은 작업은 AppResources에서 처리.
 public class NetworkRequests {
+
+    private static UosOApi oapi() {
+        return UosOApiService.api();
+    }
+
     public static class Announces {
         private static final ParseAnnounce PARSER = ParseAnnounce.getParser();
         private static final ParseAnnounce SCHOLARSHIP_PARSER = ParseAnnounce.getScholarshipParser();
@@ -66,11 +70,11 @@ public class NetworkRequests {
 
         }
 
-        public static Task<ArrayList<AnnounceItem>> normalRequest(int category, int page) {
+        public static Task<List<AnnounceItem>> normalRequest(int category, int page) {
             return normalRequest(Category.values()[category - 1], page);
         }
 
-        public static Task<ArrayList<AnnounceItem>> normalRequest(Category category, int pageIndex) {
+        public static Task<List<AnnounceItem>> normalRequest(Category category, int pageIndex) {
             ArrayMap<String, String> queryMap = new ArrayMap<>();
 
             String url;
@@ -91,11 +95,11 @@ public class NetworkRequests {
                     .wrap(scholarship ? SCHOLARSHIP_PARSER : PARSER);
         }
 
-        public static Task<ArrayList<AnnounceItem>> searchRequest(int category, int pageIndex, String query) {
+        public static Task<List<AnnounceItem>> searchRequest(int category, int pageIndex, String query) {
             return searchRequest(Category.values()[category - 1], pageIndex, query);
         }
 
-        public static Task<ArrayList<AnnounceItem>> searchRequest(Category category, int pageIndex, String query) {
+        public static Task<List<AnnounceItem>> searchRequest(Category category, int pageIndex, String query) {
             ArrayMap<String, String> queryMap = new ArrayMap<>();
 
             String url;
@@ -135,9 +139,9 @@ public class NetworkRequests {
         private static final ParseBook BOOK_PARSER = new ParseBook();
         private static final String URL = "http://mlibrary.uos.ac.kr/search/tot/result?sm=&st=KWRD&websysdiv=tot&si=TOTAL&pn=";
 
-        private static final XmlParserWrapper<ArrayList<BookStateInfo>> BOOK_STATE_INFO_PARSER = new XmlParserWrapper<>(XmlParser.newReflectionParser(BookStateInfo.class, "location", "noholding", "item"));
+        private static final XmlParserWrapper<List<BookStateInfo>> BOOK_STATE_INFO_PARSER = new XmlParserWrapper<>(XmlParser.newReflectionParser(BookStateInfo.class, null, "location", "noholding", "item"));
 
-        public static Task<ArrayList<BookStateInfo>> requestBookStateInfo(String url) {
+        public static Task<List<BookStateInfo>> requestBookStateInfo(String url) {
             return HttpRequest.Builder.newConnectionRequestBuilder(url)
                     .build()
                     .wrap(BOOK_STATE_INFO_PARSER);
@@ -159,12 +163,12 @@ public class NetworkRequests {
 
             String RM = "&websysdiv=tot";
             boolean check = true;
-            if (!OI.equals(StringUtil.NULL)) {
+            if (!TextUtils.isEmpty(OI)) {
                 sb.append("&oi=").append(OI);
                 finalURL = StringUtil.remove(sb.toString(), RM);
                 check = false;
             }
-            if (!OS.equals(StringUtil.NULL)) {
+            if (!TextUtils.isEmpty(OS)) {
                 sb.append("&os=").append(OS);
                 finalURL = sb.toString();
                 if (check) {
@@ -256,99 +260,82 @@ public class NetworkRequests {
     }
 
     public static class EmptyRooms {
-        private static final String URL = "http://wise.uos.ac.kr/uosdoc/api.ApiUcsFromToEmptyRoom.oapi";
 
-        private static final XmlParserWrapper<ArrayList<EmptyClassRoomItem>> EMPTY_ROOM_PARSER = OApiUtil.getParser(EmptyClassRoomItem.class);
-
-        private static Map<String, String> buildParamsMap(String building, int time, int term) {
-            Calendar c = Calendar.getInstance();
-            String wdayTime = String.valueOf(c.get(Calendar.DAY_OF_WEEK)) + (time < 10 ? "0" : StringUtil.NULL) + String.valueOf(time);
-
-            ArrayMap<String, String> params = new ArrayMap<>(9);
-
-            String date = new SimpleDateFormat("yyyyMMdd", Locale.KOREAN).format(new Date());
-            params.put(OApiUtil.API_KEY, OApiUtil.UOS_API_KEY);
-            params.put(OApiUtil.YEAR, OApiUtil.getYear());
-            params.put("dateFrom", date);
-            params.put("dateTo", date);
-            params.put("classRoomDiv", StringUtil.NULL);
-            params.put("aplyPosbYn", "Y");
-
-            params.put("wdayTime", wdayTime);
-            params.put(OApiUtil.TERM, OApiUtil.Semester.values()[term].code);
-            params.put("building", building);
-
-            return params;
-        }
-
-        public static Task<ArrayList<EmptyClassRoomItem>> request(Context context, String building, int time, int term) {
+        public static Task<List<EmptyRoom>> request(String building, int time, int term) {
             if (building.equals("00")) {
-                return requestAllEmptyRoom(context, time, term);
+                return requestAllEmptyRoom(time, term);
             } else {
-                return HttpRequest.Builder.newConnectionRequestBuilder(URL)
-                        .setParams(buildParamsMap(building, time, term))
-                        .setParamsEncoding(StringUtil.ENCODE_EUC_KR)
-                        .build()
-                        .wrap(EMPTY_ROOM_PARSER);
+                Calendar c = Calendar.getInstance();
+                String date = new SimpleDateFormat("yyyyMMdd", Locale.KOREAN).format(new Date());
+                String wdayTime = String.valueOf(c.get(Calendar.DAY_OF_WEEK)) + (time < 10 ? "0" : StringUtil.NULL) + String.valueOf(time);
+
+                return oapi().emptyRooms(
+                        OApiUtil.UOS_API_KEY,
+                        OApiUtil.getYear(),
+                        OApiUtil.Semester.getCodeByTermIndex(term),
+                        building,
+                        date,
+                        date,
+                        wdayTime,
+                        null,
+                        null
+                );
             }
         }
 
 
-        private static Task<ArrayList<EmptyClassRoomItem>> requestAllEmptyRoom(Context context, int time, int term) {
+        private static Task<List<EmptyRoom>> requestAllEmptyRoom(int time, int term) {
             return Tasks.newTask(() -> {
 
                 final String[] buildings = {
                         "01", "02", "03", "04", "05",
                         "06", "08", "09", "10", "11",
                         "13", "14", "15", "16", "17",
-                        "18", "19", "20", "23", "24", "25", "33"};
+                        "18", "19", "20", "23", "24",
+                        "25", "33"
+                };
 
-                ArrayList<Task<ArrayList<EmptyClassRoomItem>>> requests = new ArrayList<>(buildings.length);
+                String year = OApiUtil.getYear();
+                String termCode = OApiUtil.Semester.getCodeByTermIndex(term);
+                Calendar c = Calendar.getInstance();
+                String date = new SimpleDateFormat("yyyyMMdd", Locale.KOREAN).format(new Date());
+                String wdayTime = String.valueOf(c.get(Calendar.DAY_OF_WEEK)) + (time < 10 ? "0" : StringUtil.NULL) + String.valueOf(time);
 
-                Map<String, String> params = buildParamsMap("00", time, term);
+                ArrayList<Task<List<EmptyRoom>>> requests = new ArrayList<>(buildings.length);
 
-                HttpRequest.Builder<HttpURLConnection> requestBuilder = HttpRequest.Builder.newConnectionRequestBuilder(URL)
-                        .setParams(params)
-                        .setParamsEncoding(StringUtil.ENCODE_EUC_KR);
-
-                for (String bd : buildings) {
-                    params.put("building", bd);
-                    requests.add(requestBuilder.build().wrap(EMPTY_ROOM_PARSER));
+                for (String building : buildings) {
+                    requests.add(oapi().emptyRooms(
+                            OApiUtil.UOS_API_KEY,
+                            year,
+                            termCode,
+                            building,
+                            date,
+                            date,
+                            wdayTime,
+                            null,
+                            null
+                    ));
                 }
 
                 final int N = requests.size();
-                if (OptimizeStrategy.isSafeToOptimize(context)) {
+                if (OptimizeStrategy.isSafeToOptimize()) {
                     final int half = N / 2;
-                    Task[] tasks = {
-                            subTask(requests.subList(0, half)),
-                            subTask(requests.subList(half, N))
-                    };
+                    ArrayList<Task<List<EmptyRoom>>> tasks = new ArrayList<>();
+                    tasks.add(subTask(requests.subList(0, half)));
+                    tasks.add(subTask(requests.subList(half, N)));
 
-                    return Tasks.parallelTask(tasks).wrap(objects -> {
-                        ArrayList<EmptyClassRoomItem> roomItems = new ArrayList<>();
-                        for (Object o : objects) {
-                            if (o instanceof ArrayList && ((ArrayList) o).size() > 0 && ((ArrayList) o).get(0) instanceof EmptyClassRoomItem) {
-                                //noinspection unchecked
-                                roomItems.addAll((ArrayList<EmptyClassRoomItem>) o);
-                            }
-                        }
-                        return roomItems;
-                    }).get();
+                    return Tasks.Parallel.parallelTaskTypedCollection(tasks).get();
                 } else {
-                    ArrayList<EmptyClassRoomItem> list = new ArrayList<>();
-                    for (int i = 0; i < N; i++)
-                        list.addAll(requests.get(i).get());
-
-                    return list;
+                    return Tasks.Parallel.serialTaskTypedCollection(requests).get();
                 }
             });
         }
 
-        private static Task<ArrayList<EmptyClassRoomItem>> subTask(List<Task<ArrayList<EmptyClassRoomItem>>> tasks) {
+        private static Task<List<EmptyRoom>> subTask(List<Task<List<EmptyRoom>>> tasks) {
             return Tasks.newTask(() -> {
-                ArrayList<EmptyClassRoomItem> results = new ArrayList<>();
+                List<EmptyRoom> results = new ArrayList<>();
 
-                for (Task<ArrayList<EmptyClassRoomItem>> request : tasks)
+                for (Task<List<EmptyRoom>> request : tasks)
                     results.addAll(request.get());
                 return results;
             });
@@ -356,103 +343,67 @@ public class NetworkRequests {
     }
 
     public static class Subjects {
-        private static final XmlParserWrapper<ArrayList<SubjectItem2>> SUBJECT_PARSER = OApiUtil.getParser(SubjectItem2.class);
-        private static final String SUBJECT_CULTURE = "http://wise.uos.ac.kr/uosdoc/api.ApiUcrCultTimeInq.oapi";
-        private static final String SUBJECT_MAJOR = "http://wise.uos.ac.kr/uosdoc/api.ApiUcrMjTimeInq.oapi";
-
-        public static Task<ArrayList<SubjectItem2>> requestCulture(String year, int term, String subjectDiv, String subjectName) {
-            ArrayMap<String, String> map = new ArrayMap<>(5);
-
-            map.put(OApiUtil.API_KEY, OApiUtil.UOS_API_KEY);
-            map.put(OApiUtil.YEAR, year);
-            map.put(OApiUtil.TERM, OApiUtil.Semester.values()[term].code);
-            map.put("subjectDiv", subjectDiv);
-
-            try {
-                String encodedSubjectName = URLEncoder.encode(subjectName, StringUtil.ENCODE_EUC_KR);
-                map.put("subjectNm", encodedSubjectName);
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-
-            return HttpRequest.Builder.newConnectionRequestBuilder(SUBJECT_CULTURE)
-                    .setParamsEncoding(StringUtil.ENCODE_EUC_KR)
-                    .setParams(map)
-                    .build()
-                    .wrap(SUBJECT_PARSER);
+        public static Task<List<SubjectItem2>> requestCulture(String year, int term, String subjectDiv, String subjectName) {
+            return oapi().timetableCulture(
+                    OApiUtil.UOS_API_KEY,
+                    year,
+                    OApiUtil.Semester.getCodeByTermIndex(term),
+                    subjectDiv,
+                    null,
+                    subjectName
+            );
         }
 
-        public static Task<ArrayList<SubjectItem2>> requestMajor(String year, int term, Map<String, String> majorParams, String subjectName) {
-            ArrayMap<String, String> map = new ArrayMap<>();
+        public static Task<List<SubjectItem2>> requestMajor(String year, int term, Map<String, String> majorParams, String subjectName) {
 
-            map.put(OApiUtil.API_KEY, OApiUtil.UOS_API_KEY);
-            map.put(OApiUtil.YEAR, year);
-            map.put(OApiUtil.TERM, OApiUtil.Semester.values()[term].code);
-            if (majorParams != null)
-                map.putAll(majorParams);
-
-            try {
-                String encodedSubjectName = URLEncoder.encode(subjectName, StringUtil.ENCODE_EUC_KR);
-                map.put("subjectNm", encodedSubjectName);
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-
-            return HttpRequest.Builder.newConnectionRequestBuilder(SUBJECT_MAJOR)
-                    .setParamsEncoding(StringUtil.ENCODE_EUC_KR)
-                    .setParams(map)
-                    .build()
-                    .wrap(SUBJECT_PARSER);
+            return oapi().timetableMajor(
+                    OApiUtil.UOS_API_KEY,
+                    year,
+                    OApiUtil.Semester.getCodeByTermIndex(term),
+                    majorParams.get("deptDiv"),
+                    majorParams.get("dept"),
+                    majorParams.get("subDept"),
+                    majorParams.get("subjectDiv"),
+                    majorParams.get("subjectNo"),
+                    majorParams.get("classDiv"),
+                    subjectName,
+                    null
+            );
         }
 
 
-        private final static String COURSE_PLAN_URL = "http://wise.uos.ac.kr/uosdoc/api.ApiApiCoursePlanView.oapi";
-        private static final XmlParserWrapper<ArrayList<CoursePlanItem>> COURSE_PLAN_PARSER = OApiUtil.getParser(CoursePlanItem.class);
+        public static Task<List<CoursePlanItem>> requestCoursePlan(SubjectItem2 item) {
 
-        public static Task<ArrayList<CoursePlanItem>> requestCoursePlan(SubjectItem2 item) {
-            ArrayMap<String, String> params = new ArrayMap<>(5);
-
-            params.put(OApiUtil.API_KEY, OApiUtil.UOS_API_KEY);
-            params.put(OApiUtil.TERM, item.term);
-            params.put(OApiUtil.SUBJECT_NO, item.subject_no);
-            params.put(OApiUtil.CLASS_DIV, item.class_div);
-            params.put(OApiUtil.YEAR, item.year);
-
-            return HttpRequest.Builder.newConnectionRequestBuilder(COURSE_PLAN_URL)
-                    .setParams(params)
-                    .setParamsEncoding(StringUtil.ENCODE_EUC_KR)
-                    .build()
-                    .wrap(COURSE_PLAN_PARSER);
+            return oapi().coursePlans(
+                    OApiUtil.UOS_API_KEY,
+                    item.term,
+                    item.subject_no,
+                    item.class_div,
+                    item.year
+            );
         }
 
-        private static final String SUBJECT_INFO_URL = "http://wise.uos.ac.kr/uosdoc/api.ApiApiSubjectList.oapi";
-        private static final XmlParserWrapper<ArrayList<SubjectInfoItem>> SUBJECT_INFO_PARSER = OApiUtil.getParser(SubjectInfoItem.class);
 
-        public static Task<ArrayList<SubjectInfoItem>> requestSubjectInfo(String subjectName, int year, String termCode) {
-            ArrayMap<String, String> params = new ArrayMap<>();
-            params.put(OApiUtil.API_KEY, OApiUtil.UOS_API_KEY);
-            params.put(OApiUtil.SUBJECT_NAME, subjectName);
-            params.put(OApiUtil.YEAR, Integer.toString(year));
-            params.put(OApiUtil.TERM, termCode);
-
-            return HttpRequest.Builder.newConnectionRequestBuilder(SUBJECT_INFO_URL)
-                    .setParams(params)
-                    .setParamsEncoding(StringUtil.ENCODE_EUC_KR)
-                    .build()
-                    .wrap(SUBJECT_INFO_PARSER);
+        public static Task<List<SubjectInfoItem>> requestSubjectInfo(String subjectName, int year, String termCode) {
+            return UosOApiService.api().subjectInformation(
+                    OApiUtil.UOS_API_KEY,
+                    Integer.toString(year),
+                    termCode,
+                    subjectName,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+            );
         }
 
     }
 
     public static class UnivSchedules {
-        private static final XmlParserWrapper<ArrayList<UnivScheduleItem>> UNIV_SCHEDULE_PARSER = OApiUtil.getUnivScheduleParser();
-
-        private static final String URL = OApiUtil.URL_API_MAIN_DB + '?' + OApiUtil.API_KEY + '=' + OApiUtil.UOS_API_KEY;
-
-        public static Task<ArrayList<UnivScheduleItem>> request() {
-            return HttpRequest.Builder.newConnectionRequestBuilder(URL)
-                    .build()
-                    .wrap(UNIV_SCHEDULE_PARSER);
+        public static Task<List<UnivScheduleItem>> request() {
+            return oapi().schedules(OApiUtil.UOS_API_KEY);
         }
     }
 }

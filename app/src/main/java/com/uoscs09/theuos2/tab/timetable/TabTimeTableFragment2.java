@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.text.method.TextKeyListener;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,7 +33,6 @@ import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.OApiUtil.Semester;
-import com.uoscs09.theuos2.util.StringUtil;
 import com.uoscs09.theuos2.util.TaskUtil;
 
 import java.io.IOException;
@@ -362,7 +362,7 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> {
         String id = mWiseIdView.getText().toString();
         Context context = getActivity();
 
-        if (mWisePasswdView.length() < 1 || StringUtil.NULL.equals(id)) {
+        if (mWisePasswdView.length() < 1 || TextUtils.isEmpty(id)) {
             AppUtil.showToast(context, R.string.tab_timetable_wise_login_warning_null, true);
             clearText();
         } else {

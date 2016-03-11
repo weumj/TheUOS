@@ -20,4 +20,6 @@
     <dimen name="toolbar_elevation_dialog">4dp</dimen>
 
     <dimen name="tab_map_bottom_padding">0dp</dimen>
+
+    <dimen name="list_side_margin">20dp</dimen>
 </resources>

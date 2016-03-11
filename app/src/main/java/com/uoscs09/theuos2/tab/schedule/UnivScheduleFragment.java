@@ -28,6 +28,7 @@ import com.uoscs09.theuos2.util.AppUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import butterknife.Bind;
@@ -35,7 +36,7 @@ import mj.android.utils.task.Tasks;
 import se.emilsjolander.stickylistheaders.ExpandableStickyListHeadersListView;
 
 
-public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivScheduleItem>> {
+public class UnivScheduleFragment extends AbsProgressFragment<List<UnivScheduleItem>> {
 
     private static final int PERMISSION_REQUEST_CALENDAR = 12;
 
@@ -125,7 +126,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
 
 
         if (mList.isEmpty())
-            execute();
+            execute(false);
     }
 
     @RequiresPermission(Manifest.permission.GET_ACCOUNTS)
@@ -248,8 +249,8 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
 
     }
 
-    private void execute() {
-        execute(AppRequests.UnivSchedules.request(getActivity()),
+    private void execute(boolean force) {
+        execute(AppRequests.UnivSchedules.request(force),
                 result -> {
                     mList.clear();
                     mList.addAll(result);
@@ -272,7 +273,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<ArrayList<UnivSche
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_refresh:
-                execute();
+                execute(true);
                 return true;
 
             default:

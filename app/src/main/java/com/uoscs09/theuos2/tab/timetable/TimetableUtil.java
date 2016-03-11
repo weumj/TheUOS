@@ -5,6 +5,7 @@ import android.Manifest;
 import android.content.Context;
 import android.support.annotation.RequiresPermission;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -15,7 +16,6 @@ import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.ImageUtil;
 import com.uoscs09.theuos2.util.PrefHelper;
 import com.uoscs09.theuos2.util.PrefUtil;
-import com.uoscs09.theuos2.util.StringUtil;
 
 import java.util.ArrayList;
 
@@ -56,7 +56,7 @@ public class TimetableUtil {
                     continue;
 
                 subjectName = subject.subjectName;
-                if (!subjectName.equals(StringUtil.NULL) && !table.containsKey(subjectName)) {
+                if (!TextUtils.isEmpty(subjectName) && !table.containsKey(subjectName)) {
                     table.put(subjectName, i++);
                 }
             }

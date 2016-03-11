@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.StringRes;
+import android.text.TextUtils;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.KeepName;
@@ -94,7 +95,7 @@ public class SubjectItem2 implements Parcelable, IParser.IPostParsing {
     private String classRoomInformation = StringUtil.NULL;
 
     public String getClassRoomInformation(Context context) {
-        if (classRoomInformation.equals(StringUtil.NULL)) {
+        if (TextUtils.isEmpty(classRoomInformation)) {
             buildClassRoomInfoString(context);
         }
 
@@ -258,7 +259,7 @@ public class SubjectItem2 implements Parcelable, IParser.IPostParsing {
     }
 
     private void parseClassTimeAndRoom() {
-        if (class_nm == null || class_nm.equals(StringUtil.NULL)) {
+        if (TextUtils.isEmpty(class_nm)) {
             return;
         }
 

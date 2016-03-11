@@ -2,6 +2,7 @@ package com.uoscs09.theuos2.tab.booksearch;
 
 
 import android.content.res.Resources;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +15,7 @@ import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.common.PieProgressDrawable;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
-import com.uoscs09.theuos2.util.StringUtil;
+import com.uoscs09.theuos2.util.TaskUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,7 +48,7 @@ class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements View.OnCl
      */
     final ArrayList<ChildHolder> mChildHolderList = new ArrayList<>();
 
-    Task<ArrayList<BookStateInfo>> task;
+    Task<List<BookStateInfo>> task;
 
     BookItem item;
     BookItemListAdapter.OnItemClickListener onItemClickListener;
@@ -83,10 +84,8 @@ class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements View.OnCl
     }
 
     private void cancelBookStateLoadingTask() {
-        if (task != null) {
-            task.cancel();
-            task = null;
-        }
+        TaskUtil.cancel(task);
+        task = null;
     }
 
     @OnClick(R.id.tab_booksearch_list_info_layout)
@@ -104,13 +103,12 @@ class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements View.OnCl
         final BookItem item = holder.item;
 
         if (item.bookStateInfoList == null) {
-            if (item.infoUrl.equals(StringUtil.NULL)) {
+            if (TextUtils.isEmpty(item.infoUrl)) {
                 item.bookStateInfoList = Collections.emptyList();
                 removeAllBookStateInLayout();
             } else {
                 task = AppRequests.Books.requestBookStateInfo(item.infoUrl);
-                task.getAsync(
-                        result -> {
+                task.getAsync(result -> {
                             item.bookStateInfoList = result;
 
                             // 처리 후, ViewHolder item 과 결과 item 이 다르다면 무시
@@ -146,7 +144,7 @@ class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements View.OnCl
 
     static void drawBookStateLayout(BookItemViewHolder holder) {
         //if (holder.itemView.getContext() instanceof Activity)
-         //   BookDetailActivity.start((Activity) holder.itemView.getContext(), holder.coverImg, holder.item);
+        //   BookDetailActivity.start((Activity) holder.itemView.getContext(), holder.coverImg, holder.item);
         holder.stateInfoLayout.setVisibility(View.VISIBLE);
 
         List<BookStateInfo> list = holder.item.bookStateInfoList;

@@ -9,7 +9,7 @@ import com.uoscs09.theuos2.http.NetworkRequests;
 import com.uoscs09.theuos2.tab.announce.AnnounceItem;
 import com.uoscs09.theuos2.tab.booksearch.BookItem;
 import com.uoscs09.theuos2.tab.booksearch.BookStateInfo;
-import com.uoscs09.theuos2.tab.emptyroom.EmptyClassRoomItem;
+import com.uoscs09.theuos2.tab.emptyroom.EmptyRoom;
 import com.uoscs09.theuos2.tab.libraryseat.SeatInfo;
 import com.uoscs09.theuos2.tab.libraryseat.SeatItem;
 import com.uoscs09.theuos2.tab.restaurant.RestItem;
@@ -23,6 +23,7 @@ import com.uoscs09.theuos2.tab.timetable.TimeTable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import mj.android.utils.task.Task;
@@ -31,7 +32,7 @@ import mj.android.utils.task.Tasks;
 public class AppRequests {
 
     public static class Announces {
-        public static Task<ArrayList<AnnounceItem>> normalRequest(int category, int page) {
+        public static Task<List<AnnounceItem>> normalRequest(int category, int page) {
             return NetworkRequests.Announces.normalRequest(category, page)
                     .wrap(announceItems -> {
                         if (PrefHelper.Announces.isAnnounceExceptNoticeType()) {
@@ -47,7 +48,7 @@ public class AppRequests {
                     });
         }
 
-        public static Task<ArrayList<AnnounceItem>> searchRequest(int category, int pageIndex, String query) {
+        public static Task<List<AnnounceItem>> searchRequest(int category, int pageIndex, String query) {
             return NetworkRequests.Announces.searchRequest(category, pageIndex, query)
                     .wrap(announceItems -> {
                         final int size = announceItems.size();
@@ -64,11 +65,11 @@ public class AppRequests {
 
 
     public static class Books {
-        public static Task<ArrayList<BookStateInfo>> requestBookStateInfo(String url) {
+        public static Task<List<BookStateInfo>> requestBookStateInfo(String url) {
             return NetworkRequests.Books.requestBookStateInfo(url);
         }
 
-        public static Task<ArrayList<BookItem>> request(Context context, String query, int page, int os, int oi) {
+        public static Task<List<BookItem>> request(Context context, String query, int page, int os, int oi) {
             return NetworkRequests.Books.request(query, page, os, oi)
                     .wrap(originalList -> {
                                 if (PrefHelper.Books.isFilterUnavailableBook() && originalList.size() > 0) {
@@ -204,26 +205,26 @@ public class AppRequests {
 
 
     public static class EmptyRooms {
-        public static Task<ArrayList<EmptyClassRoomItem>> request(Context context, String building, int time, int term) {
-            return NetworkRequests.EmptyRooms.request(context, building, time, term);
+        public static Task<List<EmptyRoom>> request(String building, int time, int term) {
+            return NetworkRequests.EmptyRooms.request(building, time, term);
         }
     }
 
 
     public static class Subjects {
-        public static Task<ArrayList<SubjectItem2>> requestCulture(String year, int term, String subjectDiv, String subjectName) {
+        public static Task<List<SubjectItem2>> requestCulture(String year, int term, String subjectDiv, String subjectName) {
             return NetworkRequests.Subjects.requestCulture(year, term, subjectDiv, subjectName);
         }
 
-        public static Task<ArrayList<SubjectItem2>> requestMajor(String year, int term, Map<String, String> majorParams, String subjectName) {
+        public static Task<List<SubjectItem2>> requestMajor(String year, int term, Map<String, String> majorParams, String subjectName) {
             return NetworkRequests.Subjects.requestMajor(year, term, majorParams, subjectName);
         }
 
-        public static Task<ArrayList<CoursePlanItem>> requestCoursePlan(SubjectItem2 item) {
+        public static Task<List<CoursePlanItem>> requestCoursePlan(SubjectItem2 item) {
             return NetworkRequests.Subjects.requestCoursePlan(item);
         }
 
-        public static Task<ArrayList<SubjectInfoItem>> requestSubjectInfo(String subjectName, int year, String termCode) {
+        public static Task<List<SubjectInfoItem>> requestSubjectInfo(String subjectName, int year, String termCode) {
             return NetworkRequests.Subjects.requestSubjectInfo(subjectName, year, termCode);
         }
     }
@@ -232,11 +233,11 @@ public class AppRequests {
     public static class UnivSchedules {
         public static final String FILE_NAME = "file_univ_schedule";
 
-        public static Task<ArrayList<UnivScheduleItem>> request(Context context) {
+        public static Task<List<UnivScheduleItem>> request(boolean force) {
             return Tasks.newTask(() -> {
-                if (PrefHelper.UnivSchedules.isMonthEqualToFetchMonth()) {
+                if (PrefHelper.UnivSchedules.isMonthEqualToFetchMonth() && !force) {
                     //noinspection unchecked
-                    ArrayList<UnivScheduleItem> result = (ArrayList<UnivScheduleItem>) IOUtil.internalFileOpenTask(context, FILE_NAME).get();
+                    ArrayList<UnivScheduleItem> result = (ArrayList<UnivScheduleItem>) IOUtil.internalFileOpenTask(AppUtil.context, FILE_NAME).get();
 
                     if (result != null)
                         return result;
@@ -244,12 +245,11 @@ public class AppRequests {
                 }
 
                 return NetworkRequests.UnivSchedules.request()
-                        .wrap(IOUtil.<ArrayList<UnivScheduleItem>>newInternalFileWriteProcessor(context, AppRequests.UnivSchedules.FILE_NAME))
+                        .wrap(IOUtil.<List<UnivScheduleItem>>newInternalFileWriteProcessor(AppUtil.context, AppRequests.UnivSchedules.FILE_NAME))
                         .wrap(univScheduleItems -> {
-                                    PrefHelper.UnivSchedules.putFetchMonth(univScheduleItems.get(0).getDate(true).get(Calendar.MONTH));
-                                    return univScheduleItems;
-                                }
-                        )
+                            PrefHelper.UnivSchedules.putFetchMonth(univScheduleItems.get(0).getDate(true).get(Calendar.MONTH));
+                            return univScheduleItems;
+                        })
                         .get();
             }).wrap(univScheduleItems -> {
                 Collections.sort(univScheduleItems, (lhs, rhs) -> {

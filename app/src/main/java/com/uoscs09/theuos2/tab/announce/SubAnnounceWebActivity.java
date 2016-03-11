@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.MimeTypeMap;
@@ -18,7 +19,6 @@ import com.uoscs09.theuos2.common.WebViewActivity;
 import com.uoscs09.theuos2.http.NetworkRequests;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.PrefHelper;
-import com.uoscs09.theuos2.util.StringUtil;
 
 import java.io.File;
 
@@ -30,7 +30,6 @@ public class SubAnnounceWebActivity extends WebViewActivity {
     private String url;
     private AnnounceItem mItem;
     private int category;
-    private Dialog mProgressDialog;
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -128,11 +127,6 @@ public class SubAnnounceWebActivity extends WebViewActivity {
         }
     }
 
-    private void dismissProgressDialog() {
-        mProgressDialog.dismiss();
-        mProgressDialog.setOnCancelListener(null);
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -150,7 +144,7 @@ public class SubAnnounceWebActivity extends WebViewActivity {
     }
 
     private void downloadFile() {
-        if (mItem.attachedFileUrl.equals(StringUtil.NULL)) {
+        if (TextUtils.isEmpty(mItem.attachedFileUrl)) {
             AppUtil.showToast(this, R.string.tab_announce_no_download_link);
             return;
         }
@@ -160,8 +154,7 @@ public class SubAnnounceWebActivity extends WebViewActivity {
             return;
         }
 
-        if (mProgressDialog == null)
-            mProgressDialog = AppUtil.getProgressDialog(this, false, getString(R.string.progress_downloading), null);
+        Dialog progressDialog = AppUtil.getProgressDialog(this, false, getString(R.string.progress_downloading), null);
 
         String url;
         switch (category) {
@@ -181,7 +174,8 @@ public class SubAnnounceWebActivity extends WebViewActivity {
         final String docPath = PrefHelper.Data.getDocumentPath();
         final Task<File> task = NetworkRequests.Announces.attachedFileDownloadRequest(url, docPath);
         task.getAsync(result -> {
-                    dismissProgressDialog();
+                    progressDialog.dismiss();
+                    progressDialog.setOnCancelListener(null);
 
                     String docDir = docPath.substring(docPath.lastIndexOf('/') + 1);
                     Snackbar.make(mWebView, getString(R.string.saved_file, docDir, result.getName()), Snackbar.LENGTH_LONG)
@@ -209,13 +203,15 @@ public class SubAnnounceWebActivity extends WebViewActivity {
                             .show();
                 },
                 e -> {
-                    dismissProgressDialog();
+                    progressDialog.dismiss();
+                    progressDialog.setOnCancelListener(null);
+
                     AppUtil.showErrorToast(SubAnnounceWebActivity.this, e, true);
                 }
         );
 
-        mProgressDialog.setOnCancelListener(dialog -> task.cancel());
-        mProgressDialog.show();
+        progressDialog.setOnCancelListener(dialog -> task.cancel());
+        progressDialog.show();
 
         sendClickEvent("download file");
     }
