@@ -5,7 +5,6 @@ import android.util.Log;
 
 import com.uoscs09.theuos2.util.NetworkUtil;
 import com.uoscs09.theuos2.util.StringUtil;
-import com.uoscs09.theuos2.util.TaskUtil;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -23,11 +22,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import mj.android.utils.task.Func;
+import mj.android.utils.task.Tasks;
 
 /**
  * Http 요청을 처리하는 Request 클래스
  */
-public abstract class HttpRequest<T> extends TaskUtil.AbstractTask<T> {
+public abstract class HttpRequest<T> extends Tasks.AbstractTask<T> {
     //public static final int RETURN_TYPE_STRING = 0;
     // public static final int RETURN_TYPE_CONNECTION = 1;
     public static final int HTTP_METHOD_GET = 0;
@@ -264,6 +264,8 @@ public abstract class HttpRequest<T> extends TaskUtil.AbstractTask<T> {
                 return new ConnectionRequest(url, encodeParams(), resultEncoding, method);
             }
         }
+
+
 
     }
 

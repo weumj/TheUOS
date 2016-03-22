@@ -16,6 +16,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+@Deprecated
 public abstract class XmlParser<T> extends IParser.Base<InputStream, T> {
 
     private String encoding;
@@ -278,6 +279,7 @@ public abstract class XmlParser<T> extends IParser.Base<InputStream, T> {
 
     }
 
+    @Deprecated
     public static <T> XmlParser<List<T>> newReflectionParser(Class<? extends T> clazz, String encoding, String docRootTag, String listParentTag, String listItemTag) {
         return new SimpleReflectionParser<>(clazz, encoding, docRootTag, listParentTag, listItemTag);
     }

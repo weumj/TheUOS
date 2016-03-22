@@ -2,7 +2,7 @@ package com.uoscs09.theuos2.tab.score;
 
 @Deprecated
 public class ParseSubjectList {}/*extends OApiParser<ArrayList<String>, ArrayList<String>> {
-    private final String[] PTN = {"subject_no", "subject_nm", "class_div"};
+    private final String[] PTN = {"subject_no", "subject_nm", "classDiv"};
 
     @Override
     public ArrayList<ArrayList<String>> parse(String body) throws IOException {

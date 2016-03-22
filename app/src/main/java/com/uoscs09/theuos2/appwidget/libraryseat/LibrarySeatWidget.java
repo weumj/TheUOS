@@ -41,7 +41,7 @@ public class LibrarySeatWidget extends AbsAsyncWidgetProvider<ArrayList<SeatItem
         super.onReceive(context, intent);
         switch (intent.getAction()) {
             case LIBRARY_SEAT_WIDGET_REFRESH:
-               callOnUpdate(context);
+                callOnUpdate(context);
                 // } else if (LIBRARY_SEAT_WIDGET_ACTIVITY.equals(action)) {
                 // SeatItem item = (SeatItem) intent.getExtras().getSerializable(
                 // LIBRARY_SEAT_WIDGET_DATA);
@@ -59,7 +59,7 @@ public class LibrarySeatWidget extends AbsAsyncWidgetProvider<ArrayList<SeatItem
 
             case Intent.ACTION_BOOT_COMPLETED:
                 // 처음 부팅시 인터넷 접속이 되지 않으므로, 기존 파일에서 읽어온다.
-                ArrayList<SeatItem> list = IOUtil.readFromFileSuppressed(context, IOUtil.FILE_LIBRARY_SEAT);
+                ArrayList<SeatItem> list = IOUtil.readInternalFileSilent(IOUtil.FILE_LIBRARY_SEAT);
                 if (list == null)
                     return;
 
@@ -88,9 +88,9 @@ public class LibrarySeatWidget extends AbsAsyncWidgetProvider<ArrayList<SeatItem
         }
 
         // 파일 저장
-        IOUtil.writeObjectToFileSuppressed(context, IOUtil.FILE_LIBRARY_SEAT, newList);
+        IOUtil.writeObjectToInternalFileSilent(IOUtil.FILE_LIBRARY_SEAT, newList);
         // 불러온 시간 기록
-        IOUtil.writeObjectToFileSuppressed(context, DATE_FILE, TimeUtil.getFormat_am_hms().format(new Date()));
+        IOUtil.writeObjectToInternalFileSilent(DATE_FILE, TimeUtil.getFormat_am_hms().format(new Date()));
         return newList;
     }
 
@@ -113,7 +113,7 @@ public class LibrarySeatWidget extends AbsAsyncWidgetProvider<ArrayList<SeatItem
             rv.setRemoteAdapter(android.R.id.list, intent);
             rv.setEmptyView(android.R.id.list, android.R.id.empty);
 
-            String dateTime = IOUtil.readFromFileSuppressed(context, DATE_FILE);
+            String dateTime = IOUtil.readInternalFileSilent(DATE_FILE);
             if (dateTime == null)
                 dateTime = "";
 

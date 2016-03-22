@@ -19,7 +19,7 @@ import mj.android.utils.task.Task;
 import mj.android.utils.task.Tasks;
 
 public class ParseBook extends JerichoParser<List<BookItem>> {
-    private static final String LOG_TAG = "ParseBook";
+    //private static final String LOG_TAG = "ParseBook";
 
     private static final String HREF = "href";
     private static final String SRC = "src";
@@ -51,6 +51,7 @@ public class ParseBook extends JerichoParser<List<BookItem>> {
 
         return Tasks.Parallel.parallelTaskTypedCollection(tasks);
     }
+
 
     private static Task<List<BookItem>> parseTask(List<Element> bookHtmlList) {
         return Tasks.newTask(() -> parseListElement(bookHtmlList));

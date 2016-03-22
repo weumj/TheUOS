@@ -5,16 +5,26 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.CalendarContract.Events;
 
-import com.uoscs09.theuos2.annotation.KeepName;
 import com.uoscs09.theuos2.parse.IParser;
 
 import java.io.Serializable;
 import java.util.Calendar;
 
-@KeepName
+import mj.android.utils.xml.Element;
+import mj.android.utils.xml.Root;
+
+@Root(name = "list")
 public class UnivScheduleItem implements Serializable, Parcelable, IParser.IPostParsing {
-    private static final long serialVersionUID = 7439069212336214033L;
-    public String content, sch_date, year, month;
+    private static final long serialVersionUID = 4167246292492938182L;
+
+    @Element(name = "content", cdata = true)
+    public String content;
+    @Element(name = "sch_date", cdata = true)
+    public String scheduleDate;
+    @Element(name = "year", cdata = true)
+    private String year;
+    @Element(name = "month", cdata = true)
+    private String month;
 
     /**
      * ex) 07.01 (월)
@@ -30,14 +40,14 @@ public class UnivScheduleItem implements Serializable, Parcelable, IParser.IPost
     }
 
     private void parseDate() {
-        String[] array = sch_date.split("~");
+        String[] array = scheduleDate.split("~");
 
         if (array.length > 1) {
             dateStart = new ScheduleDate(array[0]);
             dateEnd = new ScheduleDate(array[1]);
 
-        } else if (sch_date.contains(" (")) {
-            dateStart = dateEnd = new ScheduleDate(sch_date);
+        } else if (scheduleDate.contains(" (")) {
+            dateStart = dateEnd = new ScheduleDate(scheduleDate);
         }
     }
 
@@ -66,7 +76,7 @@ public class UnivScheduleItem implements Serializable, Parcelable, IParser.IPost
 
     private UnivScheduleItem(Parcel source) {
         content = source.readString();
-        sch_date = source.readString();
+        scheduleDate = source.readString();
         year = source.readString();
         month = source.readString();
         dateStart = source.readParcelable(ScheduleDate.class.getClassLoader());
@@ -82,7 +92,7 @@ public class UnivScheduleItem implements Serializable, Parcelable, IParser.IPost
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(content);
-        dest.writeString(sch_date);
+        dest.writeString(scheduleDate);
         dest.writeString(year);
         dest.writeString(month);
         dest.writeParcelable(dateStart, flags);

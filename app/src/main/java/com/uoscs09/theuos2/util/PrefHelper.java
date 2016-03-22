@@ -9,6 +9,7 @@ import com.uoscs09.theuos2.tab.restaurant.WeekRestItem;
 import java.util.Calendar;
 
 import static com.uoscs09.theuos2.util.PrefUtil.KEY_ANNOUNCE_EXCEPT_TYPE_NOTICE;
+import static com.uoscs09.theuos2.util.PrefUtil.KEY_BUILDINGS_FETCH_TIME;
 import static com.uoscs09.theuos2.util.PrefUtil.KEY_CHECK_BORROW;
 import static com.uoscs09.theuos2.util.PrefUtil.KEY_CHECK_SEAT;
 import static com.uoscs09.theuos2.util.PrefUtil.KEY_CHECK_TIMETABLE_NOTIFY_SERVICE;
@@ -62,6 +63,79 @@ public class PrefHelper {
 
         public static boolean isShowingWidgetStudyRoom() {
             return pref().get(KEY_LIB_WIDGET_SEAT_SHOW_ALL, false);
+        }
+    }
+
+    public static class TimeTables {
+        public static boolean isNotifyServiceEnable() {
+            return pref().get(KEY_CHECK_TIMETABLE_NOTIFY_SERVICE, false);
+        }
+
+        public static void putNotifyServiceEnable(boolean enable) {
+            pref().put(KEY_CHECK_TIMETABLE_NOTIFY_SERVICE, enable);
+        }
+
+        public static boolean isShowingLastEmptyPeriod() {
+            return pref().get(KEY_TIMETABLE_LIMIT, false);
+        }
+    }
+
+    public static class Restaurants {
+        public static boolean isDownloadTimeWithin(int time) {
+            return OApiUtil.getDateTime() - PrefHelper.Restaurants.getDownloadTime() < time;
+        }
+
+        public static int getDownloadTime() {
+            return pref().get(KEY_REST_DATE_TIME, 0);
+        }
+
+        public static void putDownloadTime(int time) {
+            pref().put(KEY_REST_DATE_TIME, time);
+        }
+
+        public static boolean isTodayWithinWeekItemFetchTime(String code, int today) {
+            int start = pref().get(KEY_REST_WEEK_FETCH_TIME + "_START_" + code, today + 1);
+            int end = pref().get(KEY_REST_WEEK_FETCH_TIME + "_END_" + code, today - 1);
+
+            return (start <= today) && (today <= end);
+        }
+
+        /*
+        public static int[] getWeekItemFetchTime(String code, int today) {
+            return new int[]{
+                    pref().get(KEY_REST_WEEK_FETCH_TIME + "_START_" + code, today + 1),
+                    pref().get(KEY_REST_WEEK_FETCH_TIME + "_END_" + code, today - 1)
+            };
+        }
+        */
+
+        public static void putWeekItemFetchTime(String code, WeekRestItem item) {
+            pref().put(PrefUtil.KEY_REST_WEEK_FETCH_TIME + "_START_" + code, item.startDate);
+            pref().put(PrefUtil.KEY_REST_WEEK_FETCH_TIME + "_END_" + code, item.endDate);
+        }
+    }
+
+    public static class UnivSchedules {
+        public static boolean isMonthEqualToFetchMonth() {
+            return getFetchMonth() == Calendar.getInstance().get(Calendar.MONTH);
+        }
+
+        public static int getFetchMonth() {
+            return pref().get(KEY_SCHEDULE_FETCH_MONTH, -1);
+        }
+
+        public static void putFetchMonth(int calendarMonth) {
+            pref().put(KEY_SCHEDULE_FETCH_MONTH, calendarMonth);
+        }
+    }
+
+    public static class Buildings {
+        public static long downloadTime() {
+            return pref().get(KEY_BUILDINGS_FETCH_TIME, 0);
+        }
+
+        public static void putDownloadTime(long time) {
+            pref().put(KEY_BUILDINGS_FETCH_TIME, time);
         }
     }
 
@@ -144,58 +218,5 @@ public class PrefHelper {
         }
     }
 
-    public static class TimeTables {
-        public static boolean isNotifyServiceEnable() {
-            return pref().get(KEY_CHECK_TIMETABLE_NOTIFY_SERVICE, false);
-        }
-
-        public static void putNotifyServiceEnable(boolean enable) {
-            pref().put(KEY_CHECK_TIMETABLE_NOTIFY_SERVICE, enable);
-        }
-
-        public static boolean isShowingLastEmptyPeriod() {
-            return pref().get(KEY_TIMETABLE_LIMIT, false);
-        }
-    }
-
-    public static class Restaurants {
-        public static boolean isDownloadTimeWithin(int time) {
-            return OApiUtil.getDateTime() - PrefHelper.Restaurants.getDownloadTime() < time;
-        }
-
-        public static int getDownloadTime() {
-            return pref().get(KEY_REST_DATE_TIME, 0);
-        }
-
-        public static void putDownloadTime(int time) {
-            pref().put(KEY_REST_DATE_TIME, time);
-        }
-
-        public static int[] getWeekItemFetchTime(String code, int today) {
-            return new int[]{
-                    pref().get(KEY_REST_WEEK_FETCH_TIME + "_START_" + code, today + 1),
-                    pref().get(KEY_REST_WEEK_FETCH_TIME + "_END_" + code, today - 1)
-            };
-        }
-
-        public static void putWeekItemFetchTime(String code, WeekRestItem item) {
-            pref().put(PrefUtil.KEY_REST_WEEK_FETCH_TIME + "_START_" + code, item.startDate);
-            pref().put(PrefUtil.KEY_REST_WEEK_FETCH_TIME + "_END_" + code, item.endDate);
-        }
-    }
-
-    public static class UnivSchedules {
-        public static boolean isMonthEqualToFetchMonth() {
-            return getFetchMonth() == Calendar.getInstance().get(Calendar.MONTH);
-        }
-
-        public static int getFetchMonth() {
-            return pref().get(KEY_SCHEDULE_FETCH_MONTH, -1);
-        }
-
-        public static void putFetchMonth(int calendarMonth) {
-            pref().put(KEY_SCHEDULE_FETCH_MONTH, calendarMonth);
-        }
-    }
 
 }

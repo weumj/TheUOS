@@ -2,7 +2,7 @@ package com.uoscs09.theuos2.tab.score;
 
 @Deprecated
 public class ParseSubjectScore {}/*extends OApiParser<ScoreItem, ArrayList<String>> {
-    private final String[] PTN = {"subject_nm", "subject_no", "class_div", "class_person", "prof_nm", "dept"};
+    private final String[] PTN = {"subject_nm", "subject_no", "classDiv", "class_person", "prof_nm", "dept"};
     private final String[] PTN2 = {"type", "class_eval_item", "raw_score", "eval_grade", "ave"};
 
     @Override

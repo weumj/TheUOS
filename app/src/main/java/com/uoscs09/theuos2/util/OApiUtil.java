@@ -1,45 +1,18 @@
 package com.uoscs09.theuos2.util;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.uoscs09.theuos2.parse.XmlParser;
-import com.uoscs09.theuos2.parse.XmlParserWrapper;
-import com.uoscs09.theuos2.tab.schedule.UnivScheduleItem;
 
 import java.util.Calendar;
-import java.util.List;
 import java.util.Locale;
 
 /**
  * WISE OPEN API 관련 변수와 메소드를 가지는 클래스
  */
 public class OApiUtil {
-
-    //********** Parser *******************
-
-    public static XmlParserWrapper<List<UnivScheduleItem>> getUnivScheduleParser() {
-        return new XmlParserWrapper<>(XmlParser.newReflectionParser(UnivScheduleItem.class, "euc-kr", "root", "schList", "list"));
-    }
-
-    /**
-     * for CoursePlan, EmptyRoom, SubjectItem2, SubjectInfoItem,
-     */
-    public static <T> XmlParserWrapper<List<T>> getParser(Class<? extends T> clazz) {
-        return new XmlParserWrapper<>(XmlParser.newReflectionParser(clazz, "euc-kr", "root", "mainlist", "list"));
-    }
-
-    //********** Parser end *******************
-
     private static String sThisYear;
     private static String[] sYears;
     public static final String UOS_API_KEY = OApiKey.WISE_OAPI_KEY.toString();
-    public static final String API_KEY = "apiKey";
-    public static final String TERM = "term";
-    public static final String YEAR = "year";
     public static final String SUBJECT_NAME = "subjectNm";
-    public static final String SUBJECT_NO = "subjectNo";
-    public static final String CLASS_DIV = "classDiv";
-
-    public static final String URL_API_MAIN_DB = "http://wise.uos.ac.kr/uosdoc/api.ApiApiMainBd.oapi";
 
     public enum Semester {
         SPRING(10, "1학기", "Spring"),

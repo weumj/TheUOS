@@ -96,7 +96,7 @@ public class RestListService extends RemoteViewsService {
 
         @Override
         public void onDataSetChanged() {
-            mTable = AppRequests.Restaurants.readFromFile(context);
+            mTable = AppRequests.Restaurants.readFromFile();
         }
 
 

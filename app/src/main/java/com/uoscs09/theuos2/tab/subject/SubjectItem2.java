@@ -1,14 +1,13 @@
 package com.uoscs09.theuos2.tab.subject;
 
-import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.StringRes;
 import android.text.TextUtils;
 
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.annotation.KeepName;
 import com.uoscs09.theuos2.parse.IParser;
+import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import java.io.Serializable;
@@ -16,96 +15,120 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-@KeepName
+import mj.android.utils.xml.Element;
+import mj.android.utils.xml.Root;
+
+@Root(name = "list")
 public class SubjectItem2 implements Parcelable, IParser.IPostParsing {
 
     /**
      * 학부
      */
+    @Element(name = "sub_dept", cdata = true)
     public String sub_dept;
     /**
      * 교과구분
      */
+    @Element(name = "subject_div", cdata = true)
     public String subject_div;
     /**
      * 세부영역
      */
+    @Element(name = "subject_div2", cdata = true)
     public String subject_div2;
     /**
      * 교과번호
      */
+    @Element(name = "subject_no", cdata = true)
     public String subject_no;
     /**
      * 분반
      */
+    @Element(name = "class_div", cdata = true)
     public String class_div;
     /**
      * 교과목명
      */
+    @Element(name = "subject_nm", cdata = true)
     public String subject_nm;
     /**
      * 학년
      */
+    @Element(name = "shyr", cdata = true)
     public int shyr;
     /**
      * 학점
      */
+    @Element(name = "credit", cdata = true)
     public int credit;
     /**
      * 담당교수
      */
+    @Element(name = "prof_nm", cdata = true)
     public String prof_nm;
     /**
      * 주야
      */
+    @Element(name = "day_night_nm", cdata = true)
     public String day_night_nm;
     /**
      * 강의유형
      */
+    @Element(name = "class_type", cdata = true)
     public String class_type;
     /**
      * 강의시간 및 강의실
      */
+    @Element(name = "class_nm", cdata = true)
     public String class_nm;
     /**
      * 수강인원
      */
+    @Element(name = "tlsn_count")
     public int tlsn_count;
     /**
      * 수강정원
      */
+    @Element(name = "tlsn_limit_count", cdata = true)
     public int tlsn_limit_count;
 
     // 전공 과목
     /**
      * 타과허용
      */
+    @Element(name = "etc_permit_yn", cdata = true)
     public String etc_permit_yn = "";
     // 전공 과목
     /**
      * 복수전공
      */
+    @Element(name = "sec_permit_yn", cdata = true)
     public String sec_permit_yn = "";
-
+    @Element(name = "year", cdata = true)
     public String year;
+    @Element(name = "term", cdata = true)
     public String term;
 
-    public ArrayList<ClassInformation> classInformationList = new ArrayList<>();
+    public transient ArrayList<ClassInformation> classInformationList = new ArrayList<>();
 
-    private String classRoomInformation = StringUtil.NULL;
+    public List<ClassInformation> classInformation() {
+        return classInformationList;
+    }
 
-    public String getClassRoomInformation(Context context) {
+    private transient String classRoomInformation = StringUtil.NULL;
+
+    public String getClassRoomInformation() {
         if (TextUtils.isEmpty(classRoomInformation)) {
-            buildClassRoomInfoString(context);
+            buildClassRoomInfoString();
         }
 
         return classRoomInformation;
     }
 
-    private void buildClassRoomInfoString(Context context) {
+    private void buildClassRoomInfoString() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < classInformationList.size(); i++) {
-            sb.append(classInformationList.get(i).toString(context)).append('\n');
+            sb.append(classInformationList.get(i).toString()).append('\n');
         }
         if (!classInformationList.isEmpty())
             sb.deleteCharAt(sb.length() - 1);
@@ -465,7 +488,7 @@ public class SubjectItem2 implements Parcelable, IParser.IPostParsing {
 
         @Override
         public String toString() {
-            return dayInWeek + times.toString() + '/' + buildingAndRoom;
+            return (getDayInWeek() != -1 ? AppUtil.context.getString(getDayInWeek()) : "") + times.toString() + " / " + buildingAndRoom;
         }
 
         @StringRes
@@ -489,9 +512,6 @@ public class SubjectItem2 implements Parcelable, IParser.IPostParsing {
             }
         }
 
-        public String toString(Context context) {
-            return (getDayInWeek() != -1 ? context.getString(getDayInWeek()) : "") + times.toString() + " / " + buildingAndRoom;
-        }
 
         @Override
         public int describeContents() {

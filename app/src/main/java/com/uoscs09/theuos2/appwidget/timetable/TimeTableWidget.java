@@ -32,7 +32,7 @@ public abstract class TimeTableWidget extends BaseAppWidgetProvider {
         Tasks.execute(() -> {
             TimeTable timeTable = null;
             try {
-                timeTable = AppRequests.TimeTables.readFromFile(context).get();
+                timeTable = AppRequests.TimeTables.readFromFile().get();
             } catch (Throwable e) {
                 e.printStackTrace();
             }

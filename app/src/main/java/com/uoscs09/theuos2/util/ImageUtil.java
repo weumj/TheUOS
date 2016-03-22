@@ -24,6 +24,7 @@ import java.util.List;
 
 import mj.android.utils.task.Func;
 import mj.android.utils.task.Task;
+import mj.android.utils.task.Tasks;
 
 public class ImageUtil {
 
@@ -197,7 +198,7 @@ public class ImageUtil {
         }
     }
 
-    public static class ListViewBitmapRequest extends TaskUtil.AbstractTask<Bitmap> {
+    public static class ListViewBitmapRequest extends Tasks.AbstractTask<Bitmap> {
         private final WeakReference<ListView> listViewRef;
         private final ListAdapter adapter;
         private final WeakReference<View> headerViewRef;

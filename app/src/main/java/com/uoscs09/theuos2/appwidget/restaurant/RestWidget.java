@@ -59,7 +59,7 @@ public class RestWidget extends AbsAsyncWidgetProvider<SparseArray<RestItem>> {
 
             case Intent.ACTION_BOOT_COMPLETED:
                 // 처음 부팅시 인터넷 접속이 되지 않으므로, 기존 파일에서 읽어온다.
-                SparseArray<RestItem> map = AppRequests.Restaurants.readFromFile(context);
+                SparseArray<RestItem> map = AppRequests.Restaurants.readFromFile();
                 if (map.size() == 0)
                     return;
 
@@ -73,7 +73,7 @@ public class RestWidget extends AbsAsyncWidgetProvider<SparseArray<RestItem>> {
 
     @Override
     protected SparseArray<RestItem> doInBackGround(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) throws Throwable {
-        return AppRequests.Restaurants.request(context, false).get();
+        return AppRequests.Restaurants.request(false).get();
     }
 
     @Override

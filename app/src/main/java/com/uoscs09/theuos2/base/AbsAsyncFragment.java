@@ -88,8 +88,7 @@ public abstract class AbsAsyncFragment<T> extends BaseTabFragment {
     }
 
 
-    //protected
-    public void simpleErrorRespond(Throwable e) {
+    protected void simpleErrorRespond(Throwable e) {
         e.printStackTrace();
         if (e instanceof IOException) {
             AppUtil.showInternetConnectionErrorToast(getActivity(), isMenuVisible());

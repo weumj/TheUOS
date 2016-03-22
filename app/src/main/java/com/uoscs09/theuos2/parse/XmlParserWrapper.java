@@ -3,6 +3,7 @@ package com.uoscs09.theuos2.parse;
 
 import java.net.HttpURLConnection;
 
+@Deprecated
 public class XmlParserWrapper<T> extends IParser.Base<HttpURLConnection, T> {
     private final XmlParser<T> parser;
 

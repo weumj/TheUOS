@@ -110,7 +110,7 @@ public class LibrarySeatListService extends RemoteViewsService {
         public void onDataSetChanged() {
             super.onDataSetChanged();
             clear();
-            addAll(IOUtil.readFromFileSuppressed(getContext(), IOUtil.FILE_LIBRARY_SEAT));
+            addAll(IOUtil.readInternalFileSilent(IOUtil.FILE_LIBRARY_SEAT));
         }
 
     }

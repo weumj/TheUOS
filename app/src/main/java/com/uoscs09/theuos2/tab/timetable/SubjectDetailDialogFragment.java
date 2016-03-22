@@ -100,7 +100,7 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
 
             if (mAlarmTimeSelectSpinner != null) {
                 mAlarmTimeSelectSpinner.setTag(TAG);
-                mAlarmTimeSelectSpinner.setSelection(TimetableAlarmUtil.readTimeSelection(getActivity(), mSubject.period, mSubject.day));
+                mAlarmTimeSelectSpinner.setSelection(TimetableAlarmUtil.readTimeSelection(mSubject.period, mSubject.day));
             }
         }
     }
@@ -146,7 +146,7 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
 
         if (mSubject != null) {
             mAlarmTimeSelectSpinner.setTag(TAG);
-            mAlarmTimeSelectSpinner.setSelection(TimetableAlarmUtil.readTimeSelection(getActivity(), mSubject.period, mSubject.day));
+            mAlarmTimeSelectSpinner.setSelection(TimetableAlarmUtil.readTimeSelection(mSubject.period, mSubject.day));
         }
 
 
@@ -312,7 +312,7 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
 
         @Override
         public void onBindViewHolder(int position, SubjectDetailDialogFragment.ViewHolder holder) {
-            holder.textView.setText(getItem(position).class_div);
+            holder.textView.setText(getItem(position).classDiv);
         }
 
         @Override

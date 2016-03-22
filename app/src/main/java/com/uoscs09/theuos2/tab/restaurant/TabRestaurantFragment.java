@@ -189,7 +189,7 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
         mRestItemAdapter.mItems.clear();
         mRestItemAdapter.notifyItemRangeRemoved(0, 5);
 
-        execute(AppRequests.Restaurants.request(getActivity(), force),
+        execute(AppRequests.Restaurants.request(force),
                 result -> {
                     mRestTable = result;
                     mRestItemAdapter.mItems = mRestTable;
@@ -199,7 +199,10 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
 
                     mSwipeRefreshLayout.setRefreshing(false);
                 },
-                this::simpleErrorRespond
+                t->{
+                    simpleErrorRespond(t);
+                    mSwipeRefreshLayout.setRefreshing(false);
+                }
         );
     }
 

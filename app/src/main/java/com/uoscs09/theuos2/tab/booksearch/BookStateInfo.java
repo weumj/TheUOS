@@ -3,24 +3,30 @@ package com.uoscs09.theuos2.tab.booksearch;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.uoscs09.theuos2.annotation.KeepName;
 import com.uoscs09.theuos2.parse.IParser;
 
-@KeepName
+import mj.android.utils.xml.Element;
+import mj.android.utils.xml.Root;
+
+@Root(name = "item")
 public class BookStateInfo implements Parcelable, IParser.IPostParsing {
 
     /**
      * 도서 코드
      */
+    @Element(name = "call_no", cdata = true)
     public String call_no;
     /**
      * 장소
      */
+    @Element(name = "place_name", cdata = true)
     public String place_name;
     /**
      * 상태
      */
+    @Element(name = "book_state", cdata = true)
     public String book_state;
+
     int bookStateInt;
 
     // 반납일

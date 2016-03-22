@@ -107,7 +107,7 @@ public class WeekInformationDialogFragment extends BaseDialogFragment {
             mFailView.setVisibility(View.GONE);
 
 
-        mTask = AppRequests.Restaurants.readWeekInfo(getActivity(), getCode(mCurrentSelectionId), shouldUpdateUsingInternet);
+        mTask = AppRequests.Restaurants.readWeekInfo(getCode(mCurrentSelectionId), shouldUpdateUsingInternet);
         mTask.getAsync(
                 result -> {
                     postExecute();

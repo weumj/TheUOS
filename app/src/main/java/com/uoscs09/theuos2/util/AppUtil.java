@@ -43,7 +43,7 @@ public class AppUtil {
     private static int PAGE_SIZE = MAX_PAGE_SIZE_NORMAL;
     public static AppTheme theme;
 
-    static Context context;
+    public static Context context;
 
     public static void init(Context context) {
         if (context != null)

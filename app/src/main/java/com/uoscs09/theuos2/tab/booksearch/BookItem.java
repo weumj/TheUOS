@@ -40,7 +40,7 @@ public class BookItem implements Parcelable {
     /**
      * 책 정보 리스트
      */
-    public List<BookStateInfo> bookStateInfoList;
+    public List<BookStateInfo> bookStateInfoList; // lazy
     /**
      * 책 정보 리스트의 정보가 담긴 Url
      */

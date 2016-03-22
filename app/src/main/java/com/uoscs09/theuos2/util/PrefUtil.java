@@ -81,6 +81,8 @@ public class PrefUtil {
     public static final String KEY_SCHEDULE_FETCH_MONTH = "UNIV_SCHEDULE_FETCH_MONTH";
     public static final String KEY_REST_WEEK_FETCH_TIME = "REST_WEEK_FETCH_TIME";
 
+    public static final String KEY_BUILDINGS_FETCH_TIME = "REST_BUILDINGS_FETCH_TIME";
+
     private static PrefUtil instance;
     private SharedPreferences pref;
 

@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -19,6 +20,7 @@ import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
+import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import java.util.ArrayList;
@@ -26,6 +28,7 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.OnClick;
+import butterknife.OnItemClick;
 
 /**
  * 빈 강의실을 조회하는 fragment
@@ -118,6 +121,24 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<List<EmptyRo
         mListView.setEmptyView(mEmptyView);
 
         registerProgressView(view.findViewById(R.id.progress_layout));
+    }
+
+    @OnItemClick(R.id.etc_search_list)
+    void roomClick(int position) {
+        AppRequests.Buildings.classRoomTimeTables(OApiUtil.getYear(), mTermString, mClassRoomList.get(position), false).getAsync(
+                classRoomTimeTable -> {
+                    ScrollView scrollView = new ScrollView(getActivity());
+                    TextView textView = new TextView(getActivity());
+                    textView.setText(classRoomTimeTable.timetables().toString());
+
+                    scrollView.addView(textView);
+
+                    new AlertDialog.Builder(getActivity())
+                            .setView(scrollView)
+                            .show();
+                },
+                throwable -> AppUtil.showErrorToast(getActivity(), throwable, true)
+        );
     }
 
     @OnClick(R.id.empty1)

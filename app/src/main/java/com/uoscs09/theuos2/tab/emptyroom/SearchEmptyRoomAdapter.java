@@ -22,9 +22,9 @@ class SearchEmptyRoomAdapter extends AbsArrayAdapter<EmptyRoom, SearchEmptyRoomA
         EmptyRoom item = getItem(position);
 
         holder.building.setText(item.building);
-        holder.room_no.setText(item.room_no);
-        holder.room_div.setText(item.room_div);
-        holder.person_cnt.setText(String.valueOf(item.person_cnt));
+        holder.room_no.setText(item.roomNo);
+        holder.room_div.setText(item.roomDiv);
+        holder.person_cnt.setText(String.valueOf(item.personCount));
 
     }
 

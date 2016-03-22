@@ -2,7 +2,6 @@ package com.uoscs09.theuos2.util;
 
 import android.Manifest;
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
 import android.util.Log;
@@ -26,6 +25,9 @@ public class IOUtil {
     private IOUtil() {
     }
 
+    private static Context context() {
+        return AppUtil.context;
+    }
 
     /**
      * 주어진 이름의 파일을 내부 저장소에서 읽어온다.
@@ -36,8 +38,8 @@ public class IOUtil {
      * @throws StreamCorruptedException
      * @throws ClassNotFoundException
      */
-    public static <T> T readFromFile(Context context, String fileName) throws IOException, ClassNotFoundException {
-        return IOUtils.readFile(context, fileName);
+    public static <T> T readFromInternalFile(String fileName) throws IOException, ClassNotFoundException {
+        return IOUtils.readFile(context(), fileName);
     }
 
     /**
@@ -49,7 +51,7 @@ public class IOUtil {
      * @throws StreamCorruptedException
      * @throws ClassNotFoundException
      */
-    public static <T> T readFromFile(File file) throws IOException, ClassNotFoundException {
+    public static <T> T readFromExternalFile(File file) throws IOException, ClassNotFoundException {
         return IOUtils.readFile(file);
     }
 
@@ -72,15 +74,15 @@ public class IOUtil {
      * @param obj 저장할 객체
      * @throws IOException
      */
-    public static void writeObjectToFile(Context context, String fileName, Object obj) throws IOException {
-        IOUtils.writeObjectToFile(context, fileName, obj);
+    public static void writeObjectToInternalFile(String fileName, Object obj) throws IOException {
+        IOUtils.writeObjectToFile(context(), fileName, obj);
     }
 
 
     @Nullable
-    public static <T> T readFromFileSuppressed(Context context, String fileName) {
+    public static <T> T readInternalFileSilent(String fileName) {
         try {
-            return readFromFile(context, fileName);
+            return readFromInternalFile(fileName);
 
         } catch (IOException e) {
             return null;
@@ -90,9 +92,9 @@ public class IOUtil {
         }
     }
 
-    public static boolean writeObjectToFileSuppressed(Context context, String fileName, Object obj) {
+    public static boolean writeObjectToInternalFileSilent(String fileName, Object obj) {
         try {
-            writeObjectToFile(context, fileName, obj);
+            writeObjectToInternalFile(fileName, obj);
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -100,8 +102,17 @@ public class IOUtil {
         }
     }
 
+    public static boolean deleteInternalFile(String fileName) {
+        try {
+            return context().deleteFile(fileName);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
-    private static void closeStream(Closeable close) {
+
+    public static void closeStream(Closeable close) {
         if (close != null) {
             try {
                 close.close();
@@ -109,42 +120,6 @@ public class IOUtil {
             }
         }
     }
-
-
-    /*
-    /**
-     * 파일을 비 동기적으로 읽는다. <br>
-     * 리스너의 result에 exception 발생 여부가 전달되고, <br>
-     * data에 성공 할 경우 원하는 data, 실패 했을 경우 exception이 전달된다.
-
-    public static <T> void readFromFileAsync(final Context context, final String fileName, OnTaskFinishedListener<T> l) {
-        AsyncUtil.execute(new Callable<T>() {
-            @Override
-            public T call() throws Exception {
-                return readFromFile(context, fileName);
-            }
-        }, l);
-    }
-    */
-
-    /*
-       /**
-     * 파일을 비 동기적으로 저장한다. <br>
-     * 리스너의 result에 exception 발생 여부가 전달되고, <br>
-     * data에 성공 할 경우 성공 여부, 실패 했을 경우 exception이 전달된다.
-
-    public static void writeObjectToFileAsync(Context context, final String fileName, final Object obj, OnTaskFinishedListener<Boolean> l) {
-        final Context appContext = context.getApplicationContext();
-        AsyncUtil.execute(new Callable<Boolean>() {
-            @Override
-            public Boolean call() throws Exception {
-                writeObjectToFile(appContext, fileName, obj);
-                return true;
-            }
-        }, l);
-    }
-    */
-
 
     /**
      * 파일 또는 폴더를 삭제한다. 폴더의 경우 재귀적으로 탐색하여 내부의 파일까지 모두 삭제한다.
@@ -163,7 +138,7 @@ public class IOUtil {
                     clearApplicationFile(file);
                 else {
                     if (!file.delete())
-                        Log.e("IOUtil", "Deleting file [" + file + "] has failed.");
+                        Log.e(TAG, "Deleting file [" + file + "] has failed.");
                 }
             }
         } catch (Exception e) {
@@ -173,40 +148,40 @@ public class IOUtil {
 
     public static <T> Task<T> externalFileOpenTask(String fileName) {
         //noinspection unchecked
-        return Tasks.newTask(() -> (T) readFromFile(new File(fileName)));
+        return Tasks.newTask(() -> (T) readFromExternalFile(new File(fileName)));
     }
 
-    public static <T> Task<T> internalFileOpenTask(Context context, String fileName) {
+    public static <T> Task<T> internalFileOpenTask(String fileName) {
         //noinspection unchecked
-        return Tasks.newTask(() -> (T) readFromFile(context, fileName));
+        return Tasks.newTask(() -> (T) readFromInternalFile(fileName));
     }
 
 
     @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-    public static <T> Func<T, T> newExternalFileWriteProcessor(String fileName) {
-        return new FileWriteProcessor<>(null, fileName);
+    public static <T> Func<T, T> newExternalFileWriteFunc(String fileName) {
+        return new FileWriteFunc<>(null, fileName);
     }
 
-    public static <T> Func<T, T> newInternalFileWriteProcessor(@NonNull Context context, String fileName) {
-        return new FileWriteProcessor<>(context, fileName);
+    public static <T> Func<T, T> newInternalFileWriteFunc(String fileName) {
+        return new FileWriteFunc<>(context(), fileName);
     }
 
-    static class FileWriteProcessor<T> implements Func<T, T> {
+    static class FileWriteFunc<T> implements Func<T, T> {
         private final String fileName;
         private final Context context;
 
-        public FileWriteProcessor(@Nullable Context context, String fileName) {
+        public FileWriteFunc(@Nullable Context context, String fileName) {
             this.fileName = fileName;
             this.context = context != null ? context.getApplicationContext() : null;
         }
 
         @Override
-        public T func(T t) throws Exception {
+        public T func(T t) throws IOException {
             if (context == null)
                 //noinspection ResourceType
                 writeObjectToExternalFile(fileName, t);
             else
-                writeObjectToFile(context, fileName, t);
+                writeObjectToInternalFile(fileName, t);
             return t;
         }
     }

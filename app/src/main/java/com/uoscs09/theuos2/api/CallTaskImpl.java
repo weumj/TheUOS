@@ -1,4 +1,4 @@
-package com.uoscs09.theuos2.oapi;
+package com.uoscs09.theuos2.api;
 
 import android.os.Handler;
 import android.os.Looper;

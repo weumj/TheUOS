@@ -30,13 +30,13 @@ class SubjectAdapter2 extends AbsArrayAdapter<SubjectItem2, SubjectAdapter2.View
             array[i++].setText(a);
         }
 
-        array[8].setText(item.getClassRoomInformation(getContext()));
+        array[8].setText(item.getClassRoomInformation());
 
         /*
         array[0].setText(item.sub_dept);
         array[1].setText(item.subject_div);
         array[2].setText(item.subject_no);
-        array[3].setText(item.class_div);
+        array[3].setText(item.classDiv);
         array[4].setText(item.subject_nm);
         array[5].setText(Integer.toString(item.shyr));
         array[6].setText(Integer.toString(item.credit));

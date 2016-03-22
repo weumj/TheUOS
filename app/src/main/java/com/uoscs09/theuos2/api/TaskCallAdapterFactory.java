@@ -1,4 +1,4 @@
-package com.uoscs09.theuos2.oapi;
+package com.uoscs09.theuos2.api;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
@@ -36,8 +36,7 @@ class TaskCallAdapterFactory extends CallAdapter.Factory {
 
     static Type getCallResponseType(Type returnType) {
         if (!(returnType instanceof ParameterizedType)) {
-            throw new IllegalArgumentException(
-                    "Call return type must be parameterized as Call<Foo> or Call<? extends Foo>");
+            throw new IllegalArgumentException("Call return type must be parameterized as Call<Foo> or Call<? extends Foo>");
         }
         return getParameterUpperBound(0, (ParameterizedType) returnType);
     }

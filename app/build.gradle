@@ -23,6 +23,12 @@ android {
         versionCode 6
         versionName "1.13"
         resValue "string", "setting_app_version_name", "${versionName}"
+
+        generatedDensities = []
+    }
+
+    aaptOptions {
+        additionalParameters "--no-version-vectors"
     }
 
     applicationVariants.all { variant ->
@@ -77,6 +83,7 @@ dependencies {
     compile(name: 'utils_common', ext: 'aar')
     compile(name: 'utils_recyclerview', ext: 'aar')
     compile(name: 'utils_task', ext: 'aar')
+    compile(name: 'utils_xml', ext: 'aar')
 
     compile project(':stickylistheaders')
 
@@ -87,6 +94,8 @@ dependencies {
     compile 'com.android.support:preference-v7:23.2.0'
     compile 'com.android.support:design:23.2.0'
     compile 'com.android.support:support-annotations:23.2.0'
+    compile 'com.android.support:support-vector-drawable:23.2.0'
+    compile 'com.android.support:animated-vector-drawable:23.2.0'
 
     compile 'com.google.android.gms:play-services-maps:8.4.0'
     compile 'com.google.android.gms:play-services-analytics:8.4.0'

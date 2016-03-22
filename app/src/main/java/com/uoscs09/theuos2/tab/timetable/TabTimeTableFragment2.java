@@ -272,7 +272,7 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> {
                 Throwable::printStackTrace
         );
 */
-        execute(AppRequests.TimeTables.request(getActivity(), mWiseIdView.getText(), mWisePasswdView.getText(), semester, mTimeTableYear),
+        execute(AppRequests.TimeTables.request(mWiseIdView.getText(), mWisePasswdView.getText(), semester, mTimeTableYear),
                 result -> {
                     clearPassWd();
                     if (result == null /*|| result.isEmpty()*/) {
@@ -306,7 +306,7 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> {
     }
 
     private void readTimetableFromFileOnFragmentCreated() {
-        AppRequests.TimeTables.readFromFile(getActivity())
+        AppRequests.TimeTables.readFromFile()
                 .getAsync(
                         result -> {
                             if (result == null || result.isEmpty()) {

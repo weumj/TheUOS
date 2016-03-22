@@ -258,7 +258,9 @@ public class UnivScheduleFragment extends AbsProgressFragment<List<UnivScheduleI
 
                     setSubtitleWhenVisible(mSubTitle = mDateFormat.format(mList.get(0).getDate(true).getTime()));
                 },
-                this::simpleErrorRespond
+                t -> {
+                    super.simpleErrorRespond(t);
+                }
         );
     }
 

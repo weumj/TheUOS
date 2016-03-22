@@ -1,16 +1,15 @@
-package com.uoscs09.theuos2.oapi;
+package com.uoscs09.theuos2.api;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.uoscs09.theuos2.tab.emptyroom.EmptyRoom;
-import com.uoscs09.theuos2.tab.schedule.UnivScheduleItem;
-import com.uoscs09.theuos2.tab.subject.CoursePlanItem;
-import com.uoscs09.theuos2.tab.subject.SubjectItem2;
-import com.uoscs09.theuos2.tab.timetable.SubjectInfoItem;
-import com.uoscs09.theuos2.util.OApiUtil;
-
-import java.util.List;
+import com.uoscs09.theuos2.tab.buildings.BuildingRoom;
+import com.uoscs09.theuos2.tab.buildings.ClassRoomTimeTable;
+import com.uoscs09.theuos2.tab.emptyroom.EmptyRoomInfo;
+import com.uoscs09.theuos2.tab.schedule.UnivScheduleInfo;
+import com.uoscs09.theuos2.tab.subject.CoursePlanInfo;
+import com.uoscs09.theuos2.tab.subject.SubjectInformation;
+import com.uoscs09.theuos2.tab.subject.TimeTableSubjectInfo;
 
 import mj.android.utils.task.Task;
 import retrofit2.http.Field;
@@ -21,12 +20,10 @@ import retrofit2.http.POST;
 public interface UosOApi {
     String URL = "http://wise.uos.ac.kr/uosdoc/";
 
-    String key = OApiUtil.UOS_API_KEY;
-
     @FormUrlEncoded
     @Headers({"Content-Type: charset=EUC-KR"})
     @POST("api.ApiUcsFromToEmptyRoom.oapi")
-    Task<List<EmptyRoom>> emptyRooms(
+    Task<EmptyRoomInfo> emptyRooms(
             @NonNull @Field("apiKey") String apiKey,
             @NonNull @Field("year") String year,
             @NonNull @Field("term") String term,
@@ -41,7 +38,7 @@ public interface UosOApi {
     @FormUrlEncoded
     @Headers({"Content-Type: charset=EUC-KR"})
     @POST("api.ApiApiCoursePlanView.oapi")
-    Task<List<CoursePlanItem>> coursePlans(
+    Task<CoursePlanInfo> coursePlans(
             @NonNull @Field("apiKey") String apiKey,
             @NonNull @Field("term") String term,
             @NonNull @Field("subjectNo") String subjectNo,
@@ -52,7 +49,7 @@ public interface UosOApi {
     @FormUrlEncoded
     @Headers({"Content-Type: charset=EUC-KR"})
     @POST("api.ApiUcrCultTimeInq.oapi")
-    Task<List<SubjectItem2>> timetableCulture(
+    Task<TimeTableSubjectInfo> timetableCulture(
             @NonNull @Field("apiKey") String apiKey,
             @NonNull @Field("year") String year,
             @NonNull @Field("term") String term,
@@ -64,7 +61,7 @@ public interface UosOApi {
     @FormUrlEncoded
     @Headers({"Content-Type: charset=EUC-KR"})
     @POST("api.ApiUcrMjTimeInq.oapi")
-    Task<List<SubjectItem2>> timetableMajor(
+    Task<TimeTableSubjectInfo> timetableMajor(
             @NonNull @Field("apiKey") String apiKey,
             @NonNull @Field("year") String year,
             @NonNull @Field("term") String term,
@@ -82,7 +79,7 @@ public interface UosOApi {
     @FormUrlEncoded
     @Headers({"Content-Type: charset=EUC-KR"})
     @POST("api.ApiApiSubjectList.oapi")
-    Task<List<SubjectInfoItem>> subjectInformation(
+    Task<SubjectInformation> subjectInformation(
             @NonNull @Field("apiKey") String apiKey,
             @NonNull @Field("year") String year,
             @NonNull @Field("term") String term,
@@ -92,13 +89,31 @@ public interface UosOApi {
             @Nullable @Field("subjectDiv") String subjectDiv,
             @Nullable @Field("dept") String dept,
             @Nullable @Field("deptDiv") String deptDiv,
-            @Nullable @Field("prof_nm") String prof_nm
+            @Nullable @Field("prof_nm") String profName
     );
 
     @FormUrlEncoded
     @Headers({"Content-Type: charset=EUC-KR"})
     @POST("api.ApiApiMainBd.oapi")
-    Task<List<UnivScheduleItem>> schedules(
+    Task<UnivScheduleInfo> schedules(
             @NonNull @Field("apiKey") String apiKey
+    );
+
+    @FormUrlEncoded
+    @Headers({"Content-Type: charset=EUC-KR"})
+    @POST("api.ApiApiBuildingRoomList.oapi")
+    Task<BuildingRoom> buildings(
+            @NonNull @Field("apiKey") String apiKey
+    );
+
+    @FormUrlEncoded
+    @Headers({"Content-Type: charset=EUC-KR"})
+    @POST("api.ApiUcsCourseTimeTableRoomList.oapi")
+    Task<ClassRoomTimeTable> classRoomTimeTables(
+            @Field("apiKey") String apiKey,
+            @Field("year") String year,
+            @Field("term") String term,
+            @Field("building") String building,
+            @Field("classRoom") String classRoom
     );
 }

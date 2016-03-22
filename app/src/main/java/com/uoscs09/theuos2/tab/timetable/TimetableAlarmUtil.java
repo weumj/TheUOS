@@ -76,25 +76,25 @@ public class TimetableAlarmUtil {
     private static void recordAlarmInfo(Context context, Subject subject, int alarmType) {
 
         int period = subject.period, day = subject.day;
-        int alarmCount = readAlarmCount(context);
+        int alarmCount = readAlarmCount();
 
         // 알림 없음
         if (alarmType == 0) {
-            deleteSubject(context, period, day);
-            deleteTimeSelection(context, period, day);
+            deleteSubject(period, day);
+            deleteTimeSelection(period, day);
 
             if (alarmCount < 2) {
-                deleteAlarmCount(context);
+                deleteAlarmCount();
                 setNotificationReceiverEnabled(context, false);
             } else {
-                writeAlarmCount(context, --alarmCount);
+                writeAlarmCount(--alarmCount);
             }
 
         } else {
-            writeSubject(context, period, day, subject);
-            writeTimeSelection(context, period, day, alarmType);
+            writeSubject(period, day, subject);
+            writeTimeSelection(period, day, alarmType);
 
-            writeAlarmCount(context, ++alarmCount);
+            writeAlarmCount(++alarmCount);
 
         }
     }
@@ -122,8 +122,8 @@ public class TimetableAlarmUtil {
     }
 
     private static void registerAlarmFromFileOnStart(Context context, int period, int day) {
-        Subject subject = TimetableAlarmUtil.readSubject(context, period, day);
-        int alarmTimeSelection = TimetableAlarmUtil.readTimeSelection(context, period, day);
+        Subject subject = TimetableAlarmUtil.readSubject(period, day);
+        int alarmTimeSelection = TimetableAlarmUtil.readTimeSelection(period, day);
 
         // 파일이 정확히 등록되어 있는 경우만 알람을 설정함.
         if (subject != null && alarmTimeSelection != 0)
@@ -167,12 +167,12 @@ public class TimetableAlarmUtil {
                 PendingIntent pi = PendingIntent.getBroadcast(appContext, code, intent, PendingIntent.FLAG_UPDATE_CURRENT);
                 am.cancel(pi);
 
-                deleteTimeSelection(appContext, period, day);
-                deleteSubject(appContext, period, day);
+                deleteTimeSelection(period, day);
+                deleteSubject(period, day);
             }
         }
 
-        deleteAlarmCount(appContext);
+        deleteAlarmCount();
         setNotificationReceiverEnabled(appContext, false);
 
      PrefHelper.TimeTables.putNotifyServiceEnable(false);
@@ -200,7 +200,7 @@ public class TimetableAlarmUtil {
                 .setAction(TimetableAlarmUtil.ACTION_SET_ALARM)
                 .putExtra(TimetableAlarmUtil.INTENT_CODE, code)
                 .putExtra(OApiUtil.SUBJECT_NAME, subject.subjectName)
-                .putExtra(TimetableAlarmUtil.INTENT_TIME, readTimeSelection(context, period, day));
+                .putExtra(TimetableAlarmUtil.INTENT_TIME, readTimeSelection(period, day));
 
         long notiTime = getNotificationTime(period, day, alarmType);
         PendingIntent pi = PendingIntent.getBroadcast(context, code, intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -346,29 +346,25 @@ public class TimetableAlarmUtil {
 
     //*************** I / O ****************
 
-    static void writeSubject(Context context, int period, int day, Subject subject) {
-        IOUtil.writeObjectToFileSuppressed(context, FILE_PREFIX_SUBJECT + getAlarmCodeString(period, day), subject);
+    static void writeSubject(int period, int day, Subject subject) {
+        IOUtil.writeObjectToInternalFileSilent(FILE_PREFIX_SUBJECT + getAlarmCodeString(period, day), subject);
     }
 
-    static Subject readSubject(Context context, int period, int day) {
-        return IOUtil.readFromFileSuppressed(context, FILE_PREFIX_SUBJECT + getAlarmCodeString(period, day));
+    static Subject readSubject(int period, int day) {
+        return IOUtil.readInternalFileSilent(FILE_PREFIX_SUBJECT + getAlarmCodeString(period, day));
     }
 
-    static void deleteSubject(Context context, int period, int day) {
-        try {
-            context.deleteFile(FILE_PREFIX_SUBJECT + getAlarmCodeString(period, day));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    static void deleteSubject(int period, int day) {
+        IOUtil.deleteInternalFile(FILE_PREFIX_SUBJECT + getAlarmCodeString(period, day));
     }
 
 
-    static void writeTimeSelection(Context context, int period, int day, int selection) {
-        IOUtil.writeObjectToFileSuppressed(context, FILE_PREFIX_TIME + getAlarmCodeString(period, day), selection);
+    static void writeTimeSelection(int period, int day, int selection) {
+        IOUtil.writeObjectToInternalFileSilent(FILE_PREFIX_TIME + getAlarmCodeString(period, day), selection);
     }
 
-    static int readTimeSelection(Context context, int period, int day) {
-        Object obj = IOUtil.readFromFileSuppressed(context, FILE_PREFIX_TIME + getAlarmCodeString(period, day));
+    static int readTimeSelection(int period, int day) {
+        Object obj = IOUtil.readInternalFileSilent(FILE_PREFIX_TIME + getAlarmCodeString(period, day));
 
         if (obj == null)
             return 0;
@@ -377,16 +373,12 @@ public class TimetableAlarmUtil {
         return selection > 0 ? selection : 0;
     }
 
-    static void deleteTimeSelection(Context context, int period, int day) {
-        try {
-            context.deleteFile(FILE_PREFIX_TIME + getAlarmCodeString(period, day));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    static void deleteTimeSelection(int period, int day) {
+        IOUtil.deleteInternalFile(FILE_PREFIX_TIME + getAlarmCodeString(period, day));
     }
 
-    static int readAlarmCount(Context context) {
-        Object obj = IOUtil.readFromFileSuppressed(context, FILE_ALARM_COUNT);
+    static int readAlarmCount() {
+        Object obj = IOUtil.readInternalFileSilent(FILE_ALARM_COUNT);
 
         if (obj == null)
             return 0;
@@ -395,16 +387,12 @@ public class TimetableAlarmUtil {
         return count > 0 ? count : 0;
     }
 
-    static void writeAlarmCount(Context context, int count) {
-        IOUtil.writeObjectToFileSuppressed(context, FILE_ALARM_COUNT, count);
+    static void writeAlarmCount(int count) {
+        IOUtil.writeObjectToInternalFileSilent(FILE_ALARM_COUNT, count);
     }
 
-    static void deleteAlarmCount(Context context) {
-        try {
-            context.deleteFile(FILE_ALARM_COUNT);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    static void deleteAlarmCount() {
+        IOUtil.deleteInternalFile(FILE_ALARM_COUNT);
     }
 
 }

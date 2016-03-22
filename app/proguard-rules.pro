@@ -108,6 +108,14 @@
     public *;
 }
 
+#### xml
+-keep class mj.android.utils.xml.**
+
+
+-keepclassmembers @mj.android.utils.xml.* class * {
+   public <init>(...);
+}
+
 # Library Jars
 #-libraryjars libs/jericho-html-3.3.jar
 

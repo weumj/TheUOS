@@ -172,7 +172,7 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Tool
         mCourseEval.setText(course.score_eval_rate);
         mCourseBook.setText(course.book_nm);
 
-        mCourseLocation.setText(mSubject.getClassRoomInformation(getActivity()));
+        mCourseLocation.setText(mSubject.getClassRoomInformation());
 
         mToolbar.setTitle(course.subject_nm);
         mToolbar.setSubtitle(course.prof_nm);
@@ -323,7 +323,7 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Tool
                 writeWeek(sb, infoList.get(i));
             }
             return sb.toString();
-        }).wrap(IOUtil.<String>newExternalFileWriteProcessor(fileName));
+        }).wrap(IOUtil.<String>newExternalFileWriteFunc(fileName));
         task.getAsync(result -> {
                     dismissProgressDialog();
 
@@ -374,7 +374,7 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Tool
 
         sb.append(getString(R.string.tab_course_plan_location));
         sb.append(" : ");
-        sb.append(mSubject.getClassRoomInformation(getActivity()));
+        sb.append(mSubject.getClassRoomInformation());
         sb.append(StringUtil.NEW_LINE);
 
         sb.append(getString(R.string.tab_course_plan_prof_tel));
