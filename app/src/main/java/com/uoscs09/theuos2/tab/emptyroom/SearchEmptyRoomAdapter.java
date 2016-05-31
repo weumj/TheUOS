@@ -9,7 +9,7 @@ import com.uoscs09.theuos2.base.AbsArrayAdapter;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 
 class SearchEmptyRoomAdapter extends AbsArrayAdapter<EmptyRoom, SearchEmptyRoomAdapter.Holder> {
 
@@ -34,13 +34,13 @@ class SearchEmptyRoomAdapter extends AbsArrayAdapter<EmptyRoom, SearchEmptyRoomA
     }
 
     static class Holder extends AbsArrayAdapter.ViewHolder {
-        @Bind(R.id.etc_search_empty_room_list_text_name)
+        @BindView(R.id.etc_search_empty_room_list_text_name)
         public TextView building;
-        @Bind(R.id.etc_search_empty_room_list_text_room_no)
+        @BindView(R.id.etc_search_empty_room_list_text_room_no)
         public TextView room_no;
-        @Bind(R.id.etc_search_empty_room_list_text_subj)
+        @BindView(R.id.etc_search_empty_room_list_text_subj)
         public TextView room_div;
-        @Bind(R.id.etc_search_empty_room_list_text_person)
+        @BindView(R.id.etc_search_empty_room_list_text_person)
         public TextView person_cnt;
 
         public Holder(View convertView) {

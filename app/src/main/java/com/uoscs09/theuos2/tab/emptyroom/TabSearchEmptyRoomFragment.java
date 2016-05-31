@@ -26,7 +26,7 @@ import com.uoscs09.theuos2.util.StringUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 import butterknife.OnItemClick;
 
@@ -42,9 +42,9 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<List<EmptyRo
     private TextView[] textViews;
     private View[] tabStrips;
 
-    @Bind(R.id.tab_search_subject_empty_view)
+    @BindView(R.id.tab_search_subject_empty_view)
     View mEmptyView;
-    @Bind(R.id.etc_search_list)
+    @BindView(R.id.etc_search_list)
     ListView mListView;
 
     private ArrayAdapter<EmptyRoom> mAdapter;
@@ -148,7 +148,7 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<List<EmptyRo
     }
 
     @Override
-    protected int getLayout() {
+    protected int layoutRes() {
         return R.layout.tab_search_empty_room;
     }
 

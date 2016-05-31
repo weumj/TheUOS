@@ -1,45 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:layout_gravity="fill"
+    android:orientation="vertical">
 
     <com.balysv.materialripple.MaterialRippleLayout
         android:id="@+id/ripple"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        app:mrl_rippleDelayClick="true"
-        app:mrl_rippleColor="?colorPrimaryDark">
+        app:mrl_rippleColor="?colorPrimaryDark"
+        app:mrl_rippleDelayClick="true">
 
         <LinearLayout
             android:id="@android:id/widget_frame"
             android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center"
             android:orientation="vertical"
-            android:padding="2dp"
-            android:layout_height="fill_parent">
+            android:padding="2dp">
 
             <TextView
                 android:id="@+id/time_table_subject"
                 android:layout_width="fill_parent"
-                android:gravity="start"
-                android:textSize="14sp"
+                android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-condensed-light"
-                android:layout_height="wrap_content" />
+                android:gravity="start"
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/time_table_professor"
                 android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
                 android:gravity="start"
-                android:textSize="12sp"
-                android:layout_height="wrap_content" />
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/time_table_location"
                 android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
                 android:gravity="start"
-                android:textSize="11sp"
-                android:layout_height="wrap_content" />
+                android:textSize="11sp" />
         </LinearLayout>
     </com.balysv.materialripple.MaterialRippleLayout>
 </LinearLayout>

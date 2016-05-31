@@ -12,22 +12,33 @@ import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.PrefHelper;
 import com.uoscs09.theuos2.util.StringUtil;
 
-import java.util.Locale;
-import java.util.Map;
+import java.util.ArrayList;
 
-import butterknife.Bind;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 
-class TimeTableAdapter2 extends AbsArrayAdapter<Subject[], TimeTableAdapter2.TimeTableViewHolder> {
+class TimeTableAdapter2 extends AbsArrayAdapter<Timetable2.Period, TimeTableAdapter2.TimeTableViewHolder> {
     private OnItemClickListener onItemClickListener;
     private final SparseBooleanArray mClickedArray = new SparseBooleanArray(15);
     private final String[] periodTimeArray;
-    private final TimeTable mTimeTable;
+    private Timetable2 mTimeTable;
 
-    public TimeTableAdapter2(Context context, TimeTable timeTable) {
-        super(context, R.layout.list_layout_timetable2, timeTable.subjects);
-        this.mTimeTable = timeTable;
+    private final int cardBackgroundColor;
+
+    public TimeTableAdapter2(Context context) {
+        super(context, R.layout.list_layout_timetable2, new ArrayList<>());
         periodTimeArray = context.getResources().getStringArray(R.array.tab_timetable_timelist_only_time);
+        cardBackgroundColor = AppUtil.getAttrColor(context, R.attr.cardBackgroundColor);
+    }
+
+    public void setTimeTable(Timetable2 timeTable) {
+        this.mTimeTable = timeTable;
+        clear();
+        if (timeTable != null)
+            addAll(timeTable.periods());
+
+        notifyDataSetChanged();
     }
 
     /**
@@ -41,18 +52,18 @@ class TimeTableAdapter2 extends AbsArrayAdapter<Subject[], TimeTableAdapter2.Tim
 
     @Override
     public int getCount() {
-        return PrefHelper.TimeTables.isShowingLastEmptyPeriod() ? mTimeTable.maxTime : super.getCount();
+        if (mTimeTable == null)
+            return 0;
+
+        return PrefHelper.TimeTables.isShowingLastEmptyPeriod() ? mTimeTable.maxPeriod() : super.getCount();
     }
 
     @Override
     public void onBindViewHolder(int position, TimeTableViewHolder holder) {
         holder.item = getItem(position);
         holder.position = position;
-        holder.mClickedArray = mClickedArray;
-        holder.onItemClickListener = onItemClickListener;
-        holder.periodTimeArray = periodTimeArray;
 
-        holder.setView(mTimeTable.getColorTable());
+        holder.setView();
 
     }
 
@@ -67,36 +78,29 @@ class TimeTableAdapter2 extends AbsArrayAdapter<Subject[], TimeTableAdapter2.Tim
 
 
     public interface OnItemClickListener {
-        void onItemClick(TimeTableViewHolder vh, View v, Subject subject);
+        void onItemClick(TimeTableViewHolder vh, View v, Timetable2.SubjectInfo subject);
     }
 
 
-    static class TimeTableViewHolder extends AbsArrayAdapter.ViewHolder implements View.OnClickListener {
-        @Bind(R.id.tab_timetable_list_text_period)
+    static final int[] VIEW_IDS = new int[]{
+            R.id.tab_timetable_list_text_mon,
+            R.id.tab_timetable_list_text_tue,
+            R.id.tab_timetable_list_text_wed,
+            R.id.tab_timetable_list_text_thr,
+            R.id.tab_timetable_list_text_fri,
+            R.id.tab_timetable_list_text_sat
+    };
+
+    class TimeTableViewHolder extends AbsArrayAdapter.ViewHolder implements View.OnClickListener {
+        @BindView(R.id.tab_timetable_list_text_period)
         public TextView period;
         public final SubjectViewHolder[] subjectViews;
-        public Subject[] item;
+        public Timetable2.Period item;
         public int position;
 
-        TimeTableAdapter2.OnItemClickListener onItemClickListener;
-        SparseBooleanArray mClickedArray;
-        String[] periodTimeArray;
-
-        static final int[] VIEW_IDS = new int[]{
-                R.id.tab_timetable_list_text_mon,
-                R.id.tab_timetable_list_text_tue,
-                R.id.tab_timetable_list_text_wed,
-                R.id.tab_timetable_list_text_thr,
-                R.id.tab_timetable_list_text_fri,
-                R.id.tab_timetable_list_text_sat
-        };
-
-        private final int cardBackgroundColor;
 
         public TimeTableViewHolder(View itemView, boolean forImage) {
             super(itemView);
-
-            cardBackgroundColor = AppUtil.getAttrColor(itemView.getContext(), R.attr.cardBackgroundColor);
 
             subjectViews = new SubjectViewHolder[6];
 
@@ -120,23 +124,22 @@ class TimeTableAdapter2 extends AbsArrayAdapter<Subject[], TimeTableAdapter2.Tim
             }
         }
 
-        void setView(Map<String, Integer> colorTable) {
+        void setView() {
             setPeriodView();
 
             int i = 0;
             for (SubjectViewHolder subjectViewHolder : subjectViews) {
 
                 // 과목 배경색
-                Subject subject = item[i++];
-                Integer idx = colorTable.get(subject.subjectName);
-                if (idx != null) {
-                    int color = TimetableUtil.getTimeTableColor(itemView.getContext(), idx);
-                    if (color != 0)
-                        subjectViewHolder.view.setBackgroundColor(color);
-                    else
-                        subjectViewHolder.view.setBackgroundColor(cardBackgroundColor);
-                } else
-                    subjectViewHolder.view.setBackgroundColor(cardBackgroundColor);
+                Timetable2.SubjectInfo subject = item.getSubjectInfo(i++);
+
+                int color = 0;
+                if (subject != null) {
+                    Integer idx = mTimeTable.colorTable().get(subject.nameKor());
+                    if (idx != null)
+                        color = TimetableUtil.getTimeTableColor(itemView.getContext(), idx);
+                }
+                subjectViewHolder.view.setBackgroundColor(color != 0 ? color : cardBackgroundColor);
 
                 // 과목 정보
                 subjectViewHolder.setView(subject);
@@ -168,18 +171,16 @@ class TimeTableAdapter2 extends AbsArrayAdapter<Subject[], TimeTableAdapter2.Tim
                     if (mClickedArray.get(position)) {
                         mClickedArray.delete(position);
                         setPeriodView();
-
                     } else {
                         mClickedArray.put(position, true);
                         setPeriodView();
-
                     }
 
                     break;
 
                 default:
                     if (onItemClickListener != null)
-                        onItemClickListener.onItemClick(this, v, item[(int) v.getTag()]);
+                        onItemClickListener.onItemClick(this, v, item.getSubjectInfo((int) v.getTag()));
 
                     break;
             }
@@ -188,36 +189,27 @@ class TimeTableAdapter2 extends AbsArrayAdapter<Subject[], TimeTableAdapter2.Tim
 
     static class SubjectViewHolder {
         public final View view;
-        public final TextView subject;
-        public final TextView professor;
-        public final TextView location;
+        @BindView(R.id.time_table_subject)
+        public TextView subject;
+        @BindView(R.id.time_table_professor)
+        public TextView professor;
+        @BindView(R.id.time_table_location)
+        public TextView location;
 
         public SubjectViewHolder(View parent) {
             this.view = parent;
-            subject = (TextView) parent.findViewById(R.id.time_table_subject);
-            professor = (TextView) parent.findViewById(R.id.time_table_professor);
-            location = (TextView) parent.findViewById(R.id.time_table_location);
+            ButterKnife.bind(this, view);
         }
 
-        public void setView(Subject item) {
-
-            if (item.isEqualToUpperPeriod) {
+        public void setView(Timetable2.SubjectInfo item) {
+            if (item == null || item.isEqualPrior()) {
                 subject.setText(StringUtil.NULL);
                 professor.setText(StringUtil.NULL);
                 location.setText(StringUtil.NULL);
-
             } else {
-                if (Locale.getDefault().equals(Locale.KOREA)) {
-                    subject.setText(item.subjectNameShort);
-                    professor.setText(item.professor);
-
-                } else {
-                    subject.setText(item.subjectNameEngShort);
-                    professor.setText(item.professorEng);
-                }
-
-                location.setText(item.building);
-
+                subject.setText(item.name());
+                professor.setText(item.professor());
+                location.setText(item.location());
             }
         }
 

@@ -81,7 +81,7 @@ public interface UosOApi {
     @POST("api.ApiApiSubjectList.oapi")
     Task<SubjectInformation> subjectInformation(
             @NonNull @Field("apiKey") String apiKey,
-            @NonNull @Field("year") String year,
+            @Field("year") int year,
             @NonNull @Field("term") String term,
             @NonNull @Field("subjectNm") String subjectNm,
             @Nullable @Field("subjectNo") String subjectNo,

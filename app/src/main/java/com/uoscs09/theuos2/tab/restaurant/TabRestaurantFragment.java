@@ -25,7 +25,7 @@ import com.uoscs09.theuos2.util.AppUtil;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import jp.wasabeef.recyclerview.adapters.SlideInBottomAnimationAdapter;
 import jp.wasabeef.recyclerview.animators.SlideInDownAnimator;
@@ -53,9 +53,9 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
     private static final int[] REST_TAB_MENU_STRING_ID = {R.string.tab_rest_students_hall, R.string.tab_rest_anekan, R.string.tab_rest_nature_science, R.string.tab_rest_main_8th, R.string.tab_rest_dormitory};
     private static final String[] REST_TAB_MENU_STRING_LABEL = {"학생회관 1층", "양식당 (아느칸)", "자연과학관", "본관 8층", "생활관"};
 
-    @Bind(R.id.tab_rest_swipe_layout)
+    @BindView(R.id.tab_rest_swipe_layout)
     SwipeRefreshLayout mSwipeRefreshLayout;
-    @Bind(R.id.tab_rest_recycler_view)
+    @BindView(R.id.tab_rest_recycler_view)
     RecyclerView mRecyclerView;
 
     private RestItemAdapter mRestItemAdapter;
@@ -113,7 +113,7 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
     }
 
     @Override
-    protected int getLayout() {
+    protected int layoutRes() {
         return R.layout.tab_restaurant;
     }
 
@@ -348,11 +348,11 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
 */
     protected static class Tab {
         public final FrameLayout tabView;
-        @Bind(R.id.tab_rest_tab_text)
+        @BindView(R.id.tab_rest_tab_text)
         public TextView mTextView;
-        @Bind(R.id.ripple)
+        @BindView(R.id.ripple)
         public View ripple;
-        @Bind(R.id.tab_rest_tab_strip)
+        @BindView(R.id.tab_rest_tab_strip)
         public View mStrip;
         // public int id;
 

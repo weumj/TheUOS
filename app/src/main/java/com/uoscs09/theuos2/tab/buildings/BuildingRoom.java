@@ -1,5 +1,6 @@
 package com.uoscs09.theuos2.tab.buildings;
 
+import java.io.Serializable;
 import java.util.List;
 
 import mj.android.utils.xml.Element;
@@ -7,7 +8,9 @@ import mj.android.utils.xml.ListContainer;
 import mj.android.utils.xml.Root;
 
 @Root(name = "root", charset = "euc-kr")
-public class BuildingRoom {
+public class BuildingRoom implements Serializable {
+
+    private static final long serialVersionUID = -2868782434037894130L;
 
     @ListContainer(name = "bdList")
     private List<BuildingInfo> buildingInfoList;
@@ -23,7 +26,10 @@ public class BuildingRoom {
     }
 
     @Root(name = "list")
-    public static class BuildingInfo {
+    public static class BuildingInfo implements Serializable {
+
+        private static final long serialVersionUID = -8461609949183019523L;
+
         @Element(name = "building", cdata = true)
         private String code;
         @Element(name = "building_nm", cdata = true)
@@ -44,7 +50,10 @@ public class BuildingRoom {
     }
 
     @Root(name = "list")
-    public static class RoomInfo {
+    public static class RoomInfo implements Serializable {
+
+        private static final long serialVersionUID = 8024683345112693051L;
+
         @Element(name = "room_cd", cdata = true)
         private String code;
 

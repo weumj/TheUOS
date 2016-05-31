@@ -39,11 +39,10 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 
-public class TabBookSearchFragment extends AbsProgressFragment<List<BookItem>>
-        implements OnQueryTextListener, UosMainActivity.OnBackPressListener, BookItemListAdapter.OnItemClickListener {
+public class TabBookSearchFragment extends AbsProgressFragment<List<BookItem>> implements OnQueryTextListener, UosMainActivity.OnBackPressListener, BookItemListAdapter.OnItemClickListener {
 
     /**
      * 비동기 작업 결과가 비었는지 여부
@@ -64,9 +63,9 @@ public class TabBookSearchFragment extends AbsProgressFragment<List<BookItem>>
     @AsyncData
     private ArrayList<BookItem> mBookList;
 
-    @Bind(R.id.tab_book_list_search)
+    @BindView(R.id.tab_book_list_search)
     ListView mListView;
-    @Bind(R.id.tab_book_empty)
+    @BindView(R.id.tab_book_empty)
     View mEmptyView;
 
     /**
@@ -176,7 +175,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<List<BookItem>>
 
 
     @Override
-    protected int getLayout() {
+    protected int layoutRes() {
         return R.layout.tab_book_search;
     }
 

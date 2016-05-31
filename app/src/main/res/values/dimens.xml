@@ -22,4 +22,6 @@
     <dimen name="tab_map_bottom_padding">0dp</dimen>
 
     <dimen name="list_side_margin">20dp</dimen>
+
+    <dimen name="dp8">8dp</dimen>
 </resources>

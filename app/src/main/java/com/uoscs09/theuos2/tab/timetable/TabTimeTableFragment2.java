@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -37,13 +36,14 @@ import com.uoscs09.theuos2.util.TaskUtil;
 
 import java.io.IOException;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 import mj.android.utils.task.Task;
 import mj.android.utils.task.Tasks;
 
-public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> {
+public class TabTimeTableFragment2 extends AbsProgressFragment<Timetable2> {
 
+    private static final String TAG = "TabTimeTableFragment2";
     private static final int REQUEST_PERMISSION_SAVE_IMAGE = 10;
 
     private AlertDialog mLoginDialog;
@@ -51,15 +51,15 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> {
     protected EditText mWiseIdView, mWisePasswdView;
     private Spinner mWiseTermSpinner, mWiseYearSpinner;
 
-    @Bind(R.id.time_table_listView1)
+    @BindView(R.id.time_table_listView1)
     ListView mTimetableListView;
-    @Bind(R.id.tab_timetable_empty)
+    @BindView(R.id.tab_timetable_empty)
     View emptyView;
 
     private Dialog mProgressDialog;
 
     @AsyncData
-    private TimeTable mTimeTable;
+    private Timetable2 mTimeTable;
     private TimeTableAdapter2 mTimeTableAdapter2;
 
     private final SubjectDetailDialogFragment mSubjectDetailDialog = new SubjectDetailDialogFragment();
@@ -69,8 +69,6 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> {
     public void onCreate(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             mTimeTable = savedInstanceState.getParcelable(IOUtil.FILE_TIMETABLE);
-        } else {
-            mTimeTable = new TimeTable();
         }
 
         mSubjectDetailDialog.setColorSelectedListener(i -> mTimeTableAdapter2.notifyDataSetChanged());
@@ -79,15 +77,12 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> {
 
         super.onCreate(savedInstanceState);
 
-        if (mTimeTable.semesterCode != null)
-            setTermTextViewText(mTimeTable);
-
-
         ViewGroup mTabParent = (ViewGroup) LayoutInflater.from(getActivity()).inflate(R.layout.view_tab_timetable_toolbar_menu, getToolbarParent(), false);
 
-        mTimeTableAdapter2 = new TimeTableAdapter2(getActivity(), mTimeTable);
+        mTimeTableAdapter2 = new TimeTableAdapter2(getActivity());
+        mTimeTableAdapter2.setTimeTable(mTimeTable);
         mTimeTableAdapter2.setOnItemClickListener((vh, v, subject) -> {
-            if (subject.isEqualsTo(Subject.EMPTY))
+            if (subject == null)
                 return;
 
             mSubjectDetailDialog.setSubject(subject);
@@ -113,8 +108,8 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> {
 
 
     @Override
-    protected int getLayout() {
-        return R.layout.tab_timetable;
+    protected int layoutRes() {
+        return R.layout.tab_timetable2;
     }
 
     @Override
@@ -128,7 +123,7 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> {
         registerProgressView(rootView.findViewById(R.id.progress_layout));
 
         if (savedInstanceState == null)
-            readTimetableFromFileOnFragmentCreated();
+            readTimetableFromFile();
     }
 
     @OnClick(R.id.tab_timetable_empty_text)
@@ -147,13 +142,12 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_wise:
-                //if (isTaskRunning()) {
-                //     AppUtil.showToast(getActivity(), R.string.progress_ongoing, true);
-
-                //} else {
-                sendClickEvent("wise login");
-                mLoginDialog.show();
-                //}
+                if (taskQueue().exist(TAG))
+                    AppUtil.showToast(getActivity(), R.string.progress_ongoing, true);
+                else {
+                    sendClickEvent("wise login");
+                    mLoginDialog.show();
+                }
                 return true;
 
             case R.id.action_delete:
@@ -184,7 +178,7 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> {
 
         switch (requestCode) {
             case REQUEST_PERMISSION_SAVE_IMAGE:
-                if (checkPermissionResultAndShowToastIfFailed(permissions, grantResults, getString(R.string.tab_timetable_permission_image_reject))) {
+                if (checkPermissionResultAndShowToastIfFailed(permissions, grantResults, R.string.tab_timetable_permission_image_reject)) {
                     saveTimetableImage();
                 }
                 break;
@@ -212,8 +206,7 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> {
         mTimeTableAdapter2.changeLayout(true);
 
         final Task<String> task = TimetableUtil.saveTimetableToImage(mTimeTable, mTimetableListView, mTimeTableAdapter2, getTabParentView());
-        task.getAsync(
-                result -> {
+        task.getAsync(result -> {
                     dismissProgressDialog();
                     mTimeTableAdapter2.changeLayout(false);
 
@@ -249,78 +242,39 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> {
 
     }
 
-    private void setTermTextViewText(@NonNull TimeTable timeTable) {
-        setSubtitleWhenVisible(timeTable.getYearAndSemester());
-    }
 
     void execute() {
         emptyView.setVisibility(View.INVISIBLE);
 
         Semester semester = Semester.values()[mWiseTermSpinner.getSelectedItemPosition()];
         String mTimeTableYear = mWiseYearSpinner.getSelectedItem().toString();
-/*
-        TimeTableHttpRequest.newRequest(mWiseIdView.getText(), mWisePasswdView.getText(), semester, mTimeTableYear).wrap(
-                httpURLConnection -> {
-                    String s = HttpRequest.readContentFromStream(httpURLConnection.getInputStream(), StringUtil.ENCODE_EUC_KR);
-                    httpURLConnection.disconnect();
-                    return s;
-                }
-        ).getAsync(
-                result -> {
-                    Log.d("timetable", result);
-                },
-                Throwable::printStackTrace
-        );
-*/
-        execute(AppRequests.TimeTables.request(mWiseIdView.getText(), mWisePasswdView.getText(), semester, mTimeTableYear),
-                result -> {
+
+        executeWithQueue(TAG, AppRequests.TimeTables.request2(mWiseIdView.getText(), mWisePasswdView.getText(), semester, mTimeTableYear),
+                r -> {
                     clearPassWd();
-                    if (result == null /*|| result.isEmpty()*/) {
+
+                    setTimetable(r);
+                    if (r == null)
                         AppUtil.showToast(getActivity(), R.string.tab_timetable_wise_login_warning_fail, isMenuVisible());
-
-                        if (mTimeTableAdapter2.isEmpty())
-                            emptyView.setVisibility(View.VISIBLE);
-
-                        return;
-                    }
-
-                    mTimeTable.copyFrom(result);
-                    mTimeTableAdapter2.notifyDataSetChanged();
-
-                    setTermTextViewText(mTimeTable);
                 },
-                e -> {
-                    //clearPassWd();
+                t -> {
+                    emptyView.setVisibility(View.VISIBLE);
 
-                    if (mTimeTableAdapter2.isEmpty())
-                        emptyView.setVisibility(View.VISIBLE);
-
-                    if (e instanceof IOException || e instanceof NullPointerException) {
-                        e.printStackTrace();
+                    if (t instanceof IOException || t instanceof NullPointerException) {
+                        t.printStackTrace();
                         AppUtil.showToast(getActivity(), R.string.tab_timetable_wise_login_warning_fail, isMenuVisible());
                     } else {
-                        simpleErrorRespond(e);
+                        simpleErrorRespond(t);
                     }
                 }
         );
     }
 
-    private void readTimetableFromFileOnFragmentCreated() {
-        AppRequests.TimeTables.readFromFile()
-                .getAsync(
-                        result -> {
-                            if (result == null || result.isEmpty()) {
-                                emptyView.setVisibility(View.VISIBLE);
-
-                            } else {
-                                mTimeTable.copyFrom(result);
-                                mTimeTableAdapter2.notifyDataSetChanged();
-
-                                setTermTextViewText(mTimeTable);
-                            }
-                        },
-                        e -> Log.e("TimeTable", "cannot read timetable from file.", e)
-                );
+    private void readTimetableFromFile() {
+        AppRequests.TimeTables.readFile2().getAsync(
+                this::setTimetable,
+                e -> Log.e(TAG, "cannot read timetable from file.", e)
+        );
     }
 
     private void initDialog() {
@@ -335,41 +289,35 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> {
         mWisePasswdView = (EditText) wiseDialogLayout.findViewById(R.id.dialog_wise_passwd_input);
         mWiseTermSpinner = (Spinner) wiseDialogLayout.findViewById(R.id.dialog_wise_spinner_term);
 
-        DialogInterface.OnClickListener l = (dialog, which) -> {
-            switch (which) {
-                case DialogInterface.BUTTON_POSITIVE:
-                    loginToWise();
-                    break;
-
-                case DialogInterface.BUTTON_NEGATIVE:
-                    clearPassWd();
-                    break;
-
-                default:
-                    break;
-            }
-        };
-
         mLoginDialog = new AlertDialog.Builder(context)
                 .setTitle(R.string.tab_timetable_wise_login_title)
                 .setView(wiseDialogLayout)
-                .setPositiveButton(R.string.confirm, l)
-                .setNegativeButton(R.string.cancel, l)
+                .setPositiveButton(R.string.confirm, (dialog, which) -> {
+                    String id = mWiseIdView.getText().toString().trim();
+
+                    if (mWisePasswdView.length() < 1 || TextUtils.isEmpty(id)) {
+                        AppUtil.showToast(getActivity(), R.string.tab_timetable_wise_login_warning_null, true);
+                        clearText();
+                    } else {
+                        execute();
+                    }
+                })
+                .setNegativeButton(R.string.cancel, (dialog, which) -> {
+                    clearPassWd();
+                })
                 .create();
     }
 
-    private void loginToWise() {
-        String id = mWiseIdView.getText().toString();
-        Context context = getActivity();
-
-        if (mWisePasswdView.length() < 1 || TextUtils.isEmpty(id)) {
-            AppUtil.showToast(context, R.string.tab_timetable_wise_login_warning_null, true);
-            clearText();
+    private void setTimetable(Timetable2 timeTable) {
+        if (timeTable == null) {
+            emptyView.setVisibility(View.VISIBLE);
+            setSubtitleWhenVisible(null);
         } else {
-            execute();
+            this.mTimeTable = timeTable;
+            setSubtitleWhenVisible(timeTable.getYearAndSemester());
         }
+        mTimeTableAdapter2.setTimeTable(timeTable);
     }
-
 
     private void clearText() {
         clearId();
@@ -401,28 +349,21 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<TimeTable> {
 
     void deleteTimetable() {
         AlertDialog dialog = deleteDialog();
-        Tasks.newTask(
-                () -> TimetableUtil.deleteTimetable(getActivity()))
-                .getAsync(
-                        result -> {
-                            dialog.dismiss();
-                            if (result) {
-                                mTimeTableAdapter2.clear();
-
-                                mTimeTable.copyFrom(new TimeTable());
-                                mTimeTableAdapter2.notifyDataSetChanged();
-
-                                AppUtil.showToast(getActivity(), R.string.execute_delete, isVisible());
-                                setSubtitleWhenVisible(null);
-                            } else {
-                                AppUtil.showToast(getActivity(), R.string.file_not_found, isMenuVisible());
-                            }
-                        },
-                        e -> {
-                            dialog.dismiss();
-                            AppUtil.showToast(getActivity(), R.string.file_not_found, isMenuVisible());
-                        }
-                );
+        Tasks.newTask(() -> TimetableUtil.deleteTimetable(getActivity())).getAsync(
+                result -> {
+                    dialog.dismiss();
+                    if (result) {
+                        AppUtil.showToast(getActivity(), R.string.execute_delete, isVisible());
+                        setTimetable(null);
+                    } else {
+                        AppUtil.showToast(getActivity(), R.string.file_not_found, isMenuVisible());
+                    }
+                },
+                e -> {
+                    dialog.dismiss();
+                    AppUtil.showToast(getActivity(), R.string.file_not_found, isMenuVisible());
+                }
+        );
 
     }
 

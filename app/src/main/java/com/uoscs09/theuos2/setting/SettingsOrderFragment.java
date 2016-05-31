@@ -26,8 +26,9 @@ import com.uoscs09.theuos2.util.TrackerUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 
 /**
  * page 순서를 바꾸는 설정이 있는 fragment
@@ -35,11 +36,13 @@ import butterknife.ButterKnife;
 public class SettingsOrderFragment extends BaseFragment {
     private static final String TAG = "SettingsOrderFragment";
 
-    @Bind(R.id.setting_dynamiclistview)
+    @BindView(R.id.setting_dynamiclistview)
     DynamicListView mListView;
 
     private ArrayList<AppUtil.Page> orderList;
     private SwapAdapter mAdapter;
+
+    private Unbinder unbinder;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,7 +65,7 @@ public class SettingsOrderFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.setting_order, container, false);
-        ButterKnife.bind(this, rootView);
+        unbinder = ButterKnife.bind(this, rootView);
 
         mListView.setDrawingCacheEnabled(true);
         mListView.setAdapter(mAdapter);
@@ -75,11 +78,15 @@ public class SettingsOrderFragment extends BaseFragment {
         return rootView;
     }
 
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ButterKnife.unbind(this);
+
+        if (unbinder != null) unbinder.unbind();
+
     }
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {

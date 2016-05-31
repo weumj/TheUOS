@@ -36,7 +36,7 @@ import com.uoscs09.theuos2.util.TaskUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import mj.android.utils.task.Task;
 import mj.android.utils.task.Tasks;
@@ -48,12 +48,12 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Tool
     private static final int REQUEST_PERMISSION_TXT = 40;
     private static final int REQUEST_PERMISSION_IMAGE = 41;
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar mToolbar;
     private View mCourseTitle;
     private TextView mCourseName, mCourseCode, mCourseProf, mCourseProfTel, mCourseEval, mCourseBook, mCourseLocation;
 
-    @Bind(R.id.fragment_course_plan_listview)
+    @BindView(R.id.fragment_course_plan_listview)
     ListView mListView;
     private ArrayAdapter<CoursePlanItem> mAdapter;
 
@@ -255,6 +255,9 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Tool
                 if (checkPermissionResultAndShowToastIfFailed(permissions, grantResults, getString(R.string.tab_course_plan_permission_reject))) {
                     saveCoursePlanToImage();
                 }
+                break;
+
+            default:
                 break;
         }
     }
@@ -462,15 +465,15 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Tool
         }
 
         static class ViewHolder extends AbsArrayAdapter.ViewHolder {
-            @Bind(R.id.course_plan_week)
+            @BindView(R.id.course_plan_week)
             public TextView week;
-            @Bind(R.id.course_plan_content)
+            @BindView(R.id.course_plan_content)
             public TextView content;
-            @Bind(R.id.course_plan_meth)
+            @BindView(R.id.course_plan_meth)
             public TextView meth;
-            @Bind(R.id.course_plan_book)
+            @BindView(R.id.course_plan_book)
             public TextView book;
-            @Bind(R.id.course_plan_etc)
+            @BindView(R.id.course_plan_etc)
             public TextView etc;
 
             public ViewHolder(View view) {

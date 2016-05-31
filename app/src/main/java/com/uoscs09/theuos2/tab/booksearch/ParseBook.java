@@ -2,7 +2,6 @@ package com.uoscs09.theuos2.tab.booksearch;
 
 import android.text.TextUtils;
 
-import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.parse.JerichoParser;
 import com.uoscs09.theuos2.util.OptimizeStrategy;
 import com.uoscs09.theuos2.util.StringUtil;
@@ -17,6 +16,9 @@ import java.util.List;
 import mj.android.utils.task.Func;
 import mj.android.utils.task.Task;
 import mj.android.utils.task.Tasks;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class ParseBook extends JerichoParser<List<BookItem>> {
     //private static final String LOG_TAG = "ParseBook";
@@ -77,7 +79,7 @@ public class ParseBook extends JerichoParser<List<BookItem>> {
         try {
             Element cover = rawBookElement.getFirstElementByClass(COVER).getFirstElement(IFRAME);
             if (cover != null)
-                item.coverSrc = getImgSrc(cover.getAttributeValue(SRC));
+                item.coverSrc = getBookImgSrc(cover.getAttributeValue(SRC));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -150,17 +152,27 @@ public class ParseBook extends JerichoParser<List<BookItem>> {
     /**
      * 책 커버 이미지의 주소를 얻어온다.
      */
-    private static String getImgSrc(String imgUrl) {
+    private static String getBookImgSrc(String imgUrl) {
         String imgSrc = StringUtil.NULL;
         if (TextUtils.isEmpty(imgUrl))
             return imgSrc;
 
         try {
+            Response response = okHttpClient().newCall(new Request.Builder()
+                    .url(imgUrl)
+                    .get()
+                    .build())
+                    .execute();
+
+            if (response.isSuccessful()) {
+                return imageHtmlParser.func(new String(response.body().bytes(), StringUtil.ENCODE_UTF_8));
+            }
+            /*
             imgSrc = HttpRequest.Builder.newStringRequestBuilder(imgUrl)
                     .build()
                     .wrap(imageHtmlParser)
                     .get();
-
+*/
         } catch (Throwable e) {
             e.printStackTrace();
         }
@@ -176,6 +188,16 @@ public class ParseBook extends JerichoParser<List<BookItem>> {
                     .getAttributeValue(SRC);
         }
     };
+
+
+    private static OkHttpClient okHttpClient;
+
+    private static synchronized OkHttpClient okHttpClient() {
+        if (okHttpClient == null) {
+            okHttpClient = new OkHttpClient();
+        }
+        return okHttpClient;
+    }
 
 
 }

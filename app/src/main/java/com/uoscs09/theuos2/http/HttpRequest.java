@@ -130,7 +130,7 @@ public abstract class HttpRequest<T> extends Tasks.AbstractTask<T> {
         }
     }
 
-    static String readContentFromStream(InputStream in, String encoding) throws IOException {
+    public static String readContentFromStream(InputStream in, String encoding) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(in, encoding));
         try {
             StringBuilder builder = new StringBuilder();
@@ -264,7 +264,6 @@ public abstract class HttpRequest<T> extends Tasks.AbstractTask<T> {
                 return new ConnectionRequest(url, encodeParams(), resultEncoding, method);
             }
         }
-
 
 
     }

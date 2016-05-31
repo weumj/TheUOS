@@ -4,7 +4,7 @@ import mj.android.utils.common.NetworkUtils;
 
 public class NetworkUtil {
     public static boolean isConnectivityEnable(){
-        return NetworkUtils.isConnectivityEnable(AppUtil.context);
+        return NetworkUtils.isConnectivityEnable(AppUtil.context());
     }
 
 }

@@ -7,7 +7,7 @@ import android.os.Build;
 public class OptimizeStrategy {
 
     public static boolean isSafeToOptimize() {
-        return isCoreSizeAbove2() && isBatteryPercentageAbove29(AppUtil.context);
+        return isCoreSizeAbove2() && isBatteryPercentageAbove29(AppUtil.context());
     }
 
     private static boolean isBatteryPercentageAbove29(Context context) {

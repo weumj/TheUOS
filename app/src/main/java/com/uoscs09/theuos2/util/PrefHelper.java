@@ -27,7 +27,7 @@ import static com.uoscs09.theuos2.util.PrefUtil.getInstance;
 public class PrefHelper {
 
     private static PrefUtil pref() {
-        return getInstance(AppUtil.context);
+        return getInstance(AppUtil.context());
     }
 
     public static class Screens {

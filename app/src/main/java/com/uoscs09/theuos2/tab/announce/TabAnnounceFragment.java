@@ -31,12 +31,11 @@ import com.uoscs09.theuos2.util.AppUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 import butterknife.OnItemClick;
 
-public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>>
-        implements AdapterView.OnItemSelectedListener, SearchView.OnQueryTextListener {
+public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>> implements AdapterView.OnItemSelectedListener, SearchView.OnQueryTextListener {
 
     static final String PAGE_NUM = "PAGE";
     static final String ITEM = "item";
@@ -53,9 +52,9 @@ public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>>
     private ArrayAdapter<AnnounceItem> mAnnounceAdapter;
     private View mListFooterView;
 
-    @Bind(R.id.tab_announce_list_announce)
+    @BindView(R.id.tab_announce_list_announce)
     ListView mListView;
-    @Bind(R.id.tab_announce_empty_view)
+    @BindView(R.id.tab_announce_empty_view)
     View mEmptyView;
     private Dialog mPageSelectDialog;
     private NumberPicker mPageNumberPicker;
@@ -78,7 +77,6 @@ public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>>
      */
     private boolean mShouldChangeMaxValueOfPage = false;
 
-    /* TODO Fragment Callback */
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -140,7 +138,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>>
     }
 
     @Override
-    protected int getLayout() {
+    protected int layoutRes() {
         return R.layout.tab_announce;
     }
 
@@ -221,10 +219,6 @@ public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>>
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-	/* TODO Fragment Callback end */
-
-    /* TODO Listener Callback */
-
     /**
      * spinner 가 선택되면(카테고리 선택) 호출됨
      */
@@ -277,8 +271,6 @@ public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>>
         return true;
     }
 
-	/* TODO Listener end */
-
 
     private void executeJob(boolean search, boolean more, int newPage) {
         mIsSearchRequesting = search;
@@ -304,8 +296,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>>
     }
 
     private void executeJob(boolean moreRequest, int newPageIndex) {
-        execute(
-                AppRequests.Announces.normalRequest(getCurrentCategoryIndex(), newPageIndex),
+        execute(AppRequests.Announces.normalRequest(getCurrentCategoryIndex(), newPageIndex),
                 result -> {
                     mListFooterView.setClickable(true);
                     if (moreRequest) updateWithResultInMoreRequest(result, newPageIndex);
@@ -391,8 +382,6 @@ public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>>
         } else
             return true;
     }
-
-    /* TODO AsyncJob end */
 
     /**
      * Toolbar 에 붙일 Tab (카테고리 Spinner & PageIndexView) 을 초기화 한다.

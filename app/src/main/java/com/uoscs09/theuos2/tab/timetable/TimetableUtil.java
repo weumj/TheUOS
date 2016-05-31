@@ -118,10 +118,10 @@ public class TimetableUtil {
 
 
     @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-    public static Task<String> saveTimetableToImage(TimeTable timeTable, ListView listView, ListAdapter originalAdapter, View header) {
+    public static Task<String> saveTimetableToImage(Timetable2 timetable, ListView listView, ListAdapter originalAdapter, View header) {
         //noinspection ResourceType
         final String picturePath = PrefHelper.Data.getPicturePath();
-        String savedPath = picturePath + "/timetable_" + timeTable.year + '_' + timeTable.semesterCode + '_' + String.valueOf(System.currentTimeMillis()) + ".png";
+        String savedPath = String.format("%s/timetable_%d_%s_%d.png", picturePath, timetable.year(), timetable.semester().name(), System.currentTimeMillis());
 
         return new ImageUtil.ListViewBitmapRequest.Builder(listView, originalAdapter)
                 .setHeaderView(header)

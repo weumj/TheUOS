@@ -16,17 +16,15 @@ import mj.android.utils.task.Func;
 import mj.android.utils.task.Task;
 import mj.android.utils.task.Tasks;
 
+import static com.uoscs09.theuos2.util.AppUtil.context;
+
 public class IOUtil {
     private static final String TAG = "IOUtil";
-    public static final String FILE_TIMETABLE = "timetable_file_v1.12";
+    public static final String FILE_TIMETABLE = "timetable_file_v1.13";
     public static final String FILE_REST = "rest_file";
     public static final String FILE_LIBRARY_SEAT = "file_library_seat";
 
     private IOUtil() {
-    }
-
-    private static Context context() {
-        return AppUtil.context;
     }
 
     /**

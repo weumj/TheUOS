@@ -380,9 +380,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
 
             case PrefUtil.KEY_THEME:
                 Preference connectionPref = findPreference(key);
-                AppUtil.theme = AppTheme.values()[sharedPreferences.getInt(key, 0)];
+                AppUtil.setTheme(AppTheme.values()[sharedPreferences.getInt(key, 0)]);
                 AppUtil.applyTheme(getActivity().getApplicationContext());
-                connectionPref.setSummary(getString(R.string.setting_theme_desc) + "\n현재 적용된 테마 : " + AppUtil.theme.toString());
+                connectionPref.setSummary(getString(R.string.setting_theme_desc) + "\n현재 적용된 테마 : " + AppUtil.theme().toString());
                 break;
 
             case PrefUtil.KEY_HOME:

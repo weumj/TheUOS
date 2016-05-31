@@ -11,7 +11,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -31,7 +30,7 @@ import com.uoscs09.theuos2.util.AppUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -39,16 +38,16 @@ import butterknife.OnClick;
 public class SubjectDetailDialogFragment extends BaseDialogFragment implements ColorSelector.OnColorSelectedListener {
     private static final String TAG = "SubjectDetailDialogFragment";
 
-    @Bind(R.id.dialog_timetable_title)
+    @BindView(R.id.dialog_timetable_title)
     TextView mTimeTableDialogTitle;
     private Dialog mProgress;
     private Dialog mClassDivSelectDialog;
-    @Bind(R.id.timetable_callback_alarm_spinner)
+    @BindView(R.id.timetable_callback_alarm_spinner)
     Spinner mAlarmTimeSelectSpinner;
 
     private ArrayAdapter<SubjectInfoItem> mClassDivSelectAdapter;
-    private Subject mSubject;
-    private TimeTable mTimeTable;
+    private Timetable2.SubjectInfo mSubject;
+    private Timetable2 mTimeTable;
 
     private final CoursePlanDialogFragment mCoursePlanDialogFragment = new CoursePlanDialogFragment();
 
@@ -61,11 +60,11 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
         pieProgressDrawable.setLevel(100);
     }
 
-    public void setTimeTable(TimeTable timeTable) {
+    public void setTimeTable(Timetable2 timeTable) {
         mTimeTable = timeTable;
     }
 
-    public void setSubject(@NonNull Subject subject) {
+    public void setSubject(@NonNull Timetable2.SubjectInfo subject) {
         mSubject = subject;
     }
 
@@ -78,7 +77,6 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ButterKnife.unbind(this);
     }
 
     @Override
@@ -88,19 +86,18 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
         if (mSubject != null) {
             int color = AppUtil.getAttrColor(getActivity(), R.attr.colorPrimary);
 
-            if (mTimeTable.getColorTable().size() > 0) {
-                Integer idx = mTimeTable.getColorTable().get(mSubject.subjectName);
-                if (idx != null)
-                    color = TimetableUtil.getTimeTableColor(getActivity(), idx);
+            if (mTimeTable.colorTable().size() > 0) {
+                int i = mTimeTable.color(mSubject);
+                color = TimetableUtil.getTimeTableColor(getActivity(), i);
             }
 
             pieProgressDrawable.setColor(color);
-            mTimeTableDialogTitle.setText(mSubject.getSubjectNameLocal());
+            mTimeTableDialogTitle.setText(mSubject.name());
             mTimeTableDialogTitle.invalidateDrawable(pieProgressDrawable);
 
             if (mAlarmTimeSelectSpinner != null) {
                 mAlarmTimeSelectSpinner.setTag(TAG);
-                mAlarmTimeSelectSpinner.setSelection(TimetableAlarmUtil.readTimeSelection(mSubject.period, mSubject.day));
+                // mAlarmTimeSelectSpinner.setSelection(TimetableAlarmUtil.readTimeSelection(mSubject.period, mSubject.day));
             }
         }
     }
@@ -126,7 +123,7 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
         mTimeTableDialogTitle.setCompoundDrawablePadding(40);
 
         //View alarmButton = view.findViewById(R.id.dialog_timetable_button_alarm);
-
+/*
         mAlarmTimeSelectSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -144,11 +141,12 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
             }
         });
 
+
         if (mSubject != null) {
             mAlarmTimeSelectSpinner.setTag(TAG);
             mAlarmTimeSelectSpinner.setSelection(TimetableAlarmUtil.readTimeSelection(mSubject.period, mSubject.day));
         }
-
+ */
 
         /*
         if (AppUtil.test) {
@@ -168,15 +166,13 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
     @Override
     public void onColorSelected(int i) {
 
-        if (mSubject != null && mTimeTable.getColorTable() != null) {
-            Integer idx = mTimeTable.getColorTable().get(mSubject.subjectName);
-            if (idx != null) {
-                TimetableUtil.putTimeTableColor(getActivity(), idx, i);
+        if (mSubject != null && mTimeTable.colorTable() != null) {
+            int idx = mTimeTable.color(mSubject);
+            TimetableUtil.putTimeTableColor(getActivity(), idx, i);
 
-                dismiss();
-                if (mColorSelectedListener != null)
-                    mColorSelectedListener.onColorSelected(i);
-            }
+            dismiss();
+            if (mColorSelectedListener != null)
+                mColorSelectedListener.onColorSelected(i);
         }
     }
 
@@ -187,9 +183,9 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
 
         int color;
 
-        if (mSubject != null && mTimeTable.getColorTable() != null) {
-            Integer idx = mTimeTable.getColorTable().get(mSubject.subjectName);
-            color = idx != null ? TimetableUtil.getTimeTableColor(getActivity(), idx) : Color.BLACK;
+        if (mSubject != null && mTimeTable.colorTable() != null) {
+            int idx = mTimeTable.color(mSubject);
+            color = idx != -1 ? TimetableUtil.getTimeTableColor(getActivity(), idx) : Color.BLACK;
         } else {
             color = Color.BLACK;
         }
@@ -204,9 +200,9 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
         if (getActivity() == null)
             return;
 
-        if (mSubject != null && mSubject.univBuilding.code > 0) {
+        if (mSubject != null && mSubject.building() != null && mSubject.building().code > 0) {
             Intent intent = new Intent(v.getContext(), GoogleMapActivity.class);
-            intent.putExtra("building", mSubject.univBuilding.code);
+            intent.putExtra("building", mSubject.building().code);
 
             sendClickEvent("map");
             AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
@@ -223,34 +219,33 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
         if (getActivity() == null)
             return;
 
-        if (mSubject != null && !TextUtils.isEmpty(mSubject.subjectName)) {
+        if (mSubject != null && !TextUtils.isEmpty(mSubject.nameKor())) {
 
             sendClickEvent("course plan");
 
-            AppRequests.Subjects.requestSubjectInfo(mSubject.subjectName, mTimeTable.year, mTimeTable.semesterCode.code)
-                    .getAsync(result -> {
-                                mProgress.dismiss();
+            AppRequests.Subjects.requestSubjectInfo(mSubject.nameKor(), mTimeTable.year(), mTimeTable.semester().code).getAsync(result -> {
+                        mProgress.dismiss();
 
-                                int size;
-                                if (result == null || (size = result.size()) == 0) {
-                                    AppUtil.showToast(getActivity(), R.string.tab_timetable_error_on_search_subject, true);
-                                    dismiss();
+                        int size;
+                        if (result == null || (size = result.size()) == 0) {
+                            AppUtil.showToast(getActivity(), R.string.tab_timetable_error_on_search_subject, true);
+                            dismiss();
 
-                                } else if (size == 1) {
-                                    showCoursePlan(result.get(0).toSubjectItem(mTimeTable, mSubject));
-                                    dismiss();
+                        } else if (size == 1) {
+                            showCoursePlan(result.get(0).toSubjectItem(mTimeTable, mSubject));
+                            dismiss();
 
-                                } else {
-                                    mClassDivSelectAdapter.clear();
-                                    mClassDivSelectAdapter.addAll(result);
-                                    mClassDivSelectAdapter.notifyDataSetChanged();
+                        } else {
+                            mClassDivSelectAdapter.clear();
+                            mClassDivSelectAdapter.addAll(result);
+                            mClassDivSelectAdapter.notifyDataSetChanged();
 
-                                    mClassDivSelectDialog.show();
-                                }
+                            mClassDivSelectDialog.show();
+                        }
 
-                            },
-                            this::onError
-                    );
+                    },
+                    this::onError
+            );
 
             mProgress.show();
 
@@ -275,7 +270,7 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
     private void initSelectDialog() {
         View dialogView = View.inflate(getActivity(), R.layout.dialog_timecallback, null);
         mClassDivSelectDialog = new AlertDialog.Builder(getActivity())
-                .setTitle(mSubject.getSubjectNameLocal())
+                .setTitle(mSubject.name())
                 .setView(dialogView)
                 .setOnDismissListener(dialog -> dismiss())
                 .create();

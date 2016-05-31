@@ -20,6 +20,7 @@ import com.uoscs09.theuos2.tab.subject.CoursePlanItem;
 import com.uoscs09.theuos2.tab.subject.SubjectItem2;
 import com.uoscs09.theuos2.tab.timetable.SubjectInfoItem;
 import com.uoscs09.theuos2.tab.timetable.TimeTable;
+import com.uoscs09.theuos2.tab.timetable.Timetable2;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -75,7 +76,7 @@ public class AppRequests {
                     .wrap(originalList -> {
                                 if (PrefHelper.Books.isFilterUnavailableBook() && originalList.size() > 0) {
                                     ArrayList<BookItem> newList = new ArrayList<>();
-                                    String emptyMsg = AppUtil.context.getString(R.string.tab_book_not_found);
+                                    String emptyMsg = AppUtil.context().getString(R.string.tab_book_not_found);
                                     final int N = originalList.size();
                                     for (int i = 0; i < N; i++) {
                                         BookItem item = originalList.get(i);
@@ -165,10 +166,18 @@ public class AppRequests {
                     .wrap(IOUtil.<TimeTable>newInternalFileWriteFunc(IOUtil.FILE_TIMETABLE));
         }
 
-        public static Task<TimeTable> readFromFile() {
+        public static Task<Timetable2> request2(CharSequence id, CharSequence passwd, OApiUtil.Semester semester, CharSequence year) {
+            return NetworkRequests.TimeTables.request2(id, passwd, semester, year)
+                    .wrap(IOUtil.<Timetable2>newInternalFileWriteFunc(IOUtil.FILE_TIMETABLE));
+        }
+
+        public static Task<TimeTable> readFile() {
             return Tasks.newTask(() -> IOUtil.readInternalFileSilent(IOUtil.FILE_TIMETABLE));
         }
 
+        public static Task<Timetable2> readFile2() {
+            return Tasks.newTask(() -> IOUtil.readInternalFileSilent(IOUtil.FILE_TIMETABLE));
+        }
     }
 
 
@@ -282,7 +291,7 @@ public class AppRequests {
 
         private static Task<BuildingRoom> downloadBuildingRooms() {
             return NetworkRequests.Buildings.buildingRooms()
-                    .wrap(new IOUtil.FileWriteFunc<>(AppUtil.context, FILE_BUILDINGS))
+                    .wrap(new IOUtil.FileWriteFunc<>(AppUtil.context(), FILE_BUILDINGS))
                     .wrap(room -> {
                         PrefHelper.Buildings.putDownloadTime(System.currentTimeMillis());
                         //todo sort

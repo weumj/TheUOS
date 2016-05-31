@@ -9,8 +9,8 @@ import java.util.Locale;
  * WISE OPEN API 관련 변수와 메소드를 가지는 클래스
  */
 public class OApiUtil {
-    private static String sThisYear;
-    private static String[] sYears;
+    private static volatile String sThisYear;
+    private static volatile String[] sYears;
     public static final String UOS_API_KEY = OApiKey.WISE_OAPI_KEY.toString();
     public static final String SUBJECT_NAME = "subjectNm";
 
@@ -67,7 +67,7 @@ public class OApiUtil {
      * 현재 연도를 기준점으로 -2 ~ + 1 범위의 연도를얻는다. <br>
      * ex) 현재 연도가 "2013"이면 2011, 2012, 2013, 2014 배열을 얻게된다.
      */
-    public static String[] getYears() {
+    public static synchronized String[] getYears() {
         if (sThisYear == null) {
             getYear();
         }

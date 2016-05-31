@@ -23,14 +23,18 @@ import com.uoscs09.theuos2.tab.subject.SubjectInformation;
 import com.uoscs09.theuos2.tab.subject.SubjectItem2;
 import com.uoscs09.theuos2.tab.subject.TimeTableSubjectInfo;
 import com.uoscs09.theuos2.tab.timetable.ParseTimeTable2;
+import com.uoscs09.theuos2.tab.timetable.ParseTimetable3;
 import com.uoscs09.theuos2.tab.timetable.SubjectInfoItem;
 import com.uoscs09.theuos2.tab.timetable.TimeTable;
+import com.uoscs09.theuos2.tab.timetable.Timetable2;
 import com.uoscs09.theuos2.tab.timetable.TimetableUtil;
+import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 import com.uoscs09.theuos2.util.TaskUtil;
 
 import java.io.File;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -50,7 +54,7 @@ import static com.uoscs09.theuos2.api.ApiService.libraryApi;
 import static com.uoscs09.theuos2.api.ApiService.oApi;
 import static com.uoscs09.theuos2.api.ApiService.restaurantApi;
 
-// 오직 네트워크와 파싱 관련된 작업만 수행하고, 파일 IO같은 작업은 AppResources에서 처리.
+// 네트워크와 파싱 관련된 작업만 수행하고, 파일 IO같은 작업은 AppResources에서 처리.
 public class NetworkRequests {
 
     public static class Announces {
@@ -176,6 +180,20 @@ public class NetworkRequests {
                     });
         }
 
+
+        public static Task<Timetable2> request2(CharSequence id, CharSequence passwd, OApiUtil.Semester semester, CharSequence year) {
+            return TimeTableHttpRequest.newRequest(id, passwd, semester, year)
+                    .wrap(httpURLConnection -> {
+                        InputStream inputStream = httpURLConnection.getInputStream();
+                        try {
+                            return new ParseTimetable3().parse(inputStream);
+                        } finally {
+                            IOUtil.closeStream(inputStream);
+                            httpURLConnection.disconnect();
+                        }
+                    });
+        }
+
     }
 
     public static class LibrarySeats {
@@ -290,7 +308,7 @@ public class NetworkRequests {
         public static Task<List<SubjectInfoItem>> requestSubjectInfo(String subjectName, int year, String termCode) {
             return oApi().subjectInformation(
                     OApiUtil.UOS_API_KEY,
-                    Integer.toString(year),
+                    year,
                     termCode,
                     subjectName,
                     null,

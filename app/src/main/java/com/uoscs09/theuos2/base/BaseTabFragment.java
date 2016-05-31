@@ -12,10 +12,12 @@ import android.view.ViewGroup;
 import com.uoscs09.theuos2.UosMainActivity;
 
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import mj.android.utils.task.TaskQueue;
 
 public abstract class BaseTabFragment extends BaseFragment {
     private ViewGroup mTabParent;
+    private Unbinder unbinder;
 
     @Override
     public void onAttach(Context context) {
@@ -29,7 +31,7 @@ public abstract class BaseTabFragment extends BaseFragment {
         return (UOSApplication) getActivity().getApplication();
     }
 
-    protected final TaskQueue taskQueue(){
+    protected final TaskQueue taskQueue() {
         return getUosApplication().taskQueue();
     }
 
@@ -40,19 +42,22 @@ public abstract class BaseTabFragment extends BaseFragment {
     @Nullable
     @Override
     public final View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View v = inflater.inflate(getLayout(), container, false);
-        ButterKnife.bind(this, v);
+        final View v = inflater.inflate(layoutRes(), container, false);
+        unbinder = ButterKnife.bind(this, v);
         return v;
     }
 
+
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        ButterKnife.unbind(this);
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        if (unbinder != null) unbinder.unbind();
+
     }
 
     @LayoutRes
-    protected abstract int getLayout();
+    protected abstract int layoutRes();
 
     /*
     @Override

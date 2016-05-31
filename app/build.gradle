@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
-
+apply plugin: 'com.neenbedankt.android-apt'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    buildToolsVersion "23.0.3"
 
 
     productFlavors {
@@ -23,13 +23,8 @@ android {
         versionCode 6
         versionName "1.13"
         resValue "string", "setting_app_version_name", "${versionName}"
-
-        generatedDensities = []
     }
 
-    aaptOptions {
-        additionalParameters "--no-version-vectors"
-    }
 
     applicationVariants.all { variant ->
         variant.outputs.each { output ->
@@ -87,33 +82,30 @@ dependencies {
 
     compile project(':stickylistheaders')
 
-    compile 'com.android.support:support-v13:23.2.0'
-    compile 'com.android.support:appcompat-v7:23.2.0'
-    compile 'com.android.support:recyclerview-v7:23.2.0'
-    compile 'com.android.support:cardview-v7:23.2.0'
-    compile 'com.android.support:preference-v7:23.2.0'
-    compile 'com.android.support:design:23.2.0'
-    compile 'com.android.support:support-annotations:23.2.0'
-    compile 'com.android.support:support-vector-drawable:23.2.0'
-    compile 'com.android.support:animated-vector-drawable:23.2.0'
+    compile 'com.android.support:support-v13:23.4.0'
+    compile 'com.android.support:appcompat-v7:23.4.0'
+    compile 'com.android.support:recyclerview-v7:23.4.0'
+    compile 'com.android.support:cardview-v7:23.4.0'
+    compile 'com.android.support:preference-v7:23.4.0'
+    compile 'com.android.support:design:23.4.0'
+    compile 'com.android.support:support-annotations:23.4.0'
 
-    compile 'com.google.android.gms:play-services-maps:8.4.0'
-    compile 'com.google.android.gms:play-services-analytics:8.4.0'
+    compile 'com.google.android.gms:play-services-maps:9.0.1'
+    compile 'com.google.android.gms:play-services-analytics:9.0.1'
 
-    compile 'com.jakewharton:butterknife:7.0.1'
+    compile 'com.jakewharton:butterknife:8.0.1'
+    apt 'com.jakewharton:butterknife-compiler:8.0.1'
 
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.nineoldandroids:library:2.4.0'
-    compile 'com.squareup.retrofit2:retrofit:2.0.0-beta4'
+    compile 'com.squareup.retrofit2:retrofit:2.0.2'
 
     compile 'com.nhaarman.listviewanimations:lib-core:3.1.0@aar'
     compile 'com.nhaarman.listviewanimations:lib-manipulation:3.1.0@aar'
     // compile 'com.nhaarman.listviewanimations:lib-core-slh:3.1.0@aar'
 
-    compile('com.github.afollestad.material-dialogs:core:0.8.5.5@aar') {
-        transitive = true
-    }
-    compile 'com.pnikosis:materialish-progress:1.4'
+    compile 'com.afollestad.material-dialogs:core:0.8.5.9'
+    compile 'com.pnikosis:materialish-progress:1.7'
     compile 'com.balysv:material-ripple:1.0.2'
 
     // compile 'com.github.navasmdc:MaterialDesign:1.+@aar'

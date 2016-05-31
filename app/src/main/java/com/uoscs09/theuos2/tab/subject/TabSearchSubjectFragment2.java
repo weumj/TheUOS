@@ -34,12 +34,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnItemClick;
 import mj.android.utils.task.Task;
 
-public class TabSearchSubjectFragment2 extends AbsProgressFragment<List<SubjectItem2>>
-        implements AdapterView.OnItemSelectedListener {
+public class TabSearchSubjectFragment2 extends AbsProgressFragment<List<SubjectItem2>> implements AdapterView.OnItemSelectedListener {
     private AlertDialog mSearchDialog;
     private EditText mSearchEditText;
     private Spinner mDialogSpinner1, mDialogSpinner2, mDialogSpinner3, mDialogSpinner4, mDialogTermSpinner, mDialogYearSpinner;
@@ -50,11 +49,11 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<List<SubjectI
     private TextView[] textViews;
     private View[] tabStrips;
 
-    @Bind(R.id.tab_search_subject_scrollview)
+    @BindView(R.id.tab_search_subject_scrollview)
     CustomHorizontalScrollView mScrollView;
-    @Bind(R.id.tab_search_subject_empty_view)
+    @BindView(R.id.tab_search_subject_empty_view)
     View mEmptyView;
-    @Bind(R.id.tab_search_subject_list_view)
+    @BindView(R.id.tab_search_subject_list_view)
     ListView mListView;
 
     private String mSearchConditionString;
@@ -101,7 +100,7 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<List<SubjectI
     }
 
     @Override
-    protected int getLayout() {
+    protected int layoutRes() {
         return R.layout.tab_search_subj;
     }
 
@@ -625,6 +624,9 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<List<SubjectI
                         break;
                     case 4:
                         table.put("subDept", "A200290129");// -환경원예학과
+                        break;
+
+                    default:
                         break;
                 }
                 break;

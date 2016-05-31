@@ -21,26 +21,26 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import mj.android.utils.task.Task;
 
 class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
-    @Bind(R.id.tab_booksearch_list_book_title)
+    @BindView(R.id.tab_booksearch_list_book_title)
     TextView title;
-    @Bind(R.id.tab_booksearch_list_book_writer)
+    @BindView(R.id.tab_booksearch_list_book_writer)
     TextView writer;
-    @Bind(R.id.tab_booksearch_list_text_publish_and_year)
+    @BindView(R.id.tab_booksearch_list_text_publish_and_year)
     TextView publish_year;
-    @Bind(R.id.tab_booksearch_list_book_site)
+    @BindView(R.id.tab_booksearch_list_book_site)
     TextView location;
-    @Bind(R.id.tab_booksearch_list_book_state)
+    @BindView(R.id.tab_booksearch_list_book_state)
     TextView bookState;
-    @Bind(R.id.tab_booksearch_list_book_image)
+    @BindView(R.id.tab_booksearch_list_book_image)
     ImageView coverImg;
     //final View ripple;
-    @Bind(R.id.tab_booksearch_layout_book_state)
+    @BindView(R.id.tab_booksearch_layout_book_state)
     LinearLayout stateInfoLayout;
 
     /**
@@ -185,11 +185,11 @@ class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements View.OnCl
 
     static class ChildHolder {
         public final View itemView;
-        @Bind(R.id.tab_booksearch_bookstate_location)
+        @BindView(R.id.tab_booksearch_bookstate_location)
         public TextView location;
-        @Bind(R.id.tab_booksearch_bookstate_code)
+        @BindView(R.id.tab_booksearch_bookstate_code)
         public TextView code;
-        @Bind(R.id.tab_booksearch_bookstate_state)
+        @BindView(R.id.tab_booksearch_bookstate_state)
         public TextView state;
 
         private final PieProgressDrawable drawable = new PieProgressDrawable();

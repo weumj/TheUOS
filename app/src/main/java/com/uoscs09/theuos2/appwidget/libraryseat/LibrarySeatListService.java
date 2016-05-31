@@ -3,6 +3,7 @@ package com.uoscs09.theuos2.appwidget.libraryseat;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
@@ -33,8 +34,8 @@ public class LibrarySeatListService extends RemoteViewsService {
                 clear();
                 addAll(extraList);
             }
-            mColorRed = context.getResources().getColor(R.color.material_red_400);
-            mColorGreen = context.getResources().getColor(R.color.material_green_700);
+            mColorRed = ContextCompat.getColor(context, R.color.material_red_400);
+            mColorGreen = ContextCompat.getColor(context, R.color.material_green_700);
 
         }
 

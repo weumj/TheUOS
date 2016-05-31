@@ -27,7 +27,7 @@ import com.uoscs09.theuos2.util.TimeUtil;
 
 import java.util.Date;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import jp.wasabeef.recyclerview.animators.SlideInDownAnimator;
 import mj.android.utils.recyclerview.ListRecyclerAdapter;
 import mj.android.utils.recyclerview.ListRecyclerUtil;
@@ -54,9 +54,9 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> {
     private StaggeredGridLayoutManager mLayoutManager;
     */
 
-    @Bind(R.id.swipe_layout)
+    @BindView(R.id.swipe_layout)
     SwipeRefreshLayout mSwipeRefreshLayout;
-    @Bind(R.id.tab_library_list_seat)
+    @BindView(R.id.tab_library_list_seat)
     RecyclerView mSeatListView;
 
     private SeatDismissDialogFragment mSeatDismissDialogFragment;
@@ -92,7 +92,7 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> {
     }
 
     @Override
-    protected int getLayout() {
+    protected int layoutRes() {
         return R.layout.tab_libraryseat;
     }
 
@@ -233,11 +233,11 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> {
 
 
     static class SeatViewHolder extends ViewHolder<SeatItem> {
-        @Bind(R.id.tab_library_seat_list_text_room_name)
+        @BindView(R.id.tab_library_seat_list_text_room_name)
         TextView roomName;
-        @Bind(R.id.ripple)
+        @BindView(R.id.ripple)
         View ripple;
-        @Bind(R.id.tab_libray_seat_list_progress_img)
+        @BindView(R.id.tab_libray_seat_list_progress_img)
         TextView progressImg;
 
         final PieProgressDrawable drawable = new PieProgressDrawable();

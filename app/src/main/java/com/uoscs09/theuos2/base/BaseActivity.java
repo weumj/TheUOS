@@ -4,6 +4,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.support.v4.content.PermissionChecker;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
@@ -119,4 +120,13 @@ public abstract class BaseActivity extends AppCompatActivity implements TrackerU
         return result;
     }
 
+    protected boolean checkPermissionResultAndShowToastIfFailed(@NonNull String[] permissions, @NonNull int[] grantResults, @StringRes int res) {
+        boolean result = checkPermissionResult(permissions, grantResults);
+
+        //"권한이 거절되어 계속 진행 할 수 없습니다."
+        if (!result)
+            Toast.makeText(this, res, Toast.LENGTH_SHORT).show();
+
+        return result;
+    }
 }

@@ -34,7 +34,7 @@ class CallTaskImpl<T> implements Task<T> {
 
     private T handleResponse(Response<T> response) throws Throwable {
 
-        if (response.isSuccess()) {
+        if (response.isSuccessful()) {
             return response.body();
         } else {
             throw new IOException(response.errorBody().string());

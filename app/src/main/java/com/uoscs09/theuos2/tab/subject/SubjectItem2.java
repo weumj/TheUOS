@@ -488,7 +488,7 @@ public class SubjectItem2 implements Parcelable, IParser.IPostParsing {
 
         @Override
         public String toString() {
-            return (getDayInWeek() != -1 ? AppUtil.context.getString(getDayInWeek()) : "") + times.toString() + " / " + buildingAndRoom;
+            return (getDayInWeek() != -1 ? AppUtil.context().getString(getDayInWeek()) : "") + times.toString() + " / " + buildingAndRoom;
         }
 
         @StringRes

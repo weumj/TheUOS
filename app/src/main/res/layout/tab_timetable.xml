@@ -4,20 +4,28 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.uoscs09.theuos2.customview.NestedListView
-        android:id="@+id/time_table_listView1"
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:clipToPadding="false"
-        android:divider="@null"
-        android:dividerHeight="1dp"
-        android:paddingBottom="4dp"
-        android:paddingTop="2dp"
-        android:scrollbars="none"
-        android:scrollingCache="true" />
+        android:layout_height="match_parent">
+
+        <GridLayout
+            android:id="@+id/timetable"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:alignmentMode="alignBounds"
+            android:background="?cardBackgroundColor"
+            android:columnCount="7"
+            android:columnOrderPreserved="true"
+            android:orientation="vertical"
+            android:paddingBottom="4dp"
+            android:rowOrderPreserved="true"
+            android:useDefaultMargins="false">
+
+        </GridLayout>
+
+    </android.support.v4.widget.NestedScrollView>
 
     <RelativeLayout
         android:id="@+id/tab_timetable_empty"

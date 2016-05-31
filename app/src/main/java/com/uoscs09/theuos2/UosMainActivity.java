@@ -36,7 +36,7 @@ import com.uoscs09.theuos2.util.PrefHelper;
 
 import java.util.ArrayList;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import mj.android.utils.recyclerview.ListRecyclerAdapter;
@@ -48,7 +48,7 @@ import mj.android.utils.recyclerview.ListRecyclerUtil;
 @SuppressWarnings("ConstantConditions")
 public class UosMainActivity extends BaseActivity {
 
-    @Bind(R.id.activity_pager_viewpager)
+    @BindView(R.id.activity_pager_viewpager)
     ViewPager mViewPager;
     private IndexPagerAdapter mPagerAdapter;
     private BackPressCloseHandler mBackCloseHandler;
@@ -58,12 +58,12 @@ public class UosMainActivity extends BaseActivity {
      */
     private ArrayList<Integer> mPageOrderList;
 
-    @Bind(R.id.activity_uos_drawer_layout)
+    @BindView(R.id.activity_uos_drawer_layout)
     DrawerLayout mDrawerLayout;
 
-    @Bind(R.id.left_drawer)
+    @BindView(R.id.left_drawer)
     View mLeftDrawerLayout;
-    @Bind(R.id.drawer_listview)
+    @BindView(R.id.drawer_listview)
     RecyclerView mDrawerListView;
     private DrawerAdapter mDrawerAdapter;
 
@@ -72,11 +72,11 @@ public class UosMainActivity extends BaseActivity {
      */
     private ActionBarDrawerToggle mDrawerToggle;
 
-    @Bind(R.id.toolbar_parent)
+    @BindView(R.id.toolbar_parent)
     AppBarLayout mToolBarParent;
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar mToolbar;
-    @Bind(R.id.activity_uos_coordinator)
+    @BindView(R.id.activity_uos_coordinator)
     CoordinatorLayout mCoordinatorLayout;
     private CoordinatorLayout.Behavior mAppBarBehavior;
 
@@ -651,9 +651,9 @@ public class UosMainActivity extends BaseActivity {
     }
 
     class DrawerViewHolder extends com.uoscs09.theuos2.base.ViewHolder<Integer> {
-        @Bind(R.id.drawer_list_img)
+        @BindView(R.id.drawer_list_img)
         ImageView img;
-        @Bind(R.id.drawer_list_text)
+        @BindView(R.id.drawer_list_text)
         TextView text;
 
         public DrawerViewHolder(View itemView) {

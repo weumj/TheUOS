@@ -133,7 +133,7 @@ public class SubAnnounceWebActivity extends WebViewActivity {
 
         switch (requestCode) {
             case REQUEST_PERMISSION_FILE:
-                if (checkPermissionResultAndShowToastIfFailed(permissions, grantResults, getString(R.string.tab_announce_download_permission_reject))) {
+                if (checkPermissionResultAndShowToastIfFailed(permissions, grantResults, R.string.tab_announce_download_permission_reject)) {
                     downloadFile();
                 }
                 break;

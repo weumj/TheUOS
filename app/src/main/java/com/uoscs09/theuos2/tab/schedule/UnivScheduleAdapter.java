@@ -17,7 +17,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 
 class UnivScheduleAdapter extends AbsArrayAdapter<UnivScheduleItem, UnivScheduleAdapter.ViewHolder> implements StickyListHeadersAdapter {
@@ -84,12 +84,12 @@ class UnivScheduleAdapter extends AbsArrayAdapter<UnivScheduleItem, UnivSchedule
 
 
     static class ViewHolder extends AbsArrayAdapter.ViewHolder {
-        @Bind(android.R.id.text1)
+        @BindView(android.R.id.text1)
         TextView textView1;
-        @Bind(android.R.id.text2)
+        @BindView(android.R.id.text2)
         TextView textView2;
         /*
-        @Bind(R.id.card_view)
+        @BindView(R.id.card_view)
         CardView cardView;
         */
         //UnivScheduleItem item;
@@ -110,7 +110,7 @@ class UnivScheduleAdapter extends AbsArrayAdapter<UnivScheduleItem, UnivSchedule
     }
 
     static class HeaderViewHolder extends AbsArrayAdapter.SimpleViewHolder {
-        @Bind(android.R.id.text2)
+        @BindView(android.R.id.text2)
         TextView textView2;
 
         public HeaderViewHolder(View view) {

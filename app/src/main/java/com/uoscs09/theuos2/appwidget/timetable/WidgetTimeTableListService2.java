@@ -146,7 +146,7 @@ public abstract class WidgetTimeTableListService2 extends RemoteViewsService {
 
         private void getData() {
             try {
-                mTimeTable = AppRequests.TimeTables.readFromFile().get();
+                mTimeTable = AppRequests.TimeTables.readFile().get();
             } catch (Throwable e) {
                 e.printStackTrace();
             }

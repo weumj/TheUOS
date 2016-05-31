@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import mj.android.utils.task.Tasks;
 import se.emilsjolander.stickylistheaders.ExpandableStickyListHeadersListView;
 
@@ -47,7 +47,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<List<UnivScheduleI
             CalendarContract.Calendars._ID
     };
 
-    @Bind(R.id.list)
+    @BindView(R.id.list)
     ExpandableStickyListHeadersListView mListView;
     private AlertDialog mItemSelectDialog;
     private Dialog mProgressDialog;
@@ -70,7 +70,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<List<UnivScheduleI
     }
 
     @Override
-    protected int getLayout() {
+    protected int layoutRes() {
         return R.layout.tab_univ_schedule;
     }
 
@@ -140,7 +140,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<List<UnivScheduleI
 
         switch (requestCode) {
             case PERMISSION_REQUEST_CALENDAR:
-                if (checkPermissionResultAndShowToastIfFailed(permissions, grantResults, getString(R.string.tab_univ_schedule_permission_denied))) {
+                if (checkPermissionResultAndShowToastIfFailed(permissions, grantResults, R.string.tab_univ_schedule_permission_denied)) {
                     checkCalenderConditionAndAddSchedule();
                 }
                 break;

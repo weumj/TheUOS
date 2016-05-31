@@ -58,6 +58,32 @@ public abstract class AbsAsyncFragment<T> extends BaseTabFragment {
     protected void onPostExecute() {
     }
 
+    protected final void executeWithQueue(String tag, @NonNull Task<? extends T> task, @NonNull final ResultListener<T> r, @Nullable final ErrorListener e) {
+        onPreExecute();
+
+        sAsyncDataStoreMap.remove(getClass().getName());
+
+        taskQueue().enqueue(tag, task, result -> {
+                    if (isVisible()) {
+                        onPostExecute();
+                        r.onResult(result);
+                    } else {
+                        putAsyncData(getClass().getName(), result);
+                    }
+                },
+                t -> {
+                    if (isVisible()) {
+                        onPostExecute();
+                        if (e != null) {
+                            e.onError(t);
+                        } else {
+                            Log.w(getTag(), "error", t);
+                        }
+                    }
+                }
+        );
+    }
+
     /**
      * 주어진 작업을 비 동기로 실행한다.
      */

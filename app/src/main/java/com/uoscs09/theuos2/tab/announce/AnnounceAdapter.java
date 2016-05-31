@@ -11,7 +11,7 @@ import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import butterknife.Bind;
+import butterknife.BindViews;
 
 class AnnounceAdapter extends AbsArrayAdapter<AnnounceItem, AnnounceAdapter.Holder> {
 
@@ -51,7 +51,7 @@ class AnnounceAdapter extends AbsArrayAdapter<AnnounceItem, AnnounceAdapter.Hold
 
 
     static class Holder extends AbsArrayAdapter.ViewHolder {
-        @Bind({R.id.tab_announce_list_text_type, R.id.tab_announce_list_text_title, R.id.tab_announce_list_text_date})
+        @BindViews({R.id.tab_announce_list_text_type, R.id.tab_announce_list_text_title, R.id.tab_announce_list_text_date})
         public TextView[] textArray;
 
         public Holder(View v) {

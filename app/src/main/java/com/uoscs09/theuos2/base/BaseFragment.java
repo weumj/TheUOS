@@ -2,6 +2,7 @@ package com.uoscs09.theuos2.base;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.PermissionChecker;
 import android.support.v7.app.ActionBar;
@@ -112,6 +113,10 @@ public abstract class BaseFragment extends Fragment implements TrackerUtil.Track
 
     protected boolean checkPermissionResultAndShowToastIfFailed(@NonNull String[] permissions, @NonNull int[] grantResults, String message) {
         return getBaseActivity().checkPermissionResultAndShowToastIfFailed(permissions, grantResults, message);
+    }
+
+    protected boolean checkPermissionResultAndShowToastIfFailed(@NonNull String[] permissions, @NonNull int[] grantResults, @StringRes int res) {
+        return getBaseActivity().checkPermissionResultAndShowToastIfFailed(permissions, grantResults, res);
     }
 
     protected boolean checkPermissionResult(@NonNull String[] permissions, @NonNull int[] grantResults) {

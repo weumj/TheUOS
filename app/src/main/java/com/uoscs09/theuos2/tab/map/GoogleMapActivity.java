@@ -2,12 +2,10 @@ package com.uoscs09.theuos2.tab.map;
 
 import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -35,16 +33,20 @@ import com.uoscs09.theuos2.util.OApiUtil.UnivBuilding;
 import com.uoscs09.theuos2.util.StringUtil;
 
 public class GoogleMapActivity extends BaseActivity implements LocationListener {
+
+    private static final int REQUEST_LOCATION_SOURCE_SETTINGS = 100;
+    private static final int REQUEST_PERMISSION_IN_INIT = 120;
+
+    private static final int PERMISSION_REQUEST_LOCATION = 4826;
+
     @Nullable
     private GoogleMap googleMap;
-    private boolean isInit = true;
+    private boolean isInit = true; // Spinner 선택을 위한 변수
     private AlertDialog mWelfareBuildingDialog;
     private LocationManager locationManager;
     //private Location location;
     private Spinner mLocationSelectSpinner;
 
-    private static final int REQUEST_LOCATION_SOURCE_SETTINGS = 100;
-    private static final int REQUEST_PERMISSION_IN_INIT = 120;
 
     private enum WelfareCategory {
         CASH, BANK, COPY, PRINT, SEARCH, REST, ELEVATOR, HEALTH_CENTER, POST, RESTAURANT, FASTFOOD, STAND, EYE, BOOK, WRITING, SOUVENIR, HEALTH, TENNIS
@@ -59,7 +61,6 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
         LinearLayout toolbarParent = (LinearLayout) findViewById(R.id.toolbar_parent);
         Toolbar toolbar = (Toolbar) toolbarParent.findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
 
         int googlePlayAvailabilityResult = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
         if (googlePlayAvailabilityResult != ConnectionResult.SUCCESS) {
@@ -126,6 +127,13 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
     }
     */
 
+
+    private void initMap() {
+        if (googleMap == null) {
+            ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.tab_map_submap)).getMapAsync(this::initGoogleMapSetting);
+        }
+    }
+
     @SuppressWarnings("ResourceType")
     void initGoogleMapSetting(GoogleMap googleMap) {
         this.googleMap = googleMap;
@@ -168,20 +176,12 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
 
                     .setOnCancelListener(dialog -> finish())
                     .show();
-
         } else {
             // 위치 정보 설정이 되어 있으면 현재위치를 받아옴
             locationManager.requestLocationUpdates(provider, 1, 1, this);
         }
     }
 
-    private void initMap() {
-        if (googleMap == null) {
-            ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.tab_map_submap)).getMapAsync(this::initGoogleMapSetting);
-        }
-    }
-
-    private static final int PERMISSION_REQUEST_LOCATION = 4826;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -190,7 +190,7 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
         switch (requestCode) {
             case REQUEST_PERMISSION_IN_INIT:
             case PERMISSION_REQUEST_LOCATION:
-                if (checkPermissionResultAndShowToastIfFailed(permissions, grantResults, getString(R.string.tab_map_submap_permission_denied))) {
+                if (checkPermissionResultAndShowToastIfFailed(permissions, grantResults, R.string.tab_map_submap_permission_denied)) {
                     initMap();
                 }
                 break;
@@ -212,14 +212,16 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
                 // 사용자가 위치설정동의 안했을때 종료
                 if (provider == null) {
                     finish();
+                    return;
+                }
 
-                    // 사용자가 위치설정 동의 했을때
-                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                        && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_REQUEST_LOCATION);
-                } else {
+                // 사용자가 위치설정 동의 했을때
+                if (checkSelfPermissionCompat(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION})) {
+                    //noinspection ResourceType
                     locationManager.requestLocationUpdates(provider, 1L, 2F, this);
                     initMap();
+                } else {
+                    requestPermissionsCompat(PERMISSION_REQUEST_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION);
                 }
                 break;
 
@@ -294,9 +296,10 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
         }
 
         if (locationManager != null) {
-            if (!(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                    && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED))
+            if (checkSelfPermissionCompat(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION})) {
+                //noinspection ResourceType
                 locationManager.removeUpdates(this);
+            }
             locationManager = null;
         }
         super.onDestroy();

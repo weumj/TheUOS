@@ -14,7 +14,7 @@ import com.bumptech.glide.Glide;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.BaseActivity;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class BookDetailActivity extends BaseActivity {
@@ -24,7 +24,7 @@ public class BookDetailActivity extends BaseActivity {
         ActivityCompat.startActivity(activity, new Intent(activity, BookDetailActivity.class).putExtra("book", bookItem), transitionActivityOptions.toBundle());
     }
 
-    @Bind(R.id.book)
+    @BindView(R.id.book)
     ImageView imageView;
 
     @Override

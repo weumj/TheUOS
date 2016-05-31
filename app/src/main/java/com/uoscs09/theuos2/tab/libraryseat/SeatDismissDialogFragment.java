@@ -15,7 +15,7 @@ import android.widget.TextView;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.BaseDialogFragment;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import mj.android.utils.recyclerview.ListRecyclerAdapter;
 import mj.android.utils.recyclerview.ListRecyclerUtil;
 
@@ -91,9 +91,9 @@ public class SeatDismissDialogFragment extends BaseDialogFragment {
     }
 
     static class Holder extends ListRecyclerAdapter.ViewHolder<SeatDismissInfo> {
-        @Bind(R.id.tab_libray_seat_info_time)
+        @BindView(R.id.tab_libray_seat_info_time)
         public TextView time;
-        @Bind(R.id.tab_libray_seat_info_number)
+        @BindView(R.id.tab_libray_seat_info_number)
         public TextView count;
 
         public Holder(View v) {

@@ -26,7 +26,7 @@ public class SubjectInfoItem {
     @Element(name = "prof_nm")
     public String professorName;
 
-    public SubjectItem2 toSubjectItem(TimeTable timeTable, Subject subject) {
+    public SubjectItem2 toSubjectItem(Timetable2 timeTable, Timetable2.SubjectInfo subject) {
         SubjectItem2 item = new SubjectItem2();
         item.subject_no = subjectNo;
         item.subject_nm = subjectName;
@@ -36,10 +36,10 @@ public class SubjectInfoItem {
         item.sub_dept = dept;
         item.prof_nm = professorName;
 
-        item.term = timeTable.semesterCode.code;
-        item.year = Integer.toString(timeTable.year);
+        item.term = timeTable.semester().code;
+        item.year = Integer.toString(timeTable.year());
 
-        ArrayList<SubjectItem2.ClassInformation> classInformationList = timeTable.getClassTimeInformationTable().get(subject.subjectName);
+        ArrayList<SubjectItem2.ClassInformation> classInformationList = timeTable.classTimeInformationTable().get(subject.nameKor());
         if (classInformationList != null)
             item.classInformation().addAll(classInformationList);
 

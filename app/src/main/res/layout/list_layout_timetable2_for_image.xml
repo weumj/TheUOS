@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:baselineAligned="false"
     android:divider="@null"
     android:dividerPadding="2dp"
@@ -12,14 +12,14 @@
     <LinearLayout
         android:id="@+id/tab_timetable_list_period"
         android:layout_width="0dp"
-        android:layout_height="fill_parent"
+        android:layout_height="match_parent"
         android:layout_weight="48"
         android:background="?attr/cardBackgroundColor">
 
         <TextView
             android:id="@+id/tab_timetable_list_text_period"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:gravity="center"
             android:textColor="?attr/colorPrimaryDark" />
     </LinearLayout>
@@ -28,42 +28,42 @@
         android:id="@+id/tab_timetable_list_text_mon"
         layout="@layout/view_tab_timetable_subject_for_image"
         android:layout_width="0dp"
-        android:layout_height="fill_parent"
+        android:layout_height="match_parent"
         android:layout_weight="52" />
 
     <include
         android:id="@+id/tab_timetable_list_text_tue"
         layout="@layout/view_tab_timetable_subject_for_image"
         android:layout_width="0dp"
-        android:layout_height="fill_parent"
+        android:layout_height="match_parent"
         android:layout_weight="52" />
 
     <include
         android:id="@+id/tab_timetable_list_text_wed"
         layout="@layout/view_tab_timetable_subject_for_image"
         android:layout_width="0dp"
-        android:layout_height="fill_parent"
+        android:layout_height="match_parent"
         android:layout_weight="52" />
 
     <include
         android:id="@+id/tab_timetable_list_text_thr"
         layout="@layout/view_tab_timetable_subject_for_image"
         android:layout_width="0dp"
-        android:layout_height="fill_parent"
+        android:layout_height="match_parent"
         android:layout_weight="52" />
 
     <include
         android:id="@+id/tab_timetable_list_text_fri"
         layout="@layout/view_tab_timetable_subject_for_image"
         android:layout_width="0dp"
-        android:layout_height="fill_parent"
+        android:layout_height="match_parent"
         android:layout_weight="52" />
 
     <include
         android:id="@+id/tab_timetable_list_text_sat"
         layout="@layout/view_tab_timetable_subject_for_image"
         android:layout_width="0dp"
-        android:layout_height="fill_parent"
+        android:layout_height="match_parent"
         android:layout_weight="52" />
 
 </LinearLayout>

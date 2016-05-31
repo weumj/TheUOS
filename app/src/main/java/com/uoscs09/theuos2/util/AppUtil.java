@@ -41,13 +41,25 @@ public class AppUtil {
     private static final int MAX_PAGE_SIZE_NORMAL = 9;
 
     private static int PAGE_SIZE = MAX_PAGE_SIZE_NORMAL;
-    public static AppTheme theme;
+    private static AppTheme theme;
 
-    public static Context context;
+    private static Context context;
 
     public static void init(Context context) {
         if (context != null)
             AppUtil.context = context.getApplicationContext();
+    }
+
+    public static Context context() {
+        return context;
+    }
+
+    public static AppTheme theme() {
+        return theme;
+    }
+
+    public static void setTheme(AppTheme theme) {
+        AppUtil.theme = theme;
     }
 
     /**
@@ -81,7 +93,7 @@ public class AppUtil {
         }
     }
 
-    public static void initStaticValues( ) {
+    public static void initStaticValues() {
         int v = PrefHelper.Screens.getAppTheme().ordinal();
         AppTheme[] vals = AppTheme.values();
         if (v >= vals.length) {
@@ -705,7 +717,7 @@ public class AppUtil {
         showToast(context, R.string.canceled, isVisible);
     }
 
-    public static void showErrorToast(Context context,Throwable e, boolean isVisible) {
+    public static void showErrorToast(Context context, Throwable e, boolean isVisible) {
         if (context != null) {
             showToast(context, context.getText(R.string.error_occur) + " : " + e.getMessage(), isVisible);
         }
