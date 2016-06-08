@@ -9,16 +9,16 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBar;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.LinearLayout;
-import android.widget.Spinner;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -30,27 +30,29 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.BaseActivity;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.OApiUtil.UnivBuilding;
-import com.uoscs09.theuos2.util.StringUtil;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class GoogleMapActivity extends BaseActivity implements LocationListener {
 
     private static final int REQUEST_LOCATION_SOURCE_SETTINGS = 100;
     private static final int REQUEST_PERMISSION_IN_INIT = 120;
+    private static final int REQUEST_PERMISSION_IN_RESUME = 140;
 
     private static final int PERMISSION_REQUEST_LOCATION = 4826;
 
     @Nullable
     private GoogleMap googleMap;
-    private boolean isInit = true; // Spinner 선택을 위한 변수
-    private AlertDialog mWelfareBuildingDialog;
+    @BindView(R.id.tab_map_fab)
+    FloatingActionButton button;
+
+    private AlertDialog mMenuDialog;
     private LocationManager locationManager;
-    //private Location location;
-    private Spinner mLocationSelectSpinner;
+    private boolean isLocationUpdates = false;
 
-
-    private enum WelfareCategory {
-        CASH, BANK, COPY, PRINT, SEARCH, REST, ELEVATOR, HEALTH_CENTER, POST, RESTAURANT, FASTFOOD, STAND, EYE, BOOK, WRITING, SOUVENIR, HEALTH, TENNIS
-    }
+    private int selectedBuilding;
 
 
     @Override
@@ -58,49 +60,24 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tab_map_googlemap);
 
-        LinearLayout toolbarParent = (LinearLayout) findViewById(R.id.toolbar_parent);
-        Toolbar toolbar = (Toolbar) toolbarParent.findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        ButterKnife.bind(this);
 
         int googlePlayAvailabilityResult = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
         if (googlePlayAvailabilityResult != ConnectionResult.SUCCESS) {
-            AppUtil.showToast(getApplicationContext(), R.string.tab_map_submap_device_without_googlemap, true);
+            AppUtil.showToast(getApplicationContext(), R.string.tab_map_device_without_googlemap, true);
             finish();
             return;
         }
 
         initMap();
 
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setTitle(R.string.action_map);
-            actionBar.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP | ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE);
-        }
-        View spinnerLayout = View.inflate(this, R.layout.view_tab_map_sub_spinner_layout, null);
-        mLocationSelectSpinner = (Spinner) spinnerLayout.findViewById(R.id.spinner);
-        mLocationSelectSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (isInit) {
-                    isInit = false;
-                    return;
-                }
+        selectedBuilding = getIntent().getIntExtra("building", -1);
 
-                if (googleMap != null) {
-                    googleMap.clear();
-                }
-                UnivBuilding univBuilding = UnivBuilding.fromNumber(position + 1);
-                moveCamera(univBuilding);
-                setMapMarker(univBuilding);
-            }
+    }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-        toolbarParent.addView(spinnerLayout);
-
+    @OnClick(R.id.tab_map_fab)
+    void fabClick() {
+        selectWelfareBuildingMenu();
     }
 
     @NonNull
@@ -109,32 +86,12 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
         return "GoogleMapActivity";
     }
 
-    /*
-    private Location getCurrentLocation() {
-        Criteria criteria = new Criteria();
-        String provider = locationManager.getBestProvider(criteria, true);
-        return locationManager.getLastKnownLocation(provider);
-    }
-
-    private void showRoute(LatLng start, LatLng dest) {
-        Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
-                Uri.parse("http://maps.google.com/maps?saddr=" + start.latitude + ',' + start.longitude + "&daddr=" + dest.latitude + ',' + dest.longitude));
-
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
-        startActivity(intent);
-    }
-    */
-
-
     private void initMap() {
         if (googleMap == null) {
             ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.tab_map_submap)).getMapAsync(this::initGoogleMapSetting);
         }
     }
 
-    @SuppressWarnings("ResourceType")
     void initGoogleMapSetting(GoogleMap googleMap) {
         this.googleMap = googleMap;
 
@@ -143,45 +100,82 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
             requestPermissionsCompat(REQUEST_PERMISSION_IN_INIT, permissions);
         } else {
             googleMap.setBuildingsEnabled(true);
+            //noinspection MissingPermission
             googleMap.setMyLocationEnabled(true);
-        }
 
-        isInit = true;
-        int buildingNo = getIntent().getIntExtra("building", -1);
-        if (buildingNo != -1) {
-            // UnivBuilding univBuilding =  UnivBuilding.fromNumber(buildingNo);
-            mLocationSelectSpinner.setSelection(buildingNo - 1, false);
-            // moveCamera(univBuilding);
-            //moveCameraPositionAt(buildingNo);
-            // buildingNo = -1;
+            if (selectedBuilding != -1) {
+                showBuildingItem(selectedBuilding);
+                selectedBuilding = -1;
+            } else {
+                moveCamera(UnivBuilding.Univ);
+                setMapMarker(UnivBuilding.Univ);
+            }
 
-        } else {
-            moveCamera(UnivBuilding.Univ);
-            setMapMarker(UnivBuilding.Univ);
-
-            // moveCameraPositionAt(0);
-            //setMapMarker( UnivBuilding.fromNumber(0, getString(R.string.univ));
-        }
-
-        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        Criteria criteria = new Criteria();
-        String provider = locationManager.getBestProvider(criteria, true);
-        if (provider == null) {
-            // 위치정보 설정이 안되어 있으면 설정하는 엑티비티로 이동
-            new AlertDialog.Builder(this)
-                    .setTitle("위치서비스 동의")
-                    .setNeutralButton("이동", (dialog, which) -> {
-                        startActivityForResult(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), REQUEST_LOCATION_SOURCE_SETTINGS);
-                    })
-
-                    .setOnCancelListener(dialog -> finish())
-                    .show();
-        } else {
-            // 위치 정보 설정이 되어 있으면 현재위치를 받아옴
-            locationManager.requestLocationUpdates(provider, 1, 1, this);
+            locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (locationManager == null)
+            locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+        if (!isLocationUpdates) {
+            Criteria criteria = new Criteria();
+            String provider = locationManager.getBestProvider(criteria, true);
+            if (provider == null) {
+                // 위치정보 설정이 안되어 있으면 설정하는 엑티비티로 이동
+                new AlertDialog.Builder(this)
+                        .setTitle("위치서비스 동의")
+                        .setNeutralButton("이동", (dialog, which) -> {
+                            startActivityForResult(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), REQUEST_LOCATION_SOURCE_SETTINGS);
+                        })
+                        .setOnCancelListener(dialog -> finish())
+                        .show();
+            } else {
+                String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+                if (checkSelfPermissionCompat(permissions)) {
+                    // 위치 정보 설정이 되어 있으면 현재위치를 받아옴
+                    //noinspection MissingPermission
+                    locationManager.requestLocationUpdates(provider, 1L, 2F, this);
+                    isLocationUpdates = true;
+                } else {
+                    requestPermissionsCompat(REQUEST_PERMISSION_IN_RESUME, permissions);
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        removeLocationUpdate();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (googleMap != null) {
+            googleMap.clear();
+            googleMap = null;
+        }
+
+        removeLocationUpdate();
+        locationManager = null;
+        super.onDestroy();
+    }
+
+    private void removeLocationUpdate() {
+        if (locationManager != null) {
+            if (checkSelfPermissionCompat(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                //noinspection ResourceType
+                locationManager.removeUpdates(this);
+                isLocationUpdates = false;
+            }
+        }
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -190,7 +184,7 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
         switch (requestCode) {
             case REQUEST_PERMISSION_IN_INIT:
             case PERMISSION_REQUEST_LOCATION:
-                if (checkPermissionResultAndShowToastIfFailed(permissions, grantResults, R.string.tab_map_submap_permission_denied)) {
+                if (checkPermissionResultAndShowToastIfFailed(permissions, grantResults, R.string.tab_map_permission_denied)) {
                     initMap();
                 }
                 break;
@@ -205,23 +199,28 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case REQUEST_LOCATION_SOURCE_SETTINGS:
-                locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-                Criteria criteria = new Criteria();
-                String provider = locationManager.getBestProvider(criteria, true);
+                if (locationManager == null)
+                    locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
-                // 사용자가 위치설정동의 안했을때 종료
-                if (provider == null) {
-                    finish();
-                    return;
-                }
+                if (!isLocationUpdates) {
+                    Criteria criteria = new Criteria();
+                    String provider = locationManager.getBestProvider(criteria, true);
 
-                // 사용자가 위치설정 동의 했을때
-                if (checkSelfPermissionCompat(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION})) {
-                    //noinspection ResourceType
-                    locationManager.requestLocationUpdates(provider, 1L, 2F, this);
-                    initMap();
-                } else {
-                    requestPermissionsCompat(PERMISSION_REQUEST_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION);
+                    // 사용자가 위치설정동의 안했을때 종료
+                    if (provider == null) {
+                        finish();
+                        return;
+                    }
+
+                    // 사용자가 위치설정 동의 했을때
+                    if (checkSelfPermissionCompat(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                        //noinspection MissingPermission
+                        locationManager.requestLocationUpdates(provider, 1L, 2F, this);
+                        isLocationUpdates = true;
+                        initMap();
+                    } else {
+                        requestPermissionsCompat(PERMISSION_REQUEST_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION);
+                    }
                 }
                 break;
 
@@ -247,176 +246,101 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
     public void onStatusChanged(String provider, int status, Bundle extras) {
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.tab_map_googlemap_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (!super.onKeyDown(keyCode, event)) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_MENU:
-                    selectWelfareBuildingMenu();
-                    return true;
-                default:
-                    return false;
-            }
-        } else {
-            return true;
-        }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-            case R.id.action_search:
-                selectWelfareBuildingMenu();
-                return true;
-            /*case R.id.action_direction:
-                if (location == null)
-                    location = getCurrentLocation();
-                locationSelector.show();
-                return true;
-                */
-            default:
-                return false;
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        if (googleMap != null) {
-            googleMap.clear();
-            googleMap = null;
-        }
-
-        if (locationManager != null) {
-            if (checkSelfPermissionCompat(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION})) {
-                //noinspection ResourceType
-                locationManager.removeUpdates(this);
-            }
-            locationManager = null;
-        }
-        super.onDestroy();
-    }
-
     private void selectWelfareBuildingMenu() {
-        if (mWelfareBuildingDialog == null) {
-            mWelfareBuildingDialog = new AlertDialog.Builder(this)
-                    .setTitle(R.string.tab_map_submap_welfare)
-                    .setItems(R.array.tab_map_submap_buildings_welfare, (dialog, item) -> {
-                        if (googleMap != null) {
-                            googleMap.clear();
-                        }
+        if (mMenuDialog == null) {
+            View v = LayoutInflater.from(this).inflate(R.layout.dialog_map_menu, null, false);
 
-                        //String locationName = getResources().getStringArray(R.array.tab_map_submap_buildings_welfare)[item];
-                        String locationName = mWelfareBuildingDialog.getListView().getAdapter().getItem(item).toString();
+            Toolbar toolbar = (Toolbar) v.findViewById(R.id.toolbar);
+            toolbar.setTitle(R.string.tab_map_menu_title);
 
-                        WelfareCategory welfareCategory = WelfareCategory.values()[item];
-                        sendTrackerEvent("welfare", welfareCategory.name());
-                        // TODO 리팩토링이  필요함.
-                        switch (welfareCategory) {
-                            case BANK:
-                                setMapMarker(UnivBuilding.University_Center, locationName);
-                                break;
-                            case COPY:
-                                setMapMarker(UnivBuilding.Student_Hall, locationName);
-                                setMapMarker(UnivBuilding.Library, locationName);
-                                break;
-                            case PRINT:
-                                setMapMarker(UnivBuilding.Liberal_Arts, locationName + StringUtil.NEW_LINE + "2층 PC실(533호)");
-                                setMapMarker(UnivBuilding.The_21st_Century, locationName + StringUtil.NEW_LINE + "전자도서관(입금가능), 2층 227호");
-                                setMapMarker(UnivBuilding.Law, locationName + StringUtil.NEW_LINE + "4층(입금가능), 5층, 6층(도서관)");
-                                setMapMarker(UnivBuilding.Library, locationName + StringUtil.NEW_LINE + "1층, 2층, 3층(입금가능), 4층");
-                                setMapMarker(UnivBuilding.Mirae, locationName + StringUtil.NEW_LINE + "3층 경영도서관, 4층 PC실(입금가능)");
-                                setMapMarker(UnivBuilding.International, locationName + StringUtil.NEW_LINE + "1층 로비");
-                                break;
-                            case CASH:
-                                setMapMarker(UnivBuilding.University_Center, locationName);
-                                setMapMarker(UnivBuilding.Natural_Science, locationName);
-                                setMapMarker(UnivBuilding.Student_Hall, locationName);
-                                setMapMarker(UnivBuilding.The_21st_Century, locationName);
-                                setMapMarker(UnivBuilding.Library, locationName);
-                                break;
-                            case ELEVATOR:
-                                setMapMarker(UnivBuilding.Architecture_and_CivilEngineering, locationName);
-                                setMapMarker(UnivBuilding.Liberal_Arts, locationName);
-                                setMapMarker(UnivBuilding.Baebong, locationName);
-                                setMapMarker(UnivBuilding.University_Center, locationName);
-                                setMapMarker(UnivBuilding.Student_Hall, locationName);
-                                setMapMarker(UnivBuilding.Science_and_Technology, locationName);
-                                setMapMarker(UnivBuilding.The_21st_Century, locationName);
-                                setMapMarker(UnivBuilding.IT, locationName);
-                                setMapMarker(UnivBuilding.Law, locationName);
-                                setMapMarker(UnivBuilding.Library, locationName);
-                                setMapMarker(UnivBuilding.Dormitory, locationName);
-                                setMapMarker(UnivBuilding.International, locationName);
-                                break;
-                            case HEALTH:
-                                setMapMarker(UnivBuilding.Gymnaseum, locationName);
-                                setMapMarker(UnivBuilding.Dormitory, locationName);
-                                setMapMarker(UnivBuilding.Wellness, locationName);
-                                break;
-                            case TENNIS:
-                                setMapMarker(UnivBuilding.Wellness, locationName);
-                                break;
-                            case WRITING:
-                            case BOOK:
-                            case FASTFOOD:
-                            case POST:
-                            case SOUVENIR:
-                            case EYE:
-                            case HEALTH_CENTER:
-                                setMapMarker(UnivBuilding.Student_Hall, locationName);
-                                break;
-                            case REST:
-                                setMapMarker(UnivBuilding.Architecture_and_CivilEngineering, locationName);
-                                setMapMarker(UnivBuilding.Liberal_Arts, locationName);
-                                setMapMarker(UnivBuilding.Baebong, locationName);
-                                setMapMarker(UnivBuilding.Natural_Science, locationName);
-                                setMapMarker(UnivBuilding.Student_Hall, locationName);
-                                setMapMarker(UnivBuilding.The_21st_Century, locationName);
-                                setMapMarker(UnivBuilding.Design_and_Sculpture, locationName);
-                                setMapMarker(UnivBuilding.IT, locationName);
-                                setMapMarker(UnivBuilding.Law, locationName);
-                                setMapMarker(UnivBuilding.Library, locationName);
-                                setMapMarker(UnivBuilding.Dormitory, locationName);
-                                setMapMarker(UnivBuilding.Mirae, locationName);
-                                break;
-                            case RESTAURANT:
-                                setMapMarker(UnivBuilding.University_Center, locationName);
-                                setMapMarker(UnivBuilding.Natural_Science, locationName);
-                                setMapMarker(UnivBuilding.Student_Hall, locationName);
-                                setMapMarker(UnivBuilding.International, locationName);
-                                break;
-                            case SEARCH:
-                                setMapMarker(UnivBuilding.Architecture_and_CivilEngineering, locationName);
-                                setMapMarker(UnivBuilding.Changgong, locationName);
-                                setMapMarker(UnivBuilding.Natural_Science, locationName);
-                                setMapMarker(UnivBuilding.Science_and_Technology, locationName);
-                                setMapMarker(UnivBuilding.IT, locationName);
-                                setMapMarker(UnivBuilding.Library, locationName);
-                                setMapMarker(UnivBuilding.Dormitory, locationName);
-                                break;
-                            case STAND:
-                                setMapMarker(UnivBuilding.Student_Hall, locationName);
-                                setMapMarker(UnivBuilding.Library, locationName);
-                                setMapMarker(UnivBuilding.Mirae, locationName);
-                                break;
-                            default:
-                                break;
+            final ViewGroup viewGroup = (ViewGroup) v.findViewById(R.id.tab_map_bar_parent);
+            viewGroup.getChildAt(0).setBackgroundColor(AppUtil.getAttrColor(this, R.attr.color_actionbar_title));
+
+            ViewPager pager = (ViewPager) v.findViewById(R.id.viewpager);
+
+            v.findViewById(R.id.tab_map_menu_select_1).setOnClickListener(v1 -> pager.setCurrentItem(0, true));
+
+            v.findViewById(R.id.tab_map_menu_select_2).setOnClickListener(v1 -> pager.setCurrentItem(1, true));
+
+            pager.setAdapter(new PagerAdapter() {
+                @Override
+                public int getCount() {
+                    return 2;
+                }
+
+                @Override
+                public boolean isViewFromObject(View view, Object object) {
+                    return object.equals(view);
+                }
+
+                @Override
+                public Object instantiateItem(ViewGroup container, final int position) {
+                    View v = LayoutInflater.from(GoogleMapActivity.this).inflate(R.layout.view_map_menu_1, container, false);
+                    ListView listView = (ListView) v.findViewById(R.id.list);
+                    listView.setAdapter(ArrayAdapter.createFromResource(GoogleMapActivity.this, position == 0 ? R.array.buildings_univ : R.array.tab_map_buildings_welfare, android.R.layout.simple_list_item_1));
+                    listView.setOnItemClickListener((parent, view, position1, id) -> {
+                        if (position == 0) {
+                            showBuildingItem(position1 + 1);
+                        } else {
+                            showWelfareItem(position1);
                         }
-                        dialog.dismiss();
-                    })
+                        mMenuDialog.dismiss();
+                    });
+
+                    container.addView(v);
+                    return v;
+                }
+            });
+            pager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+                @Override
+                public void onPageSelected(int position) {
+                    super.onPageSelected(position);
+                    viewGroup.getChildAt(position).setBackgroundColor(AppUtil.getAttrColor(GoogleMapActivity.this, R.attr.color_actionbar_title));
+                    viewGroup.getChildAt(1 - position).setBackgroundColor(0);
+                }
+            });
+
+            mMenuDialog = new AlertDialog.Builder(this)
+                    .setView(v)
                     .create();
 
         }
-        mWelfareBuildingDialog.show();
+        mMenuDialog.show();
+    }
+
+    private void showBuildingItem(int position) {
+        if (googleMap != null) {
+            googleMap.clear();
+        }
+
+        UnivBuilding univBuilding = UnivBuilding.fromNumber(position);
+        setMapMarker(univBuilding);
+        moveCamera(univBuilding);
+    }
+
+    private void showWelfareItem(int position) {
+        if (googleMap != null) {
+            googleMap.clear();
+        }
+
+        Welfare welfare = Welfare.values()[position];
+        if (welfare == null) {
+            return;
+        }
+
+        sendTrackerEvent("welfare", welfare.name());
+
+        if (welfare.isArrayRes) {
+            String[] descArray = getResources().getStringArray(welfare.descriptionRes);
+            for (int i = 0; i < welfare.univBuildings.length; i++) {
+                setMapMarker(welfare.univBuildings[i], descArray[i]);
+            }
+        } else {
+            String desc = getString(welfare.descriptionRes);
+            for (UnivBuilding building : welfare.univBuildings) {
+                setMapMarker(building, desc);
+            }
+        }
     }
 
     private void moveCamera(UnivBuilding building) {

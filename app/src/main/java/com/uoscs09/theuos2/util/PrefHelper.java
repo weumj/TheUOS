@@ -131,7 +131,7 @@ public class PrefHelper {
 
     public static class Buildings {
         public static long downloadTime() {
-            return pref().get(KEY_BUILDINGS_FETCH_TIME, 0);
+            return pref().get(KEY_BUILDINGS_FETCH_TIME, 0l);
         }
 
         public static void putDownloadTime(long time) {

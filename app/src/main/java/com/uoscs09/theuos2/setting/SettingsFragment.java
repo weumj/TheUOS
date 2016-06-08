@@ -23,6 +23,8 @@ import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.common.PieProgressDrawable;
 import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.parse.JerichoParser;
+import com.uoscs09.theuos2.tab.buildings.BuildingRoom;
+import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.AppUtil.AppTheme;
 import com.uoscs09.theuos2.util.PrefHelper;
@@ -32,6 +34,11 @@ import com.uoscs09.theuos2.util.TrackerUtil;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.Source;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+import mj.android.utils.task.Task;
 import mj.android.utils.task.Tasks;
 
 /**
@@ -105,6 +112,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
             changeFragment(SettingsTimetableFragment.class);
             return true;
 
+        } else if (title.equals(getText(R.string.setting_building_room_fetch_time))) {
+            downloadBuildings();
+            return true;
+
         } else if (title.equals(getText(R.string.setting_save_text_sub_title))) {
             TrackerUtil.getInstance(this).sendEvent(TAG, "change directory - " + "text");
             SettingsFileSelectDialogFragment f = new SettingsFileSelectDialogFragment();
@@ -112,6 +123,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
             f.setTitle(title);
             f.show(getFragmentManager(), null);
             return true;
+
         } else if (title.equals(getText(R.string.setting_save_image_sub_title))) {
             TrackerUtil.getInstance(this).sendEvent(TAG, "change directory - " + "image");
             SettingsFileSelectDialogFragment f = new SettingsFileSelectDialogFragment();
@@ -119,15 +131,37 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
             f.setTitle(title);
             f.show(getFragmentManager(), null);
             return true;
+
         } else if (title.equals(getText(R.string.setting_web_page))) {
             changeFragment(SettingsWebPageFragment.class);
             return true;
+
         } else if (title.equals(getText(R.string.setting_app_version_update))) {
             TrackerUtil.getInstance(this).sendEvent(TAG, "check app version");
             showAppVersionDialog();
             return true;
+
         }
         return false;
+    }
+
+    private void downloadBuildings() {
+        Dialog dialog = AppUtil.getProgressDialog(getActivity());
+        dialog.show();
+
+        Task<BuildingRoom> task = AppRequests.Buildings.buildingRooms(true);
+        task.getAsync(room -> {
+                    dialog.dismiss();
+                    dialog.setOnCancelListener(null);
+                    onSharedPreferenceChanged(getPreferenceScreen().getSharedPreferences(), PrefUtil.KEY_BUILDINGS_FETCH_TIME);
+                },
+                throwable -> {
+                    dialog.dismiss();
+                    dialog.setOnCancelListener(null);
+                    AppUtil.showErrorToast(getActivity(), throwable, true);
+                }
+        );
+        dialog.setOnCancelListener(dialog1 -> task.cancel());
     }
 
     private void showAppVersionDialog() {
@@ -341,7 +375,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
                 PrefUtil.KEY_CHECK_SEAT,
                 PrefUtil.KEY_LIB_WIDGET_SEAT_SHOW_ALL,
                 PrefUtil.KEY_THEME,
-                PrefUtil.KEY_IMAGE_SAVE_PATH, PrefUtil.KEY_TXT_SAVE_PATH
+                PrefUtil.KEY_IMAGE_SAVE_PATH, PrefUtil.KEY_TXT_SAVE_PATH,
+                PrefUtil.KEY_BUILDINGS_FETCH_TIME
         };
         for (String key : keys) {
             onSharedPreferenceChanged(pref, key);
@@ -389,6 +424,20 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
                 TrackerUtil.getInstance(this).sendEvent(TAG, "enable home fragment", "" + sharedPreferences.getBoolean(key, true));
 
                 getActivity().setResult(AppUtil.RELAUNCH_ACTIVITY);
+                break;
+
+            case PrefUtil.KEY_BUILDINGS_FETCH_TIME:
+                connectionPref = findPreference(key);
+                long time = PrefHelper.Buildings.downloadTime();
+
+                if (time < 1)
+                    connectionPref.setSummary(R.string.setting_building_room_fetch_time_none);
+                else {
+                    Date date = new Date();
+                    date.setTime(time);
+                    String dateString = new SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.getDefault()).format(date);
+                    connectionPref.setSummary(dateString);
+                }
                 break;
 
             default:

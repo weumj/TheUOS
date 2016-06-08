@@ -76,7 +76,6 @@ public class UosMainActivity extends BaseActivity {
     AppBarLayout mToolBarParent;
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
-    @BindView(R.id.activity_uos_coordinator)
     CoordinatorLayout mCoordinatorLayout;
     private CoordinatorLayout.Behavior mAppBarBehavior;
 
@@ -108,6 +107,7 @@ public class UosMainActivity extends BaseActivity {
         ButterKnife.bind(this);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mCoordinatorLayout = ButterKnife.findById(this, R.id.activity_uos_coordinator);
             CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) mToolBarParent.getLayoutParams();
             mAppBarBehavior = params.getBehavior();
         }

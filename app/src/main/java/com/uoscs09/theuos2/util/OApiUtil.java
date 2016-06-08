@@ -33,6 +33,13 @@ public class OApiUtil {
             this.nameEng = nameEng;
         }
 
+        public String nameByLocale(){
+            if(Locale.getDefault().equals(Locale.KOREA))
+                return nameKor;
+            else
+                return nameEng;
+        }
+
         public static Semester getSemesterByCode(int code) {
             switch (code) {
                 case 10:
@@ -46,6 +53,10 @@ public class OApiUtil {
                 default:
                     return null;
             }
+        }
+
+        public static Semester getSemesterByOrder(int order){
+            return values()[order];
         }
 
         public static String getCodeByTermIndex(int termIndex) {

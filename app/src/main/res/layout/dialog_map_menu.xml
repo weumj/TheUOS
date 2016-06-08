@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="4dp"
+        android:background="?colorPrimary"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.Toolbar xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            android:theme="?actionBarStyle"
+            app:popupTheme="?android:attr/theme"
+            app:title="@string/tab_map_menu_title"
+            app:logo="?menu_theme_ic_action_action_search"
+            app:subtitleTextAppearance="?attr/toolbar_actionbar_subtitle"
+            app:titleTextAppearance="?attr/toolbar_actionbar_title" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="36dp"
+            android:divider="@null"
+            android:dividerPadding="1dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tab_map_menu_select_1"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="2dp"
+                android:text="@string/tab_map_menu_building"
+                android:textColor="?color_actionbar_title" />
+
+            <TextView
+                android:id="@+id/tab_map_menu_select_2"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="2dp"
+                android:text="@string/tab_map_menu_welfare"
+                android:textColor="?color_actionbar_title" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/tab_map_bar_parent"
+            android:layout_width="fill_parent"
+            android:layout_height="4dp"
+            android:divider="@null"
+            android:dividerPadding="1dp"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewpager"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</LinearLayout>

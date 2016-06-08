@@ -196,7 +196,6 @@ public class SubAnnounceWebActivity extends WebViewActivity {
                                     //e.printStackTrace();
                                     AppUtil.showToast(SubAnnounceWebActivity.this, R.string.error_no_activity_found_to_handle_file);
                                 } catch (Exception e) {
-                                    e.printStackTrace();
                                     AppUtil.showErrorToast(SubAnnounceWebActivity.this, e, true);
                                 }
                             })

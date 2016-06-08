@@ -63,12 +63,34 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/empty1"
                 android:layout_gravity="center_vertical"
                 android:drawableLeft="?theme_ic_action_communication_import_export"
                 android:gravity="center_vertical"
                 android:padding="2dp"
                 android:text="@string/tab_subject_empty_view_sort" />
+        </com.balysv.materialripple.MaterialRippleLayout>
+
+        <com.balysv.materialripple.MaterialRippleLayout
+            android:id="@+id/tab_search_empty_room_empty3_ripple"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/tab_search_empty_room_empty1_ripple"
+            android:layout_alignRight="@id/tab_search_empty_room_empty1_ripple"
+            android:layout_below="@id/tab_search_empty_room_empty2_ripple"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:padding="4dp"
+            app:mrl_rippleColor="?color_primary_text"
+            app:mrl_rippleDelayClick="true">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:drawableLeft="?theme_ic_action_action_about"
+                android:gravity="center_vertical"
+                android:padding="2dp"
+                android:text="@string/tab_subject_empty_view_hint_select" />
         </com.balysv.materialripple.MaterialRippleLayout>
     </RelativeLayout>
 

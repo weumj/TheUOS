@@ -41,9 +41,14 @@ import butterknife.OnClick;
 import mj.android.utils.task.Task;
 import mj.android.utils.task.Tasks;
 
-public class TabTimeTableFragment2 extends AbsProgressFragment<Timetable2> {
+public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
 
-    private static final String TAG = "TabTimeTableFragment2";
+    @Override
+    protected int layoutRes() {
+        return R.layout.tab_timetable;
+    }
+
+    private static final String TAG = "TabTimeTableFragment";
     private static final int REQUEST_PERMISSION_SAVE_IMAGE = 10;
 
     private AlertDialog mLoginDialog;
@@ -60,7 +65,7 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<Timetable2> {
 
     @AsyncData
     private Timetable2 mTimeTable;
-    private TimeTableAdapter2 mTimeTableAdapter2;
+    private TimeTableAdapter mTimeTableAdapter;
 
     private final SubjectDetailDialogFragment mSubjectDetailDialog = new SubjectDetailDialogFragment();
 
@@ -71,7 +76,7 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<Timetable2> {
             mTimeTable = savedInstanceState.getParcelable(IOUtil.FILE_TIMETABLE);
         }
 
-        mSubjectDetailDialog.setColorSelectedListener(i -> mTimeTableAdapter2.notifyDataSetChanged());
+        mSubjectDetailDialog.setColorSelectedListener(i -> mTimeTableAdapter.notifyDataSetChanged());
 
         initDialog();
 
@@ -79,9 +84,9 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<Timetable2> {
 
         ViewGroup mTabParent = (ViewGroup) LayoutInflater.from(getActivity()).inflate(R.layout.view_tab_timetable_toolbar_menu, getToolbarParent(), false);
 
-        mTimeTableAdapter2 = new TimeTableAdapter2(getActivity());
-        mTimeTableAdapter2.setTimeTable(mTimeTable);
-        mTimeTableAdapter2.setOnItemClickListener((vh, v, subject) -> {
+        mTimeTableAdapter = new TimeTableAdapter(getActivity());
+        mTimeTableAdapter.setTimeTable(mTimeTable);
+        mTimeTableAdapter.setOnItemClickListener((vh, v, subject) -> {
             if (subject == null)
                 return;
 
@@ -106,19 +111,13 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<Timetable2> {
         super.onSaveInstanceState(outState);
     }
 
-
-    @Override
-    protected int layoutRes() {
-        return R.layout.tab_timetable2;
-    }
-
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         rootView = view;
 
         mTimetableListView.setEmptyView(emptyView);
-        mTimetableListView.setAdapter(mTimeTableAdapter2);
+        mTimetableListView.setAdapter(mTimeTableAdapter);
 
         registerProgressView(rootView.findViewById(R.id.progress_layout));
 
@@ -189,7 +188,7 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<Timetable2> {
     }
 
     private void saveTimetableImage() {
-        if (mTimeTableAdapter2.isEmpty()) {
+        if (mTimeTableAdapter.isEmpty()) {
             AppUtil.showToast(getActivity(), R.string.tab_timetable_not_exist, true);
             return;
         }
@@ -203,12 +202,12 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<Timetable2> {
         if (mProgressDialog == null)
             mProgressDialog = AppUtil.getProgressDialog(getActivity(), false, getText(R.string.progress_ongoing), null);
 
-        mTimeTableAdapter2.changeLayout(true);
+        mTimeTableAdapter.changeLayout(true);
 
-        final Task<String> task = TimetableUtil.saveTimetableToImage(mTimeTable, mTimetableListView, mTimeTableAdapter2, getTabParentView());
+        final Task<String> task = TimetableUtil.saveTimetableToImage(mTimeTable, mTimetableListView, mTimeTableAdapter, getTabParentView());
         task.getAsync(result -> {
                     dismissProgressDialog();
-                    mTimeTableAdapter2.changeLayout(false);
+                    mTimeTableAdapter.changeLayout(false);
 
                     String pictureDir = result.substring(result.lastIndexOf('/') + 1);
                     Snackbar.make(rootView, getString(R.string.tab_timetable_saved, pictureDir), Snackbar.LENGTH_LONG)
@@ -224,7 +223,6 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<Timetable2> {
                                     //e.printStackTrace();
                                     AppUtil.showToast(getActivity(), R.string.error_no_activity_found_to_handle_file);
                                 } catch (Exception e) {
-                                    e.printStackTrace();
                                     AppUtil.showErrorToast(getActivity(), e, true);
                                 }
                             })
@@ -232,7 +230,7 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<Timetable2> {
                 },
                 e -> {
                     dismissProgressDialog();
-                    mTimeTableAdapter2.changeLayout(false);
+                    mTimeTableAdapter.changeLayout(false);
 
                     AppUtil.showErrorToast(getActivity(), e, true);
                 }
@@ -249,7 +247,9 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<Timetable2> {
         Semester semester = Semester.values()[mWiseTermSpinner.getSelectedItemPosition()];
         String mTimeTableYear = mWiseYearSpinner.getSelectedItem().toString();
 
-        executeWithQueue(TAG, AppRequests.TimeTables.request2(mWiseIdView.getText(), mWisePasswdView.getText(), semester, mTimeTableYear),
+        // dummy : AppRequests.TimeTables.dummyRequest(mWiseIdView.getText(), mWisePasswdView.getText(), semester, mTimeTableYear)
+
+        executeWithQueue(TAG, AppRequests.TimeTables.request(mWiseIdView.getText(), mWisePasswdView.getText(), semester, mTimeTableYear),
                 r -> {
                     clearPassWd();
 
@@ -271,7 +271,7 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<Timetable2> {
     }
 
     private void readTimetableFromFile() {
-        AppRequests.TimeTables.readFile2().getAsync(
+        AppRequests.TimeTables.readFile().getAsync(
                 this::setTimetable,
                 e -> Log.e(TAG, "cannot read timetable from file.", e)
         );
@@ -316,7 +316,7 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<Timetable2> {
             this.mTimeTable = timeTable;
             setSubtitleWhenVisible(timeTable.getYearAndSemester());
         }
-        mTimeTableAdapter2.setTimeTable(timeTable);
+        mTimeTableAdapter.setTimeTable(timeTable);
     }
 
     private void clearText() {
@@ -379,7 +379,7 @@ public class TabTimeTableFragment2 extends AbsProgressFragment<Timetable2> {
     @NonNull
     @Override
     public String getScreenNameForTracker() {
-        return "TabTimeTableFragment2";
+        return "TabTimeTableFragment";
     }
 
 }

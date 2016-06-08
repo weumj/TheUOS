@@ -9,7 +9,7 @@ import com.uoscs09.theuos2.tab.announce.AnnounceItem;
 import com.uoscs09.theuos2.tab.booksearch.BookItem;
 import com.uoscs09.theuos2.tab.booksearch.BookStateInfo;
 import com.uoscs09.theuos2.tab.buildings.BuildingRoom;
-import com.uoscs09.theuos2.tab.buildings.ClassRoomTimeTable;
+import com.uoscs09.theuos2.tab.buildings.ClassroomTimeTable;
 import com.uoscs09.theuos2.tab.emptyroom.EmptyRoom;
 import com.uoscs09.theuos2.tab.libraryseat.SeatInfo;
 import com.uoscs09.theuos2.tab.libraryseat.SeatItem;
@@ -19,7 +19,6 @@ import com.uoscs09.theuos2.tab.schedule.UnivScheduleItem;
 import com.uoscs09.theuos2.tab.subject.CoursePlanItem;
 import com.uoscs09.theuos2.tab.subject.SubjectItem2;
 import com.uoscs09.theuos2.tab.timetable.SubjectInfoItem;
-import com.uoscs09.theuos2.tab.timetable.TimeTable;
 import com.uoscs09.theuos2.tab.timetable.Timetable2;
 
 import java.util.ArrayList;
@@ -161,21 +160,20 @@ public class AppRequests {
 
     public static class TimeTables {
 
-        public static Task<TimeTable> request(CharSequence id, CharSequence passwd, OApiUtil.Semester semester, CharSequence year) {
-            return NetworkRequests.TimeTables.request(id, passwd, semester, year)
-                    .wrap(IOUtil.<TimeTable>newInternalFileWriteFunc(IOUtil.FILE_TIMETABLE));
+        public static Task<Timetable2> dummyRequest(CharSequence id, CharSequence passwd, OApiUtil.Semester semester, CharSequence year) {
+            return Tasks.newTask(() -> {
+                throw new Exception(String.format("Dummy Request - [\nid : %s\nsemester : %s\nyear : %s\n]", id, semester.name(), year));
+            });
         }
 
-        public static Task<Timetable2> request2(CharSequence id, CharSequence passwd, OApiUtil.Semester semester, CharSequence year) {
-            return NetworkRequests.TimeTables.request2(id, passwd, semester, year)
+
+        public static Task<Timetable2> request(CharSequence id, CharSequence passwd, OApiUtil.Semester semester, CharSequence year) {
+            return NetworkRequests.TimeTables.request(id, passwd, semester, year)
                     .wrap(IOUtil.<Timetable2>newInternalFileWriteFunc(IOUtil.FILE_TIMETABLE));
         }
 
-        public static Task<TimeTable> readFile() {
-            return Tasks.newTask(() -> IOUtil.readInternalFileSilent(IOUtil.FILE_TIMETABLE));
-        }
 
-        public static Task<Timetable2> readFile2() {
+        public static Task<Timetable2> readFile() {
             return Tasks.newTask(() -> IOUtil.readInternalFileSilent(IOUtil.FILE_TIMETABLE));
         }
     }
@@ -274,45 +272,105 @@ public class AppRequests {
         private static final String FILE_BUILDINGS = "FILE_BUILDINGS";
 
         public static Task<BuildingRoom> buildingRooms(boolean forceDownload) {
-            return Tasks.newTask(() -> {
-                if (!forceDownload) {
+            if (forceDownload)
+                return downloadBuildingRooms();
+            else
+                return Tasks.newTask(() -> {
+                    long downloadedTimeL = PrefHelper.Buildings.downloadTime();
+
+                    if (downloadedTimeL > 0) {
+                        Calendar current = Calendar.getInstance(), downloadedTime = Calendar.getInstance();
+                        downloadedTime.setTimeInMillis(downloadedTimeL);
+
+                        // 다운로드 한 날짜가 현재 시각보다 5개월 이전 이면
+                        if (Math.abs(current.get(Calendar.MONTH) - downloadedTime.get(Calendar.MONTH)) >= 5) {
+                            return downloadBuildingRooms().get();
+                        }
+                    }
+
                     try {
                         BuildingRoom buildingRoom = IOUtil.readFromInternalFile(FILE_BUILDINGS);
-                        if (buildingRoom != null)
+                        if (buildingRoom != null) {
+                            buildingRoom.afterParsing();
                             return buildingRoom;
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                }
 
-                return downloadBuildingRooms().get();
-            });
+                    return downloadBuildingRooms().get();
+                });
         }
 
         private static Task<BuildingRoom> downloadBuildingRooms() {
             return NetworkRequests.Buildings.buildingRooms()
-                    .wrap(new IOUtil.FileWriteFunc<>(AppUtil.context(), FILE_BUILDINGS))
                     .wrap(room -> {
                         PrefHelper.Buildings.putDownloadTime(System.currentTimeMillis());
-                        //todo sort
                         return room;
-                    });
+                    })
+                    .wrap(IOUtil.newInternalFileWriteFunc(FILE_BUILDINGS));
         }
 
-        public static Task<ClassRoomTimeTable> classRoomTimeTables(String year, String term, EmptyRoom emptyRoom, boolean forceDownload) {
+        public static Task<ClassroomTimeTable> classRoomTimeTables(String year, String term, EmptyRoom emptyRoom, boolean forceDownload) {
             return buildingRooms(forceDownload).wrap(room -> {
+                int findingRoomNum = Integer.valueOf(emptyRoom.roomNo.split("-")[0]);
                 //todo search
-                for (BuildingRoom.RoomInfo info : room.getRoomInfoList()) {
-                    if (info.name().contains(emptyRoom.roomNo)) {
-                        return classRoomTimeTables(year, term, info).get();
+                /* roomName 에 대해 정렬 되어있지 않으므로 사용 불가
+                int findingRoomNum = Integer.valueOf(emptyRoom.roomNo.split("-")[0]);
+
+
+                BuildingRoom.RoomInfo info = new BuildingRoom.RoomInfo("", emptyRoom.roomNo, "" + (findingRoomNum < 10 ? "0" + findingRoomNum : findingRoomNum));
+
+                int index = Collections.binarySearch(room.getRoomInfoList(), info, (lhs, rhs) -> {
+                    int buildingCodeCompared = lhs.buildingCode().compareTo(rhs.buildingCode());
+
+                    if (buildingCodeCompared == 0) {
+                        return lhs.roomName().compareTo(rhs.roomName());
+                    } else
+                        return buildingCodeCompared;
+                });
+
+                if (index != -1)
+                    return classRoomTimeTables(year, term, room.getRoomInfoList().get(index)).get();
+                */
+
+                final String[] buildings = {
+                        "01", "02", "03", "04", "05",
+                        "06", "08", "09", "10", "11",
+                        "13", "14", "15", "16", "17",
+                        "18", "19", "20", "23", "24",
+                        "25", "33"
+                };
+
+                for (String building : buildings) {
+                    BuildingRoom.Pair pair = room.roomInfoList(building);
+                    if (pair == null)
+                        continue;
+
+                    try {
+                        if (Integer.valueOf(pair.buildingInfo().code()) != findingRoomNum)
+                            continue;
+
+                        for (BuildingRoom.RoomInfo info : pair.roomInfoList()) {
+                            try {
+                                if (info.roomName().contains(emptyRoom.roomNo))
+                                    return classRoomTimeTables(year, term, info).get();
+                            } catch (Exception e) {
+                                //ignore
+                            }
+                        }
+
+                    } catch (Exception e) {
+                        //ignore
                     }
+
                 }
 
-                throw new IllegalArgumentException("no match");
+                throw new IllegalArgumentException(AppUtil.context().getString(R.string.tab_empty_room_search_timetable_no_match));
             });
         }
 
-        public static Task<ClassRoomTimeTable> classRoomTimeTables(String year, String term, BuildingRoom.RoomInfo roomInfo) {
+        public static Task<ClassroomTimeTable> classRoomTimeTables(String year, String term, BuildingRoom.RoomInfo roomInfo) {
             return NetworkRequests.Buildings.classRoomTimeTables(year, term, roomInfo);
         }
     }

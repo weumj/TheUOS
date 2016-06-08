@@ -57,6 +57,13 @@
             android:title="@string/setting_timetable" />
     </android.support.v7.preference.PreferenceCategory>
 
+    <android.support.v7.preference.PreferenceCategory android:title="@string/title_tab_building_classroom">
+        <android.support.v7.preference.PreferenceScreen
+            android:icon="?color_theme_ic_action_timetable"
+            android:key="@string/pref_key_buildings_fetch_time"
+            android:title="@string/setting_building_room_fetch_time" />
+    </android.support.v7.preference.PreferenceCategory>
+
     <android.support.v7.preference.PreferenceCategory android:title="@string/setting_data">
         <android.support.v7.preference.PreferenceScreen
             android:icon="?color_theme_ic_action_image_image"

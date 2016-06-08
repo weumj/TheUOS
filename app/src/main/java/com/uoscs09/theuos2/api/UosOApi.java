@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.uoscs09.theuos2.tab.buildings.BuildingRoom;
-import com.uoscs09.theuos2.tab.buildings.ClassRoomTimeTable;
+import com.uoscs09.theuos2.tab.buildings.ClassroomTimeTable;
 import com.uoscs09.theuos2.tab.emptyroom.EmptyRoomInfo;
 import com.uoscs09.theuos2.tab.schedule.UnivScheduleInfo;
 import com.uoscs09.theuos2.tab.subject.CoursePlanInfo;
@@ -109,7 +109,7 @@ public interface UosOApi {
     @FormUrlEncoded
     @Headers({"Content-Type: charset=EUC-KR"})
     @POST("api.ApiUcsCourseTimeTableRoomList.oapi")
-    Task<ClassRoomTimeTable> classRoomTimeTables(
+    Task<ClassroomTimeTable> classRoomTimeTables(
             @Field("apiKey") String apiKey,
             @Field("year") String year,
             @Field("term") String term,

@@ -90,7 +90,7 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Tool
             infoList = new ArrayList<>();
         }
 
-        mProgressDialog = AppUtil.getProgressDialog(getActivity(), false, null);
+        mProgressDialog = AppUtil.getProgressDialog(getActivity());
 
     }
 
@@ -292,7 +292,6 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Tool
                                     //e.printStackTrace();
                                     AppUtil.showToast(getActivity(), R.string.error_no_activity_found_to_handle_file);
                                 } catch (Exception e) {
-                                    e.printStackTrace();
                                     AppUtil.showErrorToast(getActivity(), e, true);
                                 }
                                 sendClickEvent("show course plan image");
@@ -343,7 +342,6 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Tool
                                     //e.printStackTrace();
                                     AppUtil.showToast(getActivity(), R.string.error_no_activity_found_to_handle_file);
                                 } catch (Exception e) {
-                                    e.printStackTrace();
                                     AppUtil.showErrorToast(getActivity(), e, true);
                                 }
 

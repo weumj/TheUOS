@@ -107,7 +107,7 @@ public abstract class BaseFragment extends Fragment implements TrackerUtil.Track
 
     // String...
     @PermissionChecker.PermissionResult
-    protected boolean checkSelfPermissions(String[] permission) {
+    protected boolean checkSelfPermissions(String... permission) {
         return getBaseActivity().checkSelfPermissionCompat(permission);
     }
 

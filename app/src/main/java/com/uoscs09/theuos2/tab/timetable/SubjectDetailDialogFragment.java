@@ -111,7 +111,7 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
     }
 
     private View createView() {
-        mProgress = AppUtil.getProgressDialog(getActivity(), false, null);
+        mProgress = AppUtil.getProgressDialog(getActivity());
 
         View view = View.inflate(getActivity(), R.layout.dialog_timetable_subject, null);
         ButterKnife.bind(this, view);
@@ -227,8 +227,12 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
                         mProgress.dismiss();
 
                         int size;
-                        if (result == null || (size = result.size()) == 0) {
+                        if (result == null) {
                             AppUtil.showToast(getActivity(), R.string.tab_timetable_error_on_search_subject, true);
+                            dismiss();
+
+                        } else if ((size = result.size()) == 0) {
+                            AppUtil.showToast(getActivity(), R.string.tab_timetable_error_on_search_subject_empty, true);
                             dismiss();
 
                         } else if (size == 1) {
@@ -258,7 +262,6 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
     public void onError(Throwable e) {
         mProgress.dismiss();
 
-        e.printStackTrace();
         AppUtil.showErrorToast(getActivity(), e, isVisible());
     }
 

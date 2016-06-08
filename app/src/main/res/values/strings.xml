@@ -38,12 +38,14 @@
     <string name="title_tab_restaurant">식당 메뉴</string>
     <string name="title_tab_book_search">도서 검색</string>
     <string name="title_tab_library_seat">열람실 정보</string>
-    <string name="title_tab_map">학교 지도</string>
     <string name="title_tab_phone">교내 전화번호</string>
     <string name="title_tab_timetable">시간표</string>
     <string name="title_tab_search_subject">교과목 검색</string>
     <string name="title_tab_search_empty_room">빈 강의실 조회</string>
     <string name="title_tab_schedule">학사일정</string>
+    <string name="title_tab_building_classroom">건물 및 강의실 정보</string>
+
+    <string name="title_tab_map">학교 지도</string>
     <string name="title_tab_score">수업평가 결과 조회</string>
     <string name="title_tab_transport">교통 정보</string>
     <string name="title_section_etc">기타</string>
@@ -97,12 +99,61 @@
     <string name="tab_library_seat_dismiss_info_time_within">%1$d 분이내</string>
     <string name="tab_library_seat_sub_seat_title">좌석 정보</string>
 
-    <string name="tab_map_submap_device_without_googlemap">이 기기는 구글 지도를 지원하지 않습니다.</string>
-    <string name="tab_map_submap_do_not_locate">현재 위치를 감지하지 못하였습니다. 잠시후에 시도하세요.</string>
-    <string name="tab_map_submap_select_dest">목적지 선택</string>
-    <string name="tab_map_submap_select_building">건물을 선택해 주세요.</string>
-    <string name="tab_map_submap_welfare">복지시설</string>
-    <string name="tab_map_submap_permission_denied">권한이 거절되어서 구글맵이 종료됩니다.</string>
+    <string name="tab_map_menu_title">건물 및 복지시설 검색</string>
+    <string name="tab_map_menu_building">건물</string>
+    <string name="tab_map_menu_welfare">복지시설</string>
+    <string name="tab_map_map_layout_error">화면을 구성하는 도중 문제가 생겼습니다.</string>
+    <string name="tab_map_device_without_googlemap">이 기기는 구글 지도를 지원하지 않습니다.</string>
+    <string name="tab_map_do_not_locate">현재 위치를 감지하지 못하였습니다. 잠시후에 시도하세요.</string>
+    <string name="tab_map_select_dest">목적지 선택</string>
+    <string name="tab_map_select_building">건물을 선택해 주세요.</string>
+    <string name="tab_map_permission_denied">권한이 거절되어서 구글맵이 종료됩니다.</string>
+    <string name="tab_map_buildings_welfare_cash">현금지급기</string>
+    <string name="tab_map_buildings_welfare_bank">은행</string>
+    <string name="tab_map_buildings_welfare_copy">복사점</string>
+    <string name="tab_map_buildings_welfare_search">컴퓨터검색</string>
+    <string name="tab_map_buildings_welfare_rest">휴게실</string>
+    <string name="tab_map_buildings_welfare_elevator">엘리베이터</string>
+    <string name="tab_map_buildings_welfare_health_center">보건소</string>
+    <string name="tab_map_buildings_welfare_post">우체국</string>
+    <string name="tab_map_buildings_welfare_restaurant">구내식당</string>
+    <string name="tab_map_buildings_welfare_fast_food">패스트푸드</string>
+    <string name="tab_map_buildings_welfare_stand">매점</string>
+    <string name="tab_map_buildings_welfare_eye">안경점</string>
+    <string name="tab_map_buildings_welfare_book">서점</string>
+    <string name="tab_map_buildings_welfare_writing">문구점</string>
+    <string name="tab_map_buildings_welfare_souvenir">기념품매장</string>
+    <string name="tab_map_buildings_welfare_health">헬스장</string>
+    <string name="tab_map_buildings_welfare_tennis">테니스장</string>
+    <string-array name="tab_map_buildings_welfare_print">
+        <item>2층 PC실(533호)</item>
+        <item>전자도서관(입금가능), 2층 227호</item>
+        <item>4층(입금가능), 5층, 6층(도서관)</item>
+        <item>1층, 2층, 3층(입금가능), 4층</item>
+        <item>3층 경영도서관, 4층 PC실(입금가능)</item>
+        <item>1층 로비</item>
+    </string-array>
+    <string-array name="tab_map_buildings_welfare">
+        <item>현금지급기</item>
+        <item>은행</item>
+        <item>복사점</item>
+        <item>프린트</item>
+        <item>컴퓨터검색</item>
+        <item>휴게실</item>
+        <item>엘리베이터</item>
+        <item>보건소</item>
+        <item>우체국</item>
+        <item>구내식당</item>
+        <item>패스트푸드</item>
+        <item>매점</item>
+        <item>안경점</item>
+        <item>서점</item>
+        <item>문구점</item>
+        <item>기념품매장</item>
+        <item>헬스장</item>
+        <item>테니스장</item>
+    </string-array>
+
 
     <string name="tab_rest_students_hall">학생회관</string>
     <string name="tab_rest_anekan">양식당</string>
@@ -165,7 +216,8 @@
     <string name="tab_timetable_empty_text2">교과목을 터치하면 추가 정보를 얻을 수 있습니다.</string>
     <string name="tab_timetable_no_subject">과목 정보가 없습니다.</string>
     <string name="tab_timetable_no_timetable">시간표 정보가 없습니다.</string>
-    <string name="tab_timetable_error_on_search_subject">교과목을 처리하는데 에러가 발생하였습니다.</string>
+    <string name="tab_timetable_error_on_search_subject">교과목을 찾는 도중 문제가 발생하였습니다.</string>
+    <string name="tab_timetable_error_on_search_subject_empty">해당 교과목을 찾을 수 없습니다.</string>
 
     <string name="tab_empty_room_building">건물</string>
     <string name="tab_empty_room_room_no">강의실\n번호</string>
@@ -174,6 +226,7 @@
     <string name="tab_empty_room_dialog_building">장소</string>
     <string name="tab_empty_room_dialog_time">시간</string>
     <string name="tab_empty_room_dialog_term">학기</string>
+    <string name="tab_empty_room_search_timetable_no_match">해당 강의실을 검색하는 데 실패하였습니다.</string>
 
     <string name="tab_search_subject_sub_dept1">학부\n(과)</string>
     <string name="tab_search_subject_sub_div1">교과\n구분</string>
@@ -189,6 +242,7 @@
 
     <string name="tab_subject_empty_view_hint">버튼을 터치하여 검색을 시작하세요.</string>
     <string name="tab_subject_empty_view_sort">각 항목의 분류를 터치하면 오름/내림차순으로 정렬할 수 있습니다.</string>
+    <string name="tab_subject_empty_view_hint_select">강의실을 선택하면 해당 강의실의 시간표를 볼 수 있습니다.</string>
     <string name="tab_subject_empty_view_hint_subj">교과목을 터치하면 수업계획서를 볼 수 있습니다</string>
     <string name="tab_subject_info_plz_select_div_no">분반을 선택해 주세요.</string>
 
@@ -225,6 +279,8 @@
     <string name="tab_univ_schedule_add_to_calendar_fail">일정을 추가하는데 실패하였습니다.</string>
     <string name="tab_univ_schedule_permission_denied">권한이 거절되어서 일정을 추가하는데 실패하였습니다.</string>
 
+    <string name="tab_building_classroom_timetable">강의실 시간표</string>
+    <string name="tab_building_classroom_timetable_result_empty">강의실 시간표 내용이 없습니다.</string>
 
     <string name="emptyview_button_or_menu_to_search">버튼이나 메뉴버튼을 눌러 검색하세요</string>
     <string name="emptyview_button_to_search">버튼을 눌러 검색하세요</string>
@@ -269,26 +325,7 @@
         <item>34 국제학사</item>
         <item>35 국제교육원</item>
     </string-array>
-    <string-array name="tab_map_submap_buildings_welfare">
-        <item>현금지급기</item>
-        <item>우리은행</item>
-        <item>복사점</item>
-        <item>프린트</item>
-        <item>컴퓨터검색</item>
-        <item>휴게실</item>
-        <item>엘리베이터</item>
-        <item>보건소</item>
-        <item>우체국</item>
-        <item>구내식당</item>
-        <item>패스트푸드</item>
-        <item>매점</item>
-        <item>안경점</item>
-        <item>서점</item>
-        <item>문구점</item>
-        <item>기념품매장</item>
-        <item>헬스장</item>
-        <item>테니스장</item>
-    </string-array>
+
     <string-array name="tab_anounce_action_spinner">
         <item>(공지사항 선택)</item>
         <item>일반공지</item>

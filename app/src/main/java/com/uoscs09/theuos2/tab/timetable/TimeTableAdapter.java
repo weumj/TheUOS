@@ -18,7 +18,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-class TimeTableAdapter2 extends AbsArrayAdapter<Timetable2.Period, TimeTableAdapter2.TimeTableViewHolder> {
+class TimeTableAdapter extends AbsArrayAdapter<Timetable2.Period, TimeTableAdapter.TimeTableViewHolder> {
     private OnItemClickListener onItemClickListener;
     private final SparseBooleanArray mClickedArray = new SparseBooleanArray(15);
     private final String[] periodTimeArray;
@@ -26,7 +26,7 @@ class TimeTableAdapter2 extends AbsArrayAdapter<Timetable2.Period, TimeTableAdap
 
     private final int cardBackgroundColor;
 
-    public TimeTableAdapter2(Context context) {
+    public TimeTableAdapter(Context context) {
         super(context, R.layout.list_layout_timetable2, new ArrayList<>());
         periodTimeArray = context.getResources().getStringArray(R.array.tab_timetable_timelist_only_time);
         cardBackgroundColor = AppUtil.getAttrColor(context, R.attr.cardBackgroundColor);

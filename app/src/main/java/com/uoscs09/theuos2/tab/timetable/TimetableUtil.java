@@ -5,19 +5,15 @@ import android.Manifest;
 import android.content.Context;
 import android.support.annotation.RequiresPermission;
 import android.support.v4.content.ContextCompat;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.common.SerializableArrayMap;
 import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.ImageUtil;
 import com.uoscs09.theuos2.util.PrefHelper;
 import com.uoscs09.theuos2.util.PrefUtil;
-
-import java.util.ArrayList;
 
 import mj.android.utils.task.Task;
 
@@ -34,36 +30,6 @@ public class TimetableUtil {
         return b;
     }
 
-
-    /**
-     * 주어진 시간표정보를 통해 시간표 각 과목과 컬러를 mapping하는 Map을 작성한다.
-     * -- 과목이름이 Key 이고, Value 가 컬러를 가리키는 Integer 인 Map<br>
-     * 컬러는 단순한 정수이며, AppUtil 을 통해 Color integer 를 얻어와야 한다.
-     *
-     * @param timetable 시간표
-     */
-    public static void makeColorTable(TimeTable timetable) {
-        SerializableArrayMap<String, Integer> table = new SerializableArrayMap<>();
-
-        ArrayList<Subject[]> subjects = timetable.subjects;
-
-        String subjectName;
-        int i = 0;
-        for (Subject[] subjectArray : subjects) {
-            for (Subject subject : subjectArray) {
-
-                if (subject.equals(Subject.EMPTY))
-                    continue;
-
-                subjectName = subject.subjectName;
-                if (!TextUtils.isEmpty(subjectName) && !table.containsKey(subjectName)) {
-                    table.put(subjectName, i++);
-                }
-            }
-        }
-
-        timetable.setColorTable(table);
-    }
 
     //************ color *************
 

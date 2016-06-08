@@ -1,5 +1,6 @@
 package com.uoscs09.theuos2.tab.emptyroom;
 
+import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
@@ -11,13 +12,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
+import com.uoscs09.theuos2.tab.buildings.ClassroomTimetableDialogFragment;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
@@ -34,6 +35,11 @@ import butterknife.OnItemClick;
  * 빈 강의실을 조회하는 fragment
  */
 public class TabSearchEmptyRoomFragment extends AbsProgressFragment<List<EmptyRoom>> {
+
+    @Override
+    protected int layoutRes() {
+        return R.layout.tab_search_empty_room;
+    }
 
     private AlertDialog mSearchDialog;
     private Spinner mBuildingSpinner;
@@ -75,7 +81,8 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<List<EmptyRo
                 R.id.tab_search_empty_room_text_building_name,
                 R.id.tab_search_empty_room_text_room_no,
                 R.id.tab_search_empty_room_text_room_subj,
-                R.id.tab_search_empty_room_text_room_person};
+                R.id.tab_search_empty_room_text_room_person
+        };
 
         int i = 0;
         for (int id : ids) {
@@ -125,31 +132,32 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<List<EmptyRo
 
     @OnItemClick(R.id.etc_search_list)
     void roomClick(int position) {
-        AppRequests.Buildings.classRoomTimeTables(OApiUtil.getYear(), mTermString, mClassRoomList.get(position), false).getAsync(
+        // 선택된 빈 강의실의 시간표 보여주기
+
+        Dialog dialog = AppUtil.getProgressDialog(getActivity());
+        dialog.show();
+
+        final OApiUtil.Semester semester = OApiUtil.Semester.getSemesterByOrder(mTermSpinner.getSelectedItemPosition());
+        AppRequests.Buildings.classRoomTimeTables(OApiUtil.getYear(), semester.code, mClassRoomList.get(position), false).getAsync(
                 classRoomTimeTable -> {
-                    ScrollView scrollView = new ScrollView(getActivity());
-                    TextView textView = new TextView(getActivity());
-                    textView.setText(classRoomTimeTable.timetables().toString());
+                    ClassroomTimetableDialogFragment.showTimetableDialog(this, classRoomTimeTable, semester);
 
-                    scrollView.addView(textView);
+                    dialog.dismiss();
 
-                    new AlertDialog.Builder(getActivity())
-                            .setView(scrollView)
-                            .show();
+                    sendClickEvent("show classroom timetable");
                 },
-                throwable -> AppUtil.showErrorToast(getActivity(), throwable, true)
+                throwable -> {
+                    AppUtil.showErrorToast(getActivity(), throwable, true);
+                    dialog.dismiss();
+                }
         );
+
     }
 
     @OnClick(R.id.empty1)
     void emptyClick() {
         sendEmptyViewClickEvent();
         mSearchDialog.show();
-    }
-
-    @Override
-    protected int layoutRes() {
-        return R.layout.tab_search_empty_room;
     }
 
     @Override

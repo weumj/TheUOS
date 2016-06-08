@@ -10,7 +10,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.util.ArrayList;
-
+@Deprecated
 public abstract class ParseUosRSS<T> extends XmlParser<T> {
 
 

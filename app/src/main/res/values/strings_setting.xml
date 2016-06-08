@@ -82,6 +82,9 @@
     <string name="setting_timetable_clear_alarm_title">모든 알람 삭제</string>
     <string name="setting_timetable_clear_alarm_desc">설정된 모든 알람을 삭제합니다.</string>
 
+    <string name="setting_building_room_fetch_time">건물 목록을 받아온 시간</string>
+    <string name="setting_building_room_fetch_time_none">건물 목록을 다운로드 한 적이 없습니다.\n여기를 눌러 다운로드 하세요.</string>
+
     <!-- '공지' 타입 표시안함 여부, boolean-->
     <string name="pref_key_announce_except_type_notice" translatable="false">KEY_ANNOUNCE_EXCEPT_TYPE_NOTICE</string>
     <!-- 공지사항 알리미를 사용 할 것인지 여부, boolean -->
@@ -110,7 +113,8 @@
     <string name="pref_key_save_image_route" translatable="false">IMAGE_SAVE_ROUTE</string>
     <!-- 텍스트가 저장되는 경로, String -->
     <string name="pref_key_save_txt_route" translatable="false">TXT_SAVE_ROUTE</string>
-
+    <!-- 건물 및 강의실 정보를 받아온 시각, long -->
+    <string name="pref_key_buildings_fetch_time" translatable="false">BUILDINGS_FETCH_TIME</string>
 
     <string name="setting_web_page">웹 페이지</string>
     <string name="setting_web_page_desc">유용한 웹 페이지의 링크를 제공합니다.</string>

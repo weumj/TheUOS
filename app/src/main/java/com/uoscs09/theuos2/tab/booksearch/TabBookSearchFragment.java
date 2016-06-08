@@ -342,7 +342,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<List<BookItem>> i
         execute(AppRequests.Books.request(mRawQuery/*mEncodedQuery*/, mCurrentPage, os.getSelectedItemPosition(), oi.getSelectedItemPosition()),
                 result -> {
                     isResultEmpty = false;
-                    if (result.size() == 0) {
+                    if (result.isEmpty()) {
                         AppUtil.showToast(getActivity(), R.string.search_result_empty, isMenuVisible());
                         isResultEmpty = true;
 

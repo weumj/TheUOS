@@ -79,9 +79,15 @@ public class PrefUtil {
      * 학사일정을 가져온 달. {@code int}, 0~11 : 정상, -1 : 없음
      */
     public static final String KEY_SCHEDULE_FETCH_MONTH = "UNIV_SCHEDULE_FETCH_MONTH";
+    /**
+     * 일주일 간 식단표 정보를 받아온 시각
+     */
     public static final String KEY_REST_WEEK_FETCH_TIME = "REST_WEEK_FETCH_TIME";
 
-    public static final String KEY_BUILDINGS_FETCH_TIME = "REST_BUILDINGS_FETCH_TIME";
+    /**
+     * 건물 및 강의실 정보를 받아온 시각 {@code long}
+     */
+    public static final String KEY_BUILDINGS_FETCH_TIME = "BUILDINGS_FETCH_TIME";
 
     private static PrefUtil instance;
     private SharedPreferences pref;

@@ -10,7 +10,7 @@ import android.widget.RemoteViews;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.BaseAppWidgetProvider;
-import com.uoscs09.theuos2.tab.timetable.TimeTable;
+import com.uoscs09.theuos2.tab.timetable.Timetable2;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
@@ -30,7 +30,7 @@ public abstract class TimeTableWidget extends BaseAppWidgetProvider {
 
         final PendingResult pendingResult = goAsync();
         Tasks.execute(() -> {
-            TimeTable timeTable = null;
+            Timetable2 timeTable = null;
             try {
                 timeTable = AppRequests.TimeTables.readFile().get();
             } catch (Throwable e) {

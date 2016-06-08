@@ -1,25 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context="com.uoscs09.theuos2.tab.map.GoogleMapActivity">
 
-    <include layout="@layout/view_toolbar" />
+    <fragment
+        android:id="@+id/tab_map_submap"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/tab_map_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_marginBottom="20dp"
+        android:layout_marginRight="20dp"
+        android:src="?menu_theme_ic_action_action_search"
+        app:backgroundTint="?colorPrimary"
+        app:borderWidth="0dp"
+        app:elevation="6dp"
+        app:pressedTranslationZ="12dp"
+        app:fabSize="normal"
+        android:clickable="true"
+        android:focusable="true"
+        app:rippleColor="?colorPrimaryDark"
+        app:useCompatPadding="true" />
 
-        <fragment
-            android:id="@+id/tab_map_submap"
-            android:name="com.google.android.gms.maps.SupportMapFragment"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent" />
-
-        <include layout="@layout/view_toolbar_shadow" />
-    </FrameLayout>
-
-
-</LinearLayout>
+</FrameLayout>

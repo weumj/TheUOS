@@ -17,9 +17,9 @@ public class TitleActivity extends Activity {
         getWindow().getDecorView().postDelayed(() -> {
 
             startActivity(new Intent(getApplicationContext(), UosMainActivity.class));
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+            overridePendingTransition(R.anim.enter_fade, R.anim.exit_hold);
             finish();
 
-        }, 200);
+        }, 150);
     }
 }

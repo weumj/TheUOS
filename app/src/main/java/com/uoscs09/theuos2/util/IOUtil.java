@@ -1,7 +1,6 @@
 package com.uoscs09.theuos2.util;
 
 import android.Manifest;
-import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
 import android.util.Log;
@@ -157,25 +156,25 @@ public class IOUtil {
 
     @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     public static <T> Func<T, T> newExternalFileWriteFunc(String fileName) {
-        return new FileWriteFunc<>(null, fileName);
+        return new FileWriteFunc<>(fileName, true);
     }
 
     public static <T> Func<T, T> newInternalFileWriteFunc(String fileName) {
-        return new FileWriteFunc<>(context(), fileName);
+        return new FileWriteFunc<>(fileName, false);
     }
 
     static class FileWriteFunc<T> implements Func<T, T> {
         private final String fileName;
-        private final Context context;
+        private final boolean isExternal;
 
-        public FileWriteFunc(@Nullable Context context, String fileName) {
+        public FileWriteFunc(String fileName, boolean isExternal) {
             this.fileName = fileName;
-            this.context = context != null ? context.getApplicationContext() : null;
+            this.isExternal = isExternal;
         }
 
         @Override
         public T func(T t) throws IOException {
-            if (context == null)
+            if (isExternal)
                 //noinspection ResourceType
                 writeObjectToExternalFile(fileName, t);
             else

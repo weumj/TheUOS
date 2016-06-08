@@ -11,7 +11,7 @@ import mj.android.utils.xml.ListContainer;
 import mj.android.utils.xml.Root;
 
 @Root(name = "root")
-public class ClassRoomTimeTable implements Parcelable, Serializable {
+public class ClassroomTimeTable implements Parcelable, Serializable {
 
     private static final long serialVersionUID = -8771076559473478423L;
 
@@ -32,22 +32,22 @@ public class ClassRoomTimeTable implements Parcelable, Serializable {
         dest.writeTypedList(timetableList);
     }
 
-    public ClassRoomTimeTable() {
+    public ClassroomTimeTable() {
     }
 
-    protected ClassRoomTimeTable(Parcel in) {
+    protected ClassroomTimeTable(Parcel in) {
         this.timetableList = in.createTypedArrayList(Timetable.CREATOR);
     }
 
-    public static final Creator<ClassRoomTimeTable> CREATOR = new Creator<ClassRoomTimeTable>() {
+    public static final Creator<ClassroomTimeTable> CREATOR = new Creator<ClassroomTimeTable>() {
         @Override
-        public ClassRoomTimeTable createFromParcel(Parcel source) {
-            return new ClassRoomTimeTable(source);
+        public ClassroomTimeTable createFromParcel(Parcel source) {
+            return new ClassroomTimeTable(source);
         }
 
         @Override
-        public ClassRoomTimeTable[] newArray(int size) {
-            return new ClassRoomTimeTable[size];
+        public ClassroomTimeTable[] newArray(int size) {
+            return new ClassroomTimeTable[size];
         }
     };
 
@@ -81,6 +81,15 @@ public class ClassRoomTimeTable implements Parcelable, Serializable {
         @Element(name = "sat")
         private String sat;
 
+        /* lazy & shorten information */
+        private String monL = null;
+        private String tueL = null;
+        private String wedL = null;
+        private String thuL = null;
+        private String friL = null;
+        private String satL = null;
+        /* lazy & shorten information */
+
         public String building() {
             return building;
         }
@@ -101,28 +110,84 @@ public class ClassRoomTimeTable implements Parcelable, Serializable {
             return time;
         }
 
+        /**
+         * @param day 1 (mon) ~ 6 (sat) , default = ""
+         * */
+        public String dateInfo(int day){
+            switch (day){
+                case 1:
+                    return mon();
+                case 2:
+                    return tue();
+                case 3:
+                    return wed();
+                case 4:
+                    return thu();
+                case 5:
+                    return fri();
+                case 6:
+                    return sat();
+                default:
+                    return "";
+            }
+        }
+
         public String mon() {
-            return mon;
+            if (monL == null) {
+                monL = lazyAndShorten(mon);
+            }
+            return monL;
         }
 
         public String tue() {
-            return tue;
+            if (tueL == null) {
+                tueL = lazyAndShorten(tue);
+            }
+            return tueL;
         }
 
         public String wed() {
-            return wed;
+            if (wedL == null) {
+                wedL = lazyAndShorten(wed);
+            }
+            return wedL;
         }
 
         public String thu() {
-            return thu;
+            if (thuL == null) {
+                thuL = lazyAndShorten(thu);
+            }
+            return thuL;
         }
 
         public String fri() {
-            return fri;
+            if (friL == null) {
+                friL = lazyAndShorten(fri);
+            }
+            return friL;
         }
 
         public String sat() {
-            return sat;
+            if (satL == null) {
+                satL = lazyAndShorten(sat);
+            }
+            return satL;
+        }
+
+        /*
+            original :
+                    "과목명\r교수\r학년\r학부"
+
+            return :
+                    "과목명\n교수"
+
+         */
+        private String lazyAndShorten(String s) {
+            String[] arr = s.replace("\r", "\n").split("\n");
+            if (arr.length < 2)
+                return s;
+
+            return arr[0] + "\n\n" + arr[1];
         }
 
         public int personCount() {

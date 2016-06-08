@@ -4,7 +4,7 @@ import com.uoscs09.theuos2.tab.announce.AnnounceItem;
 import com.uoscs09.theuos2.tab.booksearch.BookItem;
 import com.uoscs09.theuos2.tab.booksearch.BookStates;
 import com.uoscs09.theuos2.tab.buildings.BuildingRoom;
-import com.uoscs09.theuos2.tab.buildings.ClassRoomTimeTable;
+import com.uoscs09.theuos2.tab.buildings.ClassroomTimeTable;
 import com.uoscs09.theuos2.tab.emptyroom.EmptyRoomInfo;
 import com.uoscs09.theuos2.tab.libraryseat.SeatInfo;
 import com.uoscs09.theuos2.tab.restaurant.RestItem;
@@ -55,7 +55,7 @@ class ConverterFactory extends Converter.Factory {
                     || cls.equals(SubjectInformation.class)
                     || cls.equals(BookStates.class)
                     || cls.equals(BuildingRoom.class)
-                    || cls.equals(ClassRoomTimeTable.class)) {
+                    || cls.equals(ClassroomTimeTable.class)) {
                 return new XmlConverter(cls);
             } else if (cls.equals(AnnounceItem.class)) {
                 if (annotations[1].toString().contains("/list.do")) {

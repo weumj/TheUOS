@@ -3,13 +3,12 @@ package com.uoscs09.theuos2.http;
 import android.text.TextUtils;
 import android.util.SparseArray;
 
-import com.uoscs09.theuos2.parse.XmlParserWrapper;
 import com.uoscs09.theuos2.tab.announce.AnnounceItem;
 import com.uoscs09.theuos2.tab.booksearch.BookItem;
 import com.uoscs09.theuos2.tab.booksearch.BookStateInfo;
 import com.uoscs09.theuos2.tab.booksearch.BookStates;
 import com.uoscs09.theuos2.tab.buildings.BuildingRoom;
-import com.uoscs09.theuos2.tab.buildings.ClassRoomTimeTable;
+import com.uoscs09.theuos2.tab.buildings.ClassroomTimeTable;
 import com.uoscs09.theuos2.tab.emptyroom.EmptyRoom;
 import com.uoscs09.theuos2.tab.emptyroom.EmptyRoomInfo;
 import com.uoscs09.theuos2.tab.libraryseat.SeatInfo;
@@ -22,12 +21,9 @@ import com.uoscs09.theuos2.tab.subject.CoursePlanItem;
 import com.uoscs09.theuos2.tab.subject.SubjectInformation;
 import com.uoscs09.theuos2.tab.subject.SubjectItem2;
 import com.uoscs09.theuos2.tab.subject.TimeTableSubjectInfo;
-import com.uoscs09.theuos2.tab.timetable.ParseTimeTable2;
-import com.uoscs09.theuos2.tab.timetable.ParseTimetable3;
+import com.uoscs09.theuos2.tab.timetable.ParseTimetable;
 import com.uoscs09.theuos2.tab.timetable.SubjectInfoItem;
-import com.uoscs09.theuos2.tab.timetable.TimeTable;
 import com.uoscs09.theuos2.tab.timetable.Timetable2;
-import com.uoscs09.theuos2.tab.timetable.TimetableUtil;
 import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.StringUtil;
@@ -167,26 +163,13 @@ public class NetworkRequests {
     }
 
     public static class TimeTables {
-        private static final XmlParserWrapper<TimeTable> PARSER = new XmlParserWrapper<>(new ParseTimeTable2());
 
-        public static Task<TimeTable> request(CharSequence id, CharSequence passwd, OApiUtil.Semester semester, CharSequence year) {
-            return TimeTableHttpRequest.newRequest(id, passwd, semester, year)
-                    .wrap(PARSER)
-                    .wrap(timeTable -> {
-                        TimetableUtil.makeColorTable(timeTable);
-                        timeTable.getClassTimeInformationTable();
-
-                        return timeTable;
-                    });
-        }
-
-
-        public static Task<Timetable2> request2(CharSequence id, CharSequence passwd, OApiUtil.Semester semester, CharSequence year) {
+        public static Task<Timetable2> request(CharSequence id, CharSequence passwd, OApiUtil.Semester semester, CharSequence year) {
             return TimeTableHttpRequest.newRequest(id, passwd, semester, year)
                     .wrap(httpURLConnection -> {
                         InputStream inputStream = httpURLConnection.getInputStream();
                         try {
-                            return new ParseTimetable3().parse(inputStream);
+                            return new ParseTimetable().parse(inputStream);
                         } finally {
                             IOUtil.closeStream(inputStream);
                             httpURLConnection.disconnect();
@@ -333,8 +316,8 @@ public class NetworkRequests {
             return oApi().buildings(OApiUtil.UOS_API_KEY);
         }
 
-        public static Task<ClassRoomTimeTable> classRoomTimeTables(String year, String term, BuildingRoom.RoomInfo roomInfo) {
-            return oApi().classRoomTimeTables(OApiUtil.UOS_API_KEY, year, term, roomInfo.building(), roomInfo.code());
+        public static Task<ClassroomTimeTable> classRoomTimeTables(String year, String term, BuildingRoom.RoomInfo roomInfo) {
+            return oApi().classRoomTimeTables(OApiUtil.UOS_API_KEY, year, term, roomInfo.buildingCode(), roomInfo.code());
         }
     }
 }

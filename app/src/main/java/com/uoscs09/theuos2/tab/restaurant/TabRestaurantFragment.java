@@ -31,6 +31,12 @@ import jp.wasabeef.recyclerview.adapters.SlideInBottomAnimationAdapter;
 import jp.wasabeef.recyclerview.animators.SlideInDownAnimator;
 
 public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestItem>> {
+
+    @Override
+    protected int layoutRes() {
+        return R.layout.tab_restaurant;
+    }
+
     private static final String BUTTON = "button";
     private static final String REST = "rest_list";
 
@@ -112,10 +118,6 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
 
     }
 
-    @Override
-    protected int layoutRes() {
-        return R.layout.tab_restaurant;
-    }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {

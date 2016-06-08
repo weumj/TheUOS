@@ -7,6 +7,8 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.support.annotation.AttrRes;
+import android.support.annotation.ColorRes;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -22,12 +24,13 @@ import com.uoscs09.theuos2.TabHomeFragment;
 import com.uoscs09.theuos2.UosMainActivity;
 import com.uoscs09.theuos2.tab.announce.TabAnnounceFragment;
 import com.uoscs09.theuos2.tab.booksearch.TabBookSearchFragment;
+import com.uoscs09.theuos2.tab.buildings.TabBuildingRoomFragment;
 import com.uoscs09.theuos2.tab.emptyroom.TabSearchEmptyRoomFragment;
 import com.uoscs09.theuos2.tab.libraryseat.TabLibrarySeatFragment;
 import com.uoscs09.theuos2.tab.restaurant.TabRestaurantFragment;
 import com.uoscs09.theuos2.tab.schedule.UnivScheduleFragment;
 import com.uoscs09.theuos2.tab.subject.TabSearchSubjectFragment2;
-import com.uoscs09.theuos2.tab.timetable.TabTimeTableFragment2;
+import com.uoscs09.theuos2.tab.timetable.TabTimeTableFragment;
 
 import java.util.ArrayList;
 
@@ -38,7 +41,7 @@ public class AppUtil {
     // public static final String DB_PHONE = "PhoneNumberDB.db";
     public static final int RELAUNCH_ACTIVITY = 6565;
 
-    private static final int MAX_PAGE_SIZE_NORMAL = 9;
+    private static final int MAX_PAGE_SIZE_NORMAL = 10;
 
     private static int PAGE_SIZE = MAX_PAGE_SIZE_NORMAL;
     private static AppTheme theme;
@@ -105,51 +108,42 @@ public class AppUtil {
         PAGE_SIZE = MAX_PAGE_SIZE_NORMAL;//test ? 13 : MAX_PAGE_SIZE_NORMAL;
     }
 
-/*
+    // todo Page -> TabInfo
     public enum TabInfo {
-        Home(TabHomeFragment.class, R.string.title_section0_home, R.drawable.ic_launcher),
-        Announce(TabAnnounceFragment.class, R.string.title_tab_announce, R.attr.theme_ic_action_action_view_list),
-        Schedule(UnivScheduleFragment.class, R.string.title_tab_schedule, R.attr.theme_ic_action_calendar),
-        Restaurant(TabRestaurantFragment.class, R.string.title_tab_restaurant, R.attr.theme_ic_action_maps_local_restaurant),
-        BookSearch(TabBookSearchFragment.class, R.string.title_tab_book_search, R.attr.theme_ic_action_book_search),
-        LibrarySeat(TabLibrarySeatFragment.class, R.string.title_tab_library_seat, R.attr.theme_ic_action_book_opened),
-        TimeTable(TabTimeTableFragment2.class, R.string.title_tab_timetable, R.attr.theme_ic_action_timetable),
-        Map(TabMapFragment.class, R.string.title_tab_map, R.attr.theme_ic_action_maps_place),
-        EmptyRoom(TabSearchEmptyRoomFragment.class, R.string.title_tab_search_empty_room, R.attr.theme_ic_action_action_search),
-        SearchSubject(TabSearchSubjectFragment2.class, R.string.title_tab_search_subject, R.attr.theme_ic_action_content_content_paste),
+        Home(0, TabHomeFragment.class, R.string.title_section0_home, R.drawable.ic_launcher),
+        Announce(1, TabAnnounceFragment.class, R.string.title_tab_announce, R.attr.theme_ic_action_action_view_list),
+        Schedule(2, UnivScheduleFragment.class, R.string.title_tab_schedule, R.attr.theme_ic_action_calendar),
+        Restaurant(3, TabRestaurantFragment.class, R.string.title_tab_restaurant, R.attr.theme_ic_action_maps_local_restaurant),
+        BookSearch(4, TabBookSearchFragment.class, R.string.title_tab_book_search, R.attr.theme_ic_action_book_search),
+        LibrarySeat(5, TabLibrarySeatFragment.class, R.string.title_tab_library_seat, R.attr.theme_ic_action_book_opened),
+        TimeTable(6, TabTimeTableFragment.class, R.string.title_tab_timetable, R.attr.theme_ic_action_timetable),
 
-        // disable
+        EmptyRoom(7, TabSearchEmptyRoomFragment.class, R.string.title_tab_search_empty_room, R.attr.theme_ic_action_action_search),
+        SearchSubject(8, TabSearchSubjectFragment2.class, R.string.title_tab_search_subject, R.attr.theme_ic_action_content_content_paste),
+        BuildingRoom(9, TabBuildingRoomFragment.class, R.string.title_tab_building_classroom, R.attr.theme_ic_action_action_about);
+
+        /* disable
         Phone(TabPhoneFragment.class, R.string.title_tab_phone, R.attr.theme_ic_action_communication_call),
         CheckCourseEval(ScoreFragment.class, R.string.title_tab_score, R.attr.theme_ic_action_content_content_copy),
         Transport(TabTransportFragment.class, R.string.title_tab_transport, R.attr.theme_ic_action_maps_directions);
+        Map(TabMapFragment.class, R.string.title_tab_map, R.attr.theme_ic_action_maps_place),
+        */
 
+        public final int defaultOrder;
         public final Class<? extends Fragment> tabClass;
         @StringRes
         public final int title;
-        private CharSequence titleText;
         final int iconRes;
 
-        TabInfo(Class<? extends Fragment> tabClass, @StringRes int titleId, int iconRes) {
+        TabInfo(int defaultOrder, Class<? extends Fragment> tabClass, @StringRes int titleId, int iconRes) {
+            this.defaultOrder = defaultOrder;
             this.tabClass = tabClass;
             this.title = titleId;
             this.iconRes = iconRes;
         }
 
-        public int getIcon(Context context) {
-            if (this.equals(Home))
-                return iconRes;
-            else
-                return getAttrValue(context, iconRes);
-        }
-
-        public CharSequence getTitle(Context context){
-            if(titleText == null)
-                titleText = context.getText(title);
-
-            return titleText;
-        }
-
-        public Fragment getFragment(){
+        @Nullable
+        public Fragment getFragment() {
             try {
                 return tabClass.newInstance();
             } catch (Exception e) {
@@ -159,7 +153,14 @@ public class AppUtil {
             }
         }
 
-        public static TabInfo find(@StringRes int titleId){
+        public int getIcon(Context context) {
+            if (this.equals(Home))
+                return iconRes;
+            else
+                return getAttrValue(context, iconRes);
+        }
+
+        public static TabInfo find(@StringRes int titleId) {
             switch (titleId) {
                 case R.string.title_section0_home:
                     return Home;
@@ -176,12 +177,6 @@ public class AppUtil {
                 case R.string.title_tab_library_seat:
                     return LibrarySeat;
 
-                case R.string.title_tab_map:
-                    return Map;
-
-                case R.string.title_tab_phone:
-                    return Phone;
-
                 case R.string.title_tab_timetable:
                     return TimeTable;
 
@@ -193,20 +188,26 @@ public class AppUtil {
 
                 case R.string.title_tab_schedule:
                     return Schedule;
+/*
+                case R.string.title_tab_map:
+                    return Map;
+
+                case R.string.title_tab_phone:
+                    return Phone;
 
                 case R.string.title_tab_score:
                     return CheckCourseEval;
 
                 case R.string.title_tab_transport:
                     return Transport;
-
+*/
                 default:
                     return null;
             }
         }
 
     }
-*/
+
 
     public static class Page {
         public int stringId;
@@ -383,15 +384,17 @@ public class AppUtil {
                 return R.string.title_tab_search_empty_room;
             case 8:
                 return R.string.title_tab_search_subject;
+            case 9:
+                return R.string.title_tab_building_classroom;
 
             // unused
-            case 9:
+            case 20:
                 return R.string.title_tab_map;
-            case 10:
+            case 21:
                 return R.string.title_tab_phone;
-            case 11:
+            case 22:
                 return R.string.title_tab_score;
-            case 12:
+            case 23:
                 return R.string.title_tab_transport;
 
             case 98:
@@ -439,6 +442,10 @@ public class AppUtil {
 
             case R.string.title_tab_schedule:
                 id = R.attr.theme_ic_action_calendar;
+                break;
+
+            case R.string.title_tab_building_classroom:
+                id = R.attr.theme_ic_action_action_about;
                 break;
 
             //unused
@@ -513,6 +520,9 @@ public class AppUtil {
 
             case R.string.title_tab_schedule:
                 return R.drawable.ic_action_calendar_white;
+
+            case R.string.title_tab_building_classroom:
+                return R.drawable.ic_action_action_about_white;
 
             case R.string.title_tab_score:
                 return R.drawable.ic_action_content_content_copy_white;
@@ -592,7 +602,7 @@ public class AppUtil {
                 return TabMapFragment.class;
             */
             case R.string.title_tab_timetable:
-                return TabTimeTableFragment2.class;
+                return TabTimeTableFragment.class;
 
             case R.string.title_tab_search_empty_room:
                 return TabSearchEmptyRoomFragment.class;
@@ -602,6 +612,9 @@ public class AppUtil {
 
             case R.string.title_tab_schedule:
                 return UnivScheduleFragment.class;
+
+            case R.string.title_tab_building_classroom:
+                return TabBuildingRoomFragment.class;
 
             /*
             case R.string.title_tab_phone:
@@ -648,7 +661,7 @@ public class AppUtil {
             return R.string.title_tab_map;
 
 
-        else if (fragmentClass.equals(TabTimeTableFragment2.class))
+        else if (fragmentClass.equals(TabTimeTableFragment.class))
             return R.string.title_tab_timetable;
 
         else if (fragmentClass.equals(TabSearchEmptyRoomFragment.class))
@@ -721,8 +734,16 @@ public class AppUtil {
         if (context != null) {
             showToast(context, context.getText(R.string.error_occur) + " : " + e.getMessage(), isVisible);
         }
+        e.printStackTrace();
     }
 
+    /**
+     * 기본 메시지가 <b>R.string.progress_while_updating</b>인 <br>
+     * 진행바가 원 모양인 ProgressDialog 를 생성한다.
+     */
+    public static MaterialDialog getProgressDialog(Context context) {
+        return getProgressDialog(context, false, context.getString(R.string.progress_while_updating), null);
+    }
 
     /**
      * 기본 메시지가 <b>R.string.progress_while_updating</b>인 <br>
@@ -771,6 +792,7 @@ public class AppUtil {
         return ContextCompat.getColor(context, getOrderedColorRes(index));
     }
 
+    @ColorRes
     public static int getOrderedColorRes(int index) {
         switch (index % 17) {
             case 0:

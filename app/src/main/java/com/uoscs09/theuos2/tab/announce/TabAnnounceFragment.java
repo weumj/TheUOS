@@ -30,6 +30,7 @@ import com.uoscs09.theuos2.util.AppUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -415,7 +416,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>>
 
     private void updatePageNumber(int pageIndex) {
         if (mPageIndexView != null)
-            mPageIndexView.setText(String.format("%d PAGE", pageIndex));
+            mPageIndexView.setText(String.format(Locale.getDefault(), "%d PAGE", pageIndex));
         mCurrentPageIndex = pageIndex;
     }
 

@@ -38,6 +38,11 @@ import se.emilsjolander.stickylistheaders.ExpandableStickyListHeadersListView;
 
 public class UnivScheduleFragment extends AbsProgressFragment<List<UnivScheduleItem>> {
 
+    @Override
+    protected int layoutRes() {
+        return R.layout.tab_univ_schedule;
+    }
+
     private static final int PERMISSION_REQUEST_CALENDAR = 12;
 
     private static final String SELECTION = "((" + CalendarContract.Calendars.ACCOUNT_NAME + " = ?) AND ("
@@ -69,10 +74,6 @@ public class UnivScheduleFragment extends AbsProgressFragment<List<UnivScheduleI
         outState.putString("subTitle", mSubTitle);
     }
 
-    @Override
-    protected int layoutRes() {
-        return R.layout.tab_univ_schedule;
-    }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -241,7 +242,6 @@ public class UnivScheduleFragment extends AbsProgressFragment<List<UnivScheduleI
                 },
                 e -> {
                     mProgressDialog.dismiss();
-                    e.printStackTrace();
 
                     AppUtil.showErrorToast(getActivity(), e, isMenuVisible());
                 }

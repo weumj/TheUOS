@@ -83,7 +83,7 @@ public abstract class BaseActivity extends AppCompatActivity implements TrackerU
 
     // String...
     @PermissionChecker.PermissionResult
-    protected boolean checkSelfPermissionCompat(@NonNull String[] permissions) {
+    protected boolean checkSelfPermissionCompat(@NonNull String... permissions) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
             return true;
         else {

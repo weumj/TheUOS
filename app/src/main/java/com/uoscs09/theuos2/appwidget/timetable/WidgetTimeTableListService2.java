@@ -9,16 +9,13 @@ import android.widget.RemoteViewsService;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsListRemoteViewsFactory;
-import com.uoscs09.theuos2.tab.timetable.Subject;
-import com.uoscs09.theuos2.tab.timetable.TimeTable;
+import com.uoscs09.theuos2.tab.timetable.Timetable2;
 import com.uoscs09.theuos2.tab.timetable.TimetableUtil;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.PrefHelper;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import java.util.Calendar;
-import java.util.Locale;
-import java.util.Map;
 
 public abstract class WidgetTimeTableListService2 extends RemoteViewsService {
 
@@ -29,8 +26,8 @@ public abstract class WidgetTimeTableListService2 extends RemoteViewsService {
 
     protected abstract ListRemoteViewsFactory getListRemoteViewsFactory(Context context, Intent intent);
 
-    protected static abstract class ListRemoteViewsFactory extends AbsListRemoteViewsFactory<Subject[]> {
-        private TimeTable mTimeTable;
+    protected static abstract class ListRemoteViewsFactory extends AbsListRemoteViewsFactory<Timetable2.Period> {
+        private Timetable2 mTimeTable;
         private final int[] viewIds = {
                 R.id.widget_time_table_list_peroid,
                 R.id.widget_time_table_list_mon_frame,
@@ -67,7 +64,7 @@ public abstract class WidgetTimeTableListService2 extends RemoteViewsService {
 
         @Override
         public int getCount() {
-            return PrefHelper.TimeTables.isShowingLastEmptyPeriod() ? (mTimeTable != null ? mTimeTable.maxTime : 0) : super.getCount();
+            return PrefHelper.TimeTables.isShowingLastEmptyPeriod() ? (mTimeTable != null ? mTimeTable.maxPeriod() : 0) : super.getCount();
         }
 
 
@@ -75,8 +72,7 @@ public abstract class WidgetTimeTableListService2 extends RemoteViewsService {
 
         @Override
         public RemoteViews getViewAt(int position) {
-            RemoteViews views = new RemoteViews(getContext().getPackageName(),
-                    isBigSize() ? R.layout.list_layout_widget_timetable_5x4 : R.layout.list_layout_widget_timetable_4x4);
+            RemoteViews views = new RemoteViews(getContext().getPackageName(), isBigSize() ? R.layout.list_layout_widget_timetable_5x4 : R.layout.list_layout_widget_timetable_4x4);
 
             views.setTextViewText(viewIds[0], periodTimeArray[position]);
 
@@ -84,11 +80,8 @@ public abstract class WidgetTimeTableListService2 extends RemoteViewsService {
                 getData();
             }
 
-            Map<String, Integer> colorTable = mTimeTable.getColorTable();
-
-            Subject[] subjects = getItem(position);
+            Timetable2.Period period = getItem(position);
             int today = Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 1;
-            boolean isLocaleKor = Locale.getDefault().equals(Locale.KOREA);
 
             //월요일 (1) ~ 금요일 (5)
             for (int weekIndex = 1; weekIndex < viewIds.length; weekIndex++) {
@@ -105,29 +98,21 @@ public abstract class WidgetTimeTableListService2 extends RemoteViewsService {
                     views.setTextColor(subId, Color.WHITE);
                 }
 
-                Subject subject = subjects[subjectIndex];
+                Timetable2.SubjectInfo subject = period.getSubjectInfo(subjectIndex);
                 // 현재 표시하려는 과목과 리스트뷰의 한 단계 위의 과목의 이름이 같으면
                 // 내용을 표시하지 않음
-                if (subject.isEqualToUpperPeriod) {
+
+                if (subject == null || subject.isEqualPrior()) {
                     views.setTextViewText(id, StringUtil.NULL);
                     views.setTextViewText(subId, StringUtil.NULL);
-
                 } else {
-                    if (isLocaleKor) {
-                        views.setTextViewText(id, subject.subjectName);
-                    } else {
-                        views.setTextViewText(id, subject.subjectNameEng);
-                    }
-
-                    if (subject.univBuilding != null)
-                        views.setTextViewText(subId, (isLocaleKor ? subject.univBuilding.nameKor : subject.univBuilding.nameEng) + StringUtil.NEW_LINE + subject.building);
-                    else
-                        views.setTextViewText(subId, StringUtil.NULL);
+                    views.setTextViewText(id, subject.name());
+                    views.setTextViewText(subId, String.format("%s\n%s\n%s", subject.professor(), subject.location(), subject.building().getLocaleName()));
                 }
 
                 // 과목 배경색 설정
-                Integer idx = colorTable.get(subjects[subjectIndex].subjectName);
-                views.setInt(viewIds[weekIndex], "setBackgroundColor", idx != null ? TimetableUtil.getTimeTableColor(getContext(), idx) : 0);
+                int idx = mTimeTable.color(subject);
+                views.setInt(viewIds[weekIndex], "setBackgroundColor", idx != -1 ? TimetableUtil.getTimeTableColor(getContext(), idx) : 0);
             }
 
             return views;
@@ -150,9 +135,11 @@ public abstract class WidgetTimeTableListService2 extends RemoteViewsService {
             } catch (Throwable e) {
                 e.printStackTrace();
             }
+
             clear();
+
             if (mTimeTable != null) {
-                addAll(mTimeTable.subjects);
+                addAll(mTimeTable.periods());
             }
         }
 

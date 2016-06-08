@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/tab_timetable_list_period"
+    android:layout_width="wrap_content"
+    android:layout_height="fill_parent"
+    android:layout_gravity="center"
+    android:background="?attr/cardBackgroundColor"
+    android:gravity="center">
+
+    <com.balysv.materialripple.MaterialRippleLayout
+        android:id="@+id/tab_timetable_list_period_ripple"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_gravity="center"
+        app:mrl_rippleColor="?colorPrimaryDark"
+        app:mrl_rippleDelayClick="true">
+
+        <TextSwitcher
+            android:id="@+id/switcher"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center">
+
+            <TextView
+                android:id="@+id/tab_timetable_list_text_period"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:gravity="center"
+                android:textColor="?attr/colorPrimaryDark" />
+
+            <TextView
+                android:id="@+id/tab_timetable_list_text_time"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:gravity="center"
+                android:textColor="?attr/colorPrimaryDark"
+                android:textSize="14sp" />
+        </TextSwitcher>
+
+    </com.balysv.materialripple.MaterialRippleLayout>
+</LinearLayout>
