@@ -25,9 +25,12 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.BaseActivity;
+import com.uoscs09.theuos2.util.AnimUtil;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.OApiUtil.UnivBuilding;
 
@@ -75,6 +78,11 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
 
     }
 
+    @OnClick(R.id.action_backward)
+    void back() {
+        onBackPressed();
+    }
+
     @OnClick(R.id.tab_map_fab)
     void fabClick() {
         selectWelfareBuildingMenu();
@@ -89,6 +97,8 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
     private void initMap() {
         if (googleMap == null) {
             ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.tab_map_submap)).getMapAsync(this::initGoogleMapSetting);
+        } else {
+            loadDefaultMapLocation();
         }
     }
 
@@ -102,17 +112,50 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
             googleMap.setBuildingsEnabled(true);
             //noinspection MissingPermission
             googleMap.setMyLocationEnabled(true);
-
-            if (selectedBuilding != -1) {
-                showBuildingItem(selectedBuilding);
-                selectedBuilding = -1;
-            } else {
-                moveCamera(UnivBuilding.Univ);
-                setMapMarker(UnivBuilding.Univ);
-            }
-
-            locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+            ButtonMover bm = new ButtonMover();
+            googleMap.setOnMarkerClickListener(bm);
+            googleMap.setOnMapClickListener(bm);
+            loadDefaultMapLocation();
         }
+    }
+
+    private class ButtonMover implements GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
+        private boolean isButtonMove = false;
+        private final float distance;
+
+        public ButtonMover() {
+            distance = getResources().getDimension(R.dimen.dp16);
+        }
+
+        @Override
+        public void onMapClick(LatLng latLng) {
+            if (isButtonMove) {
+                button.animate().yBy(distance).start();
+                isButtonMove = false;
+            }
+        }
+
+        @Override
+        public boolean onMarkerClick(Marker marker) {
+            if (!isButtonMove) {
+                button.animate().yBy(-distance).start();
+                isButtonMove = true;
+            }
+            return false;
+        }
+    }
+
+
+    private void loadDefaultMapLocation() {
+        if (selectedBuilding != -1) {
+            showBuildingItem(selectedBuilding);
+            selectedBuilding = -1;
+        } else {
+            moveCamera(UnivBuilding.Univ);
+            setMapMarker(UnivBuilding.Univ);
+        }
+
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
     }
 
     @Override
@@ -122,7 +165,7 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
         if (locationManager == null)
             locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
-        if (!isLocationUpdates) {
+        if (!isLocationUpdates && googleMap != null) {
             Criteria criteria = new Criteria();
             String provider = locationManager.getBestProvider(criteria, true);
             if (provider == null) {
@@ -186,6 +229,8 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
             case PERMISSION_REQUEST_LOCATION:
                 if (checkPermissionResultAndShowToastIfFailed(permissions, grantResults, R.string.tab_map_permission_denied)) {
                     initMap();
+                } else {
+                    finish();
                 }
                 break;
 
@@ -303,7 +348,9 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
             mMenuDialog = new AlertDialog.Builder(this)
                     .setView(v)
                     .create();
-
+            mMenuDialog.setOnShowListener(dialog1 -> AnimUtil.revealShow(v, null));
+            //mMenuDialog.setOnDismissListener(dialog1 -> AnimUtil.revealShow(v, false, mMenuDialog));
+            //mMenuDialog.setOnCancelListener(dialog1 -> AnimUtil.revealShow(v, false, mMenuDialog));
         }
         mMenuDialog.show();
     }

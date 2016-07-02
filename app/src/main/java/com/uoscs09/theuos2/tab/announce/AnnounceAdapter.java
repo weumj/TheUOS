@@ -1,7 +1,6 @@
 package com.uoscs09.theuos2.tab.announce;
 
 import android.content.Context;
-import android.text.Html;
 import android.view.View;
 import android.widget.TextView;
 
@@ -9,9 +8,8 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 
 import java.util.List;
-import java.util.regex.Pattern;
 
-import butterknife.BindViews;
+import butterknife.BindView;
 
 class AnnounceAdapter extends AbsArrayAdapter<AnnounceItem, AnnounceAdapter.Holder> {
 
@@ -22,12 +20,17 @@ class AnnounceAdapter extends AbsArrayAdapter<AnnounceItem, AnnounceAdapter.Hold
     /**
      * <내용> 형식의 공지사항을 제대로 표시하기 위해 설정한 패턴
      */
-    private static final Pattern HTML_PATTERN = Pattern.compile(".*<[[a-z][A-Z][0-9]]+>.*");
+    //private static final Pattern HTML_PATTERN = Pattern.compile(".*<[[a-z][A-Z][0-9]]+>.*");
 
     @Override
     public void onBindViewHolder(int position, Holder holder) {
-        String[] array = getItem(position).toStringArray(getContext());
+        AnnounceItem item = getItem(position);
 
+
+        holder.title.setText(item.title);
+        holder.date.setText(item.date);
+
+        /*
         int i = 0;
         for (TextView tv : holder.textArray) {
 
@@ -42,6 +45,7 @@ class AnnounceAdapter extends AbsArrayAdapter<AnnounceItem, AnnounceAdapter.Hold
                 tv.setText(content);
             }
         }
+        */
     }
 
     @Override
@@ -51,9 +55,10 @@ class AnnounceAdapter extends AbsArrayAdapter<AnnounceItem, AnnounceAdapter.Hold
 
 
     static class Holder extends AbsArrayAdapter.ViewHolder {
-        @BindViews({R.id.tab_announce_list_text_type, R.id.tab_announce_list_text_title, R.id.tab_announce_list_text_date})
-        public TextView[] textArray;
-
+        @BindView(R.id.tab_announce_list_text_title)
+        public TextView title;
+        @BindView(R.id.tab_announce_list_text_date)
+        public TextView date;
         public Holder(View v) {
             super(v);
         }

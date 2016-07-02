@@ -24,6 +24,7 @@ import com.uoscs09.theuos2.common.PieProgressDrawable;
 import com.uoscs09.theuos2.tab.map.GoogleMapActivity;
 import com.uoscs09.theuos2.tab.subject.CoursePlanDialogFragment;
 import com.uoscs09.theuos2.tab.subject.SubjectItem2;
+import com.uoscs09.theuos2.util.AnimUtil;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
 
@@ -48,8 +49,6 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
     private ArrayAdapter<SubjectInfoItem> mClassDivSelectAdapter;
     private Timetable2.SubjectInfo mSubject;
     private Timetable2 mTimeTable;
-
-    private final CoursePlanDialogFragment mCoursePlanDialogFragment = new CoursePlanDialogFragment();
 
     private final PieProgressDrawable pieProgressDrawable = new PieProgressDrawable();
 
@@ -205,7 +204,7 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
             intent.putExtra("building", mSubject.building().code);
 
             sendClickEvent("map");
-            AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
+            AnimUtil.startActivityWithScaleUp(getActivity(), intent, v);
             dismiss();
 
         } else {
@@ -214,7 +213,7 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
     }
 
     @OnClick(R.id.dialog_timetable_button_info)
-    void showSubjectInfo() {
+    void showSubjectInfo(View v) {
 
         if (getActivity() == null)
             return;
@@ -236,7 +235,7 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
                             dismiss();
 
                         } else if (size == 1) {
-                            showCoursePlan(result.get(0).toSubjectItem(mTimeTable, mSubject));
+                            showCoursePlan(result.get(0).toSubjectItem(mTimeTable, mSubject), v);
                             dismiss();
 
                         } else {
@@ -283,17 +282,14 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
         ListView divListView = (ListView) dialogView.findViewById(R.id.dialog_timetable_callback_listview_div);
         divListView.setAdapter(mClassDivSelectAdapter);
         divListView.setOnItemClickListener((adapter, arg1, pos, arg3) -> {
-            showCoursePlan(mClassDivSelectAdapter.getItem(pos).toSubjectItem(mTimeTable, mSubject));
+            showCoursePlan(mClassDivSelectAdapter.getItem(pos).toSubjectItem(mTimeTable, mSubject), arg1);
 
             mClassDivSelectDialog.dismiss();
         });
     }
 
-    private void showCoursePlan(SubjectItem2 subject) {
-        if (!mCoursePlanDialogFragment.isAdded()) {
-            mCoursePlanDialogFragment.setSubjectItem(subject);
-            mCoursePlanDialogFragment.show(getFragmentManager(), "course");
-        }
+    private void showCoursePlan(SubjectItem2 subject, View v) {
+        CoursePlanDialogFragment.fetchCoursePlanAndShow(this, subject,v );
     }
 
     @NonNull

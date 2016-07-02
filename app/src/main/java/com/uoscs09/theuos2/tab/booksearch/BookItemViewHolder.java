@@ -107,8 +107,7 @@ class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements View.OnCl
                 item.bookStateInfoList = Collections.emptyList();
                 removeAllBookStateInLayout();
             } else {
-                task = AppRequests.Books.requestBookStateInfo(item.infoUrl);
-                task.getAsync(result -> {
+                task = AppRequests.Books.requestBookStateInfo(item.infoUrl).getAsync(result -> {
                             item.bookStateInfoList = result;
 
                             // 처리 후, ViewHolder item 과 결과 item 이 다르다면 무시

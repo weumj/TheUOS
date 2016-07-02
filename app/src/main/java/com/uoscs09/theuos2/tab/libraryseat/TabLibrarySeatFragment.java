@@ -20,6 +20,7 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.base.ViewHolder;
 import com.uoscs09.theuos2.common.PieProgressDrawable;
+import com.uoscs09.theuos2.util.AnimUtil;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.StringUtil;
@@ -59,8 +60,6 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> {
     @BindView(R.id.tab_library_list_seat)
     RecyclerView mSeatListView;
 
-    private SeatDismissDialogFragment mSeatDismissDialogFragment;
-
     private SeatInfo mSeatInfo;
     private boolean isAdapterItemClicked = false;
 
@@ -83,10 +82,6 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> {
         } else {
             mSeatInfo = new SeatInfo();
         }
-
-        mSeatDismissDialogFragment = new SeatDismissDialogFragment();
-        mSeatDismissDialogFragment.setSeatInfo(mSeatInfo);
-        mSeatDismissDialogFragment.setCancelable(true);
 
         super.onCreate(savedInstanceState);
     }
@@ -121,7 +116,7 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> {
                     .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
             // tracking 은 SubSeatWebActivity 에서 함.
-            AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
+            AnimUtil.startActivityWithScaleUp(getActivity(), intent, v);
             isAdapterItemClicked = false;
         });
 
@@ -164,14 +159,19 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> {
                 return true;
 
             case R.id.action_info:
-              //  if (isTaskRunning()) {
-              //      AppUtil.showToast(getActivity(), R.string.progress_while_loading, true);
-              //      return true;
-             //   }
+                //  if (isTaskRunning()) {
+                //      AppUtil.showToast(getActivity(), R.string.progress_while_loading, true);
+                //      return true;
+                //   }
 
                 sendClickEvent("dismiss info");
-                if (!mSeatDismissDialogFragment.isAdded())
-                    mSeatDismissDialogFragment.show(getFragmentManager(), "SeatDismissInfo");
+
+                final String tag = "SeatDismissInfo";
+                if (getFragmentManager().findFragmentByTag(tag) == null) {
+                    SeatDismissDialogFragment fragment = new SeatDismissDialogFragment();
+                    fragment.setSeatInfo(mSeatInfo);
+                    fragment.show(getFragmentManager(), "SeatDismissInfo");
+                }
 
                 return true;
 
@@ -194,7 +194,6 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> {
                     mSeatInfo.clearAndAddAll(result);
 
                     mSeatListView.getAdapter().notifyItemRangeInserted(0, result.seatItemList.size());
-                    mSeatDismissDialogFragment.notifyDataSetChanged();
                 },
                 e -> {
                     e.printStackTrace();
@@ -211,7 +210,7 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> {
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
 
-       // if (isVisibleToUser && mSwipeRefreshLayout != null)
+        // if (isVisibleToUser && mSwipeRefreshLayout != null)
         //    mSwipeRefreshLayout.setRefreshing(true);
     }
 

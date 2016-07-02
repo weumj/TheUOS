@@ -23,29 +23,19 @@ import retrofit2.Converter;
 class HtmlConverter implements Converter<ResponseBody, Object> {
     private static final Map<String, JerichoParser<?>> PARSER_MAP = new ArrayMap<>();
     private static final Map<String, String> CHARSET_MAP = new ArrayMap<>();
-    static final int OPTION_ANNOUNCE_SCHOLARSHIP = 123;
 
     private Class<?> clazz;
-    private int optional;
 
     HtmlConverter(Class<?> clazz) {
         this.clazz = clazz;
     }
 
-    HtmlConverter(Class<?> clazz, int optional) {
-        this(clazz);
-        this.optional = optional;
-    }
 
     @Override
     public Object convert(ResponseBody value) throws IOException {
         JerichoParser<?> parser;
 
         String className = clazz.getName();
-        //bad
-        if (clazz.equals(AnnounceItem.class)) {
-            className = className + optional;
-        }
 
         if (PARSER_MAP.containsKey(className)) {
             parser = PARSER_MAP.get(className);
@@ -60,7 +50,7 @@ class HtmlConverter implements Converter<ResponseBody, Object> {
             } else if (clazz.equals(WeekRestItem.class))
                 parser = new ParseRestaurantWeek();
             else if (clazz.equals(AnnounceItem.class)) {
-                parser = optional == OPTION_ANNOUNCE_SCHOLARSHIP ? ParseAnnounce.getScholarshipParser() : ParseAnnounce.getParser();
+                parser =ParseAnnounce.getParser();
             } else
                 throw new IOException("incompatible class input : " + clazz.getName());
 

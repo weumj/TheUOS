@@ -43,7 +43,8 @@ class ConverterFactory extends Converter.Factory {
         }
 
         try {
-            if (cls.equals(BookItem.class)
+            if (cls.equals(AnnounceItem.class)
+                    || cls.equals(BookItem.class)
                     || cls.equals(SeatInfo.class)
                     || cls.equals(RestItem.class)
                     || cls.equals(WeekRestItem.class)) {
@@ -57,14 +58,7 @@ class ConverterFactory extends Converter.Factory {
                     || cls.equals(BuildingRoom.class)
                     || cls.equals(ClassroomTimeTable.class)) {
                 return new XmlConverter(cls);
-            } else if (cls.equals(AnnounceItem.class)) {
-                if (annotations[1].toString().contains("/list.do")) {
-                    return new HtmlConverter(cls);
-                } else {
-                    return new HtmlConverter(cls, HtmlConverter.OPTION_ANNOUNCE_SCHOLARSHIP);
-                }
             }
-
             return null;
         } catch (IllegalStateException e) {
             return null;

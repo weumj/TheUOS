@@ -14,6 +14,7 @@ import android.widget.ListView;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
+import com.uoscs09.theuos2.util.AnimUtil;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.PrefHelper;
 import com.uoscs09.theuos2.util.TrackerUtil;
@@ -141,15 +142,18 @@ public class SettingsFileSelectDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        return new AlertDialog.Builder(getActivity())
-                .setView(createView())
-                        //.setIconAttribute(R.attr.theme_ic_action_image_image)
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> putPathToPref(getActivity(), path))
+        View view = createView();
+        Dialog dialog = new AlertDialog.Builder(getActivity())
+                .setView(view)
+                //.setIconAttribute(R.attr.theme_ic_action_image_image)
+                .setPositiveButton(android.R.string.ok, (dialog1, which) -> putPathToPref(path))
                 .setNegativeButton(android.R.string.cancel, null)
                 .create();
+
+        return  AnimUtil.applyRevealAnim(dialog, view);
     }
 
-    private void putPathToPref(Context context, String path) {
+    private void putPathToPref(String path) {
         PrefHelper.Data.putPath(PATH_KEY, path);
     }
 

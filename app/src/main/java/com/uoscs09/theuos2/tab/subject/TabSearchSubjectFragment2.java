@@ -260,10 +260,9 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<List<SubjectI
 
     @OnItemClick(R.id.tab_search_subject_list_view)
     public void onSubjectClicked(View v, int pos) {
-        if (!mCoursePlanDialogFragment.isAdded()) {
-            mCoursePlanDialogFragment.setSubjectItem(mSubjectList.get(pos));
-            mCoursePlanDialogFragment.show(getFragmentManager(), "course");
-        }
+        SubjectItem2 subjectItem2 = mSubjectList.get(pos);
+
+        CoursePlanDialogFragment.fetchCoursePlanAndShow(this, subjectItem2, v);
     }
 
     private void initDialog(View v) {

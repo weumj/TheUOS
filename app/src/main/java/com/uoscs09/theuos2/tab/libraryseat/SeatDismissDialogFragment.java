@@ -24,26 +24,41 @@ public class SeatDismissDialogFragment extends BaseDialogFragment {
     private View mDismissDialogView, mDismissEmptyView;
     private RecyclerView.Adapter mInfoAdapter;
     private SeatInfo mSeatInfo;
-    private Dialog mDialog;
+    // private Dialog mDialog;
 
     public void setSeatInfo(SeatInfo info) {
         mSeatInfo = info;
     }
 
-    @NonNull
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        if (mDialog == null) {
-            mDialog = new AlertDialog.Builder(getActivity())
-                    .setView(createView())
-                    .create();
-        } else {
-            notifyDataSetChanged();
-        }
-        return mDialog;
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
     }
 
-    private View createView() {
+    @NonNull
+    @Override
+    public final Dialog onCreateDialog(Bundle savedInstanceState) {
+        View view = createView();
+
+        return new AlertDialog.Builder(getActivity())
+                .setView(view)
+                .create();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mDismissDialogView = null;
+        mDismissEmptyView = null;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        this.mSeatInfo = null;
+    }
+
+    protected View createView() {
         if (mDismissDialogView == null) {
             mDismissDialogView = View.inflate(getActivity(), R.layout.dialog_seat_dismiss_info, null);
 

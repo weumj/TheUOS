@@ -47,8 +47,8 @@ public class TabBuildingRoomFragment extends AbsProgressFragment<BuildingRoom> {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ViewGroup mTabParent = (ViewGroup) LayoutInflater.from(getActivity()).inflate(R.layout.view_tab_announce_toolbar_menu, getToolbarParent(), false);
-        spinner = (Spinner) mTabParent.findViewById(R.id.tab_announce_action_spinner1);
+        ViewGroup mTabParent = (ViewGroup) LayoutInflater.from(getActivity()).inflate(R.layout.view_tab_building_toolbar_menu, getToolbarParent(), false);
+        spinner = (Spinner) mTabParent.findViewById(R.id.spinner);
 
         registerTabParentView(mTabParent);
     }
@@ -75,10 +75,8 @@ public class TabBuildingRoomFragment extends AbsProgressFragment<BuildingRoom> {
             dialog.show();
 
             final OApiUtil.Semester semester = OApiUtil.Semester.getSemesterByOrder(spinner.getSelectedItemPosition());
-            final Task<ClassroomTimeTable> task = AppRequests.Buildings.classRoomTimeTables(OApiUtil.getYear(), semester.code, item);
-            task.getAsync(
-                    classroomTimeTable -> {
-                        ClassroomTimetableDialogFragment.showTimetableDialog(this, classroomTimeTable, semester);
+            final Task<ClassroomTimeTable> task = AppRequests.Buildings.classRoomTimeTables(OApiUtil.getYear(), semester.code, item).getAsync(classroomTimeTable -> {
+                        ClassroomTimetableDialogFragment.showTimetableDialog(this, classroomTimeTable, semester, view1);
 
                         dialog.dismiss();
                         dialog.setOnCancelListener(null);

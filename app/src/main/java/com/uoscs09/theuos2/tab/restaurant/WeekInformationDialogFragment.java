@@ -3,10 +3,9 @@ package com.uoscs09.theuos2.tab.restaurant;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -18,7 +17,7 @@ import android.widget.TextView;
 
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.base.BaseDialogFragment;
+import com.uoscs09.theuos2.base.AbsAnimDialogFragment;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
 
@@ -26,7 +25,7 @@ import java.util.ArrayList;
 
 import mj.android.utils.task.Task;
 
-public class WeekInformationDialogFragment extends BaseDialogFragment {
+public class WeekInformationDialogFragment extends AbsAnimDialogFragment {
     private static final String TAG = "WeekInformationDialogFragment";
 
     private Toolbar mToolbar;
@@ -35,29 +34,51 @@ public class WeekInformationDialogFragment extends BaseDialogFragment {
     private ProgressWheel mProgressWheel;
     private View mFailView, mEmptyView;
 
-    private RestWeekAdapter mRestWeekAdapter;
+    private RestWeekAdapter mRestWeekAdapter = new RestWeekAdapter(new ArrayList<>());
     private int mCurrentSelectionId;
     private Task<WeekRestItem> mTask;
+
+    public static void fetchDataAndShow(final Fragment fragment, final int stringId, View v) {
+        Task<WeekRestItem> task = AppRequests.Restaurants.readWeekInfo(getCode(stringId), false);
+        Dialog d = AppUtil.getProgressDialog(fragment.getActivity(), false, (dialog, which) -> task.cancel());
+        d.show();
+
+        task.getAsync(result -> {
+                    d.dismiss();
+                    WeekInformationDialogFragment dialogFragment = new WeekInformationDialogFragment();
+                    dialogFragment.setSelection(stringId);
+                    dialogFragment.setWeekRestItem(result);
+                    dialogFragment.showFromView(fragment.getFragmentManager(), "week", v);
+                },
+                e -> {
+                    d.dismiss();
+                    AppUtil.showErrorToast(fragment.getActivity(), e, true);
+                }
+        );
+    }
 
     public void setSelection(int stringId) {
         this.mCurrentSelectionId = stringId;
     }
 
-    @NonNull
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        return new AlertDialog.Builder(getActivity())
-                .setView(createView())
-                .create();
+    public void setWeekRestItem(WeekRestItem weekRestItem) {
+        mRestWeekAdapter.restItemArrayList.clear();
+        mRestWeekAdapter.restItemArrayList.addAll(weekRestItem.weekList);
+        mRestWeekAdapter.notifyDataSetChanged();
     }
 
-    private View createView() {
+    @Override
+    protected View createView() {
         View rootView = View.inflate(getActivity(), R.layout.dialog_tab_rest_week, null);
 
         mToolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
-        mToolbar.setTitle(mCurrentSelectionId);
+        if (mCurrentSelectionId != 0) {
+            mToolbar.setTitle(mCurrentSelectionId);
 
-        sendTrackerEvent("view", getString(mCurrentSelectionId));
+            sendTrackerEvent("view", getString(mCurrentSelectionId));
+        } else {
+            dismiss();
+        }
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.tab_rest_week_swipe_layout);
         mSwipeRefreshLayout.setColorSchemeColors(AppUtil.getAttrColor(getActivity(), R.attr.colorPrimaryDark));
@@ -70,12 +91,10 @@ public class WeekInformationDialogFragment extends BaseDialogFragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
 
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(mRestWeekAdapter = new RestWeekAdapter(new ArrayList<>()));
+        recyclerView.setAdapter(mRestWeekAdapter);
 
         mProgressLayout = rootView.findViewById(R.id.progress_layout);
         mProgressWheel = (ProgressWheel) mProgressLayout.findViewById(R.id.progress_wheel);
-
-        execute(false);
 
         return rootView;
     }
@@ -107,15 +126,12 @@ public class WeekInformationDialogFragment extends BaseDialogFragment {
             mFailView.setVisibility(View.GONE);
 
 
-        mTask = AppRequests.Restaurants.readWeekInfo(getCode(mCurrentSelectionId), shouldUpdateUsingInternet);
-        mTask.getAsync(
+        mTask = AppRequests.Restaurants.readWeekInfo(getCode(mCurrentSelectionId), shouldUpdateUsingInternet).getAsync(
                 result -> {
                     postExecute();
 
                     ArrayList<RestItem> weekList = result.weekList;
-                    mRestWeekAdapter.restItemArrayList.clear();
-                    mRestWeekAdapter.restItemArrayList.addAll(weekList);
-                    mRestWeekAdapter.notifyDataSetChanged();
+                    setWeekRestItem(result);
 
                     if (weekList.isEmpty()) {
                         showEmptyView();
@@ -145,7 +161,7 @@ public class WeekInformationDialogFragment extends BaseDialogFragment {
         mTask = null;
     }
 
-    private static String getCode(int selection) {
+    static String getCode(int selection) {
         switch (selection) {
             case R.string.tab_rest_students_hall: // 학생회관
                 return "020";
@@ -165,7 +181,7 @@ public class WeekInformationDialogFragment extends BaseDialogFragment {
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
 
-        if(mTask != null)
+        if (mTask != null)
             mTask.cancel();
         mTask = null;
 

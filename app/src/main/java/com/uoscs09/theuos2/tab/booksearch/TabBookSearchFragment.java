@@ -30,6 +30,7 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.UosMainActivity;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
+import com.uoscs09.theuos2.util.AnimUtil;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.StringUtil;
@@ -185,13 +186,13 @@ public class TabBookSearchFragment extends AbsProgressFragment<List<BookItem>> i
         switch (v.getId()) {
             case R.id.tab_booksearch_list_book_image: {
                 Intent i = AppUtil.getWebPageIntent("http://mlibrary.uos.ac.kr" + item.url);
-                AppUtil.startActivityWithScaleUp(getActivity(), i, v);
+                AnimUtil.startActivityWithScaleUp(getActivity(), i, v);
                 break;
             }
             case R.id.tab_booksearch_list_book_site:
                 if (item.bookStateInt == BookItem.BOOK_STATE_ONLINE) {
                     Intent i = AppUtil.getWebPageIntent(item.site);
-                    AppUtil.startActivityWithScaleUp(getActivity(), i, v);
+                    AnimUtil.startActivityWithScaleUp(getActivity(), i, v);
                 }
                 break;
 

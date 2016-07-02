@@ -36,7 +36,7 @@ public class IndexPagerAdapter extends FixedFragmentStatePagerAdapter {
 
         Class<? extends Fragment> clz = AppUtil.getPageClass(list.get(position));
         if (clz == null) {
-            list = AppUtil.loadEnabledPageOrder(mContext);
+            list = AppUtil.loadEnabledPageOrder2();
             clz = AppUtil.getPageClass(list.get(position));
         }
 

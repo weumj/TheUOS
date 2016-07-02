@@ -139,7 +139,10 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
 
         mRecyclerView.setAdapter(new SlideInBottomAnimationAdapter(mRestItemAdapter = new RestItemAdapter(mRestTable)));
         mRestItemAdapter.setRestMenu(mCurrentSelection);
-        mRestItemAdapter.setExtraMenuListener(v -> showWeekDialog());
+        mRestItemAdapter.setExtraMenuListener(v -> {
+            sendClickEvent("show week");
+            WeekInformationDialogFragment.fetchDataAndShow(this, REST_TAB_MENU_STRING_ID[mCurrentSelection], v);
+        });
 
         mRecyclerView.setItemAnimator(new SlideInDownAnimator());
 
@@ -201,20 +204,13 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
 
                     mSwipeRefreshLayout.setRefreshing(false);
                 },
-                t->{
+                t -> {
                     simpleErrorRespond(t);
                     mSwipeRefreshLayout.setRefreshing(false);
                 }
         );
     }
 
-    private void showWeekDialog() {
-        sendClickEvent("show week");
-        WeekInformationDialogFragment dialogFragment = new WeekInformationDialogFragment();
-        dialogFragment.setSelection(REST_TAB_MENU_STRING_ID[mCurrentSelection]);
-
-        dialogFragment.show(getFragmentManager(), "week");
-    }
 
     @NonNull
     @Override

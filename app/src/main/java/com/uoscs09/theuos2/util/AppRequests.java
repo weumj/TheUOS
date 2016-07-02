@@ -34,7 +34,8 @@ public class AppRequests {
 
     public static class Announces {
         public static Task<List<AnnounceItem>> normalRequest(int category, int page) {
-            return NetworkRequests.Announces.normalRequest(category, page)
+            return NetworkRequests.Announces.normalRequest(category, page);
+            /*
                     .wrap(announceItems -> {
                         if (PrefHelper.Announces.isAnnounceExceptNoticeType()) {
                             final int size = announceItems.size();
@@ -47,10 +48,12 @@ public class AppRequests {
 
                         return announceItems;
                     });
+                    */
         }
 
         public static Task<List<AnnounceItem>> searchRequest(int category, int pageIndex, String query) {
-            return NetworkRequests.Announces.searchRequest(category, pageIndex, query)
+            return NetworkRequests.Announces.searchRequest(category, pageIndex, query);
+            /*
                     .wrap(announceItems -> {
                         final int size = announceItems.size();
                         for (int i = size - 1; i >= 0; i--) {
@@ -61,6 +64,7 @@ public class AppRequests {
 
                         return announceItems;
                     });
+                    */
         }
     }
 

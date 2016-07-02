@@ -42,13 +42,14 @@ import java.util.Map;
 import mj.android.utils.task.Task;
 import mj.android.utils.task.Tasks;
 
-import static com.uoscs09.theuos2.api.ApiService.URL_REST_WEEK;
-import static com.uoscs09.theuos2.api.ApiService.URL_SCHOLARSHIP;
-import static com.uoscs09.theuos2.api.ApiService.URL_SEATS;
-import static com.uoscs09.theuos2.api.ApiService.announceApi;
-import static com.uoscs09.theuos2.api.ApiService.libraryApi;
-import static com.uoscs09.theuos2.api.ApiService.oApi;
-import static com.uoscs09.theuos2.api.ApiService.restaurantApi;
+import static com.uoscs09.theuos2.api.UosApiService.URL_ANNOUNCE;
+import static com.uoscs09.theuos2.api.UosApiService.URL_REST_WEEK;
+import static com.uoscs09.theuos2.api.UosApiService.URL_SCHOLARSHIP;
+import static com.uoscs09.theuos2.api.UosApiService.URL_SEATS;
+import static com.uoscs09.theuos2.api.UosApiService.announceApi;
+import static com.uoscs09.theuos2.api.UosApiService.libraryApi;
+import static com.uoscs09.theuos2.api.UosApiService.oApi;
+import static com.uoscs09.theuos2.api.UosApiService.restaurantApi;
 
 // 네트워크와 파싱 관련된 작업만 수행하고, 파일 IO같은 작업은 AppResources에서 처리.
 public class NetworkRequests {
@@ -82,7 +83,7 @@ public class NetworkRequests {
             if (scholarship) {
                 return announceApi().scholarships(URL_SCHOLARSHIP, pageIndex, 1, null, null);
             } else {
-                return announceApi().announces(category.tag, pageIndex, null, null);
+                return announceApi().announces(URL_ANNOUNCE, category.tag, pageIndex, null, null);
             }
         }
 
@@ -95,15 +96,15 @@ public class NetworkRequests {
             if (scholarship) {
                 return announceApi().scholarships(URL_SCHOLARSHIP, pageIndex, 1, "title", query);
             } else {
-                return announceApi().announces(category.tag, pageIndex, "1", query);
+                return announceApi().announces(URL_ANNOUNCE, category.tag, pageIndex, "1", query);
             }
         }
 
-        public static Task<File> attachedFileDownloadRequest(String url, String docPath) {
+        public static Task<File> attachedFileDownloadRequest(String url, String docPath, String fileName) {
             return HttpRequest.Builder.newConnectionRequestBuilder(url)
                     .setHttpMethod(HttpRequest.HTTP_METHOD_POST)
                     .build()
-                    .wrap(new HttpRequest.FileDownloadProcessor(new File(docPath)));
+                    .wrap(new HttpRequest.FileDownloadProcessor(new File(docPath), fileName));
         }
     }
 

@@ -1,21 +1,18 @@
 package com.uoscs09.theuos2.util;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.support.annotation.AttrRes;
+import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.TypedValue;
-import android.view.View;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -41,7 +38,7 @@ public class AppUtil {
     // public static final String DB_PHONE = "PhoneNumberDB.db";
     public static final int RELAUNCH_ACTIVITY = 6565;
 
-    private static final int MAX_PAGE_SIZE_NORMAL = 10;
+    private static final int MAX_PAGE_SIZE_NORMAL = 9;
 
     private static int PAGE_SIZE = MAX_PAGE_SIZE_NORMAL;
     private static AppTheme theme;
@@ -284,7 +281,7 @@ public class AppUtil {
         return list;
     }
 
-    public static ArrayList<Page> loadPageOrder2(Context context) {
+    public static ArrayList<Page> loadPageOrder2() {
         ArrayList<Page> list = new ArrayList<>();
         PrefUtil pref = PrefUtil.getInstance(context);
         for (int i = 1; i < PAGE_SIZE; i++) {
@@ -294,16 +291,36 @@ public class AppUtil {
         return list;
     }
 
-    public static ArrayList<Integer> loadEnabledPageOrder(Context context) {
+    public static ArrayList<Integer> loadEnabledPageOrder2() {
         PrefUtil pref = PrefUtil.getInstance(context);
         ArrayList<Integer> tabList = new ArrayList<>();
         for (int i = 1; i < PAGE_SIZE; i++) {
             Page page = Page.read(pref, i);
 
-            if (page.isEnable)
-                tabList.add(page.stringId);
+            if (page.isEnable) tabList.add(page.stringId);
         }
 
+        return tabList;
+    }
+
+    public static ArrayList<Page> loadEnabledPageOrder() {
+        PrefUtil pref = PrefUtil.getInstance(context);
+        ArrayList<Page> tabList = new ArrayList<>();
+        for (int i = 1; i < PAGE_SIZE; i++) {
+            Page page = Page.read(pref, i);
+
+            if (page.isEnable) tabList.add(page);
+        }
+
+        return tabList;
+    }
+
+    public static ArrayList<Page> loadEnabledPageOrderWithSetting(){
+        ArrayList<Page> tabList = loadEnabledPageOrder();
+
+        Page page = new Page(tabList.size() + 1, true);
+        page.stringId = R.string.setting;
+        tabList.add(page);
         return tabList;
     }
 
@@ -557,6 +574,7 @@ public class AppUtil {
         return out.resourceId;
     }
 
+    @ColorInt
     public static int getAttrColor(Context context, @AttrRes int attrColorId) {
         return ContextCompat.getColor(context, getAttrValue(context, attrColorId));
     }
@@ -698,10 +716,6 @@ public class AppUtil {
         return CommonUtils.getWebPageIntent(webURL);
     }
 
-    public static void startActivityWithScaleUp(Activity activity, Intent intent, View v) {
-        ActivityCompat.startActivity(activity, intent, ActivityOptionsCompat.makeScaleUpAnimation(v, 0, 0, v.getWidth(), v.getHeight()).toBundle());
-    }
-
     public static void showInternetConnectionErrorToast(Context context, boolean isVisible) {
         showToast(context, R.string.error_internet, isVisible);
     }
@@ -841,7 +855,7 @@ public class AppUtil {
      * <br>
      * {@code false} - 그 외
      */
-    public static boolean isScreenSizeSmall(Context context) {
+    public static boolean isScreenSizeSmall() {
         int sizeInfoMasked = context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
 
         switch (sizeInfoMasked) {

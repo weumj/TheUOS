@@ -30,6 +30,7 @@ import com.uoscs09.theuos2.base.BaseActivity;
 import com.uoscs09.theuos2.common.BackPressCloseHandler;
 import com.uoscs09.theuos2.setting.SettingActivity;
 import com.uoscs09.theuos2.tab.map.GoogleMapActivity;
+import com.uoscs09.theuos2.util.AnimUtil;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.ImageUtil;
 import com.uoscs09.theuos2.util.PrefHelper;
@@ -88,7 +89,7 @@ public class UosMainActivity extends BaseActivity {
     private void initValues() {
 
         AppUtil.initStaticValues();
-        mPageOrderList = AppUtil.loadEnabledPageOrder(this);
+        mPageOrderList = AppUtil.loadEnabledPageOrder2();
         if (PrefHelper.Screens.isHomeEnable() || mPageOrderList.isEmpty()) {
             mPageOrderList.add(0, R.string.title_section0_home);
         }
@@ -263,7 +264,7 @@ public class UosMainActivity extends BaseActivity {
 
     @OnClick(R.id.drawer_btn_map)
     void toMap(View v) {
-        AppUtil.startActivityWithScaleUp(UosMainActivity.this, new Intent(this, GoogleMapActivity.class), v);
+        AnimUtil.startActivityWithScaleUp(UosMainActivity.this, new Intent(this, GoogleMapActivity.class), v);
     }
 
     @OnClick(R.id.drawer_btn_exit)
@@ -428,7 +429,7 @@ public class UosMainActivity extends BaseActivity {
         if (onBackPressListener != null && onBackPressListener.onBackPress())
             return;
 
-        if (AppUtil.isScreenSizeSmall(this) && mDrawerLayout.isDrawerOpen(mLeftDrawerLayout)) {
+        if (AppUtil.isScreenSizeSmall() && mDrawerLayout.isDrawerOpen(mLeftDrawerLayout)) {
             mDrawerLayout.closeDrawer(mLeftDrawerLayout);
 
         }/* else if (PrefUtil.getInstance(getApplicationContext()).get(PrefUtil.KEY_HOME, true)) {

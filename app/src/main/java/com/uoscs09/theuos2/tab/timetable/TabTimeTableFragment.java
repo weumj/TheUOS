@@ -27,6 +27,7 @@ import android.widget.Spinner;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
+import com.uoscs09.theuos2.util.AnimUtil;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.IOUtil;
@@ -204,8 +205,7 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
 
         mTimeTableAdapter.changeLayout(true);
 
-        final Task<String> task = TimetableUtil.saveTimetableToImage(mTimeTable, mTimetableListView, mTimeTableAdapter, getTabParentView());
-        task.getAsync(result -> {
+        final Task<String> task = TimetableUtil.saveTimetableToImage(mTimeTable, mTimetableListView, mTimeTableAdapter, getTabParentView()).getAsync(result -> {
                     dismissProgressDialog();
                     mTimeTableAdapter.changeLayout(false);
 
@@ -217,7 +217,7 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
                                 intent.setDataAndType(Uri.parse("file://" + result), "image/*");
 
                                 try {
-                                    AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
+                                    AnimUtil.startActivityWithScaleUp(getActivity(), intent, v);
                                     sendClickEvent("show timetable image");
                                 } catch (ActivityNotFoundException e) {
                                     //e.printStackTrace();

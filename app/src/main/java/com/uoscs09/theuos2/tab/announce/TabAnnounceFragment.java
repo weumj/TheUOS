@@ -25,6 +25,7 @@ import android.widget.TextView;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
+import com.uoscs09.theuos2.util.AnimUtil;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
 
@@ -162,10 +163,9 @@ public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>>
 
         Intent intent = new Intent(getActivity(), SubAnnounceWebActivity.class)
                 .putExtra(ITEM, mAnnounceAdapter.getItem(position))
-                .putExtra(INDEX_CATEGORY, getCurrentCategoryIndex())
-                .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                .putExtra(INDEX_CATEGORY, getCurrentCategoryIndex());
 
-        AppUtil.startActivityWithScaleUp(getActivity(), intent, view);
+        AnimUtil.startActivityWithScaleUp(getActivity(), intent, view);
     }
 
     @Override
@@ -327,7 +327,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>>
             // 페이지 선택에서 이동 가능한 최대 페이지 번호를
             // 공지사항의 인덱스를 기준으로 설정함
             if (mShouldChangeMaxValueOfPage) {
-                mPageNumberPicker.setMaxValue(getMaximumAnnounceIndex(result) / 10 + 1);
+                //mPageNumberPicker.setMaxValue(getMaximumAnnounceIndex(result) / 10 + 1);
                 mShouldChangeMaxValueOfPage = false;
             }
             mListFooterView.setVisibility(mAnnounceAdapter.isEmpty() ? View.GONE : View.VISIBLE);
@@ -355,7 +355,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>>
         // '다음 페이지 요청'의 경우 검색된 결과가 없다는 것은 마지막 페이지를 지났다는 것 이므로
         // 페이지를 업데이트 하지 않는다.
     }
-
+/*
     private int getMaximumAnnounceIndex(List<AnnounceItem> announceItems) {
         final int size = announceItems.size();
 
@@ -369,6 +369,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>>
 
         return 0;
     }
+    */
 
     private boolean checkResultNotEmpty(List<AnnounceItem> result) {
         if (result == null || result.size() == 0) {

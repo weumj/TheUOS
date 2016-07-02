@@ -3,14 +3,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/univ_pic"
-    android:gravity="center" >
+    android:clickable="true"
+    android:gravity="center">
 
     <FrameLayout
+        android:clickable="false"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:foreground="@drawable/dim" >
-    </FrameLayout>
+        android:foreground="@drawable/dim" />
 
+    <android.support.v7.widget.RecyclerView
+        android:paddingTop="@dimen/tab_home_recycler_view_top_margin"
+        android:clipToPadding="false"
+        android:clickable="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:id="@+id/tab_home_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!--
     <GridView
         android:id="@+id/tab_home_gridview"
         android:layout_width="match_parent"
@@ -28,7 +40,6 @@
         android:paddingTop="@dimen/tab_home_grid_view_vertical_margin"
         android:scrollbars="none"
         android:stretchMode="spacingWidthUniform"
-        android:verticalSpacing="10dip" >
-    </GridView>
-
+        android:verticalSpacing="10dip"/>
+-->
 </RelativeLayout>

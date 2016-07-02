@@ -26,6 +26,8 @@ public class SubjectInfoItem {
     @Element(name = "prof_nm")
     public String professorName;
 
+    //todo refactor
+    @Deprecated
     public SubjectItem2 toSubjectItem(Timetable2 timeTable, Timetable2.SubjectInfo subject) {
         SubjectItem2 item = new SubjectItem2();
         item.subject_no = subjectNo;

@@ -1,26 +1,34 @@
 package com.uoscs09.theuos2.tab.announce;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.util.Pair;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.webkit.WebSettings;
+import android.webkit.WebView;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.common.WebViewActivity;
+import com.uoscs09.theuos2.customview.NonLeakingWebView;
 import com.uoscs09.theuos2.http.NetworkRequests;
+import com.uoscs09.theuos2.util.AnimUtil;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.PrefHelper;
 
 import java.io.File;
+import java.util.List;
 
 import mj.android.utils.task.Task;
 
@@ -30,6 +38,7 @@ public class SubAnnounceWebActivity extends WebViewActivity {
     private String url;
     private AnnounceItem mItem;
     private int category;
+    private List<Pair<String, String>> attachedFileUrlPairList;
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -80,9 +89,19 @@ public class SubAnnounceWebActivity extends WebViewActivity {
 
         mWebView.setInitialScale(100);
 
-        //settings.setJavaScriptEnabled(true);
-        //mWebView.setWebViewClient(new AnnounceWebViewClient(this, selection));
+        // settings.setJavaScriptEnabled(true);
+        mWebView.setWebViewClient(new AnnounceWebViewClient(this));
         mWebView.loadUrl(url);
+
+        ParseAnnounce.fileNameUrlPairTask(url).getAsync(
+                pairs -> {
+                    this.attachedFileUrlPairList = pairs;
+                },
+                throwable -> {
+                    throwable.printStackTrace();
+                }
+        );
+
     }
 
     @NonNull
@@ -144,7 +163,16 @@ public class SubAnnounceWebActivity extends WebViewActivity {
     }
 
     private void downloadFile() {
-        if (TextUtils.isEmpty(mItem.attachedFileUrl)) {
+        String attachedFileUrl;
+        Pair<String, String> pair = null;
+        if (attachedFileUrlPairList == null || attachedFileUrlPairList.isEmpty()) {
+            attachedFileUrl = null;
+        } else {
+            pair = attachedFileUrlPairList.get(0);
+            attachedFileUrl = pair.second;
+        }
+
+        if (TextUtils.isEmpty(attachedFileUrl)) {
             AppUtil.showToast(this, R.string.tab_announce_no_download_link);
             return;
         }
@@ -156,24 +184,9 @@ public class SubAnnounceWebActivity extends WebViewActivity {
 
         Dialog progressDialog = AppUtil.getProgressDialog(this, false, getString(R.string.progress_downloading), null);
 
-        String url;
-        switch (category) {
-            case 3:
-                url = mItem.attachedFileUrl;
-                break;
-            case 4:
-            case 2:
-            case 1:
-                url = mItem.attachedFileUrl + NetworkRequests.Announces.Category.values()[category - 1].tag;
-                break;
-            default:
-                return;
-        }
-
         //noinspection ResourceType
         final String docPath = PrefHelper.Data.getDocumentPath();
-        final Task<File> task = NetworkRequests.Announces.attachedFileDownloadRequest(url, docPath);
-        task.getAsync(result -> {
+        final Task<File> task = NetworkRequests.Announces.attachedFileDownloadRequest(attachedFileUrl, docPath, pair.first).getAsync(result -> {
                     progressDialog.dismiss();
                     progressDialog.setOnCancelListener(null);
 
@@ -191,7 +204,7 @@ public class SubAnnounceWebActivity extends WebViewActivity {
                                         .setAction(Intent.ACTION_VIEW)
                                         .setDataAndType(fileUri, mimeType);
                                 try {
-                                    AppUtil.startActivityWithScaleUp(SubAnnounceWebActivity.this, intent, v);
+                                    AnimUtil.startActivityWithScaleUp(SubAnnounceWebActivity.this, intent, v);
                                 } catch (ActivityNotFoundException e) {
                                     //e.printStackTrace();
                                     AppUtil.showToast(SubAnnounceWebActivity.this, R.string.error_no_activity_found_to_handle_file);
@@ -215,42 +228,37 @@ public class SubAnnounceWebActivity extends WebViewActivity {
         sendClickEvent("download file");
     }
 
-/*
+
     private class AnnounceWebViewClient extends NonLeakingWebView.NonLeakingWebViewClient {
 
-        private final int selection;
         private boolean firstLoading = true;
-        public AnnounceWebViewClient(Activity activity, int selection) {
+
+        public AnnounceWebViewClient(Activity activity) {
             super(activity);
-            this.selection = selection;
+        }
+
+        @Override
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            super.onPageStarted(view, url, favicon);
+            view.setVisibility(View.INVISIBLE);
         }
 
         @Override
         public void onPageFinished(WebView view, String url) {
-            if(firstLoading) {
-                if (selection != 3) {
-                    view.loadUrl(" javascript:(function() { " +
-                            "var viewType = document.getElementsByClassName('viewType01')[0]; " +
-                            "document.body.removeChild(document.getElementById('container'));" +
-                            "document.body.removeChild(document.getElementById('footer'));" +
-                            "document.body.style.backgroundImage = '';" +
-                            "document.clear();" +
-                            "document.body.appendChild(viewType);" +
-                            "})()");
-                } else {
-                    view.loadUrl(" javascript:(function() { " +
-                            "var viewType = document.getElementsByClassName('notice_tb')[0]; " +
-                            "document.body.removeChild(document.getElementById('all_wrap'));" +
-                            "document.body.style.backgroundImage = '';" +
-                            "document.clear();" +
-                            "document.body.appendChild(viewType);" +
-                            "})()");
-                    view.setInitialScale(100);
-                }
+            if (firstLoading) {
+
+                view.loadUrl("javascript:(function() { " +
+                        "document.body.style.background = \"transparent\";" +
+                        "var viewType = document.getElementsByClassName('con_text_board')[0]; " +
+                        "viewType.getElementsByClassName('board_num')[0].outerHTML = \"\"" +
+                        "document.body.innerHTML = viewType.outerHTML;" +
+                        "})()");
+
                 firstLoading = false;
             }
 
+            view.setVisibility(View.VISIBLE);
         }
     }
-    */
+
 }

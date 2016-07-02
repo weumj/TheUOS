@@ -1,13 +1,11 @@
 package com.uoscs09.theuos2.tab.buildings;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.ArrayMap;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +13,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.uoscs09.theuos2.R;
+import com.uoscs09.theuos2.base.AbsAnimDialogFragment;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
-import com.uoscs09.theuos2.base.BaseDialogFragment;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 
@@ -27,7 +25,7 @@ import butterknife.BindView;
 import butterknife.BindViews;
 import butterknife.ButterKnife;
 
-public class ClassroomTimetableDialogFragment extends BaseDialogFragment {
+public class ClassroomTimetableDialogFragment extends AbsAnimDialogFragment {
     @NonNull
     @Override
     public String getScreenNameForTracker() {
@@ -44,14 +42,14 @@ public class ClassroomTimetableDialogFragment extends BaseDialogFragment {
     ClassroomTimeTable classRoomTimeTable;
     OApiUtil.Semester semester;
 
-    public static void showTimetableDialog(Fragment f, ClassroomTimeTable classRoomTimeTable, OApiUtil.Semester semester) {
+    public static void showTimetableDialog(Fragment f, ClassroomTimeTable classRoomTimeTable, OApiUtil.Semester semester, View fromView) {
         ClassroomTimetableDialogFragment fragment = new ClassroomTimetableDialogFragment();
         fragment.classRoomTimeTable = classRoomTimeTable;
         fragment.semester = semester;
         if (classRoomTimeTable.timetables().isEmpty()) {
             AppUtil.showToast(f.getActivity(), R.string.tab_building_classroom_timetable_result_empty);
         } else
-            fragment.show(f.getChildFragmentManager(), "timetable");
+            fragment.showFromView(f.getChildFragmentManager(), "timetable", fromView);
     }
 
     @Override
@@ -63,21 +61,19 @@ public class ClassroomTimetableDialogFragment extends BaseDialogFragment {
             outState.putInt("semester", semester.ordinal());
     }
 
-    @NonNull
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         if (savedInstanceState != null) {
             classRoomTimeTable = savedInstanceState.getParcelable("timetable");
             semester = OApiUtil.Semester.values()[savedInstanceState.getInt("semester")];
         }
 
-        return new AlertDialog.Builder(getActivity())
-                .setView(createView())
-                .create();
     }
 
-    private View createView() {
+    @Override
+    protected View createView() {
         View view = View.inflate(getActivity(), R.layout.dialog_building_room_timetable, null);
         ButterKnife.bind(this, view);
 

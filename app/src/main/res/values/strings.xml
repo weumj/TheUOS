@@ -107,7 +107,7 @@
     <string name="tab_map_do_not_locate">현재 위치를 감지하지 못하였습니다. 잠시후에 시도하세요.</string>
     <string name="tab_map_select_dest">목적지 선택</string>
     <string name="tab_map_select_building">건물을 선택해 주세요.</string>
-    <string name="tab_map_permission_denied">권한이 거절되어서 구글맵이 종료됩니다.</string>
+    <string name="tab_map_permission_denied">위치 권한이 거절되어서 지도 화면이 종료됩니다.</string>
     <string name="tab_map_buildings_welfare_cash">현금지급기</string>
     <string name="tab_map_buildings_welfare_bank">은행</string>
     <string name="tab_map_buildings_welfare_copy">복사점</string>

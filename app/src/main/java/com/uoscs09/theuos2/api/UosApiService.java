@@ -12,10 +12,11 @@ import okhttp3.Request;
 import okhttp3.Response;
 import retrofit2.Retrofit;
 
-public class ApiService {
+public class UosApiService {
     private static final String URL_UOS = "http://www.uos.ac.kr/";
 
-    public static final String URL_SCHOLARSHIP = AnnounceApi.URL_SCHOLARSHIP;
+    public static final String URL_SCHOLARSHIP = AnnounceApi.URL_M_SCHOLARSHIP;
+    public static final String URL_ANNOUNCE= AnnounceApi.URL_M_ANNOUNCE;
 
     public static final String URL_SEATS = LibraryApi.SEATS_URL;
 

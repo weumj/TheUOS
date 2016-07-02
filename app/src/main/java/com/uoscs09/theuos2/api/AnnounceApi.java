@@ -14,11 +14,13 @@ import retrofit2.http.POST;
 import retrofit2.http.Url;
 
 public interface AnnounceApi {
-    String URL_SCHOLARSHIP = "http://scholarship.uos.ac.kr/scholarship/notice/notice/list.do";
+    String URL_M_SCHOLARSHIP = "http://m.uos.ac.kr/mkor/schBoard/list.do";
+    String URL_M_ANNOUNCE = "http://m.uos.ac.kr/mkor/notBoard/list.do";
 
     @FormUrlEncoded
-    @POST("korNotice/list.do")
+    @POST
     Task<List<AnnounceItem>> announces(
+            @NonNull @Url String url,
             @NonNull @Field("list_id") String category,
             @Field("pageIndex") int page,
             @Nullable @Field("searchCnd") String searchCondition,

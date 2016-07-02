@@ -149,8 +149,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
         Dialog dialog = AppUtil.getProgressDialog(getActivity());
         dialog.show();
 
-        Task<BuildingRoom> task = AppRequests.Buildings.buildingRooms(true);
-        task.getAsync(room -> {
+        Task<BuildingRoom> task = AppRequests.Buildings.buildingRooms(true).getAsync(room -> {
                     dialog.dismiss();
                     dialog.setOnCancelListener(null);
                     onSharedPreferenceChanged(getPreferenceScreen().getSharedPreferences(), PrefUtil.KEY_BUILDINGS_FETCH_TIME);

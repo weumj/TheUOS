@@ -107,7 +107,6 @@
             android:layout_height="4dp"
             android:background="?colorPrimary"
             android:divider="@null"
-            android:dividerPadding="1dp"
             android:orientation="horizontal"
             android:weightSum="360">
 
@@ -152,6 +151,8 @@
 
     <ListView
         android:id="@+id/list"
+        android:listSelector="@color/transparent"
+        android:background="@color/transparent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:divider="@null" />

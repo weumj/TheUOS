@@ -1,132 +1,27 @@
 package com.uoscs09.theuos2;
 
 
-import android.content.Context;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
-import android.view.LayoutInflater;
+import android.support.annotation.Nullable;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.GridView;
-import android.widget.ListView;
+import android.widget.TextView;
 
-import com.nhaarman.listviewanimations.appearance.simple.SwingBottomInAnimationAdapter;
-import com.uoscs09.theuos2.base.AbsArrayAdapter;
-import com.uoscs09.theuos2.base.BaseFragment;
+import com.uoscs09.theuos2.base.BaseTabFragment;
+import com.uoscs09.theuos2.base.ViewHolder;
 import com.uoscs09.theuos2.util.AppUtil;
-import com.uoscs09.theuos2.util.ImageUtil;
 
 import java.util.List;
 
-public class TabHomeFragment extends BaseFragment implements OnItemClickListener {
-    private AlertDialog etcDialog;
+import butterknife.BindView;
+import mj.android.utils.recyclerview.ListRecyclerAdapter;
+import mj.android.utils.recyclerview.ListRecyclerUtil;
 
-    private static class GridViewAdapter extends AbsArrayAdapter.SimpleAdapter<Integer> {
-
-        public GridViewAdapter(Context context, List<Integer> list) {
-            super(context, R.layout.list_layout_home, list);
-        }
-
-        @Override
-        public void onBindViewHolder(int position, SimpleViewHolder holder) {
-            super.onBindViewHolder(position, holder);
-            holder.textView.setCompoundDrawablesWithIntrinsicBounds(0, AppUtil.getPageIconWhite(getItem(position)), 0, 0);
-        }
-
-        @Override
-        public String getTextFromItem(Integer item) {
-            return getContext().getString(item);
-        }
-    }
-
-    private static class DialogAdapter extends AbsArrayAdapter.SimpleAdapter<Integer> {
-
-        public DialogAdapter(Context context, List<Integer> list) {
-            super(context, android.R.layout.simple_list_item_1, list);
-        }
-
-        @Override
-        public void onBindViewHolder(int position, SimpleViewHolder holder) {
-            super.onBindViewHolder(position, holder);
-            holder.textView.setCompoundDrawablesWithIntrinsicBounds(ImageUtil.getPageIcon(holder.textView.getContext(), getItem(position)), null, null, null);
-        }
-
-        @Override
-        public String getTextFromItem(Integer item) {
-            return getContext().getString(item);
-        }
-    }
-
-    private void initEtcMenuDialog(Context context) {
-        List<Integer> list = AppUtil.loadEnabledPageOrder(context);
-        list = list.subList(7, list.size());
-
-        View dialogView = View.inflate(context, R.layout.dialog_home_etc, null);
-        ListView listView = (ListView) dialogView.findViewById(R.id.dialog_home_listview);
-
-        listView.setAdapter(new DialogAdapter(getActivity(), list));
-
-        listView.setOnItemClickListener((parent, view, position, id) -> {
-            etcDialog.dismiss();
-            ((UosMainActivity) getActivity()).navigateItem(position + 8, false);
-        });
-
-        etcDialog = new AlertDialog.Builder(context)
-                .setCancelable(true)
-                .setIconAttribute(R.attr.theme_ic_action_navigation_check)
-                .setTitle(R.string.tab_etc_selection)
-                .setView(dialogView)
-                .create();
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Context context = getActivity();
-
-        List<Integer> list = AppUtil.loadEnabledPageOrder(context);
-        if (AppUtil.isScreenSizeSmall(context) && list.size() > 8) {
-            initEtcMenuDialog(context);
-
-            list = list.subList(0, 7);
-            list.add(R.string.title_section_etc);
-        }
-        list.add(R.string.setting);
-
-
-        View v = inflater.inflate(R.layout.tab_home, container, false);
-
-        GridView gridView = (GridView) v.findViewById(R.id.tab_home_gridview);
-        SwingBottomInAnimationAdapter animatorAdapter = new SwingBottomInAnimationAdapter(new GridViewAdapter(getActivity(), list));
-        animatorAdapter.setAbsListView(gridView);
-
-        gridView.setOnItemClickListener(this);
-        gridView.setAdapter(animatorAdapter);
-
-        return v;
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View v, int pos, long id) {
-        int size = adapterView.getCount() - 1;
-
-        if (pos == size) {
-            ((UosMainActivity) getActivity()).startSettingActivity();
-
-        } else if (pos == size - 1) {
-
-            if (etcDialog == null)
-                ((UosMainActivity) getActivity()).navigateItem(pos + 1, false);
-            else
-                etcDialog.show();
-
-        } else {
-            ((UosMainActivity) getActivity()).navigateItem(pos + 1, false);
-        }
-
-    }
+public class TabHomeFragment extends BaseTabFragment {
 
     @NonNull
     @Override
@@ -135,6 +30,89 @@ public class TabHomeFragment extends BaseFragment implements OnItemClickListener
     }
 
     @Override
+    protected int layoutRes() {
+        return R.layout.tab_home;
+    }
+
+    @BindView(R.id.tab_home_recycler_view)
+    RecyclerView mRecyclerView;
+    ListRecyclerAdapter<AppUtil.Page, HomeViewHolder> adapter;
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+
+        List<AppUtil.Page> list = AppUtil.loadEnabledPageOrderWithSetting();
+        final int listLastCount = list.size() - 1;
+
+        final int screenWidth = getResources().getDisplayMetrics().widthPixels;
+        final int viewCount = AppUtil.isScreenSizeSmall() ? 3 : 5;
+
+        final int marginSize = getResources().getDimensionPixelSize(R.dimen.dp8);
+        final int viewSize = (screenWidth - ((viewCount + 1) * marginSize)) / viewCount;
+
+        mRecyclerView.setNestedScrollingEnabled(false);
+        mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), viewCount));
+        adapter = ListRecyclerUtil.newSimpleAdapter(list, HomeViewHolder.class, R.layout.list_layout_home);
+        adapter.setOnItemClickListener((homeViewHolder, view1) -> {
+            int position = homeViewHolder.getAdapterPosition();
+            if (listLastCount == position) {
+                getUosMainActivity().startSettingActivity();
+            } else {
+                getUosMainActivity().navigateItem(position + 1, false);
+            }
+        });
+        mRecyclerView.setAdapter(adapter);
+
+        final int half = marginSize / 2;
+        final int lastCount = viewCount - 1;
+
+        mRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+                ViewGroup.LayoutParams params = view.getLayoutParams();
+                params.height = viewSize;
+                params.width = viewSize;
+
+                view.setLayoutParams(params);
+
+                int position = parent.getChildAdapterPosition(view);
+
+                int rowPosition = position % viewCount;
+
+                if (rowPosition == 0) {
+                    outRect.set(marginSize, marginSize, half, 0);
+                } else if (rowPosition == lastCount) {
+                    outRect.set(half, marginSize, marginSize, 0);
+                } else {
+                    outRect.set(half, marginSize, half, 0);
+                }
+            }
+        });
+
+
+    }
+
+
+    @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
+    }
+
+    static class HomeViewHolder extends ViewHolder<AppUtil.Page> {
+        @BindView(android.R.id.text1)
+        TextView textView;
+
+        public HomeViewHolder(View itemView) {
+            super(itemView);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        protected void setView(int i) {
+            AppUtil.Page item = getItem();
+            textView.setCompoundDrawablesWithIntrinsicBounds(0, AppUtil.getPageIconWhite(item.stringId), 0, 0);
+            textView.setText(textView.getContext().getString(item.stringId));
+        }
     }
 }

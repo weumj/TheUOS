@@ -1,6 +1,7 @@
 package com.uoscs09.theuos2.http;
 
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.uoscs09.theuos2.util.NetworkUtil;
@@ -272,15 +273,17 @@ public abstract class HttpRequest<T> extends Tasks.AbstractTask<T> {
     //** FileDownloadProcessor
 
     public static class FileDownloadProcessor implements Func<HttpURLConnection, File> {
-        private File downloadDir;
+        private final File downloadDir;
+        private final String suggestFileName;
 
-        public FileDownloadProcessor(File downloadDir) {
+        public FileDownloadProcessor(File downloadDir, @Nullable String suggestFileName) {
             this.downloadDir = downloadDir;
+            this.suggestFileName = suggestFileName;
         }
 
         @Override
         public File func(HttpURLConnection connection) throws IOException {
-            String fileNameAndExtension = getFileName(connection);
+            String fileNameAndExtension = TextUtils.isEmpty(suggestFileName)? getFileName(connection) : suggestFileName;
             File downloadFile = makeFile(fileNameAndExtension);
 
             writeContentsToFile(downloadFile, connection.getInputStream());

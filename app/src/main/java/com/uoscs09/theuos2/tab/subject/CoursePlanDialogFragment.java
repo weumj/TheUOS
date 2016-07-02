@@ -11,7 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AlertDialog;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -23,15 +23,15 @@ import android.widget.TextView;
 import com.nhaarman.listviewanimations.appearance.AnimationAdapter;
 import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
 import com.uoscs09.theuos2.R;
+import com.uoscs09.theuos2.base.AbsAnimDialogFragment;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
-import com.uoscs09.theuos2.base.BaseDialogFragment;
+import com.uoscs09.theuos2.util.AnimUtil;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.ImageUtil;
 import com.uoscs09.theuos2.util.PrefHelper;
 import com.uoscs09.theuos2.util.StringUtil;
-import com.uoscs09.theuos2.util.TaskUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +41,7 @@ import butterknife.ButterKnife;
 import mj.android.utils.task.Task;
 import mj.android.utils.task.Tasks;
 
-public class CoursePlanDialogFragment extends BaseDialogFragment implements Toolbar.OnMenuItemClickListener {
+public class CoursePlanDialogFragment extends AbsAnimDialogFragment implements Toolbar.OnMenuItemClickListener {
 
     private final static String TAG = "CoursePlanDialogFragment";
     private final static String INFO = "info";
@@ -57,20 +57,39 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Tool
     ListView mListView;
     private ArrayAdapter<CoursePlanItem> mAdapter;
 
-    private ArrayList<CoursePlanItem> infoList;
+    private ArrayList<CoursePlanItem> infoList = new ArrayList<>();
     private AnimationAdapter aAdapter;
-    private Dialog mProgressDialog;
 
-    private boolean isDataInvalid = false;
     private SubjectItem2 mSubject;
 
+    public static void fetchCoursePlanAndShow(final Fragment fragment, SubjectItem2 subjectItem2, View v) {
+        Task<List<CoursePlanItem>> task = AppRequests.Subjects.requestCoursePlan(subjectItem2);
+        Dialog d = AppUtil.getProgressDialog(fragment.getActivity(), false, (dialog, which) -> task.cancel());
 
-    private Task<List<CoursePlanItem>> task;
+        d.show();
+        task.getAsync(coursePlanItems -> {
+                    d.dismiss();
 
-    public void setSubjectItem(SubjectItem2 item) {
-        mSubject = item;
-        isDataInvalid = true;
+                    if (!coursePlanItems.isEmpty()) {
+                        CoursePlanDialogFragment f = new CoursePlanDialogFragment();
+                        f.initValues(subjectItem2, coursePlanItems);
+                        f.showFromView(fragment.getFragmentManager(), "course", v);
+                    } else {
+                        AppUtil.showToast(fragment.getActivity(), R.string.tab_course_plan_result_empty);
+                    }
+                },
+                throwable -> {
+                    AppUtil.showErrorToast(fragment.getActivity(), throwable, true);
+                    d.dismiss();
+                }
+        );
+    }
 
+
+    public void initValues(SubjectItem2 item, List<CoursePlanItem> infoList) {
+        this.mSubject = item;
+        this.infoList.clear();
+        this.infoList.addAll(infoList);
     }
 
 
@@ -86,23 +105,9 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Tool
 
         if (savedInstanceState != null) {
             infoList = savedInstanceState.getParcelableArrayList(INFO);
-        } else {
-            infoList = new ArrayList<>();
         }
-
-        mProgressDialog = AppUtil.getProgressDialog(getActivity());
-
     }
 
-    @NonNull
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        //dialog.getTitleFrame().setBackgroundResource(AppUtil.getAttrValue(getActivity(), R.attr.colorPrimary));
-        return new AlertDialog.Builder(getActivity())
-                //.titleColorAttr(R.attr.color_actionbar_title)
-                .setView(createView())
-                .create();
-    }
 
     @Override
     public void onResume() {
@@ -110,15 +115,11 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Tool
 
         if (mSubject == null) {
             dismiss();
-            return;
-        }
-
-        if (infoList.isEmpty() || isDataInvalid) {
-            execute();
         }
     }
 
-    private View createView() {
+    @Override
+    protected View createView() {
         View v = View.inflate(getActivity(), R.layout.dialog_course_plan, null);
         ButterKnife.bind(this, v);
 
@@ -144,6 +145,11 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Tool
 
         mListView.setAdapter(aAdapter);
 
+        setCourseTitle(infoList.get(0));
+        mAdapter.notifyDataSetChanged();
+
+        aAdapter.reset();
+        aAdapter.notifyDataSetChanged();
 
         return v;
     }
@@ -186,57 +192,9 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Tool
         mToolbar.setSubtitle(null);
     }
 
-    void execute() {
-        TaskUtil.cancel(task);
 
-        mProgressDialog.setOnCancelListener(dialog -> {
-            TaskUtil.cancel(task);
-            dismiss();
-        });
-        mProgressDialog.show();
-
-        task = AppRequests.Subjects.requestCoursePlan(mSubject);
-        task.getAsync(
-                result -> {
-                    dismissProgressDialog();
-
-                    if (getActivity() == null) {
-                        dismiss();
-                        return;
-                    }
-
-                    if (result.isEmpty()) {
-                        AppUtil.showToast(getActivity(), R.string.tab_course_plan_result_empty);
-                        dismiss();
-                        return;
-                    } else {
-                        setCourseTitle(result.get(0));
-                    }
-
-                    infoList.clear();
-                    infoList.addAll(result);
-
-                    mAdapter.notifyDataSetChanged();
-
-                    aAdapter.reset();
-                    aAdapter.notifyDataSetChanged();
-                    isDataInvalid = false;
-                },
-                this::onError
-        );
-    }
-
-    private void dismissProgressDialog() {
-        if (task != null)
-            task = null;
-
-        mProgressDialog.dismiss();
-        mProgressDialog.setOnCancelListener(null);
-    }
-
-    public void onError(Throwable e) {
-        dismissProgressDialog();
-
+    public void onError(Dialog d, Throwable e) {
+        d.dismiss();
         AppUtil.showErrorToast(getActivity(), e, true);
     }
 
@@ -270,14 +228,18 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Tool
             return;
         }
 
+
         final String picturePath = PrefHelper.Data.getPicturePath();
         String dir = picturePath + "/" + getString(R.string.tab_course_plan_title) + '_' + mSubject.subject_nm + '_' + mSubject.prof_nm + '_' + mSubject.class_div + ".jpeg";
         final Task<String> task = new ImageUtil.ListViewBitmapRequest.Builder(mListView, mAdapter)
                 .setHeaderView(mCourseTitle)
                 .build()
                 .wrap(new ImageUtil.ImageWriteProcessor(dir));
+
+        Dialog d = AppUtil.getProgressDialog(getActivity(), false, (dialog, which) -> task.cancel());
+
         task.getAsync(result -> {
-                    dismissProgressDialog();
+                    d.dismiss();
 
                     String pictureDir = picturePath.substring(picturePath.lastIndexOf('/') + 1);
                     Snackbar.make(mListView, getString(R.string.tab_course_plan_action_save_image_completed, pictureDir), Snackbar.LENGTH_LONG)
@@ -287,7 +249,7 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Tool
                                 intent.setDataAndType(Uri.parse("file://" + result), "image/*");
 
                                 try {
-                                    AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
+                                    AnimUtil.startActivityWithScaleUp(getActivity(), intent, v);
                                 } catch (ActivityNotFoundException e) {
                                     //e.printStackTrace();
                                     AppUtil.showToast(getActivity(), R.string.error_no_activity_found_to_handle_file);
@@ -298,11 +260,8 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Tool
                             })
                             .show();
                 },
-                this::onError
+                throwable -> onError(d, throwable)
         );
-        mProgressDialog.setOnCancelListener(dialog -> TaskUtil.cancel(task));
-        mProgressDialog.show();
-
     }
 
     void saveCoursePlanToText() {
@@ -326,8 +285,11 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Tool
             }
             return sb.toString();
         }).wrap(IOUtil.<String>newExternalFileWriteFunc(fileName));
+
+        Dialog d = AppUtil.getProgressDialog(getActivity(), false, (dialog, which) -> task.cancel());
+
         task.getAsync(result -> {
-                    dismissProgressDialog();
+                    d.dismiss();
 
                     String docDir = docPath.substring(docPath.lastIndexOf('/') + 1);
                     Snackbar.make(mListView, getString(R.string.tab_course_plan_action_save_text_completed, docDir), Snackbar.LENGTH_LONG)
@@ -337,7 +299,7 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Tool
                                 intent.setDataAndType(Uri.parse("file://" + fileName), "text/*");
 
                                 try {
-                                    AppUtil.startActivityWithScaleUp(getActivity(), intent, v);
+                                    AnimUtil.startActivityWithScaleUp(getActivity(), intent, v);
                                 } catch (ActivityNotFoundException e) {
                                     //e.printStackTrace();
                                     AppUtil.showToast(getActivity(), R.string.error_no_activity_found_to_handle_file);
@@ -349,11 +311,8 @@ public class CoursePlanDialogFragment extends BaseDialogFragment implements Tool
                             })
                             .show();
                 },
-                this::onError
+                throwable -> onError(d, throwable)
         );
-        mProgressDialog.setOnCancelListener(dialog -> TaskUtil.cancel(task));
-        mProgressDialog.show();
-
     }
 
 

@@ -14,12 +14,12 @@ public class TitleActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+
         getWindow().getDecorView().postDelayed(() -> {
-
-            startActivity(new Intent(getApplicationContext(), UosMainActivity.class));
-            overridePendingTransition(R.anim.enter_fade, R.anim.exit_hold);
+            startActivity(new Intent(TitleActivity.this, UosMainActivity.class));
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             finish();
+        }, 200);
 
-        }, 150);
     }
 }

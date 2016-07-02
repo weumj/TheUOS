@@ -47,7 +47,7 @@ class CallTaskImpl<T> implements Task<T> {
     }
 
     @Override
-    public void getAsync(ResultListener<T> r, ErrorListener e) {
+    public Task<T> getAsync(ResultListener<T> r, ErrorListener e) {
         call.enqueue(new Callback<T>() {
             @Override
             public void onResponse(Call<T> call, Response<T> response) {
@@ -80,12 +80,14 @@ class CallTaskImpl<T> implements Task<T> {
             }
 
         });
+        return this;
     }
 
 
     @Override
-    public void getAsync(ResultListener<T> resultListener, ErrorListener errorListener, Executor executor) {
+    public Task<T> getAsync(ResultListener<T> resultListener, ErrorListener errorListener, Executor executor) {
         Tasks.newTask(this::get).getAsync(resultListener, errorListener, executor);
+        return this;
     }
 
     @Override

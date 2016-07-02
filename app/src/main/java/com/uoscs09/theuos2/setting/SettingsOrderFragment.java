@@ -47,7 +47,7 @@ public class SettingsOrderFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         setHasOptionsMenu(true);
-        orderList = AppUtil.loadPageOrder2(getActivity());
+        orderList = AppUtil.loadPageOrder2();
         mAdapter = new SwapAdapter(getActivity(), orderList);
         super.onCreate(savedInstanceState);
 
@@ -116,7 +116,7 @@ public class SettingsOrderFragment extends BaseFragment {
                 return true;
 
             case R.id.action_cancel:
-                refresh(AppUtil.loadPageOrder2(getActivity()));
+                refresh(AppUtil.loadPageOrder2());
                 AppUtil.showCanceledToast(getActivity(), true);
                 finish();
                 return true;
