@@ -3,6 +3,7 @@ package com.uoscs09.theuos2.http;
 import android.text.TextUtils;
 import android.util.SparseArray;
 
+import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.tab.announce.AnnounceItem;
 import com.uoscs09.theuos2.tab.booksearch.BookItem;
 import com.uoscs09.theuos2.tab.booksearch.BookStateInfo;
@@ -24,8 +25,10 @@ import com.uoscs09.theuos2.tab.subject.TimeTableSubjectInfo;
 import com.uoscs09.theuos2.tab.timetable.ParseTimetable;
 import com.uoscs09.theuos2.tab.timetable.SubjectInfoItem;
 import com.uoscs09.theuos2.tab.timetable.Timetable2;
+import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
+import com.uoscs09.theuos2.util.PrefHelper;
 import com.uoscs09.theuos2.util.StringUtil;
 import com.uoscs09.theuos2.util.TaskUtil;
 
@@ -42,7 +45,8 @@ import java.util.Map;
 import mj.android.utils.task.Task;
 import mj.android.utils.task.Tasks;
 
-import static com.uoscs09.theuos2.api.UosApiService.URL_ANNOUNCE;
+import static com.uoscs09.theuos2.api.UosApiService.URL_M_ANNOUNCE;
+import static com.uoscs09.theuos2.api.UosApiService.URL_M_SCHOLARSHIP;
 import static com.uoscs09.theuos2.api.UosApiService.URL_REST_WEEK;
 import static com.uoscs09.theuos2.api.UosApiService.URL_SCHOLARSHIP;
 import static com.uoscs09.theuos2.api.UosApiService.URL_SEATS;
@@ -81,9 +85,13 @@ public class NetworkRequests {
         public static Task<List<AnnounceItem>> normalRequest(Category category, int pageIndex) {
             boolean scholarship = category == Category.SCHOLARSHIP;
             if (scholarship) {
-                return announceApi().scholarships(URL_SCHOLARSHIP, pageIndex, 1, null, null);
+                return PrefHelper.Announces.isSearchOnMobile() ?
+                        announceApi().scholarshipsMobile(URL_M_SCHOLARSHIP, pageIndex, 1) :
+                        announceApi().scholarships(URL_SCHOLARSHIP, pageIndex, 1, null, null);
             } else {
-                return announceApi().announces(URL_ANNOUNCE, category.tag, pageIndex, null, null);
+                return PrefHelper.Announces.isSearchOnMobile() ?
+                        announceApi().announcesMobile(URL_M_ANNOUNCE, category.tag, pageIndex, null, null) :
+                        announceApi().announces(category.tag, pageIndex, null, null);
             }
         }
 
@@ -94,9 +102,15 @@ public class NetworkRequests {
         public static Task<List<AnnounceItem>> searchRequest(Category category, int pageIndex, String query) {
             boolean scholarship = category == Category.SCHOLARSHIP;
             if (scholarship) {
-                return announceApi().scholarships(URL_SCHOLARSHIP, pageIndex, 1, "title", query);
+                return PrefHelper.Announces.isSearchOnMobile() ?
+                        Tasks.newTask(() -> {
+                            throw new IllegalStateException(AppUtil.context().getString(R.string.tab_announce_not_support_search_on_scholarship));
+                        }) :
+                        announceApi().scholarships(URL_M_SCHOLARSHIP, pageIndex, 1, "1", query);
             } else {
-                return announceApi().announces(URL_ANNOUNCE, category.tag, pageIndex, "1", query);
+                return PrefHelper.Announces.isSearchOnMobile() ?
+                        announceApi().announcesMobile(URL_M_ANNOUNCE, category.tag, pageIndex, "1", query) :
+                        announceApi().announces(category.tag, pageIndex, "1", query);
             }
         }
 
@@ -114,8 +128,8 @@ public class NetworkRequests {
         }
 
         public static Task<List<BookItem>> request(String query, int page, int os, int oi) {
-            String OS = getSpinnerItemString(1, os);
-            String OI = getSpinnerItemString(0, oi);
+            String OS = optionItem(1, os);
+            String OI = optionItem(0, oi);
 
             if (TextUtils.isEmpty(OI) && TextUtils.isEmpty(OS)) {
                 return libraryApi().books(page, query);
@@ -124,7 +138,7 @@ public class NetworkRequests {
             }
         }
 
-        private static String getSpinnerItemString(int which, int pos) {
+        private static String optionItem(int which, int pos) {
             switch (which) {
                 case 0:
                     switch (pos) {

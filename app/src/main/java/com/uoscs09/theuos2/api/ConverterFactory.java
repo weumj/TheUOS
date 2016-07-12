@@ -23,8 +23,13 @@ import retrofit2.Converter;
 import retrofit2.Retrofit;
 
 class ConverterFactory extends Converter.Factory {
-    public static ConverterFactory create() {
-        return new ConverterFactory();
+    private static ConverterFactory instance;
+
+    public static ConverterFactory getInstance() {
+        if (instance == null)
+            instance = new ConverterFactory();
+
+        return instance;
     }
 
     private ConverterFactory() {
@@ -43,8 +48,10 @@ class ConverterFactory extends Converter.Factory {
         }
 
         try {
-            if (cls.equals(AnnounceItem.class)
-                    || cls.equals(BookItem.class)
+            if (cls.equals(AnnounceItem.class)) {
+                Converter<ResponseBody, ?> converter = AnnounceHtmlConverter.choose(annotations);
+                return converter == null ? new HtmlConverter(cls) : converter;
+            } else if (cls.equals(BookItem.class)
                     || cls.equals(SeatInfo.class)
                     || cls.equals(RestItem.class)
                     || cls.equals(WeekRestItem.class)) {

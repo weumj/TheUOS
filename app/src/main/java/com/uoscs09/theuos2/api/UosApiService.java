@@ -15,8 +15,9 @@ import retrofit2.Retrofit;
 public class UosApiService {
     private static final String URL_UOS = "http://www.uos.ac.kr/";
 
-    public static final String URL_SCHOLARSHIP = AnnounceApi.URL_M_SCHOLARSHIP;
-    public static final String URL_ANNOUNCE= AnnounceApi.URL_M_ANNOUNCE;
+    public static final String URL_M_SCHOLARSHIP = AnnounceApi.URL_M_SCHOLARSHIP;
+    public static final String URL_SCHOLARSHIP = AnnounceApi.URL_SCHOLARSHIP;
+    public static final String URL_M_ANNOUNCE= AnnounceApi.URL_M_ANNOUNCE;
 
     public static final String URL_SEATS = LibraryApi.SEATS_URL;
 
@@ -27,9 +28,9 @@ public class UosApiService {
     public static UosOApi oApi() {
         if (uosOApi == null) {
             uosOApi = new Retrofit.Builder()
-                    .addCallAdapterFactory(TaskCallAdapterFactory.create())
-                    .addConverterFactory(ConverterFactory.create())
                     .baseUrl(UosOApi.URL)
+                    .addCallAdapterFactory(TaskCallAdapterFactory.getInstance())
+                    .addConverterFactory(ConverterFactory.getInstance())
                     .client(okHttpClient())
                     .build()
                     .create(UosOApi.class);
@@ -44,8 +45,8 @@ public class UosApiService {
         if (libraryApi == null)
             libraryApi = new Retrofit.Builder()
                     .baseUrl(LibraryApi.BOOK_URL)
-                    .addCallAdapterFactory(TaskCallAdapterFactory.create())
-                    .addConverterFactory(ConverterFactory.create())
+                    .addCallAdapterFactory(TaskCallAdapterFactory.getInstance())
+                    .addConverterFactory(ConverterFactory.getInstance())
                     .client(okHttpClient())
                     .build()
                     .create(LibraryApi.class);
@@ -59,8 +60,8 @@ public class UosApiService {
         if (announceApi == null)
             announceApi = new Retrofit.Builder()
                     .baseUrl(URL_UOS)
-                    .addCallAdapterFactory(TaskCallAdapterFactory.create())
-                    .addConverterFactory(ConverterFactory.create())
+                    .addCallAdapterFactory(TaskCallAdapterFactory.getInstance())
+                    .addConverterFactory(ConverterFactory.getInstance())
                     .client(okHttpClient())
                     .build()
                     .create(AnnounceApi.class);
@@ -74,8 +75,8 @@ public class UosApiService {
         if (restaurantApi == null)
             restaurantApi = new Retrofit.Builder()
                     .baseUrl(RestaurantApi.URL)
-                    .addCallAdapterFactory(TaskCallAdapterFactory.create())
-                    .addConverterFactory(ConverterFactory.create())
+                    .addCallAdapterFactory(TaskCallAdapterFactory.getInstance())
+                    .addConverterFactory(ConverterFactory.getInstance())
                     .client(okHttpClient())
                     .build()
                     .create(RestaurantApi.class);

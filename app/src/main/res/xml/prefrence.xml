@@ -23,14 +23,24 @@
             android:title="@string/setting_home" />
     </android.support.v7.preference.PreferenceCategory>
 
-    <android.support.v7.preference.PreferenceCategory android:title="@string/title_tab_announce">
+    <!--
+    <android.support.v7.preference.PreferenceCategory
+        android:title="@string/title_tab_announce">
         <android.support.v7.preference.CheckBoxPreference
+            android:defaultValue="false"
+            android:icon="?color_theme_ic_action_action_language"
+            android:key="@string/pref_key_announce_search_not_mobile"
+            android:summary="@string/setting_announce_search_not_mobile_desc"
+            android:title="@string/setting_announce_search_not_mobile" />
+
+        <android.support.v7.preference.CheckBoxPreference
+            android:dependency="@string/pref_key_announce_search_not_mobile"
             android:icon="?color_theme_ic_action_action_view_list"
             android:key="@string/pref_key_announce_except_type_notice"
             android:summary="@string/setting_announce_except_type_notice_desc"
             android:title="@string/setting_announce_except_type_notice" />
-
     </android.support.v7.preference.PreferenceCategory>
+    -->
 
     <android.support.v7.preference.PreferenceCategory android:title="@string/title_tab_book_search">
         <android.support.v7.preference.CheckBoxPreference

@@ -369,6 +369,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
         pref.registerOnSharedPreferenceChangeListener(this);
 
         String[] keys = {
+                PrefUtil.KEY_ANNOUNCE_SEARCH_NOT_MOBILE,
                 PrefUtil.KEY_ANNOUNCE_EXCEPT_TYPE_NOTICE,
                 PrefUtil.KEY_CHECK_BORROW,
                 PrefUtil.KEY_CHECK_SEAT,
@@ -392,6 +393,17 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         switch (key) {
+            case PrefUtil.KEY_ANNOUNCE_SEARCH_NOT_MOBILE: {
+                boolean value = sharedPreferences.getBoolean(key, false);
+
+                Preference preference = findPreference(PrefUtil.KEY_ANNOUNCE_EXCEPT_TYPE_NOTICE);
+                if (preference != null)
+                    preference.setSummary(value ?
+                            R.string.setting_announce_except_type_notice_desc :
+                            R.string.setting_announce_except_type_notice_desc_mobile);
+
+                break;
+            }
             case PrefUtil.KEY_CHECK_BORROW:
                 setPrefScreenSummary(sharedPreferences, key, R.string.setting_check_borrow_desc_enable, R.string.setting_check_borrow_desc_disable);
                 break;

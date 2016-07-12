@@ -117,11 +117,11 @@ public abstract class AbsArrayAdapter<T, VH extends AbsArrayAdapter.IViewHolder>
             super(context, layout, textViewId, list);
         }
 
-        public abstract String getTextFromItem(T item);
+        public abstract String getTextFromItem(int position, T item);
 
         @Override
         public void onBindViewHolder(int position, SimpleViewHolder holder) {
-            holder.textView.setText(getTextFromItem(getItem(position)));
+            holder.textView.setText(getTextFromItem(position, getItem(position)));
         }
 
         @Override

@@ -169,7 +169,7 @@ public class SettingsFileSelectDialogFragment extends DialogFragment {
         }
 
         @Override
-        public String getTextFromItem(File item) {
+        public String getTextFromItem(int position, File item) {
             return item.getName();
         }
 

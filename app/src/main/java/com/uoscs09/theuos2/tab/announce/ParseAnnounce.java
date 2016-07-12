@@ -4,6 +4,7 @@ import android.support.v4.util.Pair;
 
 import com.uoscs09.theuos2.http.HttpRequest;
 import com.uoscs09.theuos2.parse.JerichoParser;
+import com.uoscs09.theuos2.util.CollectionUtil;
 
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
@@ -18,16 +19,17 @@ import mj.android.utils.task.Task;
 import mj.android.utils.task.Tasks;
 
 public abstract class ParseAnnounce extends JerichoParser<List<AnnounceItem>> {
-    public static ParseAnnounce getParser() {
-        //return NormalWeb.getParser();
+    public static ParseAnnounce mobileWeb() {
         return new MobileWeb();
     }
 
-    public static ParseAnnounce getScholarshipParser() {
-        //return NormalWeb.getScholarshipParser();
-        return new MobileWeb();
+    public static ParseAnnounce normalWeb(){
+        return NormalWeb.getParser();
     }
 
+    public static ParseAnnounce scholarship(){
+        return NormalWeb.getScholarshipParser();
+    }
 
     private abstract static class NormalWeb extends ParseAnnounce {
         public static ParseAnnounce getParser() {
@@ -80,10 +82,12 @@ public abstract class ParseAnnounce extends JerichoParser<List<AnnounceItem>> {
 
                 item.date = childElementList.get(3).getTextExtractor().toString();
 
+                /*
                 Element fileDownElement = childElementList.get(5).getFirstElement(HTMLElementName.A);
                 if (fileDownElement != null) {
                     // item.attachedFileUrl = extractFileDownURL(fileDownElement.getAttributeValue("onclick"));
                 }
+                */
 
                 return item;
             } catch (Exception e) {
@@ -292,11 +296,34 @@ public abstract class ParseAnnounce extends JerichoParser<List<AnnounceItem>> {
 
     }
 
-    public static Task<List<Pair<String, String>>> fileNameUrlPairTask(String url) {
+    public static Task<DetailAnnounceItem> fileNameUrlPairTask(String url) {
         return HttpRequest.Builder.newStringRequestBuilder(url)
                 .build()
                 .wrap((s) -> {
+                    DetailAnnounceItem detailAnnounceItem = new DetailAnnounceItem();
+
                     Source source = new Source(s);
+
+                    Element conTextBoard = CollectionUtil.elementAt(source.getAllElementsByClass("con_text_board"), 0);
+
+                    if (conTextBoard != null) {
+                        Element file = CollectionUtil.elementAt(conTextBoard.getAllElementsByClass("file"), 0);
+
+                        String html = conTextBoard.toString();
+                        if (file != null) {
+                            html = html.replace(file.toString(), "");
+                        }
+
+                        Element boardNavigator = CollectionUtil.elementAt(conTextBoard.getAllElementsByClass("board_num"), 0);
+                        if (boardNavigator != null) {
+                            html = html.replace(boardNavigator.toString(), "");
+                        }
+
+                        detailAnnounceItem.page = "<meta name=\"viewport\" content=\"initial-scale=1.0; width=device-width;\" />\n" +
+                                "<link rel=\"stylesheet\" href=\"/css/mkor/base.css\" type=\"text/css\" />\n" + html;
+                    }
+
+
                     List<Element> fileDivElement = source.getAllElementsByClass("pb4 hwp");
 
                     Pattern p = Pattern.compile("\'.+?\'");
@@ -314,7 +341,9 @@ public abstract class ParseAnnounce extends JerichoParser<List<AnnounceItem>> {
                         fileUrlPairList.add(new Pair<>(list.get(2), fileUrl));
                     }
 
-                    return fileUrlPairList;
+                    detailAnnounceItem.fileNameUrlPairList = fileUrlPairList;
+
+                    return detailAnnounceItem;
                 });
     }
 

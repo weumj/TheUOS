@@ -24,6 +24,13 @@ public class PrefUtil {
      */
     public static final String KEY_ANNOUNCE_EXCEPT_TYPE_NOTICE = "KEY_ANNOUNCE_EXCEPT_TYPE_NOTICE";
     /**
+     * 모바일 공지사항 검색 여부, {@code boolean}
+     *
+     * @see R.string#pref_key_announce_search_not_mobile
+     */
+    public static final String KEY_ANNOUNCE_SEARCH_NOT_MOBILE = "KEY_ANNOUNCE_SEARCH_NOT_MOBILE";
+
+    /**
      * 대출 불가능한 도서 표시 여부, {@code boolean}
      *
      * @see R.string#pref_key_check_borrow

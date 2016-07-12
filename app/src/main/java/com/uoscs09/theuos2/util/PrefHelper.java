@@ -9,6 +9,7 @@ import com.uoscs09.theuos2.tab.restaurant.WeekRestItem;
 import java.util.Calendar;
 
 import static com.uoscs09.theuos2.util.PrefUtil.KEY_ANNOUNCE_EXCEPT_TYPE_NOTICE;
+import static com.uoscs09.theuos2.util.PrefUtil.KEY_ANNOUNCE_SEARCH_NOT_MOBILE;
 import static com.uoscs09.theuos2.util.PrefUtil.KEY_BUILDINGS_FETCH_TIME;
 import static com.uoscs09.theuos2.util.PrefUtil.KEY_CHECK_BORROW;
 import static com.uoscs09.theuos2.util.PrefUtil.KEY_CHECK_SEAT;
@@ -45,8 +46,13 @@ public class PrefHelper {
     }
 
     public static class Announces {
+        public static boolean isSearchOnMobile(){
+            return !pref().get(KEY_ANNOUNCE_SEARCH_NOT_MOBILE, false);
+        }
+
+        // 모바일 웹에서 검색하는 경우 항상 true
         public static boolean isAnnounceExceptNoticeType() {
-            return pref().get(KEY_ANNOUNCE_EXCEPT_TYPE_NOTICE, false);
+            return isSearchOnMobile() || pref().get(KEY_ANNOUNCE_EXCEPT_TYPE_NOTICE, false);
         }
     }
 

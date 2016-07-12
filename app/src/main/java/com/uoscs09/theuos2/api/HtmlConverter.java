@@ -50,7 +50,7 @@ class HtmlConverter implements Converter<ResponseBody, Object> {
             } else if (clazz.equals(WeekRestItem.class))
                 parser = new ParseRestaurantWeek();
             else if (clazz.equals(AnnounceItem.class)) {
-                parser =ParseAnnounce.getParser();
+                parser = ParseAnnounce.mobileWeb();
             } else
                 throw new IOException("incompatible class input : " + clazz.getName());
 

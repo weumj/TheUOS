@@ -1,12 +1,10 @@
 package com.uoscs09.theuos2.tab.announce;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -18,7 +16,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -58,8 +55,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>>
     ListView mListView;
     @BindView(R.id.tab_announce_empty_view)
     View mEmptyView;
-    private Dialog mPageSelectDialog;
-    private NumberPicker mPageNumberPicker;
+    //private NumberPicker mPageNumberPicker;
     private MenuItem mSearchMenu;
 
 
@@ -100,7 +96,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>>
             currentCategoryIndex = 0;
         }
 
-        initPageSelectDialog();
+        //initPageSelectDialog();
 
         super.onCreate(savedInstanceState);
 
@@ -402,6 +398,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>>
         mCategorySpinner.setOnItemSelectedListener(this);
 
         mPageIndexView = (TextView) mTabParent.findViewById(R.id.tab_anounce_action_textView_page);
+        /*
         mPageIndexView.setOnClickListener(v -> {
             if (getCurrentCategoryIndex() < 1) {
                 AppUtil.showToast(getActivity(), R.string.tab_announce_invalid_category, true);
@@ -409,6 +406,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>>
                 mPageSelectDialog.show();
             }
         });
+        */
 
         updatePageNumber(mCurrentPageIndex);
 
@@ -421,9 +419,9 @@ public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>>
         mCurrentPageIndex = pageIndex;
     }
 
-    /**
+    /*
      * 페이지 선택 dialog 를 생성한다.
-     */
+
     private void initPageSelectDialog() {
         Context context = getActivity();
         mPageNumberPicker = new NumberPicker(context);
@@ -443,7 +441,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>>
                 .create();
 
     }
-
+ */
     @NonNull
     @Override
     public String getScreenNameForTracker() {

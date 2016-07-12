@@ -10,6 +10,7 @@ import android.widget.RemoteViewsService;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsListRemoteViewsFactory;
 import com.uoscs09.theuos2.tab.libraryseat.SeatItem;
+import com.uoscs09.theuos2.util.CollectionUtil;
 import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 
@@ -30,7 +31,7 @@ public class LibrarySeatListService extends RemoteViewsService {
         public ListRemoteViewsFactory(Context context, Intent intent) {
             super(context, intent);
             List<SeatItem> extraList = intent.getBundleExtra(LibrarySeatWidget.LIBRARY_SEAT_WIDGET_DATA).getParcelableArrayList(LibrarySeatWidget.LIBRARY_SEAT_WIDGET_DATA);
-            if (extraList != null && !extraList.isEmpty()) {
+            if(!CollectionUtil.isEmpty(extraList)){
                 clear();
                 addAll(extraList);
             }

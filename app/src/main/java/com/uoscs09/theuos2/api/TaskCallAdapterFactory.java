@@ -41,8 +41,14 @@ class TaskCallAdapterFactory extends CallAdapter.Factory {
         return getParameterUpperBound(0, (ParameterizedType) returnType);
     }
 
-    public static TaskCallAdapterFactory create() {
-        return new TaskCallAdapterFactory();
+    private static TaskCallAdapterFactory instance;
+
+    public static TaskCallAdapterFactory getInstance() {
+        if(instance == null){
+            instance = new TaskCallAdapterFactory();
+        }
+
+        return instance;
     }
 
 }
