@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:columnCount="6"
+        android:rowCount="3">
+
+        <TextView
+            android:id="@+id/tab_wise_score_text1"
+            android:layout_gravity="center"
+            android:text="1"
+            android:layout_columnSpan="2"
+            android:layout_rowSpan="1" />
+
+        <TextView
+            android:id="@+id/tab_wise_score_text2"
+            android:text="2"
+            android:layout_columnSpan="2"
+            android:layout_rowSpan="1" />
+
+        <TextView
+            android:id="@+id/tab_wise_score_text3"
+            android:text="3"
+            android:layout_columnSpan="2"
+            android:layout_rowSpan="1" />
+
+        <TextView
+            android:id="@+id/tab_wise_score_text4"
+            android:text="4"
+            android:layout_columnSpan="3"
+            android:layout_rowSpan="1" />
+
+        <TextView
+            android:id="@+id/tab_wise_score_text5"
+            android:text="5"
+            android:layout_columnSpan="3"
+            android:layout_rowSpan="1" />
+
+        <TextView
+            android:id="@+id/tab_wise_score_text6"
+            android:text="6"
+            android:layout_columnSpan="3"
+            android:layout_rowSpan="1" />
+
+        <TextView
+            android:id="@+id/tab_wise_score_text7"
+            android:text="7"
+            android:layout_columnSpan="3"
+            android:layout_rowSpan="1" />
+
+    </GridLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>

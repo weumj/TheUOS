@@ -4,6 +4,7 @@ import android.text.TextUtils;
 import android.util.SparseArray;
 
 import com.uoscs09.theuos2.R;
+import com.uoscs09.theuos2.api.WiseApiService;
 import com.uoscs09.theuos2.tab.announce.AnnounceItem;
 import com.uoscs09.theuos2.tab.booksearch.BookItem;
 import com.uoscs09.theuos2.tab.booksearch.BookStateInfo;
@@ -22,18 +23,15 @@ import com.uoscs09.theuos2.tab.subject.CoursePlanItem;
 import com.uoscs09.theuos2.tab.subject.SubjectInformation;
 import com.uoscs09.theuos2.tab.subject.SubjectItem2;
 import com.uoscs09.theuos2.tab.subject.TimeTableSubjectInfo;
-import com.uoscs09.theuos2.tab.timetable.ParseTimetable;
 import com.uoscs09.theuos2.tab.timetable.SubjectInfoItem;
 import com.uoscs09.theuos2.tab.timetable.Timetable2;
 import com.uoscs09.theuos2.util.AppUtil;
-import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.PrefHelper;
 import com.uoscs09.theuos2.util.StringUtil;
 import com.uoscs09.theuos2.util.TaskUtil;
 
 import java.io.File;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -180,16 +178,7 @@ public class NetworkRequests {
     public static class TimeTables {
 
         public static Task<Timetable2> request(CharSequence id, CharSequence passwd, OApiUtil.Semester semester, CharSequence year) {
-            return TimeTableHttpRequest.newRequest(id, passwd, semester, year)
-                    .wrap(httpURLConnection -> {
-                        InputStream inputStream = httpURLConnection.getInputStream();
-                        try {
-                            return new ParseTimetable().parse(inputStream);
-                        } finally {
-                            IOUtil.closeStream(inputStream);
-                            httpURLConnection.disconnect();
-                        }
-                    });
+            return WiseApiService.timetableTask(id, passwd, semester, Integer.parseInt(year.toString()));
         }
 
     }
@@ -333,6 +322,15 @@ public class NetworkRequests {
 
         public static Task<ClassroomTimeTable> classRoomTimeTables(String year, String term, BuildingRoom.RoomInfo roomInfo) {
             return oApi().classRoomTimeTables(OApiUtil.UOS_API_KEY, year, term, roomInfo.buildingCode(), roomInfo.code());
+        }
+    }
+
+    public static class WiseScores{
+        public static Task<com.uoscs09.theuos2.tab.score.WiseScores> wiseScores(String id, String pw) {
+            return Tasks.Parallel.serialTask(
+                    WiseApiService.mobileWiseApi().login(1, id, pw),
+                    WiseApiService.mobileWiseApi().score()
+            ).wrap(objects -> (com.uoscs09.theuos2.tab.score.WiseScores) objects[1]);
         }
     }
 }

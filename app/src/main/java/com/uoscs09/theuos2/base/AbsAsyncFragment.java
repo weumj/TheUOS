@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.util.AppUtil;
 
@@ -59,10 +60,16 @@ public abstract class AbsAsyncFragment<T> extends BaseTabFragment {
     }
 
     protected final void executeWithQueue(String tag, @NonNull Task<? extends T> task, @NonNull final ResultListener<T> r, @Nullable final ErrorListener e) {
+        if (taskQueue() == null) {
+            AppUtil.showToast(getActivity(), R.string.error_cannot_execute, true);
+            return;
+        }
+
         onPreExecute();
 
         sAsyncDataStoreMap.remove(getClass().getName());
 
+        //noinspection ConstantConditions
         taskQueue().enqueue(tag, task, result -> {
                     if (isVisible()) {
                         onPostExecute();

@@ -1,14 +1,12 @@
 package com.uoscs09.theuos2;
 
 
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.uoscs09.theuos2.base.BaseTabFragment;
@@ -46,16 +44,15 @@ public class TabHomeFragment extends BaseTabFragment {
         List<AppUtil.Page> list = AppUtil.loadEnabledPageOrderWithSetting();
         final int listLastCount = list.size() - 1;
 
-        final int screenWidth = getResources().getDisplayMetrics().widthPixels;
         final int viewCount = AppUtil.isScreenSizeSmall() ? 3 : 5;
-
-        final int marginSize = getResources().getDimensionPixelSize(R.dimen.dp8);
-        final int viewSize = (screenWidth - ((viewCount + 1) * marginSize)) / viewCount;
 
         mRecyclerView.setNestedScrollingEnabled(false);
         mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), viewCount));
         adapter = ListRecyclerUtil.newSimpleAdapter(list, HomeViewHolder.class, R.layout.list_layout_home);
         adapter.setOnItemClickListener((homeViewHolder, view1) -> {
+            if(getUosMainActivity() == null)
+                return;
+
             int position = homeViewHolder.getAdapterPosition();
             if (listLastCount == position) {
                 getUosMainActivity().startSettingActivity();
@@ -65,32 +62,7 @@ public class TabHomeFragment extends BaseTabFragment {
         });
         mRecyclerView.setAdapter(adapter);
 
-        final int half = marginSize / 2;
-        final int lastCount = viewCount - 1;
-
-        mRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
-            @Override
-            public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-                ViewGroup.LayoutParams params = view.getLayoutParams();
-                params.height = viewSize;
-                params.width = viewSize;
-
-                view.setLayoutParams(params);
-
-                int position = parent.getChildAdapterPosition(view);
-
-                int rowPosition = position % viewCount;
-
-                if (rowPosition == 0) {
-                    outRect.set(marginSize, marginSize, half, 0);
-                } else if (rowPosition == lastCount) {
-                    outRect.set(half, marginSize, marginSize, 0);
-                } else {
-                    outRect.set(half, marginSize, half, 0);
-                }
-            }
-        });
-
+        mRecyclerView.addItemDecoration(ListRecyclerUtil.squareViewItemDecoration(getActivity(), viewCount, R.dimen.tab_home_item_side_margin));
 
     }
 

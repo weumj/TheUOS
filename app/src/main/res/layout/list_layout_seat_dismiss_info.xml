@@ -7,7 +7,7 @@
     android:padding="2dp">
 
     <TextView
-        android:id="@+id/tab_libray_seat_info_time"
+        android:id="@+id/tab_library_seat_info_time"
         android:layout_width="0dp"
         android:layout_height="fill_parent"
         android:layout_weight="1"
@@ -15,7 +15,7 @@
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
-        android:id="@+id/tab_libray_seat_info_number"
+        android:id="@+id/tab_library_seat_info_number"
         android:layout_width="0dp"
         android:layout_height="fill_parent"
         android:layout_weight="1"

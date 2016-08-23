@@ -264,7 +264,10 @@ public class UosMainActivity extends BaseActivity {
 
     @OnClick(R.id.drawer_btn_map)
     void toMap(View v) {
-        AnimUtil.startActivityWithScaleUp(UosMainActivity.this, new Intent(this, GoogleMapActivity.class), v);
+        Intent intent = GoogleMapActivity.startIntentWithErrorToast(this);
+        if(intent != null) {
+            AnimUtil.startActivityWithScaleUp(UosMainActivity.this, intent, v);
+        }
     }
 
     @OnClick(R.id.drawer_btn_exit)

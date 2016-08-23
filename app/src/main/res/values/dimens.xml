@@ -8,6 +8,9 @@
     <dimen name="tab_home_recycler_view_top_margin">40dp</dimen>
     <dimen name="home_item_size">100dp</dimen>
     <dimen name="home_item_padding">10dp</dimen>
+    <dimen name="tab_home_item_side_margin">8dp</dimen>
+
+    <dimen name="tab_wise_score_side_margin">8dp</dimen>
 
     <dimen name="activity_left_drawer">200dp</dimen>
 
@@ -28,6 +31,6 @@
     <dimen name="list_side_margin">20dp</dimen>
 
     <dimen name="dp8">8dp</dimen>
-    <dimen name="dp16">16dp</dimen>
+    <dimen name="dp20">20dp</dimen>
 
 </resources>

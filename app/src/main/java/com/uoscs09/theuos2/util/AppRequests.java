@@ -378,4 +378,10 @@ public class AppRequests {
             return NetworkRequests.Buildings.classRoomTimeTables(year, term, roomInfo);
         }
     }
+
+    public static class WiseScores {
+        public static Task<com.uoscs09.theuos2.tab.score.WiseScores> wiseScores(String id, String pw) {
+            return NetworkRequests.WiseScores.wiseScores(id, pw);
+        }
+    }
 }

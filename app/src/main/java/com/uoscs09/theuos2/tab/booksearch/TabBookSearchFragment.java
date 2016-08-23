@@ -275,7 +275,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<List<BookItem>> i
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
 
-        if (getActivity() != null)
+        if (getUosMainActivity() != null)
             getUosMainActivity().setOnBackPressListener(isVisibleToUser ? this : null);
 
     }

@@ -319,7 +319,7 @@ public abstract class ParseAnnounce extends JerichoParser<List<AnnounceItem>> {
                             html = html.replace(boardNavigator.toString(), "");
                         }
 
-                        detailAnnounceItem.page = "<meta name=\"viewport\" content=\"initial-scale=1.0; width=device-width;\" />\n" +
+                        detailAnnounceItem.page = "<meta name=\"viewport\" content=\"initial-scale=1.0; width=device-width; target-densitydpi=device-dpi;\" />\n" +
                                 "<link rel=\"stylesheet\" href=\"/css/mkor/base.css\" type=\"text/css\" />\n" + html;
                     }
 

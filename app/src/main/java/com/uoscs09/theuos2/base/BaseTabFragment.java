@@ -27,16 +27,28 @@ public abstract class BaseTabFragment extends BaseFragment {
             throw new RuntimeException("Activity != UosMainActivity");
     }
 
+    @Nullable
     protected final UOSApplication getUosApplication() {
+        if (getActivity() == null)
+            return null;
+
         return (UOSApplication) getActivity().getApplication();
     }
 
+    @Nullable
     protected final TaskQueue taskQueue() {
-        return getUosApplication().taskQueue();
+        if (getUosApplication() != null)
+            return getUosApplication().taskQueue();
+        else
+            return null;
     }
 
+    @Nullable
     protected UosMainActivity getUosMainActivity() {
-        return (UosMainActivity) getActivity();
+        if (getActivity() != null && getActivity() instanceof UosMainActivity)
+            return (UosMainActivity) getActivity();
+        else
+            return null;
     }
 
     @Nullable
@@ -89,8 +101,12 @@ public abstract class BaseTabFragment extends BaseFragment {
     }
     */
 
+
+    @Nullable
     protected ViewGroup getToolbarParent() {
-        return ((UosMainActivity) getActivity()).getToolbarParent();
+        UosMainActivity activity = getUosMainActivity();
+
+        return activity != null ? activity.getToolbarParent() : null;
     }
 
     @Override

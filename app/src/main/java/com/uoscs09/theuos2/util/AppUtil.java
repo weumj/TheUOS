@@ -1,17 +1,22 @@
 package com.uoscs09.theuos2.util;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.support.annotation.AttrRes;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.PermissionChecker;
 import android.util.TypedValue;
 import android.widget.Toast;
 
@@ -26,6 +31,7 @@ import com.uoscs09.theuos2.tab.emptyroom.TabSearchEmptyRoomFragment;
 import com.uoscs09.theuos2.tab.libraryseat.TabLibrarySeatFragment;
 import com.uoscs09.theuos2.tab.restaurant.TabRestaurantFragment;
 import com.uoscs09.theuos2.tab.schedule.UnivScheduleFragment;
+import com.uoscs09.theuos2.tab.score.TabWiseScoreFragment;
 import com.uoscs09.theuos2.tab.subject.TabSearchSubjectFragment2;
 import com.uoscs09.theuos2.tab.timetable.TabTimeTableFragment;
 
@@ -38,6 +44,7 @@ public class AppUtil {
     // public static final String DB_PHONE = "PhoneNumberDB.db";
     public static final int RELAUNCH_ACTIVITY = 6565;
 
+    //todo
     private static final int MAX_PAGE_SIZE_NORMAL = 9;
 
     private static int PAGE_SIZE = MAX_PAGE_SIZE_NORMAL;
@@ -117,7 +124,9 @@ public class AppUtil {
 
         EmptyRoom(7, TabSearchEmptyRoomFragment.class, R.string.title_tab_search_empty_room, R.attr.theme_ic_action_action_search),
         SearchSubject(8, TabSearchSubjectFragment2.class, R.string.title_tab_search_subject, R.attr.theme_ic_action_content_content_paste),
-        BuildingRoom(9, TabBuildingRoomFragment.class, R.string.title_tab_building_classroom, R.attr.theme_ic_action_action_about);
+        WiseScore(9, TabWiseScoreFragment.class, R.string.title_tab_wise_score, R.attr.theme_ic_action_content_content_copy),
+        BuildingRoom(10, TabBuildingRoomFragment.class, R.string.title_tab_building_classroom, R.attr.theme_ic_action_action_about);
+
 
         /* disable
         Phone(TabPhoneFragment.class, R.string.title_tab_phone, R.attr.theme_ic_action_communication_call),
@@ -206,6 +215,7 @@ public class AppUtil {
     }
 
 
+    @Deprecated
     public static class Page {
         public int stringId;
         public int order;
@@ -403,6 +413,8 @@ public class AppUtil {
                 return R.string.title_tab_search_subject;
             case 9:
                 return R.string.title_tab_building_classroom;
+            case 10:
+                return R.string.title_tab_wise_score;
 
             // unused
             case 20:
@@ -463,6 +475,10 @@ public class AppUtil {
 
             case R.string.title_tab_building_classroom:
                 id = R.attr.theme_ic_action_action_about;
+                break;
+
+            case R.string.title_tab_wise_score:
+                id = R.attr.theme_ic_action_content_content_copy;
                 break;
 
             //unused
@@ -541,7 +557,7 @@ public class AppUtil {
             case R.string.title_tab_building_classroom:
                 return R.drawable.ic_action_action_about_white;
 
-            case R.string.title_tab_score:
+            case R.string.title_tab_wise_score:
                 return R.drawable.ic_action_content_content_copy_white;
 
             case R.string.title_tab_transport:
@@ -634,12 +650,13 @@ public class AppUtil {
             case R.string.title_tab_building_classroom:
                 return TabBuildingRoomFragment.class;
 
+            case R.string.title_tab_wise_score:
+                return TabWiseScoreFragment.class;
             /*
             case R.string.title_tab_phone:
                 return TabPhoneFragment.class;
 
-            case R.string.title_tab_score:
-                return ScoreFragment.class;
+
 
             case R.string.title_tab_transport:
                 return TabTransportFragment.class;
@@ -865,6 +882,66 @@ public class AppUtil {
             default:
                 return false;
         }
+    }
+
+
+
+
+    @PermissionChecker.PermissionResult
+    public static boolean checkSelfPermissionCompat(Context context, @NonNull String permission) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
+            return true;
+        else
+            return context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    // String...
+    @PermissionChecker.PermissionResult
+    public static boolean checkSelfPermissionCompat(Context context, @NonNull String... permissions) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
+            return true;
+        else {
+            for (String permission : permissions) {
+                if (context.checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED)
+                    return false;
+            }
+            return true;
+        }
+    }
+
+    public static void requestPermissionsCompat(Activity activity, int requestCode, String... permissions) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            activity.requestPermissions(permissions, requestCode);
+    }
+
+    public static boolean checkPermissionResult(@NonNull String[] permissions, @NonNull int[] grantResults) {
+        for (int result : grantResults) {
+            if (result == PackageManager.PERMISSION_DENIED) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public static boolean checkPermissionResultAndShowToastIfFailed(Context context, @NonNull String[] permissions, @NonNull int[] grantResults, String message) {
+        boolean result = checkPermissionResult(permissions, grantResults);
+
+        //"권한이 거절되어 계속 진행 할 수 없습니다."
+        if (!result)
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+
+        return result;
+    }
+
+    public static boolean checkPermissionResultAndShowToastIfFailed(Context context,@NonNull String[] permissions, @NonNull int[] grantResults, @StringRes int res) {
+        boolean result = checkPermissionResult(permissions, grantResults);
+
+        //"권한이 거절되어 계속 진행 할 수 없습니다."
+        if (!result)
+            Toast.makeText(context, res, Toast.LENGTH_SHORT).show();
+
+        return result;
     }
 
 }

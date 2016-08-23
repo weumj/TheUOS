@@ -1,12 +1,15 @@
 package com.uoscs09.theuos2.tab.map;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -22,6 +25,7 @@ import android.widget.ListView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -32,6 +36,7 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.BaseActivity;
 import com.uoscs09.theuos2.util.AnimUtil;
 import com.uoscs09.theuos2.util.AppUtil;
+import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.OApiUtil.UnivBuilding;
 
 import butterknife.BindView;
@@ -39,9 +44,48 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class GoogleMapActivity extends BaseActivity implements LocationListener {
+    @Nullable
+    public static Intent startIntentWithErrorToast(Activity activity, OApiUtil.UnivBuilding univBuilding) {
+        try {
+            return startIntent(activity, univBuilding);
+        } catch (GooglePlayServicesNotAvailableException e) {
+            AppUtil.showToast(activity, R.string.tab_map_device_cannot_init_googlemap, true);
+        }
+
+        return null;
+    }
+
+    @Nullable
+    public static Intent startIntentWithErrorToast(Activity activity) {
+        try {
+            return startIntent(activity);
+        } catch (GooglePlayServicesNotAvailableException e) {
+            AppUtil.showToast(activity, R.string.tab_map_device_cannot_init_googlemap, true);
+        }
+
+        return null;
+    }
+
+    public static Intent startIntent(Context context) throws GooglePlayServicesNotAvailableException {
+        int googlePlayAvailabilityResult = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context);
+        if (googlePlayAvailabilityResult != ConnectionResult.SUCCESS) {
+            throw new GooglePlayServicesNotAvailableException(googlePlayAvailabilityResult);
+        }
+
+        return new Intent(context, GoogleMapActivity.class);
+    }
+
+    public static Intent startIntent(Context context, OApiUtil.UnivBuilding univBuilding) throws GooglePlayServicesNotAvailableException {
+        if (univBuilding.code < 0) {
+            return null;
+        }
+        return startIntent(context).putExtra("building", univBuilding.code);
+    }
+
 
     private static final int REQUEST_LOCATION_SOURCE_SETTINGS = 100;
     private static final int REQUEST_PERMISSION_IN_INIT = 120;
+    private static final int REQUEST_PERMISSION_IN_INIT_MAP = 130;
     private static final int REQUEST_PERMISSION_IN_RESUME = 140;
 
     private static final int PERMISSION_REQUEST_LOCATION = 4826;
@@ -61,21 +105,21 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.tab_map_googlemap);
 
-        ButterKnife.bind(this);
-
-        int googlePlayAvailabilityResult = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
-        if (googlePlayAvailabilityResult != ConnectionResult.SUCCESS) {
-            AppUtil.showToast(getApplicationContext(), R.string.tab_map_device_without_googlemap, true);
-            finish();
+        String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+        if (!checkSelfPermissionCompat(permissions)) {
+            requestPermissionsCompat(REQUEST_PERMISSION_IN_INIT, permissions);
+            //AppUtil.showToast(this, R.string.tab_map_permission_denied);
+            //finish();
             return;
         }
 
-        initMap();
-
         selectedBuilding = getIntent().getIntExtra("building", -1);
 
+        setContentView(R.layout.tab_map_googlemap);
+        ButterKnife.bind(this);
+
+        initMap();
     }
 
     @OnClick(R.id.action_backward)
@@ -104,27 +148,29 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
 
     void initGoogleMapSetting(GoogleMap googleMap) {
         this.googleMap = googleMap;
+        googleMap.animateCamera(CameraUpdateFactory.zoomTo(17));
 
         String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
         if (!checkSelfPermissionCompat(permissions)) {
-            requestPermissionsCompat(REQUEST_PERMISSION_IN_INIT, permissions);
+            requestPermissionsCompat(REQUEST_PERMISSION_IN_INIT_MAP, permissions);
         } else {
             googleMap.setBuildingsEnabled(true);
             //noinspection MissingPermission
             googleMap.setMyLocationEnabled(true);
-            ButtonMover bm = new ButtonMover();
+            ButtonMover bm = new ButtonMover(button);
             googleMap.setOnMarkerClickListener(bm);
             googleMap.setOnMapClickListener(bm);
             loadDefaultMapLocation();
         }
     }
 
-    private class ButtonMover implements GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
+    private static class ButtonMover implements GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
         private boolean isButtonMove = false;
         private final float distance;
-
-        public ButtonMover() {
-            distance = getResources().getDimension(R.dimen.dp16);
+        private final View button;
+        public ButtonMover(View v) {
+            this.button = v;
+            distance = v.getContext().getResources().getDimension(R.dimen.dp20);
         }
 
         @Override
@@ -148,8 +194,10 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
 
     private void loadDefaultMapLocation() {
         if (selectedBuilding != -1) {
-            showBuildingItem(selectedBuilding);
-            selectedBuilding = -1;
+            new Handler().postDelayed(() -> {
+                showBuildingItem(selectedBuilding);
+                selectedBuilding = -1;
+            }, 500);
         } else {
             moveCamera(UnivBuilding.Univ);
             setMapMarker(UnivBuilding.Univ);
@@ -201,6 +249,8 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
     @Override
     protected void onDestroy() {
         if (googleMap != null) {
+            googleMap.setOnMarkerClickListener(null);
+            googleMap.setOnMapClickListener(null);
             googleMap.clear();
             googleMap = null;
         }
@@ -226,6 +276,16 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
 
         switch (requestCode) {
             case REQUEST_PERMISSION_IN_INIT:
+                if (checkPermissionResultAndShowToastIfFailed(permissions, grantResults, R.string.tab_map_permission_denied)) {
+                    setContentView(R.layout.tab_map_googlemap);
+                    ButterKnife.bind(this);
+                    initMap();
+                } else {
+                    finish();
+                }
+                break;
+
+            case REQUEST_PERMISSION_IN_INIT_MAP:
             case PERMISSION_REQUEST_LOCATION:
                 if (checkPermissionResultAndShowToastIfFailed(permissions, grantResults, R.string.tab_map_permission_denied)) {
                     initMap();
@@ -352,6 +412,8 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
             //mMenuDialog.setOnDismissListener(dialog1 -> AnimUtil.revealShow(v, false, mMenuDialog));
             //mMenuDialog.setOnCancelListener(dialog1 -> AnimUtil.revealShow(v, false, mMenuDialog));
         }
+
+        //todo http://hujiaweibujidao.github.io/blog/2015/12/13/Fab-and-Dialog-Morphing-Animation/
         mMenuDialog.show();
     }
 

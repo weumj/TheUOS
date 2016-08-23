@@ -19,6 +19,7 @@
     <string name="error_occur">에러!</string>
     <string name="error_internet">인터넷 또는 학교 서버 접속에 실패하였습니다.</string>
     <string name="error_no_activity_found_to_handle_file">해당 파일을 열 수 있는 앱을 찾을 수 없습니다.</string>
+    <string name="error_cannot_execute">작업을 실행할 수 없습니다.</string>
 
     <string name="finish_update">업데이트 완료</string>
     <string name="progress_finish">작업 완료</string>
@@ -44,6 +45,7 @@
     <string name="title_tab_search_empty_room">빈 강의실 조회</string>
     <string name="title_tab_schedule">학사일정</string>
     <string name="title_tab_building_classroom">건물 및 강의실 정보</string>
+    <string name="title_tab_wise_score">성적 조회</string>
 
     <string name="title_tab_map">학교 지도</string>
     <string name="title_tab_score">수업평가 결과 조회</string>
@@ -105,11 +107,11 @@
     <string name="tab_map_menu_building">건물</string>
     <string name="tab_map_menu_welfare">복지시설</string>
     <string name="tab_map_map_layout_error">화면을 구성하는 도중 문제가 생겼습니다.</string>
-    <string name="tab_map_device_without_googlemap">이 기기는 구글 지도를 지원하지 않습니다.</string>
+    <string name="tab_map_device_cannot_init_googlemap">구글 지도를 사용할 수 없습니다.</string>
     <string name="tab_map_do_not_locate">현재 위치를 감지하지 못하였습니다. 잠시후에 시도하세요.</string>
     <string name="tab_map_select_dest">목적지 선택</string>
     <string name="tab_map_select_building">건물을 선택해 주세요.</string>
-    <string name="tab_map_permission_denied">위치 권한이 거절되어서 지도 화면이 종료됩니다.</string>
+    <string name="tab_map_permission_denied">위치 권한이 거절되어 지도를 사용할 수 없습니다.</string>
     <string name="tab_map_buildings_welfare_cash">현금지급기</string>
     <string name="tab_map_buildings_welfare_bank">은행</string>
     <string name="tab_map_buildings_welfare_copy">복사점</string>

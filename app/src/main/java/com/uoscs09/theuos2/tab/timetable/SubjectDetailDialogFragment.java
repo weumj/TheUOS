@@ -200,11 +200,15 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
             return;
 
         if (mSubject != null && mSubject.building() != null && mSubject.building().code > 0) {
-            Intent intent = new Intent(v.getContext(), GoogleMapActivity.class);
-            intent.putExtra("building", mSubject.building().code);
 
-            sendClickEvent("map");
-            AnimUtil.startActivityWithScaleUp(getActivity(), intent, v);
+            Intent intent = GoogleMapActivity.startIntentWithErrorToast(getBaseActivity(), mSubject.building());
+
+            if (intent != null) {
+                sendClickEvent("map");
+                AnimUtil.startActivityWithScaleUp(getActivity(), intent, v);
+            } else {
+                AppUtil.showToast(getActivity(), R.string.tab_timetable_no_subject);
+            }
             dismiss();
 
         } else {
@@ -289,7 +293,7 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
     }
 
     private void showCoursePlan(SubjectItem2 subject, View v) {
-        CoursePlanDialogFragment.fetchCoursePlanAndShow(this, subject,v );
+        CoursePlanDialogFragment.fetchCoursePlanAndShow(this, subject, v);
     }
 
     @NonNull

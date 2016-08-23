@@ -106,9 +106,9 @@ public class SeatDismissDialogFragment extends BaseDialogFragment {
     }
 
     static class Holder extends ListRecyclerAdapter.ViewHolder<SeatDismissInfo> {
-        @BindView(R.id.tab_libray_seat_info_time)
+        @BindView(R.id.tab_library_seat_info_time)
         public TextView time;
-        @BindView(R.id.tab_libray_seat_info_number)
+        @BindView(R.id.tab_library_seat_info_number)
         public TextView count;
 
         public Holder(View v) {

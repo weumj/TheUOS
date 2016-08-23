@@ -108,6 +108,10 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<List<EmptyRo
         mTimeSpinner = (Spinner) dialogLayout.findViewById(R.id.etc_empty_spinner_time);
         mTermSpinner = (Spinner) dialogLayout.findViewById(R.id.etc_empty_spinner_term);
 
+
+        mTermSpinner.setSelection(OApiUtil.Semester.getByCurrentMonth().ordinal());
+
+
         mSearchDialog = new AlertDialog.Builder(getActivity())
                 .setView(dialogLayout)
                 .setPositiveButton(R.string.confirm, (dialog, which) -> {

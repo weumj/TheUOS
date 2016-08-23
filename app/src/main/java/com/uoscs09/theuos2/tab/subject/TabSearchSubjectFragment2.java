@@ -67,8 +67,6 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<List<SubjectI
     private SubjectAdapter2 mSubjectAdapter;
     private AlphaInAnimationAdapter mAminAdapter;
 
-    private final CoursePlanDialogFragment mCoursePlanDialogFragment = new CoursePlanDialogFragment();
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -90,6 +88,8 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<List<SubjectI
         mDialogTermSpinner = (Spinner) dialogView.findViewById(R.id.search_subj_spinner_term);
         mDialogYearSpinner = (Spinner) dialogView.findViewById(R.id.search_subj_spinner_year);
         mDialogYearSpinner.setAdapter(new ArrayAdapter<>(context, android.R.layout.simple_spinner_dropdown_item, OApiUtil.getYears()));
+
+        mDialogTermSpinner.setSelection(OApiUtil.Semester.getByCurrentMonth().ordinal());
 
         // current year
         mDialogYearSpinner.setSelection(2);

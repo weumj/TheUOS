@@ -10,6 +10,8 @@
     <dimen name="tab_home_grid_view_vertical_margin">80dp</dimen>
     <dimen name="tab_home_grid_view_horizontal_margin">80dp</dimen>
     <dimen name="tab_home_recycler_view_top_margin">100dp</dimen>
+    <dimen name="tab_home_item_side_margin">16dp</dimen>
     <dimen name="activity_left_drawer">200dp</dimen>
 
+    <dimen name="tab_wise_score_side_margin">20dp</dimen>
 </resources>

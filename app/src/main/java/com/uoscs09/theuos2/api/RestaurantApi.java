@@ -16,12 +16,12 @@ public interface RestaurantApi {
     String URL = "http://m.uos.ac.kr/mkor/food/";
     String WEEK_URL = "http://www.uos.ac.kr/food/placeList.do";
 
-    @Headers({"Content-Type: charset=EUC-KR"})
+    @Headers({"Content-Type: text/html; charset=EUC-KR"})
     @GET("list.do")
     Task<SparseArray<RestItem>> restItem(
     );
 
-    @Headers({"Content-Type: charset=EUC-KR"})
+    @Headers({"Content-Type: text/html; charset=EUC-KR"})
     @GET
     Task<WeekRestItem> weekRestItem(
             @NonNull @Url String url,

@@ -45,7 +45,7 @@ public interface LibraryApi {
             @Url String url
     );
 
-    @Headers({"Content-Type: charset=EUC-KR"})
+    @Headers({"Content-Type: text/html; charset=EUC-KR"})
     @GET
     Task<SeatInfo> seatInformation(
             @Url String url

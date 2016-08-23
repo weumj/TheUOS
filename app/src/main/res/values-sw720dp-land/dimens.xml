@@ -9,6 +9,8 @@
     <dimen name="activity_horizontal_margin">128dp</dimen>
     <dimen name="tab_home_grid_view_vertical_margin">128dp</dimen>
     <dimen name="tab_home_grid_view_horizontal_margin">128dp</dimen>
+    <dimen name="tab_home_item_side_margin">32dp</dimen>
     <dimen name="activity_left_drawer">180dp</dimen>
 
+    <dimen name="tab_wise_score_side_margin">32dp</dimen>
 </resources>
