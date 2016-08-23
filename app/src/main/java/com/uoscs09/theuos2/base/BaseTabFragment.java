@@ -113,7 +113,7 @@ public abstract class BaseTabFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
 
-        if (mTabParent != null && getUserVisibleHint()) {
+        if (mTabParent != null && isMenuVisible()) {// current tab
             addTabMenu();
         }
 
