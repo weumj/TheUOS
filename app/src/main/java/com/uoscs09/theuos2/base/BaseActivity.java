@@ -18,6 +18,7 @@ public abstract class BaseActivity extends AppCompatActivity implements TrackerU
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         AppUtil.applyTheme(this);
+
         super.onCreate(savedInstanceState);
 
         if (!UOSApplication.DEBUG) {

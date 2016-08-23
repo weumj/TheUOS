@@ -31,6 +31,6 @@
     <dimen name="list_side_margin">20dp</dimen>
 
     <dimen name="dp8">8dp</dimen>
-    <dimen name="dp20">20dp</dimen>
+    <dimen name="dp28">28dp</dimen>
 
 </resources>

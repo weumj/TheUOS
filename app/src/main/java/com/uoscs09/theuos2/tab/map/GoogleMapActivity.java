@@ -13,15 +13,8 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -34,7 +27,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.BaseActivity;
-import com.uoscs09.theuos2.util.AnimUtil;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.OApiUtil.UnivBuilding;
@@ -95,7 +87,6 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
     @BindView(R.id.tab_map_fab)
     FloatingActionButton button;
 
-    private AlertDialog mMenuDialog;
     private LocationManager locationManager;
     private boolean isLocationUpdates = false;
 
@@ -163,34 +154,6 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
             loadDefaultMapLocation();
         }
     }
-
-    private static class ButtonMover implements GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
-        private boolean isButtonMove = false;
-        private final float distance;
-        private final View button;
-        public ButtonMover(View v) {
-            this.button = v;
-            distance = v.getContext().getResources().getDimension(R.dimen.dp20);
-        }
-
-        @Override
-        public void onMapClick(LatLng latLng) {
-            if (isButtonMove) {
-                button.animate().yBy(distance).start();
-                isButtonMove = false;
-            }
-        }
-
-        @Override
-        public boolean onMarkerClick(Marker marker) {
-            if (!isButtonMove) {
-                button.animate().yBy(-distance).start();
-                isButtonMove = true;
-            }
-            return false;
-        }
-    }
-
 
     private void loadDefaultMapLocation() {
         if (selectedBuilding != -1) {
@@ -352,69 +315,15 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
     }
 
     private void selectWelfareBuildingMenu() {
-        if (mMenuDialog == null) {
-            View v = LayoutInflater.from(this).inflate(R.layout.dialog_map_menu, null, false);
+        MapBuildingsDialogFragment.showDialog(this, button, (pagerIndex, listIndex) -> {
+            if (pagerIndex == 0) {
+                showBuildingItem(listIndex + 1);
+            } else {
+                showWelfareItem(listIndex);
+            }
 
-            Toolbar toolbar = (Toolbar) v.findViewById(R.id.toolbar);
-            toolbar.setTitle(R.string.tab_map_menu_title);
-
-            final ViewGroup viewGroup = (ViewGroup) v.findViewById(R.id.tab_map_bar_parent);
-            viewGroup.getChildAt(0).setBackgroundColor(AppUtil.getAttrColor(this, R.attr.color_actionbar_title));
-
-            ViewPager pager = (ViewPager) v.findViewById(R.id.viewpager);
-
-            v.findViewById(R.id.tab_map_menu_select_1).setOnClickListener(v1 -> pager.setCurrentItem(0, true));
-
-            v.findViewById(R.id.tab_map_menu_select_2).setOnClickListener(v1 -> pager.setCurrentItem(1, true));
-
-            pager.setAdapter(new PagerAdapter() {
-                @Override
-                public int getCount() {
-                    return 2;
-                }
-
-                @Override
-                public boolean isViewFromObject(View view, Object object) {
-                    return object.equals(view);
-                }
-
-                @Override
-                public Object instantiateItem(ViewGroup container, final int position) {
-                    View v = LayoutInflater.from(GoogleMapActivity.this).inflate(R.layout.view_map_menu_1, container, false);
-                    ListView listView = (ListView) v.findViewById(R.id.list);
-                    listView.setAdapter(ArrayAdapter.createFromResource(GoogleMapActivity.this, position == 0 ? R.array.buildings_univ : R.array.tab_map_buildings_welfare, android.R.layout.simple_list_item_1));
-                    listView.setOnItemClickListener((parent, view, position1, id) -> {
-                        if (position == 0) {
-                            showBuildingItem(position1 + 1);
-                        } else {
-                            showWelfareItem(position1);
-                        }
-                        mMenuDialog.dismiss();
-                    });
-
-                    container.addView(v);
-                    return v;
-                }
-            });
-            pager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-                @Override
-                public void onPageSelected(int position) {
-                    super.onPageSelected(position);
-                    viewGroup.getChildAt(position).setBackgroundColor(AppUtil.getAttrColor(GoogleMapActivity.this, R.attr.color_actionbar_title));
-                    viewGroup.getChildAt(1 - position).setBackgroundColor(0);
-                }
-            });
-
-            mMenuDialog = new AlertDialog.Builder(this)
-                    .setView(v)
-                    .create();
-            mMenuDialog.setOnShowListener(dialog1 -> AnimUtil.revealShow(v, null));
-            //mMenuDialog.setOnDismissListener(dialog1 -> AnimUtil.revealShow(v, false, mMenuDialog));
-            //mMenuDialog.setOnCancelListener(dialog1 -> AnimUtil.revealShow(v, false, mMenuDialog));
-        }
-
-        //todo http://hujiaweibujidao.github.io/blog/2015/12/13/Fab-and-Dialog-Morphing-Animation/
-        mMenuDialog.show();
+            return true;
+        });
     }
 
     private void showBuildingItem(int position) {
@@ -480,4 +389,32 @@ public class GoogleMapActivity extends BaseActivity implements LocationListener 
         }
     }
 
+
+
+    private static class ButtonMover implements GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
+        private boolean isButtonMove = false;
+        private final float distance;
+        private final View button;
+        public ButtonMover(View v) {
+            this.button = v;
+            distance = v.getContext().getResources().getDimension(R.dimen.dp28);
+        }
+
+        @Override
+        public void onMapClick(LatLng latLng) {
+            if (isButtonMove) {
+                button.animate().yBy(distance).start();
+                isButtonMove = false;
+            }
+        }
+
+        @Override
+        public boolean onMarkerClick(Marker marker) {
+            if (!isButtonMove) {
+                button.animate().yBy(-distance).start();
+                isButtonMove = true;
+            }
+            return false;
+        }
+    }
 }

@@ -151,7 +151,7 @@ class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements View.OnCl
 
         LinearLayout layout = holder.stateInfoLayout;
 
-        final int attachingViewsSize = list.size();
+        final int attachingViewsSize = list == null? 0 : list.size();
 
         final int availableRecyledHolderCount = childHolderList.size();
         final int diff = attachingViewsSize - availableRecyledHolderCount;
