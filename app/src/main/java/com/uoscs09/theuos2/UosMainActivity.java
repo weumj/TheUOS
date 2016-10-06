@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -32,7 +31,6 @@ import com.uoscs09.theuos2.setting.SettingActivity;
 import com.uoscs09.theuos2.tab.map.GoogleMapActivity;
 import com.uoscs09.theuos2.util.AnimUtil;
 import com.uoscs09.theuos2.util.AppUtil;
-import com.uoscs09.theuos2.util.ImageUtil;
 import com.uoscs09.theuos2.util.PrefHelper;
 
 import java.util.ArrayList;
@@ -57,8 +55,9 @@ public class UosMainActivity extends BaseActivity {
     /**
      * 화면 순서를 나타내는 리스트
      */
-    private ArrayList<Integer> mPageOrderList;
+    //private ArrayList<Integer> mTabOrderList;
 
+    private ArrayList<AppUtil.TabInfo> mTabOrderList;
     @BindView(R.id.activity_uos_drawer_layout)
     DrawerLayout mDrawerLayout;
 
@@ -87,12 +86,8 @@ public class UosMainActivity extends BaseActivity {
 
 
     private void initValues() {
-
         AppUtil.initStaticValues();
-        mPageOrderList = AppUtil.loadEnabledPageOrder2();
-        if (PrefHelper.Screens.isHomeEnable() || mPageOrderList.isEmpty()) {
-            mPageOrderList.add(0, R.string.title_section0_home);
-        }
+        mTabOrderList = AppUtil.TabInfo.loadEnabledTabOrderForMain();
     }
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,14 +116,11 @@ public class UosMainActivity extends BaseActivity {
 
         int tabNumber = getIntent().getIntExtra(SAVED_TAB_NUM, 0);
         if (savedInstanceState != null) {
-            navigateItem(mPageOrderList.indexOf(savedInstanceState.getInt(SAVED_TAB_NUM)), false);
-
+            navigateSavedTabOrder(savedInstanceState.getInt(SAVED_TAB_NUM));
         } else if (tabNumber != 0) {
-            navigateItem(mPageOrderList.indexOf(tabNumber), false);
-
+            navigateSavedTabOrder(tabNumber);
         } else {
             navigateItem(0, false);
-
         }
 
         //AppUtil.startOrStopServiceAnnounce(getApplicationContext());
@@ -136,6 +128,16 @@ public class UosMainActivity extends BaseActivity {
 
         //TODO test
         //startActivity(new Intent(this, TestActivity.class));
+    }
+
+    private void navigateSavedTabOrder(int order) {
+        for (int i = 0; i < mTabOrderList.size(); i++) {
+            AppUtil.TabInfo tabInfo = mTabOrderList.get(i);
+            if (order == tabInfo.defaultOrder) {
+                navigateItem(i, false);
+                break;
+            }
+        }
     }
 
     @NonNull
@@ -187,9 +189,9 @@ public class UosMainActivity extends BaseActivity {
         }
         */
 
-        int res = mPageOrderList.get(position);
-        if (res != -1) {
-            getSupportActionBar().setTitle(res);
+        AppUtil.TabInfo tabInfo = mTabOrderList.get(position);
+        if (tabInfo.titleResId > 0) {
+            getSupportActionBar().setTitle(tabInfo.titleResId);
             // getSupportActionBar().setIcon(AppUtil.getPageIcon(res));
         }
 
@@ -201,7 +203,7 @@ public class UosMainActivity extends BaseActivity {
 
     private void initDrawer() {
         @SuppressWarnings("unchecked")
-        ArrayList<Integer> list = (ArrayList<Integer>) mPageOrderList.clone();
+        ArrayList<Integer> list = (ArrayList<Integer>) mTabOrderList.clone();
         list.add(R.string.setting);
         list.add(R.string.action_exit);
 
@@ -265,7 +267,7 @@ public class UosMainActivity extends BaseActivity {
     @OnClick(R.id.drawer_btn_map)
     void toMap(View v) {
         Intent intent = GoogleMapActivity.startIntentWithErrorToast(this);
-        if(intent != null) {
+        if (intent != null) {
             AnimUtil.startActivityWithScaleUp(UosMainActivity.this, intent, v);
         }
     }
@@ -284,7 +286,7 @@ public class UosMainActivity extends BaseActivity {
     }
 
     private void initPager() {
-        mPagerAdapter = new IndexPagerAdapter(getSupportFragmentManager(), mPageOrderList, this);
+        mPagerAdapter = new IndexPagerAdapter(getSupportFragmentManager(), mTabOrderList, this);
 
         mViewPager.setAdapter(mPagerAdapter);
         mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
@@ -293,7 +295,7 @@ public class UosMainActivity extends BaseActivity {
                 navigateItem(position, true);
             }
         });
-        //mViewPager.setOffscreenPageLimit(mPageOrderList.size() >= 6 ? 6 : mPageOrderList.size());
+        //mViewPager.setOffscreenPageLimit(mTabOrderList.size() >= 6 ? 6 : mTabOrderList.size());
         /*
         switch (AppUtil.theme) {
             case BlackAndWhite:
@@ -348,7 +350,7 @@ public class UosMainActivity extends BaseActivity {
      * 현재 페이지의 id를 얻는다.
      */
     private int getCurrentPageId() {
-        return mPageOrderList.get(getCurrentPageIndex());
+        return mTabOrderList.get(getCurrentPageIndex()).defaultOrder;
     }
 
     @Override
@@ -419,7 +421,7 @@ public class UosMainActivity extends BaseActivity {
         mBackCloseHandler = null;
         mDrawerListView = null;
         mDrawerToggle = null;
-        mPageOrderList = null;
+        mTabOrderList = null;
         mPagerAdapter = null;
         mViewPager = null;
         mLeftDrawerLayout = null;
@@ -597,14 +599,14 @@ public class UosMainActivity extends BaseActivity {
     }
 */
 
-    private class DrawerAdapter extends ListRecyclerAdapter<Integer, DrawerViewHolder> {
+    private class DrawerAdapter extends ListRecyclerAdapter<AppUtil.TabInfo, DrawerViewHolder> {
         private final int mDefaultTextColor, mSelectedTextColor;
         private final PorterDuffColorFilter mColorFilter;
         private int mCurrentSelection = 0;
         //private final boolean isHomeEnable;
 
-        public DrawerAdapter() {
-            super(mPageOrderList, new ListRecyclerUtil.InnerClassViewHolderFactory<>(UosMainActivity.this, DrawerViewHolder.class, R.layout.list_layout_drawer));
+        DrawerAdapter() {
+            super(mTabOrderList, new ListRecyclerUtil.InnerClassViewHolderFactory<>(UosMainActivity.this, DrawerViewHolder.class, R.layout.list_layout_drawer));
             mDefaultTextColor = AppUtil.getAttrColor(UosMainActivity.this, R.attr.colorControlNormal);
             mSelectedTextColor = AppUtil.getAttrColor(UosMainActivity.this, R.attr.color_primary_text);
             mColorFilter = new PorterDuffColorFilter(mSelectedTextColor, PorterDuff.Mode.SRC_IN);
@@ -613,16 +615,15 @@ public class UosMainActivity extends BaseActivity {
 
         @Override
         public void onBindViewHolder(DrawerViewHolder holder, int position) {
-            int titleStringId = mPageOrderList.get(position);
+            AppUtil.TabInfo tabInfo = mTabOrderList.get(position);
 
-            Drawable drawable = ImageUtil.getPageIcon(holder.itemView.getContext(), titleStringId);
-            holder.img.setImageDrawable(drawable);
-            holder.text.setText(titleStringId);
+            holder.img.setImageResource(tabInfo.getIcon(holder.itemView.getContext()));
+            holder.text.setText(tabInfo.titleResId);
 
             // 표시해야할 아이템이 선택된 상태라면 특별한 컬러로 하이라이트 시켜주고
             // 아니면 일반 상태로 표시한다.
             if (mCurrentSelection == position) {
-                if (titleStringId != R.string.title_section0_home)
+                if (tabInfo != AppUtil.TabInfo.Home)
                     holder.img.setColorFilter(mColorFilter);
                 else
                     holder.img.setColorFilter(null);
@@ -637,7 +638,7 @@ public class UosMainActivity extends BaseActivity {
 
         @Override
         public int getItemCount() {
-            return mPageOrderList.size();
+            return mTabOrderList.size();
         }
 
         /**
@@ -654,7 +655,7 @@ public class UosMainActivity extends BaseActivity {
 
     }
 
-    class DrawerViewHolder extends com.uoscs09.theuos2.base.ViewHolder<Integer> {
+    class DrawerViewHolder extends com.uoscs09.theuos2.base.ViewHolder<AppUtil.TabInfo> {
         @BindView(R.id.drawer_list_img)
         ImageView img;
         @BindView(R.id.drawer_list_text)

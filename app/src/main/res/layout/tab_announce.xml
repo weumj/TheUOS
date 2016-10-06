@@ -10,12 +10,12 @@
         android:layout_height="wrap_content"
         android:clipToPadding="false"
         android:divider="@android:color/transparent"
-        android:dividerHeight="8dp"
+        android:dividerHeight="@dimen/list_divide_margin"
         android:listSelector="@android:color/transparent"
-        android:paddingBottom="5dp"
+        android:paddingBottom="@dimen/list_divide_margin"
         android:paddingLeft="@dimen/list_side_margin"
         android:paddingRight="@dimen/list_side_margin"
-        android:paddingTop="10dp"
+        android:paddingTop="@dimen/list_divide_margin"
         android:scrollbars="none"
         android:scrollingCache="true" />
 

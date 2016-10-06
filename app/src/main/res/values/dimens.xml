@@ -28,7 +28,8 @@
 
     <dimen name="tab_map_bottom_padding">0dp</dimen>
 
-    <dimen name="list_side_margin">20dp</dimen>
+    <dimen name="list_side_margin">12dp</dimen>
+    <dimen name="list_divide_margin">16dp</dimen>
 
     <dimen name="dp8">8dp</dimen>
     <dimen name="dp28">28dp</dimen>

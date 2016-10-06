@@ -10,16 +10,20 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.util.Pair;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.webkit.WebSettings;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.common.WebViewActivity;
+import com.uoscs09.theuos2.customview.NonLeakingWebView;
 import com.uoscs09.theuos2.http.NetworkRequests;
 import com.uoscs09.theuos2.util.AnimUtil;
 import com.uoscs09.theuos2.util.AppUtil;
@@ -33,6 +37,7 @@ import mj.android.utils.task.Task;
 
 public class SubAnnounceWebActivity extends WebViewActivity {
     private static final int REQUEST_PERMISSION_FILE = 40;
+
 
     private String url;
     private AnnounceItem mItem;
@@ -50,6 +55,22 @@ public class SubAnnounceWebActivity extends WebViewActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setContentView(R.layout.activity_announce_subweb);
+
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mWebView = (NonLeakingWebView) findViewById(R.id.webview);
+
+        setSupportActionBar(mToolbar);
+
+        settings = mWebView.getSettings();
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+            actionBar.setDisplayShowTitleEnabled(true);
+        }
+
         settings.setSupportZoom(true);
         settings.setBuiltInZoomControls(true);
         settings.setDisplayZoomControls(false);
@@ -62,6 +83,18 @@ public class SubAnnounceWebActivity extends WebViewActivity {
         showWebPageFromIntent(getIntent());
 
         mWebView.setBackgroundColor(Color.WHITE);
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (mWebView != null) {
+            settings = null;
+            mWebView.clearCache(true);
+            mWebView.loadUrl("about:blank");
+            //mWebView.destroy();
+            mWebView = null;
+        }
+        super.onDestroy();
     }
 
     private void showWebPageFromIntent(Intent intent) {
@@ -106,6 +139,12 @@ public class SubAnnounceWebActivity extends WebViewActivity {
     void setScreenWithItem(DetailAnnounceItem detailAnnounceItem) {
         mWebView.loadDataWithBaseURL("http://m.uos.ac.kr/", detailAnnounceItem.page, "text/html", "UTF-8", "");
         this.attachedFileUrlPairList = detailAnnounceItem.fileNameUrlPairList;
+
+        if (!attachedFileUrlPairList.isEmpty()) {
+            View v = findViewById(R.id.tab_announce_subweb_fab);
+            v.setVisibility(View.VISIBLE);
+            v.setOnClickListener(v1 -> showDownloadDialog());
+        }
     }
 
     @NonNull
@@ -128,6 +167,10 @@ public class SubAnnounceWebActivity extends WebViewActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home:
+                supportFinishAfterTransition();
+                return true;
+
             case R.id.action_web:
                 startActivity(AppUtil.getWebPageIntent(url));
                 return true;
@@ -140,11 +183,11 @@ public class SubAnnounceWebActivity extends WebViewActivity {
 
                 startActivity(Intent.createChooser(sharingIntent, getResources().getString(R.string.action_share)));
                 return true;
-
+/*
             case R.id.action_download:
                 showDownloadDialog();
                 return true;
-
+*/
             default:
                 return super.onOptionsItemSelected(item);
         }

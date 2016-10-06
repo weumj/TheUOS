@@ -4,7 +4,7 @@ apply plugin: 'com.neenbedankt.android-apt'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.1"
+    buildToolsVersion "24.0.3"
 
 
     productFlavors {
@@ -66,12 +66,14 @@ android {
 
 }
 
-
+/*
 retrolambda {
     jdk System.getenv("JAVA8_HOME")
     oldJdk System.getenv("JAVA7_HOME")
-    defaultMethods true
+    javaVersion JavaVersion.VERSION_1_7
+    defaultMethods false
 }
+*/
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
@@ -84,20 +86,20 @@ dependencies {
     compile project(':stickylistheaders')
     compile 'com.tonicartos:superslim:0.4.13'
     
-    compile 'com.android.support:support-v13:24.2.0'
-    compile 'com.android.support:appcompat-v7:24.2.0'
-    compile 'com.android.support:recyclerview-v7:24.2.0'
-    compile 'com.android.support:cardview-v7:24.2.0'
-    compile 'com.android.support:preference-v7:24.2.0'
-    compile 'com.android.support:design:24.2.0'
-    compile 'com.android.support:support-annotations:24.2.0'
+    compile 'com.android.support:support-v13:24.2.1'
+    compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.android.support:recyclerview-v7:24.2.1'
+    compile 'com.android.support:cardview-v7:24.2.1'
+    compile 'com.android.support:preference-v7:24.2.1'
+    compile 'com.android.support:design:24.2.1'
+    compile 'com.android.support:support-annotations:24.2.1'
 
-    compile 'com.google.android.gms:play-services-base:9.4.0'
-    compile 'com.google.android.gms:play-services-maps:9.4.0'
-    compile 'com.google.android.gms:play-services-analytics:9.4.0'
+    compile 'com.google.android.gms:play-services-base:9.6.1'
+    compile 'com.google.android.gms:play-services-maps:9.6.1'
+    compile 'com.google.android.gms:play-services-analytics:9.6.1'
 
-    compile 'com.jakewharton:butterknife:8.0.1'
-    apt 'com.jakewharton:butterknife-compiler:8.0.1'
+    compile 'com.jakewharton:butterknife:8.4.0'
+    apt 'com.jakewharton:butterknife-compiler:8.4.0'
 
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.nineoldandroids:library:2.4.0'
@@ -110,7 +112,7 @@ dependencies {
     compile 'com.nhaarman.listviewanimations:lib-manipulation:3.1.0@aar'
     // compile 'com.nhaarman.listviewanimations:lib-core-slh:3.1.0@aar'
 
-    compile 'com.afollestad.material-dialogs:core:0.8.5.9'
+    compile 'com.afollestad.material-dialogs:core:0.9.0.2'
     compile 'com.pnikosis:materialish-progress:1.7'
     compile 'com.balysv:material-ripple:1.0.2'
 

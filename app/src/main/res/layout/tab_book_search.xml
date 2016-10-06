@@ -12,14 +12,15 @@
         android:animateLayoutChanges="true"
         android:clipToPadding="false"
         android:divider="@android:color/transparent"
-        android:dividerHeight="10dp"
+        android:dividerHeight="@dimen/list_divide_margin"
         android:fastScrollEnabled="true"
-        android:scrollbarStyle="outsideOverlay"
         android:indicatorRight="5dp"
         android:listSelector="@android:color/transparent"
+        android:paddingBottom="@dimen/list_divide_margin"
         android:paddingLeft="@dimen/list_side_margin"
         android:paddingRight="@dimen/list_side_margin"
-        android:paddingTop="5dp"
+        android:paddingTop="@dimen/list_divide_margin"
+        android:scrollbarStyle="outsideOverlay"
         android:scrollingCache="true" />
 
     <RelativeLayout
@@ -30,14 +31,14 @@
 
         <com.balysv.materialripple.MaterialRippleLayout
             android:id="@+id/tab_book_search_empty_info1_ripple"
-            android:padding="4dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginLeft="20dp"
             android:layout_width="wrap_content"
-            app:mrl_rippleColor="?color_primary_text"
-            app:mrl_rippleDelayClick="true"
+            android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_height="wrap_content">
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:padding="4dp"
+            app:mrl_rippleColor="?color_primary_text"
+            app:mrl_rippleDelayClick="true">
 
             <TextView
                 android:id="@+id/tab_book_search_empty_info1"
@@ -51,16 +52,16 @@
 
         <com.balysv.materialripple.MaterialRippleLayout
             android:id="@+id/tab_book_search_empty_info2_ripple"
-            android:padding="4dp"
             android:layout_width="wrap_content"
-            app:mrl_rippleColor="?color_primary_text"
-            app:mrl_rippleDelayClick="true"
-            android:layout_marginTop="10dp"
-            android:layout_centerHorizontal="true"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@id/tab_book_search_empty_info1_ripple"
             android:layout_alignRight="@id/tab_book_search_empty_info1_ripple"
-            android:layout_below="@id/tab_book_search_empty_info1_ripple">
+            android:layout_below="@id/tab_book_search_empty_info1_ripple"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:padding="4dp"
+            app:mrl_rippleColor="?color_primary_text"
+            app:mrl_rippleDelayClick="true">
 
             <TextView
                 android:id="@+id/tab_book_search_empty_info2"
@@ -75,16 +76,16 @@
 
         <com.balysv.materialripple.MaterialRippleLayout
             android:id="@+id/tab_book_search_empty_info3_ripple"
-            android:padding="4dp"
             android:layout_width="wrap_content"
-            app:mrl_rippleColor="?color_primary_text"
-            app:mrl_rippleDelayClick="true"
-            android:layout_marginTop="10dp"
-            android:layout_centerHorizontal="true"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@id/tab_book_search_empty_info1_ripple"
             android:layout_alignRight="@id/tab_book_search_empty_info1_ripple"
-            android:layout_below="@id/tab_book_search_empty_info2_ripple">
+            android:layout_below="@id/tab_book_search_empty_info2_ripple"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:padding="4dp"
+            app:mrl_rippleColor="?color_primary_text"
+            app:mrl_rippleDelayClick="true">
 
             <TextView
                 android:layout_width="wrap_content"

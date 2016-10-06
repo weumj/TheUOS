@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
-import android.support.annotation.StringRes;
 import android.support.v4.content.res.ResourcesCompat;
 import android.view.View;
 import android.view.View.MeasureSpec;
@@ -140,43 +139,8 @@ public class ImageUtil {
         return cs;
     }
 
-    /*
-    public static Drawable getTintDrawable(Context context, @DrawableRes int id, int color ){
-        return getTintDrawable(getDrawable(context, id), color);
-    }
-
-    /*
-    public static Drawable getTintDrawable(Drawable drawable, int color) {
-        Drawable drawable1 = DrawableCompat.wrap(drawable);
-        DrawableCompat.setTintMode(drawable1, PorterDuff.Mode.SRC_IN);
-        DrawableCompat.setTint(drawable1, color);
-        return drawable1;
-    }
-
-
-    public static Drawable getTintDrawableForMenu(Context context, Drawable drawable) {
-        return getTintDrawable(drawable, context.getResources().getColor(AppUtil.getAttrValue(context, R.attr.color_actionbar_title)));
-    }
-
-
-    public static Drawable getTintDrawableForMenu(Context context, @DrawableRes int id) {
-        return getTintDrawableForMenu(context, getDrawable(context, id));
-    }
-    */
-
     public static Drawable getDrawable(Context context, @DrawableRes int id) {
         return ResourcesCompat.getDrawable(context.getResources(), id, context.getTheme());
-    }
-
-    public static Drawable getPageIcon(Context context, @StringRes int titleRes) {
-        int drawableRes = AppUtil.getPageIcon(context, titleRes);
-
-        if (titleRes == AppUtil.RESOURCE_NOT_EXIST)
-            return null;
-
-        else
-            return getDrawable(context, drawableRes);
-
     }
 
     public static class ImageWriteProcessor implements Func<Bitmap, String> {

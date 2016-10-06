@@ -15,11 +15,12 @@
         android:orderInCategory="103"
         android:title="@string/action_web"
         app:showAsAction="ifRoom" />
-
+<!--
     <item
         android:id="@+id/action_download"
         android:icon="?menu_theme_ic_action_content_save"
         android:orderInCategory="104"
         android:title="@string/action_file_download"
         app:showAsAction="always" />
+        -->
 </menu>

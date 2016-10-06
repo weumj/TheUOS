@@ -46,14 +46,14 @@ class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements View.OnCl
     /**
      * 책의 세부 위치 정보를 표현하는 뷰를 담은 리스트
      */
-    final ArrayList<ChildHolder> mChildHolderList = new ArrayList<>();
+    private final ArrayList<ChildHolder> mChildHolderList = new ArrayList<>();
 
-    Task<List<BookStateInfo>> task;
+    private Task<List<BookStateInfo>> task;
 
     BookItem item;
     BookItemListAdapter.OnItemClickListener onItemClickListener;
 
-    public BookItemViewHolder(View v) {
+    BookItemViewHolder(View v) {
         super(v);
 
         coverImg.setOnClickListener(this);
@@ -89,7 +89,7 @@ class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements View.OnCl
     }
 
     @OnClick(R.id.tab_booksearch_list_info_layout)
-    public void changeBookStateLayoutVisibility() {
+    void changeBookStateLayoutVisibility() {
         if (stateInfoLayout.getChildCount() > 0)
             removeAllBookStateInLayout();
         else
@@ -141,7 +141,7 @@ class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements View.OnCl
 
     }
 
-    static void drawBookStateLayout(BookItemViewHolder holder) {
+    private static void drawBookStateLayout(BookItemViewHolder holder) {
         //if (holder.itemView.getContext() instanceof Activity)
         //   BookDetailActivity.start((Activity) holder.itemView.getContext(), holder.coverImg, holder.item);
         holder.stateInfoLayout.setVisibility(View.VISIBLE);
@@ -173,6 +173,8 @@ class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements View.OnCl
         final int N = childHolderList.size();
         for (int i = 0; i < N; i++) {
             ChildHolder childHolder = childHolderList.get(i);
+            // if(list != null) list 가 null 일 경우 N = 0
+            //noinspection ConstantConditions
             childHolder.setContent(list.get(i));
             layout.addView(childHolder.itemView);
         }
@@ -189,7 +191,7 @@ class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements View.OnCl
         @BindView(R.id.tab_booksearch_bookstate_code)
         public TextView code;
         @BindView(R.id.tab_booksearch_bookstate_state)
-        public TextView state;
+        TextView state;
 
         private final PieProgressDrawable drawable = new PieProgressDrawable();
 

@@ -20,10 +20,10 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.base.BaseFragment;
 import com.uoscs09.theuos2.util.AppUtil;
-import com.uoscs09.theuos2.util.ImageUtil;
 import com.uoscs09.theuos2.util.TrackerUtil;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
@@ -39,7 +39,7 @@ public class SettingsOrderFragment extends BaseFragment {
     @BindView(R.id.setting_dynamiclistview)
     DynamicListView mListView;
 
-    private ArrayList<AppUtil.Page> orderList;
+    private ArrayList<AppUtil.TabInfo> orderList;
     private SwapAdapter mAdapter;
 
     private Unbinder unbinder;
@@ -47,7 +47,7 @@ public class SettingsOrderFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         setHasOptionsMenu(true);
-        orderList = AppUtil.loadPageOrder2();
+        orderList = AppUtil.TabInfo.loadEnabledTabOrder();
         mAdapter = new SwapAdapter(getActivity(), orderList);
         super.onCreate(savedInstanceState);
 
@@ -97,13 +97,13 @@ public class SettingsOrderFragment extends BaseFragment {
 
         StringBuilder sb = new StringBuilder();
 
-        for (AppUtil.Page p : orderList) {
-            sb.append(p.order).append('-').append(p.isEnable).append('\n');
+        for (AppUtil.TabInfo p : orderList) {
+            sb.append(p.defaultOrder).append('-').append(p.isEnable()).append('\n');
         }
 
         sendTrackerEvent("change tab order", sb.toString());
 
-        AppUtil.savePageOrder2(orderList, getActivity());
+        AppUtil.TabInfo.saveTabOrderList(orderList);
     }
 
     @Override
@@ -116,13 +116,13 @@ public class SettingsOrderFragment extends BaseFragment {
                 return true;
 
             case R.id.action_cancel:
-                refresh(AppUtil.loadPageOrder2());
+                //refresh(AppUtil.TabInfo.loadEnabledTabOrder());
                 AppUtil.showCanceledToast(getActivity(), true);
                 finish();
                 return true;
 
             case R.id.action_goto_default:
-                refresh(AppUtil.loadDefaultOrder2());
+                refresh(AppUtil.TabInfo.loadEnabledTabOrder());
                 AppUtil.showToast(getActivity(), R.string.apply_default, true);
                 return true;
 
@@ -135,7 +135,7 @@ public class SettingsOrderFragment extends BaseFragment {
         getActivity().onBackPressed();
     }
 
-    private void refresh(ArrayList<AppUtil.Page> newList) {
+    private void refresh(ArrayList<AppUtil.TabInfo> newList) {
         mAdapter.clear();
         mAdapter.addAll(newList);
         mAdapter.notifyDataSetChanged();
@@ -149,20 +149,20 @@ public class SettingsOrderFragment extends BaseFragment {
         return TAG;
     }
 
-    private class SwapAdapter extends AbsArrayAdapter<AppUtil.Page, ViewHolder> implements Swappable {
+    private class SwapAdapter extends AbsArrayAdapter<AppUtil.TabInfo, ViewHolder> implements Swappable {
 
-        public SwapAdapter(Context context, List<AppUtil.Page> list) {
+        SwapAdapter(Context context, List<AppUtil.TabInfo> list) {
             super(context, R.layout.list_layout_order, list);
         }
 
         @Override
         public void onBindViewHolder(int position, SettingsOrderFragment.ViewHolder holder) {
-            AppUtil.Page item = getItem(position);
+            AppUtil.TabInfo item = getItem(position);
             holder.item = item;
 
-            holder.textView.setText(item.stringId);
-            holder.textView.setCompoundDrawablesWithIntrinsicBounds(ImageUtil.getPageIcon(holder.itemView.getContext(), item.stringId), null, null, null);
-            holder.checkBox.setChecked(item.isEnable);
+            holder.textView.setText(item.titleResId);
+            holder.textView.setCompoundDrawablesWithIntrinsicBounds(item.getIcon(holder.itemView.getContext()), 0,0,0);
+            holder.checkBox.setChecked(item.isEnable());
         }
 
         @Override
@@ -177,15 +177,12 @@ public class SettingsOrderFragment extends BaseFragment {
 
         @Override
         public long getItemId(int position) {
-            return getItem(position).stringId;
+            return getItem(position).titleResId;
         }
 
         @Override
         public void swapItems(int positionOne, int positionTwo) {
-            AppUtil.Page x = orderList.get(positionOne);
-            AppUtil.Page y = orderList.get(positionTwo);
-
-            x.swap(y);
+            Collections.swap(orderList, positionOne, positionTwo);
         }
 
 
@@ -193,8 +190,8 @@ public class SettingsOrderFragment extends BaseFragment {
 
     static class ViewHolder extends AbsArrayAdapter.ViewHolder implements CheckBox.OnCheckedChangeListener {
         public final TextView textView;
-        public final CheckBox checkBox;
-        AppUtil.Page item;
+        final CheckBox checkBox;
+        AppUtil.TabInfo item;
 
         public ViewHolder(View view) {
             super(view);
@@ -205,7 +202,7 @@ public class SettingsOrderFragment extends BaseFragment {
 
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            item.isEnable = isChecked;
+            item.setEnable(isChecked);
         }
     }
 }

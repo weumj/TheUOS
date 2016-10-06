@@ -11,6 +11,7 @@ import android.os.Build;
 import android.support.annotation.AttrRes;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -26,7 +27,6 @@ import com.uoscs09.theuos2.TabHomeFragment;
 import com.uoscs09.theuos2.UosMainActivity;
 import com.uoscs09.theuos2.tab.announce.TabAnnounceFragment;
 import com.uoscs09.theuos2.tab.booksearch.TabBookSearchFragment;
-import com.uoscs09.theuos2.tab.buildings.TabBuildingRoomFragment;
 import com.uoscs09.theuos2.tab.emptyroom.TabSearchEmptyRoomFragment;
 import com.uoscs09.theuos2.tab.libraryseat.TabLibrarySeatFragment;
 import com.uoscs09.theuos2.tab.restaurant.TabRestaurantFragment;
@@ -36,18 +36,13 @@ import com.uoscs09.theuos2.tab.subject.TabSearchSubjectFragment2;
 import com.uoscs09.theuos2.tab.timetable.TabTimeTableFragment;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import mj.android.utils.common.CommonUtils;
 
 public class AppUtil {
-    public static final int RESOURCE_NOT_EXIST = -1;
-    // public static final String DB_PHONE = "PhoneNumberDB.db";
     public static final int RELAUNCH_ACTIVITY = 6565;
 
-    //todo
-    private static final int MAX_PAGE_SIZE_NORMAL = 9;
-
-    private static int PAGE_SIZE = MAX_PAGE_SIZE_NORMAL;
     private static AppTheme theme;
 
     private static Context context;
@@ -108,45 +103,58 @@ public class AppUtil {
             PrefHelper.Screens.putAppTheme(v);
         }
         AppUtil.theme = vals[v];
-
-        PAGE_SIZE = MAX_PAGE_SIZE_NORMAL;//test ? 13 : MAX_PAGE_SIZE_NORMAL;
     }
 
     // todo Page -> TabInfo
     public enum TabInfo {
-        Home(0, TabHomeFragment.class, R.string.title_section0_home, R.drawable.ic_launcher),
-        Announce(1, TabAnnounceFragment.class, R.string.title_tab_announce, R.attr.theme_ic_action_action_view_list),
-        Schedule(2, UnivScheduleFragment.class, R.string.title_tab_schedule, R.attr.theme_ic_action_calendar),
-        Restaurant(3, TabRestaurantFragment.class, R.string.title_tab_restaurant, R.attr.theme_ic_action_maps_local_restaurant),
-        BookSearch(4, TabBookSearchFragment.class, R.string.title_tab_book_search, R.attr.theme_ic_action_book_search),
-        LibrarySeat(5, TabLibrarySeatFragment.class, R.string.title_tab_library_seat, R.attr.theme_ic_action_book_opened),
-        TimeTable(6, TabTimeTableFragment.class, R.string.title_tab_timetable, R.attr.theme_ic_action_timetable),
+        Home(0, TabHomeFragment.class, R.string.title_section0_home, R.drawable.ic_launcher, R.drawable.ic_launcher),
+        Announce(1, TabAnnounceFragment.class, R.string.title_tab_announce, R.attr.theme_ic_action_action_view_list, R.drawable.ic_action_action_view_list_white),
+        Schedule(2, UnivScheduleFragment.class, R.string.title_tab_schedule, R.attr.theme_ic_action_calendar, R.drawable.ic_action_calendar_white),
+        Restaurant(3, TabRestaurantFragment.class, R.string.title_tab_restaurant, R.attr.theme_ic_action_maps_local_restaurant, R.drawable.ic_action_maps_local_restaurant_white),
+        BookSearch(4, TabBookSearchFragment.class, R.string.title_tab_book_search, R.attr.theme_ic_action_book_search, R.drawable.ic_action_book_search_white),
+        LibrarySeat(5, TabLibrarySeatFragment.class, R.string.title_tab_library_seat, R.attr.theme_ic_action_book_opened, R.drawable.ic_action_book_opened_white),
+        TimeTable(6, TabTimeTableFragment.class, R.string.title_tab_timetable, R.attr.theme_ic_action_timetable, R.drawable.ic_action_timetable_white),
 
-        EmptyRoom(7, TabSearchEmptyRoomFragment.class, R.string.title_tab_search_empty_room, R.attr.theme_ic_action_action_search),
-        SearchSubject(8, TabSearchSubjectFragment2.class, R.string.title_tab_search_subject, R.attr.theme_ic_action_content_content_paste),
-        WiseScore(9, TabWiseScoreFragment.class, R.string.title_tab_wise_score, R.attr.theme_ic_action_content_content_copy),
-        BuildingRoom(10, TabBuildingRoomFragment.class, R.string.title_tab_building_classroom, R.attr.theme_ic_action_action_about);
-
+        EmptyRoom(7, TabSearchEmptyRoomFragment.class, R.string.title_tab_search_empty_room, R.attr.theme_ic_action_action_search, R.drawable.ic_action_action_search_white),
+        SearchSubject(8, TabSearchSubjectFragment2.class, R.string.title_tab_search_subject, R.attr.theme_ic_action_content_content_paste, R.drawable.ic_action_content_content_paste_white),
+        WiseScore(9, TabWiseScoreFragment.class, R.string.title_tab_wise_score, R.attr.theme_ic_action_content_content_copy, R.drawable.ic_action_content_content_copy_white),
+        //BuildingRoom(10, TabBuildingRoomFragment.class, R.string.title_tab_building_classroom, R.attr.theme_ic_action_action_about, R.drawable.ic_action_action_about_white),
 
         /* disable
-        Phone(TabPhoneFragment.class, R.string.title_tab_phone, R.attr.theme_ic_action_communication_call),
+        Phone(TabPhoneFragment.class, R.string.title_tab_phone, R.attr.theme_ic_action_communication_call,R.drawable.ic_action_communication_call_white),
         CheckCourseEval(ScoreFragment.class, R.string.title_tab_score, R.attr.theme_ic_action_content_content_copy),
-        Transport(TabTransportFragment.class, R.string.title_tab_transport, R.attr.theme_ic_action_maps_directions);
-        Map(TabMapFragment.class, R.string.title_tab_map, R.attr.theme_ic_action_maps_place),
+        Transport(TabTransportFragment.class, R.string.title_tab_transport, R.attr.theme_ic_action_maps_directions,R.drawable.ic_action_maps_directions_white);
+        Map(TabMapFragment.class, R.string.title_tab_map, R.attr.theme_ic_action_maps_place,R.drawable.ic_action_maps_place_white),
+
         */
+
+        //ETC(,R.drawable.ic_action_navigation_check_white)
+        //Exit(,R.drawable.ic_action_navigation_close_white)
+        Setting(98, null, R.string.setting, R.attr.theme_ic_action_action_settings, R.drawable.ic_action_action_settings_white);
+
+
+        private static final String TAB_ORDER_ = "tab_order_";
+        private static final String TAB_ENABLE_ = "tab_enable_";
 
         public final int defaultOrder;
         public final Class<? extends Fragment> tabClass;
         @StringRes
-        public final int title;
+        public final int titleResId;
         final int iconRes;
+        @DrawableRes
+        final int lightIconRes;
 
-        TabInfo(int defaultOrder, Class<? extends Fragment> tabClass, @StringRes int titleId, int iconRes) {
+        private boolean isEnable = true;
+
+
+        TabInfo(int defaultOrder, Class<? extends Fragment> tabClass, @StringRes int titleId, int iconRes, int lightIconRes) {
             this.defaultOrder = defaultOrder;
             this.tabClass = tabClass;
-            this.title = titleId;
+            this.titleResId = titleId;
             this.iconRes = iconRes;
+            this.lightIconRes = lightIconRes;
         }
+
 
         @Nullable
         public Fragment getFragment() {
@@ -159,6 +167,7 @@ public class AppUtil {
             }
         }
 
+        @DrawableRes
         public int getIcon(Context context) {
             if (this.equals(Home))
                 return iconRes;
@@ -166,414 +175,106 @@ public class AppUtil {
                 return getAttrValue(context, iconRes);
         }
 
+        @DrawableRes
+        public int getLightIcon() {
+            return lightIconRes;
+        }
+
+        public boolean recordedEnable() {
+            PrefUtil pref = PrefUtil.getInstance(context);
+
+            return pref.get(TAB_ENABLE_ + defaultOrder, true);
+        }
+
+        public int order() {
+            PrefUtil pref = PrefUtil.getInstance(context);
+            return pref.get(TAB_ORDER_ + defaultOrder, defaultOrder);
+        }
+
+        public void setEnable(boolean enable) {
+            isEnable = enable;
+        }
+
+        public boolean isEnable() {
+            return isEnable;
+        }
+
         public static TabInfo find(@StringRes int titleId) {
-            switch (titleId) {
-                case R.string.title_section0_home:
-                    return Home;
 
-                case R.string.title_tab_announce:
-                    return Announce;
+            for (TabInfo tabInfo : TabInfo.values()) {
+                if (tabInfo.titleResId == titleId) return tabInfo;
+            }
 
-                case R.string.title_tab_restaurant:
-                    return Restaurant;
+            return null;
+        }
 
-                case R.string.title_tab_book_search:
-                    return BookSearch;
+        /**
+         * load every TabInfo except Home(the uos, no. 0,), setting(no.98)
+         */
+        public static ArrayList<TabInfo> loadDefaultOrder() {
+            ArrayList<TabInfo> list = loadWholeList();
+            list.remove(0); // remove main(the uos)
+            list.remove(list.size() - 1); //  remove setting
+            return list;
+        }
 
-                case R.string.title_tab_library_seat:
-                    return LibrarySeat;
+        /**
+         * load ordered TabInfo list
+         */
+        public static ArrayList<TabInfo> loadEnabledTabOrder() {
+            ArrayList<TabInfo> tabList = loadDefaultOrder();
 
-                case R.string.title_tab_timetable:
-                    return TimeTable;
 
-                case R.string.title_tab_search_empty_room:
-                    return EmptyRoom;
+            for (TabInfo tabInfo : tabList) {
+                tabInfo.isEnable = tabInfo.recordedEnable();
+            }
+            Collections.sort(tabList, (o1, o2) -> intCompare(o1.order(), o2.order()));
 
-                case R.string.title_tab_search_subject:
-                    return SearchSubject;
+            return tabList;
+        }
 
-                case R.string.title_tab_schedule:
-                    return Schedule;
-/*
-                case R.string.title_tab_map:
-                    return Map;
+        /**
+         * load ordered TabInfo list, with Home(the uos, no. 0,) if PrefHelper.Screens.isHomeEnable() == true
+         */
+        public static ArrayList<TabInfo> loadEnabledTabOrderForMain() {
+            ArrayList<TabInfo> tabList = loadEnabledTabOrder();
 
-                case R.string.title_tab_phone:
-                    return Phone;
+            if (PrefHelper.Screens.isHomeEnable()) tabList.add(0, Home);
 
-                case R.string.title_tab_score:
-                    return CheckCourseEval;
+            return tabList;
+        }
 
-                case R.string.title_tab_transport:
-                    return Transport;
-*/
-                default:
-                    return null;
+        /**
+         * load ordered TabInfo list, with Setting, Home(the uos, no. 0,) if PrefHelper.Screens.isHomeEnable() == true
+         */
+        public static ArrayList<TabInfo> loadEnabledTabOrderWithSettingForMain() {
+            ArrayList<TabInfo> tabList = loadEnabledTabOrder();
+            tabList.add(Setting);
+
+            return tabList;
+        }
+
+        /**
+         * load every TabInfo
+         */
+        public static ArrayList<TabInfo> loadWholeList() {
+            ArrayList<TabInfo> list = new ArrayList<>();
+            Collections.addAll(list, values());
+            return list;
+        }
+
+        public static void saveTabOrderList(ArrayList<TabInfo> list) {
+            PrefUtil pref = PrefUtil.getInstance(context);
+            for (int i = 0; i < list.size(); i++) {
+                TabInfo tabInfo = list.get(i);
+
+                pref.put(TAB_ORDER_ + tabInfo.defaultOrder, i);
+                pref.put(TAB_ENABLE_ + tabInfo.defaultOrder, tabInfo.isEnable);
             }
         }
 
-    }
-
-
-    @Deprecated
-    public static class Page {
-        public int stringId;
-        public int order;
-        //public final Class<? extends Fragment>
-        public boolean isEnable;
-
-        private static final String PAGE_ORDER_ = "page_order_";
-        private static final String PAGE_ENABLE_ = "page_enable_";
-
-        Page(int order) {
-            this.order = order;
-            stringId = AppUtil.getTitleResId(order);
-            isEnable = true;
-        }
-
-        Page(int order, boolean isEnable) {
-            this(order);
-            this.isEnable = isEnable;
-        }
-
-        static Page read(PrefUtil pref, int order) {
-            int tabOrder = pref.get(PAGE_ORDER_ + order, order);
-            boolean isEnable = pref.get(PAGE_ENABLE_ + order, true);
-
-            return new Page(tabOrder, isEnable);
-        }
-
-        void write(PrefUtil pref, int order) {
-            pref.put(PAGE_ORDER_ + order, this.order);
-            pref.put(PAGE_ENABLE_ + order, isEnable);
-        }
-
-        /*
-        static void clearAll(PrefUtil pref) {
-            String[] array = new String[PAGE_SIZE];
-            String[] array2 = new String[PAGE_SIZE];
-            for (int i = 1; i < array.length; i++) {
-                array[i - 1] = PAGE_ORDER_ + i;
-                array2[i - 1] = PAGE_ENABLE_ + i;
-            }
-            pref.remove(array);
-            pref.remove(array2);
-        }
-        */
-
-
-        public void swap(Page another) {
-            int stringId = this.stringId;
-            int order = this.order;
-            boolean isEnable = this.isEnable;
-
-            this.stringId = another.stringId;
-            this.order = another.order;
-            this.isEnable = another.isEnable;
-
-            another.stringId = stringId;
-            another.order = order;
-            another.isEnable = isEnable;
-        }
-
-        @Override
-        public String toString() {
-            return "Page : " + order + " / " + isEnable + " : " + stringId;
-        }
-    }
-
-    public static ArrayList<Page> loadDefaultOrder2() {
-        ArrayList<Page> list = new ArrayList<>();
-        for (int i = 1; i < PAGE_SIZE; i++) {
-            list.add(new Page(i));
-        }
-
-        return list;
-    }
-
-    public static ArrayList<Page> loadPageOrder2() {
-        ArrayList<Page> list = new ArrayList<>();
-        PrefUtil pref = PrefUtil.getInstance(context);
-        for (int i = 1; i < PAGE_SIZE; i++) {
-            list.add(Page.read(pref, i));
-        }
-
-        return list;
-    }
-
-    public static ArrayList<Integer> loadEnabledPageOrder2() {
-        PrefUtil pref = PrefUtil.getInstance(context);
-        ArrayList<Integer> tabList = new ArrayList<>();
-        for (int i = 1; i < PAGE_SIZE; i++) {
-            Page page = Page.read(pref, i);
-
-            if (page.isEnable) tabList.add(page.stringId);
-        }
-
-        return tabList;
-    }
-
-    public static ArrayList<Page> loadEnabledPageOrder() {
-        PrefUtil pref = PrefUtil.getInstance(context);
-        ArrayList<Page> tabList = new ArrayList<>();
-        for (int i = 1; i < PAGE_SIZE; i++) {
-            Page page = Page.read(pref, i);
-
-            if (page.isEnable) tabList.add(page);
-        }
-
-        return tabList;
-    }
-
-    public static ArrayList<Page> loadEnabledPageOrderWithSetting(){
-        ArrayList<Page> tabList = loadEnabledPageOrder();
-
-        Page page = new Page(tabList.size() + 1, true);
-        page.stringId = R.string.setting;
-        tabList.add(page);
-        return tabList;
-    }
-
-    public static void savePageOrder2(ArrayList<Page> list, Context context) {
-        PrefUtil pref = PrefUtil.getInstance(context);
-        int size = list.size();
-        for (int i = 0; i < size; i++) {
-            list.get(i).write(pref, i + 1);
-        }
-
-    }
-
-    /*
-     * 기본 page title 의 resource id에 따른 page 순서를 반환한다.
-
-    public static int titleResIdToOrder(@StringRes int titleResId) {
-        switch (titleResId) {
-            case R.string.title_section0_home:
-                return 0;
-            case R.string.title_tab_announce:
-                return 1;
-            case R.string.title_tab_schedule:
-                return 2;
-            case R.string.title_tab_restaurant:
-                return 3;
-            case R.string.title_tab_book_search:
-                return 4;
-            case R.string.title_tab_library_seat:
-                return 5;
-            case R.string.title_tab_timetable:
-                return 6;
-            case R.string.title_tab_search_empty_room:
-                return 7;
-            case R.string.title_tab_search_subject:
-                return 8;
-
-            //unused
-            case R.string.title_tab_map:
-                return 9;
-            case R.string.title_tab_phone:
-                return 10;
-            case R.string.title_tab_score:
-                return 11;
-            case R.string.title_tab_transport:
-                return 12;
-
-
-            case R.string.setting:
-                return 98;
-            case R.string.title_section_etc:
-                return 99;
-            default:
-                return RESOURCE_NOT_EXIST;
-        }
-    }
-    */
-
-    /**
-     * 기본 page 순서에 따른 page title 의 resource id를 반환한다.
-     */
-    public static int getTitleResId(int order) {
-        switch (order) {
-            case 0:
-                return R.string.title_section0_home;
-            case 1:
-                return R.string.title_tab_announce;
-            case 2:
-                return R.string.title_tab_schedule;
-            case 3:
-                return R.string.title_tab_restaurant;
-            case 4:
-                return R.string.title_tab_book_search;
-            case 5:
-                return R.string.title_tab_library_seat;
-            case 6:
-                return R.string.title_tab_timetable;
-            case 7:
-                return R.string.title_tab_search_empty_room;
-            case 8:
-                return R.string.title_tab_search_subject;
-            case 9:
-                return R.string.title_tab_building_classroom;
-            case 10:
-                return R.string.title_tab_wise_score;
-
-            // unused
-            case 20:
-                return R.string.title_tab_map;
-            case 21:
-                return R.string.title_tab_phone;
-            case 22:
-                return R.string.title_tab_score;
-            case 23:
-                return R.string.title_tab_transport;
-
-            case 98:
-                return R.string.setting;
-            case 99:
-                return R.string.title_section_etc;
-            default:
-                return RESOURCE_NOT_EXIST;
-        }
-    }
-
-    public static int getPageIcon(Context context, @StringRes int pageStringResId) {
-        int id;
-        switch (pageStringResId) {
-            case R.string.title_section0_home:
-                return R.drawable.ic_launcher;
-
-            case R.string.title_tab_announce:
-                id = R.attr.theme_ic_action_action_view_list;
-                break;
-
-            case R.string.title_tab_restaurant:
-                id = R.attr.theme_ic_action_maps_local_restaurant;
-                break;
-
-            case R.string.title_tab_book_search:
-                id = R.attr.theme_ic_action_book_search;
-                break;
-
-            case R.string.title_tab_library_seat:
-                id = R.attr.theme_ic_action_book_opened;
-                break;
-
-            case R.string.title_tab_timetable:
-                id = R.attr.theme_ic_action_timetable;
-                break;
-
-            case R.string.title_tab_search_empty_room:
-                id = R.attr.theme_ic_action_action_search;
-                break;
-
-            case R.string.title_tab_search_subject:
-                id = R.attr.theme_ic_action_content_content_paste;
-                break;
-
-            case R.string.title_tab_schedule:
-                id = R.attr.theme_ic_action_calendar;
-                break;
-
-            case R.string.title_tab_building_classroom:
-                id = R.attr.theme_ic_action_action_about;
-                break;
-
-            case R.string.title_tab_wise_score:
-                id = R.attr.theme_ic_action_content_content_copy;
-                break;
-
-            //unused
-            case R.string.title_tab_map:
-                id = R.attr.theme_ic_action_maps_place;
-                break;
-
-            case R.string.title_tab_phone:
-                id = R.attr.theme_ic_action_communication_call;
-                break;
-
-            case R.string.title_tab_score:
-                id = R.attr.theme_ic_action_content_content_copy;
-                break;
-
-            case R.string.title_tab_transport:
-                id = R.attr.theme_ic_action_maps_directions;
-                break;
-
-            case R.string.title_section_etc:
-                id = R.attr.theme_ic_action_navigation_check;
-                break;
-
-
-            case R.string.setting:
-                id = R.attr.theme_ic_action_action_settings;
-                break;
-
-            case R.string.action_exit:
-                id = R.attr.theme_ic_action_navigation_close;
-                break;
-
-            default:
-                return RESOURCE_NOT_EXIST;
-        }
-
-        return getAttrValue(context, id);
-
-    }
-
-    public static int getPageIconWhite(@StringRes int id) {
-        switch (id) {
-            case R.string.title_section0_home:
-                return R.drawable.ic_launcher;
-
-            case R.string.title_tab_announce:
-                return R.drawable.ic_action_action_view_list_white;
-
-            case R.string.title_tab_restaurant:
-                return R.drawable.ic_action_maps_local_restaurant_white;
-
-            case R.string.title_tab_book_search:
-                return R.drawable.ic_action_book_search_white;
-
-            case R.string.title_tab_library_seat:
-                return R.drawable.ic_action_book_opened_white;
-
-            case R.string.title_tab_map:
-                return R.drawable.ic_action_maps_place_white;
-
-            case R.string.title_tab_phone:
-                return R.drawable.ic_action_communication_call_white;
-
-            case R.string.title_tab_timetable:
-                return R.drawable.ic_action_timetable_white;
-
-            case R.string.title_tab_search_empty_room:
-                return R.drawable.ic_action_action_search_white;
-
-            case R.string.title_tab_search_subject:
-                return R.drawable.ic_action_content_content_paste_white;
-
-            case R.string.title_tab_schedule:
-                return R.drawable.ic_action_calendar_white;
-
-            case R.string.title_tab_building_classroom:
-                return R.drawable.ic_action_action_about_white;
-
-            case R.string.title_tab_wise_score:
-                return R.drawable.ic_action_content_content_copy_white;
-
-            case R.string.title_tab_transport:
-                return R.drawable.ic_action_maps_directions_white;
-
-            case R.string.title_section_etc:
-                return R.drawable.ic_action_navigation_check_white;
-
-            case R.string.setting:
-                return R.drawable.ic_action_action_settings_white;
-
-            case R.string.action_exit:
-                return R.drawable.ic_action_navigation_close_white;
-
-            default:
-                return RESOURCE_NOT_EXIST;
+        private static int intCompare(int x, int y) {
+            return (x < y) ? -1 : ((x == y) ? 0 : 1);
         }
     }
 
@@ -609,119 +310,6 @@ public class AppUtil {
         IOUtil.clearApplicationFile(context.getCacheDir());
         IOUtil.clearApplicationFile(context.getExternalCacheDir());
     }
-
-    /**
-     * @param pageTitleResId 얻으려는 page에 알맞는 string 리소스 id
-     * @return fragment 클래스
-     */
-    public static Class<? extends Fragment> getPageClass(@StringRes int pageTitleResId) {
-        switch (pageTitleResId) {
-            case R.string.title_section0_home:
-                return TabHomeFragment.class;
-
-            case R.string.title_tab_announce:
-                return TabAnnounceFragment.class;
-
-            case R.string.title_tab_restaurant:
-                return TabRestaurantFragment.class;
-
-            case R.string.title_tab_book_search:
-                return TabBookSearchFragment.class;
-
-            case R.string.title_tab_library_seat:
-                return TabLibrarySeatFragment.class;
-
-            /*
-            case R.string.title_tab_map:
-                return TabMapFragment.class;
-            */
-            case R.string.title_tab_timetable:
-                return TabTimeTableFragment.class;
-
-            case R.string.title_tab_search_empty_room:
-                return TabSearchEmptyRoomFragment.class;
-
-            case R.string.title_tab_search_subject:
-                return TabSearchSubjectFragment2.class;
-
-            case R.string.title_tab_schedule:
-                return UnivScheduleFragment.class;
-
-            case R.string.title_tab_building_classroom:
-                return TabBuildingRoomFragment.class;
-
-            case R.string.title_tab_wise_score:
-                return TabWiseScoreFragment.class;
-            /*
-            case R.string.title_tab_phone:
-                return TabPhoneFragment.class;
-
-
-
-            case R.string.title_tab_transport:
-                return TabTransportFragment.class;
-            */
-
-            default:
-                return null;
-        }
-    }
-
-    /*public static int getPageResByClass(Class<? extends Fragment> fragmentClass) {
-
-
-        //switch (fragmentClass.getSimpleName()) {
-//            case "TabHomeFragment":
-  //              return R.string.title_section0_home;
-    //    }
-
-
-        if (fragmentClass.equals(TabHomeFragment.class))
-            return R.string.title_section0_home;
-
-        else if (fragmentClass.equals(TabAnnounceFragment.class))
-            return R.string.title_tab_announce;
-
-        else if (fragmentClass.equals(TabRestaurantFragment.class))
-            return R.string.title_tab_restaurant;
-
-        else if (fragmentClass.equals(TabBookSearchFragment.class))
-            return R.string.title_tab_book_search;
-
-        else if (fragmentClass.equals(TabLibrarySeatFragment.class))
-            return R.string.title_tab_library_seat;
-
-
-        else if (fragmentClass.equals(TabMapFragment.class))
-            return R.string.title_tab_map;
-
-
-        else if (fragmentClass.equals(TabTimeTableFragment.class))
-            return R.string.title_tab_timetable;
-
-        else if (fragmentClass.equals(TabSearchEmptyRoomFragment.class))
-            return R.string.title_tab_search_empty_room;
-
-        else if (fragmentClass.equals(TabSearchSubjectFragment2.class))
-            return R.string.title_tab_search_subject;
-
-        else if (fragmentClass.equals(UnivScheduleFragment.class))
-            return R.string.title_tab_schedule;
-
-
-        else if (fragmentClass.equals(TabPhoneFragment.class))
-            return R.string.title_tab_phone;
-
-        else if (fragmentClass.equals(ScoreFragment.class))
-            return R.string.title_tab_score;
-
-        else if (fragmentClass.equals(TabTransportFragment.class))
-            return R.string.title_tab_transport;
-
-        else
-            return RESOURCE_NOT_EXIST;
-    }
-    */
 
     /**
      * 인텐트를 통해 인터넷 페이지를 띄운다.
@@ -885,8 +473,6 @@ public class AppUtil {
     }
 
 
-
-
     @PermissionChecker.PermissionResult
     public static boolean checkSelfPermissionCompat(Context context, @NonNull String permission) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
@@ -934,7 +520,7 @@ public class AppUtil {
         return result;
     }
 
-    public static boolean checkPermissionResultAndShowToastIfFailed(Context context,@NonNull String[] permissions, @NonNull int[] grantResults, @StringRes int res) {
+    public static boolean checkPermissionResultAndShowToastIfFailed(Context context, @NonNull String[] permissions, @NonNull int[] grantResults, @StringRes int res) {
         boolean result = checkPermissionResult(permissions, grantResults);
 
         //"권한이 거절되어 계속 진행 할 수 없습니다."
