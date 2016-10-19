@@ -212,18 +212,25 @@ public class AppUtil {
          * load every TabInfo except Home(the uos, no. 0,), setting(no.98)
          */
         public static ArrayList<TabInfo> loadDefaultOrder() {
-            ArrayList<TabInfo> list = loadWholeList();
+            ArrayList<TabInfo> list = new ArrayList<>();
+            Collections.addAll(list, values());
+
+            for (TabInfo tabInfo : list) {
+                tabInfo.isEnable = true;
+            }
+
             list.remove(0); // remove main(the uos)
             list.remove(list.size() - 1); //  remove setting
+
             return list;
         }
+
 
         /**
          * load ordered TabInfo list
          */
-        public static ArrayList<TabInfo> loadEnabledTabOrder() {
+        public static ArrayList<TabInfo> loadEnabledTabOrderForSetting() {
             ArrayList<TabInfo> tabList = loadDefaultOrder();
-
 
             for (TabInfo tabInfo : tabList) {
                 tabInfo.isEnable = tabInfo.recordedEnable();
@@ -233,11 +240,21 @@ public class AppUtil {
             return tabList;
         }
 
+        private static ArrayList<TabInfo> loadEnabledTabOrderInternal() {
+            ArrayList<TabInfo> tabList = loadEnabledTabOrderForSetting();
+
+
+            for (int i = tabList.size() - 1; i >= 0; i--) {
+                if (!tabList.get(i).isEnable) tabList.remove(i);
+            }
+
+            return tabList;
+        }
         /**
          * load ordered TabInfo list, with Home(the uos, no. 0,) if PrefHelper.Screens.isHomeEnable() == true
          */
         public static ArrayList<TabInfo> loadEnabledTabOrderForMain() {
-            ArrayList<TabInfo> tabList = loadEnabledTabOrder();
+            ArrayList<TabInfo> tabList = loadEnabledTabOrderInternal();
 
             if (PrefHelper.Screens.isHomeEnable()) tabList.add(0, Home);
 
@@ -247,20 +264,11 @@ public class AppUtil {
         /**
          * load ordered TabInfo list, with Setting, Home(the uos, no. 0,) if PrefHelper.Screens.isHomeEnable() == true
          */
-        public static ArrayList<TabInfo> loadEnabledTabOrderWithSettingForMain() {
-            ArrayList<TabInfo> tabList = loadEnabledTabOrder();
+        public static ArrayList<TabInfo> loadEnabledTabOrderForHome() {
+            ArrayList<TabInfo> tabList = loadEnabledTabOrderInternal();
             tabList.add(Setting);
 
             return tabList;
-        }
-
-        /**
-         * load every TabInfo
-         */
-        public static ArrayList<TabInfo> loadWholeList() {
-            ArrayList<TabInfo> list = new ArrayList<>();
-            Collections.addAll(list, values());
-            return list;
         }
 
         public static void saveTabOrderList(ArrayList<TabInfo> list) {

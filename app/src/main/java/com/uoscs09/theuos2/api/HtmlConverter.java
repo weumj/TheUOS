@@ -5,8 +5,10 @@ import android.support.v4.util.ArrayMap;
 import com.uoscs09.theuos2.parse.JerichoParser;
 import com.uoscs09.theuos2.tab.announce.AnnounceItem;
 import com.uoscs09.theuos2.tab.announce.ParseAnnounce;
+import com.uoscs09.theuos2.tab.booksearch.BookDetailItem;
 import com.uoscs09.theuos2.tab.booksearch.BookItem;
 import com.uoscs09.theuos2.tab.booksearch.ParseBook;
+import com.uoscs09.theuos2.tab.booksearch.ParseBookDetail;
 import com.uoscs09.theuos2.tab.libraryseat.ParseSeat;
 import com.uoscs09.theuos2.tab.libraryseat.SeatInfo;
 import com.uoscs09.theuos2.tab.restaurant.ParseRest;
@@ -51,6 +53,8 @@ class HtmlConverter implements Converter<ResponseBody, Object> {
                 parser = new ParseRestaurantWeek();
             else if (clazz.equals(AnnounceItem.class)) {
                 parser = ParseAnnounce.mobileWeb();
+            } else if (clazz.equals(BookDetailItem.class)) {
+                parser = new ParseBookDetail();
             } else
                 throw new IOException("incompatible class input : " + clazz.getName());
 

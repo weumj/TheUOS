@@ -1,5 +1,7 @@
 package com.uoscs09.theuos2.parse;
 
+import java.util.Collection;
+
 import mj.android.utils.task.Func;
 
 /**
@@ -21,6 +23,10 @@ public interface IParser<Param, Return> extends Func<Param, Return> {
         @Override
         public final Return func(Param param) throws Throwable {
             return parse(param);
+        }
+
+        protected static boolean checkNull(Collection c) {
+            return c == null || c.isEmpty();
         }
 
     }

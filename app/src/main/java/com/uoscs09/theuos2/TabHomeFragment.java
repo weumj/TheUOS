@@ -20,7 +20,7 @@ import butterknife.BindView;
 import mj.android.utils.recyclerview.ListRecyclerAdapter;
 import mj.android.utils.recyclerview.ListRecyclerUtil;
 
-import static com.uoscs09.theuos2.util.AppUtil.TabInfo.loadEnabledTabOrderWithSettingForMain;
+import static com.uoscs09.theuos2.util.AppUtil.TabInfo.loadEnabledTabOrderForHome;
 
 public class TabHomeFragment extends BaseTabFragment {
 
@@ -44,7 +44,7 @@ public class TabHomeFragment extends BaseTabFragment {
         super.onViewCreated(view, savedInstanceState);
 
 
-        List<TabInfo> list = loadEnabledTabOrderWithSettingForMain();
+        List<TabInfo> list = loadEnabledTabOrderForHome();
 
         final int viewCount = AppUtil.isScreenSizeSmall() ? 3 : 5;
 

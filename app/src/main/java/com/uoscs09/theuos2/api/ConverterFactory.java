@@ -1,6 +1,7 @@
 package com.uoscs09.theuos2.api;
 
 import com.uoscs09.theuos2.tab.announce.AnnounceItem;
+import com.uoscs09.theuos2.tab.booksearch.BookDetailItem;
 import com.uoscs09.theuos2.tab.booksearch.BookItem;
 import com.uoscs09.theuos2.tab.booksearch.BookStates;
 import com.uoscs09.theuos2.tab.buildings.BuildingRoom;
@@ -54,7 +55,8 @@ class ConverterFactory extends Converter.Factory {
             } else if (cls.equals(BookItem.class)
                     || cls.equals(SeatInfo.class)
                     || cls.equals(RestItem.class)
-                    || cls.equals(WeekRestItem.class)) {
+                    || cls.equals(WeekRestItem.class)
+                    || cls.equals(BookDetailItem.class)) {
                 return new HtmlConverter(cls);
             } else if (cls.equals(UnivScheduleInfo.class)
                     || cls.equals(CoursePlanInfo.class)

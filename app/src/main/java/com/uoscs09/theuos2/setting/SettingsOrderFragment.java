@@ -47,7 +47,7 @@ public class SettingsOrderFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         setHasOptionsMenu(true);
-        orderList = AppUtil.TabInfo.loadEnabledTabOrder();
+        orderList = AppUtil.TabInfo.loadEnabledTabOrderForSetting();
         mAdapter = new SwapAdapter(getActivity(), orderList);
         super.onCreate(savedInstanceState);
 
@@ -122,7 +122,7 @@ public class SettingsOrderFragment extends BaseFragment {
                 return true;
 
             case R.id.action_goto_default:
-                refresh(AppUtil.TabInfo.loadEnabledTabOrder());
+                refresh(AppUtil.TabInfo.loadDefaultOrder());
                 AppUtil.showToast(getActivity(), R.string.apply_default, true);
                 return true;
 

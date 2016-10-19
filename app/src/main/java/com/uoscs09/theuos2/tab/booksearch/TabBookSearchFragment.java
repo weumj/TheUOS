@@ -1,6 +1,7 @@
 package com.uoscs09.theuos2.tab.booksearch;
 
 import android.app.SearchManager;
+import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -185,8 +186,9 @@ public class TabBookSearchFragment extends AbsProgressFragment<List<BookItem>> i
         final BookItem item = holder.getItem();
         switch (v.getId()) {
             case R.id.tab_booksearch_list_book_image: {
-                Intent i = AppUtil.getWebPageIntent("http://mlibrary.uos.ac.kr" + item.url);
-                AnimUtil.startActivityWithScaleUp(getActivity(), i, v);
+                // Intent i = AppUtil.getWebPageIntent("http://mlibrary.uos.ac.kr" + item.url);
+                //AnimUtil.startActivityWithScaleUp(getActivity(), i, v);
+                BookDetailActivity.start(getActivity(), v, holder.getItem());
                 break;
             }
             case R.id.tab_booksearch_list_book_site:
@@ -422,7 +424,12 @@ public class TabBookSearchFragment extends AbsProgressFragment<List<BookItem>> i
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_WEB_SEARCH);
         intent.putExtra(SearchManager.QUERY, text);
-        startActivity(intent);
+
+        try {
+            startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            AppUtil.showToast(getActivity(), R.string.error_no_related_activity_found);
+        }
     }
 
     private void initOptionDialog(int oiSelect, int osSelect) {

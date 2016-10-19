@@ -3,6 +3,7 @@ package com.uoscs09.theuos2.tab.booksearch;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import java.util.ArrayList;
@@ -52,15 +53,17 @@ public class BookItem implements Parcelable {
      * 이용 가능
      */
     public static final int BOOK_STATE_AVAILABLE = 1;
-    /**
-     * 이용가능하지 않음
-     */
-    public static final int BOOK_STATE_NOT_AVAILABLE = BOOK_STATE_AVAILABLE << 1;
 
     /**
      * 온라인 이용 가능
      */
     public static final int BOOK_STATE_ONLINE = BOOK_STATE_AVAILABLE << 2 | BOOK_STATE_AVAILABLE;
+
+    /**
+     * 이용가능하지 않음
+     */
+    public static final int BOOK_STATE_NOT_AVAILABLE = BOOK_STATE_AVAILABLE << 1;
+
     /**
      * 정리중
      */
@@ -74,6 +77,50 @@ public class BookItem implements Parcelable {
      * 분실
      */
     public static final int BOOK_STATE_MISSING = BOOK_STATE_NOT_AVAILABLE << 3 | BOOK_STATE_NOT_AVAILABLE;
+
+    /**
+     * 알 수 없음 (파싱 실패 등등..)
+     */
+    public static final int BOOK_STATE_UNKNOWN = BOOK_STATE_NOT_AVAILABLE << 4 | BOOK_STATE_NOT_AVAILABLE;
+
+
+    public static int checkLocationState(String state) {
+        switch (state) {
+            case "대출가능":
+                return BookItem.BOOK_STATE_AVAILABLE;
+            case "대출중":
+                return BookItem.BOOK_STATE_NOT_AVAILABLE;
+            case "온라인이용가능":
+                return BookItem.BOOK_STATE_ONLINE;
+            case "정리중":
+                return BookItem.BOOK_STATE_IN_ARRANGE;
+            case "파오손":
+                return BookItem.BOOK_STATE_BROKEN_OR_DIRTY;
+            case "분실":
+                return BookItem.BOOK_STATE_MISSING;
+            default:
+                return BookItem.BOOK_STATE_UNKNOWN;
+        }
+    }
+
+    public static int bookStateStringRes(int state){
+        switch (state){
+            case BookItem.BOOK_STATE_AVAILABLE:
+                return R.string.tab_book_state_available;
+            case BookItem.BOOK_STATE_ONLINE:
+                return R.string.tab_book_state_available_in_online;
+            case BookItem.BOOK_STATE_NOT_AVAILABLE:
+                return R.string.tab_book_state_not_available;
+            case BookItem.BOOK_STATE_IN_ARRANGE:
+                return R.string.tab_book_state_in_arrange;
+            case BookItem.BOOK_STATE_BROKEN_OR_DIRTY:
+                return R.string.tab_book_state_broken_or_dirty;
+            case BookItem.BOOK_STATE_MISSING:
+                return R.string.tab_book_state_missing;
+            default:
+                return R.string.tab_book_state_unknown;
+        }
+    }
 
     public BookItem() {
         title = writer = bookInfo = site = bookState = coverSrc = url = infoUrl = StringUtil.NULL;

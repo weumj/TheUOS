@@ -3,6 +3,7 @@ package com.uoscs09.theuos2.api;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.uoscs09.theuos2.tab.booksearch.BookDetailItem;
 import com.uoscs09.theuos2.tab.booksearch.BookItem;
 import com.uoscs09.theuos2.tab.booksearch.BookStates;
 import com.uoscs09.theuos2.tab.libraryseat.SeatInfo;
@@ -42,6 +43,13 @@ public interface LibraryApi {
     //@Headers({"Content-Type: charset=EUC-KR"})
     @GET
     Task<BookStates> bookStateInformation(
+            @Url String url
+    );
+
+    //fixme
+    @Headers({"Content-Type: text/html; charset=EUC-KR"})
+    @GET
+    Task<BookDetailItem> bookDetailItem(
             @Url String url
     );
 
