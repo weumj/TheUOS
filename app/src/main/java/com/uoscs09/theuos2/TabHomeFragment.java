@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.uoscs09.theuos2.base.BaseTabFragment;
@@ -19,6 +20,7 @@ import java.util.List;
 import butterknife.BindView;
 import mj.android.utils.recyclerview.ListRecyclerAdapter;
 import mj.android.utils.recyclerview.ListRecyclerUtil;
+import mj.android.utils.recyclerview.ViewHolderFactory;
 
 import static com.uoscs09.theuos2.util.AppUtil.TabInfo.loadEnabledTabOrderForHome;
 
@@ -50,15 +52,20 @@ public class TabHomeFragment extends BaseTabFragment {
 
         mRecyclerView.setNestedScrollingEnabled(false);
         mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), viewCount));
-        adapter = ListRecyclerUtil.newSimpleAdapter(list, HomeViewHolder.class, R.layout.list_layout_home);
+        adapter = new ListRecyclerAdapter<>(list, new ViewHolderFactory<TabInfo, HomeViewHolder>() {
+            @Override
+            public HomeViewHolder newViewHolder(ViewGroup viewGroup, int i) {
+                return new HomeViewHolder(ListRecyclerUtil.makeViewHolderItemView(viewGroup, R.layout.list_layout_home));
+            }
+        });
         adapter.setOnItemClickListener((homeViewHolder, view1) -> {
-            if(getUosMainActivity() == null)
+            if (getUosMainActivity() == null)
                 return;
 
 
             int position = homeViewHolder.getAdapterPosition();
 
-            switch (homeViewHolder.getItem()){
+            switch (homeViewHolder.getItem()) {
                 case Setting:
                     getUosMainActivity().startSettingActivity();
                     break;

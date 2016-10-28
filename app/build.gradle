@@ -48,7 +48,7 @@ android {
     buildTypes {
         debug {
             signingConfig signingConfigs.common
-            minifyEnabled Boolean.valueOf(project.property('TheUOS.Debug.Proguard').toString())
+            minifyEnabled true//Boolean.valueOf(project.property('TheUOS.Debug.Proguard').toString())
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         release {

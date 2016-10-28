@@ -34,6 +34,7 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import mj.android.utils.recyclerview.ListRecyclerAdapter;
 import mj.android.utils.recyclerview.ListRecyclerUtil;
+import mj.android.utils.recyclerview.ViewHolderFactory;
 
 /**
  * 빈 강의실을 조회하는 fragment
@@ -128,7 +129,12 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<List<EmptyRo
         super.onViewCreated(view, savedInstanceState);
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(manager);
-        mAdapter = ListRecyclerUtil.newSimpleAdapter(mClassRoomList, Holder.class, R.layout.list_layout_empty_room);
+        mAdapter = new ListRecyclerAdapter<>(mClassRoomList, new ViewHolderFactory<EmptyRoom, Holder>() {
+            @Override
+            public Holder newViewHolder(ViewGroup viewGroup, int i) {
+                return new Holder(ListRecyclerUtil.makeViewHolderItemView(viewGroup, R.layout.list_layout_empty_room));
+            }
+        });
         recyclerView.setAdapter(mAdapter);
         mAdapter.setOnItemClickListener((holder, view1) -> roomClick(view1, holder.getAdapterPosition()));
 

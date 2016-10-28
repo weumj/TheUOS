@@ -17,6 +17,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,7 +39,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import mj.android.utils.recyclerview.ListRecyclerAdapter;
-import mj.android.utils.recyclerview.ListRecyclerUtil;
+import mj.android.utils.recyclerview.ViewHolderFactory;
 
 /**
  * Main Activity, ViewPager 가 존재한다.
@@ -102,10 +103,10 @@ public class UosMainActivity extends BaseActivity {
         ButterKnife.bind(this);
 
         //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mCoordinatorLayout = ButterKnife.findById(this, R.id.activity_uos_coordinator);
-            CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) mToolBarParent.getLayoutParams();
-            mAppBarBehavior = params.getBehavior();
-       // }
+        mCoordinatorLayout = ButterKnife.findById(this, R.id.activity_uos_coordinator);
+        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) mToolBarParent.getLayoutParams();
+        mAppBarBehavior = params.getBehavior();
+        // }
 
         setSupportActionBar(mToolbar);
 
@@ -605,7 +606,12 @@ public class UosMainActivity extends BaseActivity {
         //private final boolean isHomeEnable;
 
         DrawerAdapter() {
-            super(mTabOrderList, new ListRecyclerUtil.InnerClassViewHolderFactory<>(UosMainActivity.this, DrawerViewHolder.class, R.layout.list_layout_drawer));
+            super(mTabOrderList, new ViewHolderFactory<AppUtil.TabInfo, DrawerViewHolder>() {
+                @Override
+                public DrawerViewHolder newViewHolder(ViewGroup viewGroup, int i) {
+                    return new DrawerViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_layout_drawer, viewGroup, false));
+                }
+            });
             mDefaultTextColor = AppUtil.getAttrColor(UosMainActivity.this, R.attr.colorControlNormal);
             mSelectedTextColor = AppUtil.getAttrColor(UosMainActivity.this, R.attr.color_primary_text);
             mColorFilter = new PorterDuffColorFilter(mSelectedTextColor, PorterDuff.Mode.SRC_IN);

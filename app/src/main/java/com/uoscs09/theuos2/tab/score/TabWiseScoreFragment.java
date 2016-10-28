@@ -35,7 +35,9 @@ import butterknife.BindView;
 import butterknife.BindViews;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import mj.android.utils.recyclerview.ListRecyclerAdapter;
 import mj.android.utils.recyclerview.ListRecyclerUtil;
+import mj.android.utils.recyclerview.ViewHolderFactory;
 
 public class TabWiseScoreFragment extends AbsProgressFragment<WiseScores> {
     @Override
@@ -250,7 +252,13 @@ public class TabWiseScoreFragment extends AbsProgressFragment<WiseScores> {
                 View vv = View.inflate(context, R.layout.dialog_tab_score_sub, null);
                 RecyclerView recyclerView = (RecyclerView) vv.findViewById(R.id.recyclerview);
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
-                recyclerView.setAdapter(ListRecyclerUtil.newSimpleAdapter(semesterScore.subjectScores, SubScoreViewHolder.class, R.layout.list_layout_wise_scores_sub));
+                recyclerView.setAdapter(new ListRecyclerAdapter<>(semesterScore.subjectScores, new ViewHolderFactory<WiseScores.SubjectScore, ListRecyclerAdapter.ViewHolder<WiseScores.SubjectScore>>() {
+                    @Override
+                    public ListRecyclerAdapter.ViewHolder<WiseScores.SubjectScore> newViewHolder(ViewGroup viewGroup, int i) {
+                        return new SubScoreViewHolder(ListRecyclerUtil.makeViewHolderItemView(viewGroup, R.layout.list_layout_wise_scores_sub));
+                    }
+                }
+                ));
 
                 Toolbar toolbar = (Toolbar) vv.findViewById(R.id.toolbar);
                 toolbar.setTitle(semesterScore.yearAndSemester);
@@ -260,7 +268,7 @@ public class TabWiseScoreFragment extends AbsProgressFragment<WiseScores> {
                         .setView(vv)
                         .show();
 
-                if(context instanceof TrackerUtil.TrackerScreen){
+                if (context instanceof TrackerUtil.TrackerScreen) {
                     ((TrackerUtil.TrackerScreen) context).sendClickEvent("detail score");
                 }
             });

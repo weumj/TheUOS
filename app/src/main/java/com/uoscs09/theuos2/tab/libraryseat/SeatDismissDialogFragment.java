@@ -9,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.TextView;
 
@@ -18,6 +19,7 @@ import com.uoscs09.theuos2.base.BaseDialogFragment;
 import butterknife.BindView;
 import mj.android.utils.recyclerview.ListRecyclerAdapter;
 import mj.android.utils.recyclerview.ListRecyclerUtil;
+import mj.android.utils.recyclerview.ViewHolderFactory;
 
 public class SeatDismissDialogFragment extends BaseDialogFragment {
 
@@ -70,7 +72,12 @@ public class SeatDismissDialogFragment extends BaseDialogFragment {
 
             recyclerView.setLayoutManager(manager);
 
-            mInfoAdapter = ListRecyclerUtil.newSimpleAdapter(mSeatInfo.seatDismissInfoList, Holder.class, R.layout.list_layout_seat_dismiss_info);
+            mInfoAdapter = new ListRecyclerAdapter<>(mSeatInfo.seatDismissInfoList, new ViewHolderFactory<SeatDismissInfo, ListRecyclerAdapter.ViewHolder<SeatDismissInfo>>() {
+                @Override
+                public ListRecyclerAdapter.ViewHolder<SeatDismissInfo> newViewHolder(ViewGroup viewGroup, int i) {
+                    return new Holder(ListRecyclerUtil.makeViewHolderItemView(viewGroup, R.layout.list_layout_seat_dismiss_info));
+                }
+            });
             recyclerView.setAdapter(mInfoAdapter);
 
             if (mSeatInfo.seatDismissInfoList.isEmpty())

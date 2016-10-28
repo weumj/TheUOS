@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.uoscs09.theuos2.R;
@@ -32,6 +33,7 @@ import butterknife.BindView;
 import jp.wasabeef.recyclerview.animators.SlideInDownAnimator;
 import mj.android.utils.recyclerview.ListRecyclerAdapter;
 import mj.android.utils.recyclerview.ListRecyclerUtil;
+import mj.android.utils.recyclerview.ViewHolderFactory;
 
 /**
  * 도서관 좌석 정보 현황을 보여주는 페이지
@@ -105,7 +107,12 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> {
             execute();
         });
 
-        ListRecyclerAdapter<SeatItem, SeatViewHolder> mSeatAdapter = ListRecyclerUtil.newSimpleAdapter(mSeatInfo.seatItemList, SeatViewHolder.class, R.layout.list_layout_seat);
+        ListRecyclerAdapter<SeatItem, SeatViewHolder> mSeatAdapter = new ListRecyclerAdapter<>(mSeatInfo.seatItemList, new ViewHolderFactory<SeatItem, SeatViewHolder>() {
+            @Override
+            public SeatViewHolder newViewHolder(ViewGroup viewGroup, int i) {
+                return new SeatViewHolder(ListRecyclerUtil.makeViewHolderItemView(viewGroup, R.layout.list_layout_seat));
+            }
+        });
         mSeatAdapter.setOnItemClickListener((viewHolder, v) -> {
             if (isAdapterItemClicked)
                 return;
