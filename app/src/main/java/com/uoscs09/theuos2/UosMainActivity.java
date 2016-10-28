@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -102,11 +101,11 @@ public class UosMainActivity extends BaseActivity {
         setContentView(R.layout.activity_uosmain);
         ButterKnife.bind(this);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mCoordinatorLayout = ButterKnife.findById(this, R.id.activity_uos_coordinator);
             CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) mToolBarParent.getLayoutParams();
             mAppBarBehavior = params.getBehavior();
-        }
+       // }
 
         setSupportActionBar(mToolbar);
 

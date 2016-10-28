@@ -17,7 +17,8 @@
         android:paddingBottom="4dp"
         android:paddingTop="2dp"
         android:scrollbars="none"
-        android:scrollingCache="true" />
+        android:scrollingCache="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <RelativeLayout
         android:id="@+id/tab_timetable_empty"

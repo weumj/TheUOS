@@ -77,11 +77,14 @@ public class BookItem implements Parcelable {
      * 분실
      */
     public static final int BOOK_STATE_MISSING = BOOK_STATE_NOT_AVAILABLE << 3 | BOOK_STATE_NOT_AVAILABLE;
-
+    /**
+     * 소재 불명
+     */
+    public static final int BOOK_STATE_UNKNOWN = BOOK_STATE_NOT_AVAILABLE << 4 | BOOK_STATE_NOT_AVAILABLE;
     /**
      * 알 수 없음 (파싱 실패 등등..)
      */
-    public static final int BOOK_STATE_UNKNOWN = BOOK_STATE_NOT_AVAILABLE << 4 | BOOK_STATE_NOT_AVAILABLE;
+    public static final int BOOK_STATE_ERROR = BOOK_STATE_NOT_AVAILABLE << 5 | BOOK_STATE_NOT_AVAILABLE;
 
 
     public static int checkLocationState(String state) {
@@ -98,8 +101,10 @@ public class BookItem implements Parcelable {
                 return BookItem.BOOK_STATE_BROKEN_OR_DIRTY;
             case "분실":
                 return BookItem.BOOK_STATE_MISSING;
-            default:
+            case "소재불명":
                 return BookItem.BOOK_STATE_UNKNOWN;
+            default:
+                return BookItem.BOOK_STATE_ERROR;
         }
     }
 
@@ -117,8 +122,10 @@ public class BookItem implements Parcelable {
                 return R.string.tab_book_state_broken_or_dirty;
             case BookItem.BOOK_STATE_MISSING:
                 return R.string.tab_book_state_missing;
-            default:
+            case BOOK_STATE_UNKNOWN:
                 return R.string.tab_book_state_unknown;
+            default:
+                return R.string.tab_book_state_error;
         }
     }
 

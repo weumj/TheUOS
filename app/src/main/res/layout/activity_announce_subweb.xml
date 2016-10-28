@@ -9,7 +9,8 @@
 
     <FrameLayout
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+        android:layout_height="fill_parent"
+        android:animateLayoutChanges="true">
 
         <com.uoscs09.theuos2.customview.NonLeakingWebView
             android:id="@+id/webview"
@@ -25,11 +26,10 @@
             android:layout_gravity="end|bottom"
             android:layout_marginBottom="10dp"
             android:layout_marginRight="10dp"
-            android:animateLayoutChanges="true"
             android:background="?colorPrimary"
             android:clickable="true"
             android:focusable="true"
-            android:src="@drawable/theme_ic_action_file_folder_color"
+            android:src="?color_theme_ic_action_file_folder"
             android:visibility="invisible"
             app:borderWidth="0dp"
             app:elevation="6dp"

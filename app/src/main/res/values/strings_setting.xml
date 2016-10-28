@@ -17,21 +17,23 @@
     <string name="setting_order_goto_default">초기값으로</string>
     <string name="setting_order_desc">어플리케이션 각 화면의 순서를 변경합니다.</string>
     <string name="setting_theme">테마 변경</string>
-    <string name="setting_theme_desc">어플리케이션의 테마를 변경합니다.</string>
+    <string name="setting_theme_desc">어플리케이션의 테마를 변경합니다.\n현재 적용된 테마 : %1$s</string>
 
     <string name="setting_home">홈 화면</string>
-    <string name="setting_home_desc">어플리케이션의 초기 화면에 메뉴 선택 화면을 띄웁니다. </string>
+    <string name="setting_home_desc_enable">어플리케이션의 초기 화면에 메뉴 선택 화면을 띄웁니다.</string>
+    <string name="setting_home_desc_disable">어플리케이션의 초기 화면에 메뉴 선택 화면을 띄우지 않습니다.</string>
 
     <string name="setting_data">데이터</string>
     <string name="setting_delete_cache">임시파일 삭제</string>
     <string name="setting_delete_cache_desc">임시파일을 삭제합니다.</string>
 
+    <!--
     <string name="setting_announce_except_type_notice">\'공지\' 타입 표시안함</string>
     <string name="setting_announce_except_type_notice_desc">체크한 경우 검색된 공지사항 리스트에서 \'공지\' 타입을 제외합니다.</string>
     <string name="setting_announce_except_type_notice_desc_mobile">모바일 웹에서 검색하는 경우 \'공지\' 타입은 자동으로 제외됩니다.</string>
     <string name="setting_announce_search_not_mobile">일반 웹 사용</string>
     <string name="setting_announce_search_not_mobile_desc">체크한 경우 모바일웹이 아닌 일반 웹에서 공지사항을 검색합니다. \n기본적으로 모바일 웹을 사용합니다.</string>
-
+    -->
     <string name="setting_announce_noti">UOS 공지사항 알리미</string>
     <string name="setting_announce_noti_desc">공지사항 알리미의 설정을 변경합니다.</string>
     <string name="setting_announce_noti_frag_desc">매일 설정된 시간에 공지사항을 검색합니다.\n검색 당일 올라온 공지사항 중에 설정한 키워드가 포함되어 있는 공지사항을 알려줍니다.</string>
@@ -72,8 +74,14 @@
     <string name="setting_check_announce_service_desc_disable">공지사항 알리미가 작동하지 않습니다.</string>
     <string name="setting_check_announce_service">공지사항 알리미 사용</string>
 
-    <string name="setting_save_image_sub_title">이미지 저장 위치</string>
-    <string name="setting_save_text_sub_title">텍스트 저장 위치</string>
+    <string name="setting_save_image_title">이미지</string>
+    <string name="setting_save_doc_title">일반 문서</string>
+    <string name="setting_save_image_sub_title">이미지 저장 경로</string>
+    <string name="setting_save_doc_sub_title">일반 문서 저장 경로</string>
+    <string name="setting_save_image_sub_desc">시간표, 수업계획서 등의 이미지가 저장되는 경로를 설정합니다.</string>
+    <string name="setting_save_image_desc">%1$s</string>
+    <string name="setting_save_doc_sub_desc">수업계획서, 공지사항 첨부파일 등의 일반 문서나, 파일이 저장되는 경로를 설정합니다.</string>
+    <string name="setting_save_doc_desc">%1$s</string>
     <string name="setting_save_route_up">상위 폴더로</string>
     <string name="setting_save_route_error_parent">현재 폴더의 상위 폴더를 불러올 수 없습니다.</string>
 
@@ -85,7 +93,10 @@
     <string name="setting_timetable_clear_alarm_title">모든 알람 삭제</string>
     <string name="setting_timetable_clear_alarm_desc">설정된 모든 알람을 삭제합니다.</string>
 
-    <string name="setting_building_room_fetch_time">건물 목록을 받아온 시간</string>
+    <string name="setting_building_room_title">건물 및 강의실 목록</string>
+    <string name="setting_building_room_sub_title">건물 및 강의실 정보 업데이트 시각</string>
+    <string name="setting_building_room_sub_desc">교내 건물 및 강의실 구분 정보를 언제 받아왔는지 알 수 있습니다.\n이 정보는 \'빈 강의실 조회\'등에서 건물과 강의실을 특정지을 때 사용합니다.\n아래를 눌러 최신 정보를 받아올 수 있습니다.</string>
+    <string name="setting_building_room_desc">%1$s</string>
     <string name="setting_building_room_fetch_time_none">건물 목록을 다운로드 한 적이 없습니다.\n여기를 눌러 다운로드 하세요.</string>
 
     <!-- '공지' 타입 표시안함 여부, boolean-->
@@ -116,8 +127,8 @@
     <string name="pref_key_home" translatable="false">SCREEN_HOME</string>
     <!-- 이미지가 저장되는 경로, String -->
     <string name="pref_key_save_image_route" translatable="false">IMAGE_SAVE_ROUTE</string>
-    <!-- 텍스트가 저장되는 경로, String -->
-    <string name="pref_key_save_txt_route" translatable="false">TXT_SAVE_ROUTE</string>
+    <!-- 일반 파일이나 문서가 저장되는 경로, String -->
+    <string name="pref_key_save_doc_route" translatable="false">DOC_SAVE_ROUTE</string>
     <!-- 건물 및 강의실 정보를 받아온 시각, long -->
     <string name="pref_key_buildings_fetch_time" translatable="false">BUILDINGS_FETCH_TIME</string>
 

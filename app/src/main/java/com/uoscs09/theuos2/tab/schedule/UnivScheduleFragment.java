@@ -132,6 +132,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<List<UnivScheduleI
 
     @RequiresPermission(Manifest.permission.GET_ACCOUNTS)
     private Account[] deviceAccounts() {
+        //noinspection MissingPermission
         return AccountManager.get(getActivity()).getAccountsByType("com.google");
     }
 
@@ -170,6 +171,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<List<UnivScheduleI
             return;
         }
 
+        //noinspection MissingPermission
         Account[] accounts = deviceAccounts();
         if (accounts.length < 1) {
             AppUtil.showToast(getActivity(), R.string.tab_univ_schedule_google_account_not_exist);

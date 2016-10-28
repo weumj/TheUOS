@@ -92,8 +92,9 @@
     <string name="tab_book_not_found">검색된 페이지에 대여 가능 도서가 없습니다.</string>
     <string name="tab_book_subject_opt">검색 옵션을 선택해주세요</string>
     <string name="tab_book_empty_text1"> 버튼을 터치하여 도서 검색을 해 보세요.</string>
-    <string name="tab_book_empty_text2"> 버튼을 터치하여 도서 검색 옵션을 설정하세요.</string>
+    <string name="tab_book_empty_text2"> 도서 검색 옵션을 설정하여 상세한 검색을 할 수 있습니다.</string>
     <string name="tab_book_empty_text3"> 리스트나 책 이미지를 터치하면 자세한 정보를 볼 수 있습니다.</string>
+    <string name="tab_book_sub_title">상세 도서 정보</string>
     <string name="tab_book_image_transition_name">book_image_transition</string>
     <string name="tab_book_state_available">대출가능</string>
     <string name="tab_book_state_available_in_online">온라인 이용 가능</string>
@@ -101,7 +102,8 @@
     <string name="tab_book_state_in_arrange">정리중</string>
     <string name="tab_book_state_broken_or_dirty">파오손</string>
     <string name="tab_book_state_missing">분실</string>
-    <string name="tab_book_state_unknown">알수없음</string>
+    <string name="tab_book_state_unknown">소재불명</string>
+    <string name="tab_book_state_error">알수없음</string>
 
     <string name="tab_library_seat_last_update">최근 조회 시간\n</string>
     <string name="tab_library_seat_vacancy"> 잔여 좌석수 : </string>
@@ -109,6 +111,23 @@
     <string name="tab_library_seat_dismiss_info_not_exist_in_1hr">1시간 내에 해지될 좌석이 없습니다.</string>
     <string name="tab_library_seat_dismiss_info_time_within">%1$d 분이내</string>
     <string name="tab_library_seat_sub_seat_title">좌석 정보</string>
+
+    <string name="tab_wise_score_login">Mobile Wise 로그인</string>
+    <string name="tab_wise_score_empty_hint1">Wise에서 Mobile Wise를 등록할 수 있습니다.</string>
+    <string name="tab_wise_score_empty_hint2">각 항목을 터치하면 상세 정보를 볼 수 있습니다.</string>
+    <string name="tab_wise_score_sub_subtitle">%1$d학점 / %2$s / %3$s</string>
+    <string name="tab_wise_score_score_earned_total">취득학점 : %1$s</string>
+    <string name="tab_wise_score_eval_sum_total">평점합계 : %1$s</string>
+    <string name="tab_wise_score_eval_percent_total">평점평균 : %1$s</string>
+    <string name="tab_wise_score_eval_average_total">백분율 환산 : %1$s</string>
+    <string name="tab_wise_score_empty_view_hint">버튼을 터치하여 검색을 시작하세요.</string>
+    <string name="tab_wise_score_name">과목</string>
+    <string name="tab_wise_score_subject_div">교과</string>
+    <string name="tab_wise_score_credit">학점</string>
+    <string name="tab_wise_score_grade">등급</string>
+    <string name="tab_wise_score_eval">평점</string>
+    <string name="tab_wise_score_valid">성적\n유효</string>
+    <string name="tab_wise_score_retaking">재수강</string>
 
     <string name="tab_map_menu_title">건물 및 복지시설 검색</string>
     <string name="tab_map_menu_building">건물</string>
@@ -194,11 +213,6 @@
     <string name="tab_rest_operation_time_dormitory_in_vacation">08:00~19:00</string>
 
 
-    <string name="tab_phone_call">전화</string>
-    <string name="tab_phone_search_hint">검색할 장소를 입력하세요.</string>
-    <string name="tab_phone_confirm_call">(으)로 전화를 겁니다.</string>
-    <string name="tab_phone_caution_update">전화번호 업데이트를 시행합니다.\n사용자의 네트워크 환경에 따라 다소 시간이 걸릴 수 있습니다.\n진행하시겠습니까?</string>
-
     <string name="tab_timetable_wise_id">Wise ID</string>
     <string name="tab_timetable_wise_passwd">Wise 비밀번호</string>
     <string name="tab_timetable_wise_term">학기</string>
@@ -277,8 +291,6 @@
 
     <string name="tab_transport_empty">버튼을 눌러 정보를 불러오세요.</string>
 
-    <string name="tab_score_input_subject_name">과목명을 입력하세요</string>
-
     <string name="tab_univ_schedule_calendar_not_exist">캘린더가 존재하지 않습니다.</string>
     <string name="tab_univ_schedule_add_to_calendar">캘린더에 일정 등록</string>
     <string name="tab_univ_schedule_add_schedule_to_calender">일정 \' %s \' 을(를) 캘린더에 추가합니다.</string>
@@ -316,7 +328,7 @@
         <item>14 과학기술관</item>
         <item>15 21세기관</item>
         <item>16 조형관</item>
-        <item>17 체육관</item>
+        <item>17 시민문화교육관</item>
         <item>18 자작마루</item>
         <item>19 정보기술관</item>
         <item>20 법학관</item>
@@ -337,7 +349,7 @@
         <item>35 국제교육원</item>
     </string-array>
 
-    <string-array name="tab_anounce_action_spinner">
+    <string-array name="tab_announce_action_spinner">
         <item>(공지사항 선택)</item>
         <item>일반공지</item>
         <item>학사공지</item>
@@ -360,7 +372,7 @@
         <item>14 과학기술관</item>
         <item>15 21세기관</item>
         <item>16 조형관</item>
-        <item>17 체육관</item>
+        <item>17 시민문화교육관</item>
         <item>18 자작마루</item>
         <item>19 정보기술관</item>
         <item>20 법학관</item>
@@ -404,7 +416,7 @@
         <item>15교시\n 21:55 ~ 22:40</item>
     </string-array>
     <string-array name="tab_book_opt_oi">
-        <item>항목선택</item>
+        <item>(검색 분류)</item>
         <item>제목</item>
         <item>저자</item>
         <item>출판사</item>
@@ -412,7 +424,7 @@
         <item>출판년</item>
     </string-array>
     <string-array name="tab_book_opt_os">
-        <item>정렬</item>
+        <item>(정렬 방식)</item>
         <item>오름차순</item>
         <item>내림차순</item>
     </string-array>

@@ -47,6 +47,8 @@ public class BookDetailActivity extends BaseActivity {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+    @BindView(R.id.title)
+    TextView title;
 
     @BindView(R.id.book_detail_info_layout)
     LinearLayout infoLayout;
@@ -64,7 +66,7 @@ public class BookDetailActivity extends BaseActivity {
     @BindView(R.id.progress_wheel)
     ProgressWheel progressWheel;
 
-    @BindView(android.R.id.text1)
+    @BindView(R.id.error)
     TextView errorTextView;
 
     BookItem bookItem;
@@ -94,7 +96,7 @@ public class BookDetailActivity extends BaseActivity {
         }
 
 
-        toolbar.setTitle(bookItem.title);
+        toolbar.setTitle(R.string.tab_book_sub_title);
         toolbar.setNavigationIcon(AppUtil.getAttrValue(this, R.attr.menu_theme_ic_action_navigation_arrow_back));
         toolbar.setNavigationOnClickListener(v -> finish());
 
@@ -102,12 +104,16 @@ public class BookDetailActivity extends BaseActivity {
     }
 
     @OnClick(R.id.book_detail_fab)
-    void toWeb(View v){
+    void toWeb(View v) {
+        sendClickEvent("web");
+
         Intent intent = AppUtil.getWebPageIntent("http://mlibrary.uos.ac.kr" + bookItem.url);
         AnimUtil.startActivityWithScaleUp(BookDetailActivity.this, intent, v);
     }
 
     private void load() {
+        errorTextView.setVisibility(View.INVISIBLE);
+        progressWheel.setVisibility(View.VISIBLE);
         progressWheel.spin();
 
         UosApiService.libraryApi().bookDetailItem("http://mlibrary.uos.ac.kr" + bookItem.url).getAsync(
@@ -129,16 +135,25 @@ public class BookDetailActivity extends BaseActivity {
                     if (isFinishing())
                         return;
 
+                    findViewById(R.id.scrollView).setVisibility(View.INVISIBLE);
                     progressWheel.stopSpinning();
                     progressWheel.setVisibility(View.GONE);
 
+                    errorTextView.setVisibility(View.VISIBLE);
                     errorTextView.setText(R.string.progress_fail);
                 }
         );
     }
 
+    @OnClick(R.id.error)
+    void retry() {
+        load();
+    }
+
     private void drawLayout() {
         fab.setVisibility(View.VISIBLE);
+
+        title.setText(bookItem.title);
 
         LayoutInflater inflater = LayoutInflater.from(this);
         for (Pair<String, Object> pair : bookDetailItem.detailInfoList) {
@@ -191,7 +206,7 @@ public class BookDetailActivity extends BaseActivity {
             infoLayout.addView(v);
         }
 
-        if(bookDetailItem.relationInfo == null){
+        if (bookDetailItem.relationInfo == null) {
             relatedInfoLayout.setVisibility(View.GONE);
             return;
         }
@@ -233,10 +248,12 @@ public class BookDetailActivity extends BaseActivity {
 
                 stateText.setText(styledText);
 
-                if(!TextUtils.isEmpty(locationInfo.link)){
+                if (!TextUtils.isEmpty(locationInfo.link)) {
                     View reservation = ButterKnife.findById(v, R.id.button);
                     reservation.setVisibility(View.VISIBLE);
                     reservation.setOnClickListener(v1 -> {
+                        sendClickEvent("reservation");
+
                         Intent intent = AppUtil.getWebPageIntent(locationInfo.link);
                         AnimUtil.startActivityWithScaleUp(BookDetailActivity.this, intent, v1);
                     });

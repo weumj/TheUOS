@@ -4,20 +4,22 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
+import com.uoscs09.theuos2.base.ViewHolder;
 import com.uoscs09.theuos2.tab.buildings.ClassroomTimetableDialogFragment;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
@@ -25,11 +27,13 @@ import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import butterknife.OnItemClick;
+import mj.android.utils.recyclerview.ListRecyclerAdapter;
+import mj.android.utils.recyclerview.ListRecyclerUtil;
 
 /**
  * 빈 강의실을 조회하는 fragment
@@ -51,9 +55,9 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<List<EmptyRo
     @BindView(R.id.tab_search_subject_empty_view)
     View mEmptyView;
     @BindView(R.id.etc_search_list)
-    ListView mListView;
+    RecyclerView recyclerView;
 
-    private ArrayAdapter<EmptyRoom> mAdapter;
+    private ListRecyclerAdapter<EmptyRoom, Holder> mAdapter;
     @AsyncData
     private ArrayList<EmptyRoom> mClassRoomList;
     private String mTermString;
@@ -114,9 +118,7 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<List<EmptyRo
 
         mSearchDialog = new AlertDialog.Builder(getActivity())
                 .setView(dialogLayout)
-                .setPositiveButton(R.string.confirm, (dialog, which) -> {
-                    execute();
-                })
+                .setPositiveButton(R.string.confirm, (dialog, which) -> execute())
                 .create();
     }
 
@@ -124,17 +126,19 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<List<EmptyRo
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        LinearLayoutManager manager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(manager);
+        mAdapter = ListRecyclerUtil.newSimpleAdapter(mClassRoomList, Holder.class, R.layout.list_layout_empty_room);
+        recyclerView.setAdapter(mAdapter);
+        mAdapter.setOnItemClickListener((holder, view1) -> roomClick(view1, holder.getAdapterPosition()));
 
-        mAdapter = new SearchEmptyRoomAdapter(getActivity(), mClassRoomList);
-
-        mListView.setAdapter(mAdapter);
-
-        mListView.setEmptyView(mEmptyView);
+        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), manager.getOrientation()));
 
         registerProgressView(view.findViewById(R.id.progress_layout));
+
+        mEmptyView.setVisibility(mClassRoomList.isEmpty() ? View.VISIBLE : View.INVISIBLE);
     }
 
-    @OnItemClick(R.id.etc_search_list)
     void roomClick(View v, int position) {
         // 선택된 빈 강의실의 시간표 보여주기
 
@@ -207,16 +211,12 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<List<EmptyRo
                     mTermString = mTimeSpinner.getSelectedItem().toString().split(StringUtil.NEW_LINE)[1] + StringUtil.NEW_LINE + mTermSpinner.getSelectedItem();
                     setSubtitleWhenVisible(mTermString);
 
-                    if (mAdapter.isEmpty())
-                        mEmptyView.setVisibility(View.VISIBLE);
-
+                    mEmptyView.setVisibility(mClassRoomList.isEmpty() ? View.VISIBLE : View.INVISIBLE);
                 },
                 e -> {
                     e.printStackTrace();
 
-                    if (mAdapter.isEmpty())
-                        mEmptyView.setVisibility(View.VISIBLE);
-
+                    mEmptyView.setVisibility(mClassRoomList.isEmpty() ? View.VISIBLE : View.INVISIBLE);
                     simpleErrorRespond(e);
                 }
         );
@@ -262,7 +262,9 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<List<EmptyRo
                         R.attr.menu_theme_ic_action_navigation_arrow_drop_up : R.attr.menu_theme_ic_action_navigation_arrow_drop_down), 0, 0, 0);
         tabStrips[field].setVisibility(View.VISIBLE);
 
-        mAdapter.sort(EmptyRoom.getComparator(field, isReverse));
+        Collections.sort(mClassRoomList, EmptyRoom.getComparator(field, isReverse));
+        mAdapter.notifyDataSetChanged();
+
     }
 
     @Override
@@ -276,4 +278,30 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<List<EmptyRo
         return "TabSearchEmptyRoomFragment";
     }
 
+
+    static class Holder extends ViewHolder<EmptyRoom> {
+        @BindView(R.id.etc_search_empty_room_list_text_name)
+        TextView building;
+        @BindView(R.id.etc_search_empty_room_list_text_room_no)
+        TextView room_no;
+        @BindView(R.id.etc_search_empty_room_list_text_subj)
+        TextView room_div;
+        @BindView(R.id.etc_search_empty_room_list_text_person)
+        TextView person_cnt;
+
+        public Holder(View convertView) {
+            super(convertView);
+            convertView.findViewById(R.id.ripple).setOnClickListener(this);
+        }
+
+        @Override
+        protected void setView(int i) {
+            super.setView(i);
+            EmptyRoom item = getItem();
+            building.setText(item.building);
+            room_no.setText(item.roomNo);
+            room_div.setText(item.roomDiv);
+            person_cnt.setText(String.valueOf(item.personCount));
+        }
+    }
 }

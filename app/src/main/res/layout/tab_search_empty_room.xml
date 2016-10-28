@@ -4,26 +4,18 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
-    <com.uoscs09.theuos2.customview.NestedListView
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/etc_search_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:clipToPadding="false"
-        android:fastScrollEnabled="true"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp"
-        android:paddingLeft="@dimen/list_side_margin"
-        android:paddingRight="@dimen/list_side_margin"
-        android:scrollbarStyle="outsideOverlay"
-        android:scrollingCache="true" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <RelativeLayout
         android:id="@+id/tab_search_subject_empty_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:layout_marginTop="100dp"
-        android:visibility="gone">
+        android:layout_marginTop="100dp">
 
         <com.balysv.materialripple.MaterialRippleLayout
             android:id="@+id/tab_search_empty_room_empty1_ripple"

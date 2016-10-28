@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.View;
@@ -104,9 +105,15 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Dialog dialog = new BottomSheetDialog(getActivity());
+        dialog.setContentView(createView());
+        return dialog;
+
+        /*
         return new AlertDialog.Builder(getActivity())
                 .setView(createView())
                 .create();
+                */
     }
 
     private View createView() {

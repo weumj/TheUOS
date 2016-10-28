@@ -157,6 +157,8 @@ public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>>
         if (!isMenuVisible() || getCurrentCategoryIndex() < 1)
             return;
 
+        sendClickEvent("detail announce");
+
         Intent intent = new Intent(getActivity(), SubAnnounceWebActivity.class)
                 .putExtra(ITEM, mAnnounceAdapter.getItem(position))
                 .putExtra(INDEX_CATEGORY, getCurrentCategoryIndex());

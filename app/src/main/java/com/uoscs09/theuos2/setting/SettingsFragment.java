@@ -14,6 +14,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
@@ -94,15 +95,19 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
 
         CharSequence title = preference.getTitle();
 
+        if(TextUtils.isEmpty(title))
+            return false;
+
         if (title.equals(getText(R.string.setting_order))) {
             changeFragment(SettingsOrderFragment.class);
             return true;
         } else if (title.equals(getText(R.string.setting_theme))) {
             showThemeDialog();
             return true;
-        } else if (title.equals(getText(R.string.setting_announce_except_type_notice))) {
+        /*}else if (title.equals(getText(R.string.setting_announce_except_type_notice))) {
             TrackerUtil.getInstance(this).sendEvent(TAG, "announce_except_type_notice");
             return true;
+            */
         } else if (title.equals(getText(R.string.setting_delete_cache))) {
             TrackerUtil.getInstance(this).sendEvent(TAG, "delete cache");
             deleteCache();
@@ -112,11 +117,11 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
             changeFragment(SettingsTimetableFragment.class);
             return true;
 
-        } else if (title.equals(getText(R.string.setting_building_room_fetch_time))) {
+        } else if (title.equals(getText(R.string.setting_building_room_sub_title))) {
             downloadBuildings();
             return true;
 
-        } else if (title.equals(getText(R.string.setting_save_text_sub_title))) {
+        } else if (title.equals(getText(R.string.setting_save_doc_sub_title))) {
             TrackerUtil.getInstance(this).sendEvent(TAG, "change directory - " + "text");
             SettingsFileSelectDialogFragment f = new SettingsFileSelectDialogFragment();
             f.setSavePathKey(preference.getKey());
@@ -153,6 +158,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
                     dialog.dismiss();
                     dialog.setOnCancelListener(null);
                     onSharedPreferenceChanged(getPreferenceScreen().getSharedPreferences(), PrefUtil.KEY_BUILDINGS_FETCH_TIME);
+                    AppUtil.showToast(getActivity(), R.string.finish_update);
                 },
                 throwable -> {
                     dialog.dismiss();
@@ -369,14 +375,13 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
         pref.registerOnSharedPreferenceChangeListener(this);
 
         String[] keys = {
-                PrefUtil.KEY_ANNOUNCE_SEARCH_NOT_MOBILE,
-                PrefUtil.KEY_ANNOUNCE_EXCEPT_TYPE_NOTICE,
+                PrefUtil.KEY_HOME,
                 PrefUtil.KEY_CHECK_BORROW,
                 PrefUtil.KEY_CHECK_SEAT,
                 PrefUtil.KEY_LIB_WIDGET_SEAT_SHOW_ALL,
                 PrefUtil.KEY_THEME,
-                PrefUtil.KEY_IMAGE_SAVE_PATH, PrefUtil.KEY_TXT_SAVE_PATH,
-                PrefUtil.KEY_BUILDINGS_FETCH_TIME
+                PrefUtil.KEY_IMAGE_SAVE_PATH, PrefUtil.KEY_DOC_SAVE_PATH,
+                //PrefUtil.KEY_BUILDINGS_FETCH_TIME
         };
         for (String key : keys) {
             onSharedPreferenceChanged(pref, key);
@@ -393,17 +398,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         switch (key) {
-            case PrefUtil.KEY_ANNOUNCE_SEARCH_NOT_MOBILE: {
-                boolean value = sharedPreferences.getBoolean(key, false);
-
-                Preference preference = findPreference(PrefUtil.KEY_ANNOUNCE_EXCEPT_TYPE_NOTICE);
-                if (preference != null)
-                    preference.setSummary(value ?
-                            R.string.setting_announce_except_type_notice_desc :
-                            R.string.setting_announce_except_type_notice_desc_mobile);
-
-                break;
-            }
             case PrefUtil.KEY_CHECK_BORROW:
                 setPrefScreenSummary(sharedPreferences, key, R.string.setting_check_borrow_desc_enable, R.string.setting_check_borrow_desc_disable);
                 break;
@@ -417,22 +411,24 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
                 break;
 
             case PrefUtil.KEY_IMAGE_SAVE_PATH:
-                findPreference(key).setSummary(PrefHelper.Data.getPicturePath());
+                findPreference(key).setSummary(getString(R.string.setting_save_image_desc, PrefHelper.Data.getPicturePath()));
                 break;
 
-            case PrefUtil.KEY_TXT_SAVE_PATH:
-                findPreference(key).setSummary(PrefHelper.Data.getDocumentPath());
+            case PrefUtil.KEY_DOC_SAVE_PATH:
+                findPreference(key).setSummary(getString(R.string.setting_save_doc_desc, PrefHelper.Data.getDocumentPath()));
                 break;
 
             case PrefUtil.KEY_THEME:
                 Preference connectionPref = findPreference(key);
                 AppUtil.setTheme(AppTheme.values()[sharedPreferences.getInt(key, 0)]);
                 AppUtil.applyTheme(getActivity().getApplicationContext());
-                connectionPref.setSummary(getString(R.string.setting_theme_desc) + "\n현재 적용된 테마 : " + AppUtil.theme().toString());
+                connectionPref.setSummary(getString(R.string.setting_theme_desc, AppUtil.theme().toString()));
                 break;
 
             case PrefUtil.KEY_HOME:
-                TrackerUtil.getInstance(this).sendEvent(TAG, "enable home fragment", "" + sharedPreferences.getBoolean(key, true));
+                TrackerUtil.getInstance(this).sendEvent(TAG, "enable home fragment", Boolean.toString(sharedPreferences.getBoolean(key, true)));
+
+                setPrefScreenSummary(sharedPreferences, key, R.string.setting_home_desc_enable, R.string.setting_home_desc_disable);
 
                 getActivity().setResult(AppUtil.RELAUNCH_ACTIVITY);
                 break;
@@ -442,12 +438,12 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
                 long time = PrefHelper.Buildings.downloadTime();
 
                 if (time < 1)
-                    connectionPref.setSummary(R.string.setting_building_room_fetch_time_none);
+                    connectionPref.setSummary(getString(R.string.setting_building_room_desc, getString(R.string.setting_building_room_fetch_time_none)));
                 else {
                     Date date = new Date();
                     date.setTime(time);
                     String dateString = new SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.getDefault()).format(date);
-                    connectionPref.setSummary(dateString);
+                    connectionPref.setSummary(getString(R.string.setting_building_room_desc, dateString));
                 }
                 break;
 

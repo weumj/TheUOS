@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <com.uoscs09.theuos2.customview.NestedListView
         android:id="@+id/tab_announce_list_announce"
@@ -21,20 +22,20 @@
 
     <com.balysv.materialripple.MaterialRippleLayout
         android:id="@+id/tab_announce_empty_view_ripple"
-        android:padding="4dp"
         android:layout_width="wrap_content"
-        app:mrl_rippleColor="?color_primary_text"
-        app:mrl_rippleDelayClick="false"
+        android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:layout_height="wrap_content">
+        android:padding="4dp"
+        app:mrl_rippleColor="?color_primary_text"
+        app:mrl_rippleDelayClick="false">
 
         <TextView
             android:id="@+id/tab_announce_empty_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:drawableLeft="?theme_ic_action_navigation_check"
             android:gravity="center_vertical"
-            android:layout_gravity="center"
             android:text="@string/tab_announce_empty_view_desc"
             android:visibility="invisible" />
     </com.balysv.materialripple.MaterialRippleLayout>

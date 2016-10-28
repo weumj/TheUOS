@@ -18,19 +18,6 @@ public class PrefUtil {
      */
     public static final String KEY_HOME = "SCREEN_HOME";
     /**
-     * '공지' 타입 표시안함 여부, {@code boolean}
-     *
-     * @see R.string#pref_key_announce_except_type_notice
-     */
-    public static final String KEY_ANNOUNCE_EXCEPT_TYPE_NOTICE = "KEY_ANNOUNCE_EXCEPT_TYPE_NOTICE";
-    /**
-     * 모바일 공지사항 검색 여부, {@code boolean}
-     *
-     * @see R.string#pref_key_announce_search_not_mobile
-     */
-    public static final String KEY_ANNOUNCE_SEARCH_NOT_MOBILE = "KEY_ANNOUNCE_SEARCH_NOT_MOBILE";
-
-    /**
      * 대출 불가능한 도서 표시 여부, {@code boolean}
      *
      * @see R.string#pref_key_check_borrow
@@ -58,9 +45,9 @@ public class PrefUtil {
     /**
      * 텍스트가 저장되는 경로, {@code String}
      *
-     * @see R.string#pref_key_save_txt_route
+     * @see R.string#pref_key_save_doc_route
      */
-    public static final String KEY_TXT_SAVE_PATH = "TXT_SAVE_ROUTE";
+    public static final String KEY_DOC_SAVE_PATH = "DOC_SAVE_ROUTE";
     /**
      * 어플리케이션의 테마, {@code int}
      *

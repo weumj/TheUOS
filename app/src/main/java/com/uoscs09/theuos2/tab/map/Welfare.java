@@ -90,7 +90,6 @@ enum Welfare {
     ),
     HEALTH_CENTER(
             new UnivBuilding[]{
-                    UnivBuilding.Gymnaseum,
                     UnivBuilding.Dormitory,
                     UnivBuilding.Wellness,
             },
@@ -154,7 +153,6 @@ enum Welfare {
 
     HEALTH(
             new UnivBuilding[]{
-                    UnivBuilding.Gymnaseum,
                     UnivBuilding.Dormitory,
                     UnivBuilding.Wellness,
             },

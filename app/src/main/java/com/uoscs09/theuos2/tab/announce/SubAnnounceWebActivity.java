@@ -172,6 +172,7 @@ public class SubAnnounceWebActivity extends WebViewActivity {
                 return true;
 
             case R.id.action_web:
+                sendClickEvent("to web");
                 startActivity(AppUtil.getWebPageIntent(url));
                 return true;
 
@@ -182,6 +183,8 @@ public class SubAnnounceWebActivity extends WebViewActivity {
                 sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, mItem.title + " - \'" + url + "\'");
 
                 startActivity(Intent.createChooser(sharingIntent, getResources().getString(R.string.action_share)));
+
+                sendClickEvent("share");
                 return true;
 /*
             case R.id.action_download:

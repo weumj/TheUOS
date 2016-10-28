@@ -19,7 +19,7 @@
             android:defaultValue="true"
             android:icon="?color_theme_ic_action_hardware_phone_android"
             android:key="@string/pref_key_home"
-            android:summary="@string/setting_home_desc"
+            android:summary="@string/setting_home_desc_enable"
             android:title="@string/setting_home" />
     </android.support.v7.preference.PreferenceCategory>
 
@@ -66,23 +66,30 @@
             android:summary="@string/setting_timetable_desc"
             android:title="@string/setting_timetable" />
     </android.support.v7.preference.PreferenceCategory>
-
-    <android.support.v7.preference.PreferenceCategory android:title="@string/title_tab_building_classroom">
+    <!--
+    <android.support.v7.preference.PreferenceCategory
+        android:title="@string/title_tab_building_classroom">
         <android.support.v7.preference.PreferenceScreen
             android:icon="?color_theme_ic_action_timetable"
             android:key="@string/pref_key_buildings_fetch_time"
-            android:title="@string/setting_building_room_fetch_time" />
+            android:title="@string/setting_building_room_sub_title" />
+        <android.support.v7.preference.PreferenceScreen android:summary="@string/setting_building_room_sub_desc" />
     </android.support.v7.preference.PreferenceCategory>
-
+    -->
     <android.support.v7.preference.PreferenceCategory android:title="@string/setting_data">
+
         <android.support.v7.preference.PreferenceScreen
             android:icon="?color_theme_ic_action_image_image"
             android:key="@string/pref_key_save_image_route"
             android:title="@string/setting_save_image_sub_title" />
+        <android.support.v7.preference.PreferenceScreen android:summary="@string/setting_save_image_sub_desc" />
+
         <android.support.v7.preference.PreferenceScreen
             android:icon="?color_theme_ic_action_action_view_list"
-            android:key="@string/pref_key_save_txt_route"
-            android:title="@string/setting_save_text_sub_title" />
+            android:key="@string/pref_key_save_doc_route"
+            android:title="@string/setting_save_doc_sub_title" />
+        <android.support.v7.preference.PreferenceScreen android:summary="@string/setting_save_doc_sub_desc" />
+
         <android.support.v7.preference.PreferenceScreen
             android:icon="?color_theme_ic_action_action_delete"
             android:key="@string/pref_key_delete_cache"
@@ -103,11 +110,12 @@
             android:summary="@string/setting_app_version_name"
             android:title="@string/setting_app_version" />
 
+        <!--
         <android.support.v7.preference.PreferenceScreen
             android:icon="?color_theme_ic_action_action_search"
             android:summary="@string/setting_app_version_update_desc"
             android:title="@string/setting_app_version_update" />
-
+        -->
     </android.support.v7.preference.PreferenceCategory>
 
 </android.support.v7.preference.PreferenceScreen>

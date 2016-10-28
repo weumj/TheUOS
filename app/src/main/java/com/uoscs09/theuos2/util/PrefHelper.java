@@ -8,12 +8,11 @@ import com.uoscs09.theuos2.tab.restaurant.WeekRestItem;
 
 import java.util.Calendar;
 
-import static com.uoscs09.theuos2.util.PrefUtil.KEY_ANNOUNCE_EXCEPT_TYPE_NOTICE;
-import static com.uoscs09.theuos2.util.PrefUtil.KEY_ANNOUNCE_SEARCH_NOT_MOBILE;
 import static com.uoscs09.theuos2.util.PrefUtil.KEY_BUILDINGS_FETCH_TIME;
 import static com.uoscs09.theuos2.util.PrefUtil.KEY_CHECK_BORROW;
 import static com.uoscs09.theuos2.util.PrefUtil.KEY_CHECK_SEAT;
 import static com.uoscs09.theuos2.util.PrefUtil.KEY_CHECK_TIMETABLE_NOTIFY_SERVICE;
+import static com.uoscs09.theuos2.util.PrefUtil.KEY_DOC_SAVE_PATH;
 import static com.uoscs09.theuos2.util.PrefUtil.KEY_HOME;
 import static com.uoscs09.theuos2.util.PrefUtil.KEY_IMAGE_SAVE_PATH;
 import static com.uoscs09.theuos2.util.PrefUtil.KEY_LIB_WIDGET_SEAT_SHOW_ALL;
@@ -22,7 +21,6 @@ import static com.uoscs09.theuos2.util.PrefUtil.KEY_REST_WEEK_FETCH_TIME;
 import static com.uoscs09.theuos2.util.PrefUtil.KEY_SCHEDULE_FETCH_MONTH;
 import static com.uoscs09.theuos2.util.PrefUtil.KEY_THEME;
 import static com.uoscs09.theuos2.util.PrefUtil.KEY_TIMETABLE_LIMIT;
-import static com.uoscs09.theuos2.util.PrefUtil.KEY_TXT_SAVE_PATH;
 import static com.uoscs09.theuos2.util.PrefUtil.getInstance;
 
 public class PrefHelper {
@@ -47,12 +45,7 @@ public class PrefHelper {
 
     public static class Announces {
         public static boolean isSearchOnMobile(){
-            return !pref().get(KEY_ANNOUNCE_SEARCH_NOT_MOBILE, false);
-        }
-
-        // 모바일 웹에서 검색하는 경우 항상 true
-        public static boolean isAnnounceExceptNoticeType() {
-            return isSearchOnMobile() || pref().get(KEY_ANNOUNCE_EXCEPT_TYPE_NOTICE, false);
+            return true; /*!pref().get(KEY_ANNOUNCE_SEARCH_NOT_MOBILE, false);*/
         }
     }
 
@@ -123,6 +116,7 @@ public class PrefHelper {
 
     public static class UnivSchedules {
         public static boolean isMonthEqualToFetchMonth() {
+            //noinspection WrongConstant
             return getFetchMonth() == Calendar.getInstance().get(Calendar.MONTH);
         }
 
@@ -137,7 +131,7 @@ public class PrefHelper {
 
     public static class Buildings {
         public static long downloadTime() {
-            return pref().get(KEY_BUILDINGS_FETCH_TIME, 0l);
+            return pref().get(KEY_BUILDINGS_FETCH_TIME, 0L);
         }
 
         public static void putDownloadTime(long time) {
@@ -175,11 +169,11 @@ public class PrefHelper {
          */
         @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         public static String getDocumentPath() {
-            return pref().get(KEY_TXT_SAVE_PATH, getDocumentPathDefault());
+            return pref().get(KEY_DOC_SAVE_PATH, getDocumentPathDefault());
         }
 
         public static void putDocumentPath(String path) {
-            pref().put(KEY_TXT_SAVE_PATH, path);
+            pref().put(KEY_DOC_SAVE_PATH, path);
         }
 
         /**
@@ -194,7 +188,7 @@ public class PrefHelper {
                 default:
                 case KEY_IMAGE_SAVE_PATH:
                     return getPicturePathDefault();
-                case KEY_TXT_SAVE_PATH:
+                case KEY_DOC_SAVE_PATH:
                     return getDocumentPathDefault();
             }
         }
@@ -206,7 +200,7 @@ public class PrefHelper {
                 default:
                 case KEY_IMAGE_SAVE_PATH:
                     return getPicturePath();
-                case KEY_TXT_SAVE_PATH:
+                case KEY_DOC_SAVE_PATH:
                     return getDocumentPath();
             }
         }
@@ -217,7 +211,7 @@ public class PrefHelper {
                 case KEY_IMAGE_SAVE_PATH:
                     putPicturePath(path);
                     break;
-                case KEY_TXT_SAVE_PATH:
+                case KEY_DOC_SAVE_PATH:
                     putDocumentPath(path);
                     break;
             }

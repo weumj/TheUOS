@@ -21,7 +21,8 @@
         android:paddingRight="@dimen/list_side_margin"
         android:paddingTop="@dimen/list_divide_margin"
         android:scrollbarStyle="outsideOverlay"
-        android:scrollingCache="true" />
+        android:scrollingCache="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <RelativeLayout
         android:id="@+id/tab_book_empty"

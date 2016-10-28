@@ -1,6 +1,7 @@
 package com.uoscs09.theuos2.tab.timetable;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -11,7 +12,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
-import android.text.method.TextKeyListener;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -36,6 +36,7 @@ import com.uoscs09.theuos2.util.OApiUtil.Semester;
 import com.uoscs09.theuos2.util.TaskUtil;
 
 import java.io.IOException;
+import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -52,17 +53,12 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
     private static final String TAG = "TabTimeTableFragment";
     private static final int REQUEST_PERMISSION_SAVE_IMAGE = 10;
 
-    private AlertDialog mLoginDialog;
     View rootView;
-    protected EditText mWiseIdView, mWisePasswdView;
-    private Spinner mWiseTermSpinner, mWiseYearSpinner;
 
     @BindView(R.id.time_table_listView1)
     ListView mTimetableListView;
     @BindView(R.id.tab_timetable_empty)
     View emptyView;
-
-    private Dialog mProgressDialog;
 
     @AsyncData
     private Timetable2 mTimeTable;
@@ -78,8 +74,6 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
         }
 
         mSubjectDetailDialog.setColorSelectedListener(i -> mTimeTableAdapter.notifyDataSetChanged());
-
-        initDialog();
 
         super.onCreate(savedInstanceState);
 
@@ -127,9 +121,9 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
     }
 
     @OnClick(R.id.tab_timetable_empty_text)
-    void showLoginDialog() {
+    void emptyViewClick() {
         sendEmptyViewClickEvent();
-        mLoginDialog.show();
+        showLoginDialog();
     }
 
     @Override
@@ -146,7 +140,7 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
                     AppUtil.showToast(getActivity(), R.string.progress_ongoing, true);
                 else {
                     sendClickEvent("wise login");
-                    mLoginDialog.show();
+                    showLoginDialog();
                 }
                 return true;
 
@@ -165,11 +159,6 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
             default:
                 return false;
         }
-    }
-
-    private void dismissProgressDialog() {
-        mProgressDialog.dismiss();
-        mProgressDialog.setOnCancelListener(null);
     }
 
     @Override
@@ -200,13 +189,13 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
         }
 
 
-        if (mProgressDialog == null)
-            mProgressDialog = AppUtil.getProgressDialog(getActivity(), false, getText(R.string.progress_ongoing), null);
+        final Dialog progressDialog = AppUtil.getProgressDialog(getActivity(), false, getText(R.string.progress_ongoing), null);
 
         mTimeTableAdapter.changeLayout(true);
 
         final Task<String> task = TimetableUtil.saveTimetableToImage(mTimeTable, mTimetableListView, mTimeTableAdapter, getTabParentView()).getAsync(result -> {
-                    dismissProgressDialog();
+                    progressDialog.dismiss();
+                    progressDialog.setOnCancelListener(null);
                     mTimeTableAdapter.changeLayout(false);
 
                     String pictureDir = result.substring(result.lastIndexOf('/') + 1);
@@ -229,30 +218,26 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
                             .show();
                 },
                 e -> {
-                    dismissProgressDialog();
+                    progressDialog.dismiss();
+                    progressDialog.setOnCancelListener(null);
                     mTimeTableAdapter.changeLayout(false);
 
                     AppUtil.showErrorToast(getActivity(), e, true);
                 }
         );
-        mProgressDialog.setOnCancelListener(dialog -> TaskUtil.cancel(task));
-        mProgressDialog.show();
+        progressDialog.setOnCancelListener(dialog -> TaskUtil.cancel(task));
+        progressDialog.show();
 
     }
 
 
-    void execute() {
+    void execute(Semester semester, String year, String id, String passwd) {
         emptyView.setVisibility(View.INVISIBLE);
 
-        Semester semester = Semester.values()[mWiseTermSpinner.getSelectedItemPosition()];
-        String mTimeTableYear = mWiseYearSpinner.getSelectedItem().toString();
+        // dummy : AppRequests.TimeTables.dummyRequest(id, passwd, semester, year)
 
-        // dummy : AppRequests.TimeTables.dummyRequest(mWiseIdView.getText(), mWisePasswdView.getText(), semester, mTimeTableYear)
-
-        executeWithQueue(TAG, AppRequests.TimeTables.request(mWiseIdView.getText(), mWisePasswdView.getText(), semester, mTimeTableYear),
+        executeWithQueue(TAG, AppRequests.TimeTables.request(id, passwd, semester, year),
                 r -> {
-                    clearPassWd();
-
                     setTimetable(r);
                     if (r == null)
                         AppUtil.showToast(getActivity(), R.string.tab_timetable_wise_login_warning_fail, isMenuVisible());
@@ -277,35 +262,66 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
         );
     }
 
-    private void initDialog() {
+    @SuppressLint("SwitchIntDef")
+    private void showLoginDialog() {
         Context context = getActivity();
         View wiseDialogLayout = View.inflate(context, R.layout.dialog_timetable_wise_login, null);
 
-        mWiseYearSpinner = (Spinner) wiseDialogLayout.findViewById(R.id.dialog_wise_spinner_year);
-        mWiseYearSpinner.setAdapter(new ArrayAdapter<>(context, R.layout.support_simple_spinner_dropdown_item, OApiUtil.getYears()));
-        mWiseYearSpinner.setSelection(2);
+        Spinner wiseYearSpinner = (Spinner) wiseDialogLayout.findViewById(R.id.dialog_wise_spinner_year);
+        wiseYearSpinner.setAdapter(new ArrayAdapter<>(context, R.layout.support_simple_spinner_dropdown_item, OApiUtil.getYears()));
+        wiseYearSpinner.setSelection(2);
 
-        mWiseIdView = (EditText) wiseDialogLayout.findViewById(R.id.dialog_wise_id_input);
-        mWisePasswdView = (EditText) wiseDialogLayout.findViewById(R.id.dialog_wise_passwd_input);
-        mWiseTermSpinner = (Spinner) wiseDialogLayout.findViewById(R.id.dialog_wise_spinner_term);
+        EditText wiseIdView = (EditText) wiseDialogLayout.findViewById(R.id.dialog_wise_id_input);
+        EditText wisePasswdView = (EditText) wiseDialogLayout.findViewById(R.id.dialog_wise_passwd_input);
+        Spinner wiseTermSpinner = (Spinner) wiseDialogLayout.findViewById(R.id.dialog_wise_spinner_term);
 
-        mLoginDialog = new AlertDialog.Builder(context)
+        Calendar c = Calendar.getInstance();
+        switch (c.get(Calendar.MONTH)) {
+            default:
+            case Calendar.FEBRUARY:
+            case Calendar.MARCH:
+            case Calendar.APRIL:
+            case Calendar.MAY:
+                wiseTermSpinner.setSelection(Semester.SPRING.ordinal());
+                break;
+
+            case Calendar.JUNE:
+            case Calendar.JULY:
+                wiseTermSpinner.setSelection(Semester.SUMMER.ordinal());
+                break;
+
+            case Calendar.AUGUST:
+            case Calendar.SEPTEMBER:
+            case Calendar.OCTOBER:
+            case Calendar.NOVEMBER:
+                wiseTermSpinner.setSelection(Semester.AUTUMN.ordinal());
+                break;
+
+            case Calendar.DECEMBER:
+            case Calendar.JANUARY:
+                wiseTermSpinner.setSelection(Semester.WINTER.ordinal());
+                break;
+        }
+
+        new AlertDialog.Builder(context)
                 .setTitle(R.string.tab_timetable_wise_login_title)
                 .setView(wiseDialogLayout)
                 .setPositiveButton(R.string.confirm, (dialog, which) -> {
-                    String id = mWiseIdView.getText().toString().trim();
+                    String id = wiseIdView.getText().toString().trim();
 
-                    if (mWisePasswdView.length() < 1 || TextUtils.isEmpty(id)) {
+                    if (wisePasswdView.length() < 1 || TextUtils.isEmpty(id)) {
                         AppUtil.showToast(getActivity(), R.string.tab_timetable_wise_login_warning_null, true);
-                        clearText();
                     } else {
-                        execute();
+                        execute(
+                                Semester.values()[wiseTermSpinner.getSelectedItemPosition()],
+                                wiseYearSpinner.getSelectedItem().toString(),
+                                wiseIdView.getText().toString().trim(),
+                                wisePasswdView.getText().toString().trim()
+                        );
                     }
                 })
-                .setNegativeButton(R.string.cancel, (dialog, which) -> {
-                    clearPassWd();
-                })
-                .create();
+                .setNegativeButton(R.string.cancel, null)
+                .show();
     }
 
     private void setTimetable(Timetable2 timeTable) {
@@ -317,23 +333,6 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
             setSubtitleWhenVisible(timeTable.getYearAndSemester());
         }
         mTimeTableAdapter.setTimeTable(timeTable);
-    }
-
-    private void clearText() {
-        clearId();
-        clearPassWd();
-    }
-
-    private void clearId() {
-        if (mWiseIdView != null && mWiseIdView.length() > 0) {
-            TextKeyListener.clear(mWiseIdView.getText());
-        }
-    }
-
-    private void clearPassWd() {
-        if (mWisePasswdView != null && mWisePasswdView.length() > 0) {
-            TextKeyListener.clear(mWisePasswdView.getText());
-        }
     }
 
 

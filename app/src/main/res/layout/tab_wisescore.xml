@@ -1,75 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-
-        </LinearLayout>
-
-    </LinearLayout>
-    <GridLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:columnCount="6"
-        android:rowCount="3">
-
-        <TextView
-            android:id="@+id/tab_wise_score_text1"
-            android:layout_gravity="center"
-            android:text="1"
-            android:layout_columnSpan="2"
-            android:layout_rowSpan="1" />
-
-        <TextView
-            android:id="@+id/tab_wise_score_text2"
-            android:text="2"
-            android:layout_columnSpan="2"
-            android:layout_rowSpan="1" />
-
-        <TextView
-            android:id="@+id/tab_wise_score_text3"
-            android:text="3"
-            android:layout_columnSpan="2"
-            android:layout_rowSpan="1" />
-
-        <TextView
-            android:id="@+id/tab_wise_score_text4"
-            android:text="4"
-            android:layout_columnSpan="3"
-            android:layout_rowSpan="1" />
-
-        <TextView
-            android:id="@+id/tab_wise_score_text5"
-            android:text="5"
-            android:layout_columnSpan="3"
-            android:layout_rowSpan="1" />
-
-        <TextView
-            android:id="@+id/tab_wise_score_text6"
-            android:text="6"
-            android:layout_columnSpan="3"
-            android:layout_rowSpan="1" />
-
-        <TextView
-            android:id="@+id/tab_wise_score_text7"
-            android:text="7"
-            android:layout_columnSpan="3"
-            android:layout_rowSpan="1" />
-
-    </GridLayout>
+    android:layout_height="match_parent">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-</LinearLayout>
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+    <RelativeLayout
+        android:id="@+id/empty_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true">
+
+        <com.balysv.materialripple.MaterialRippleLayout
+            android:id="@+id/empty1_ripple"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:padding="4dp"
+            app:mrl_rippleColor="?color_primary_text"
+            app:mrl_rippleDelayClick="true">
+
+            <TextView
+                android:id="@+id/empty1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:drawableLeft="?theme_ic_action_action_search"
+                android:gravity="center_vertical"
+                android:padding="2dp"
+                android:text="@string/tab_subject_empty_view_hint" />
+        </com.balysv.materialripple.MaterialRippleLayout>
+
+        <com.balysv.materialripple.MaterialRippleLayout
+            android:id="@+id/empty2_ripple"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/empty1_ripple"
+            android:layout_alignRight="@id/empty1_ripple"
+            android:layout_below="@id/empty1_ripple"
+            android:padding="4dp"
+            app:mrl_rippleColor="?color_primary_text"
+            app:mrl_rippleDelayClick="true">
+
+            <TextView
+                android:id="@+id/empty2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:drawableLeft="?theme_ic_action_navigation_check"
+                android:gravity="center_vertical"
+                android:padding="2dp"
+                android:text="@string/tab_wise_score_empty_hint2" />
+        </com.balysv.materialripple.MaterialRippleLayout>
+
+        <com.balysv.materialripple.MaterialRippleLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/empty1_ripple"
+            android:layout_alignRight="@id/empty1_ripple"
+            android:layout_below="@id/empty2_ripple"
+            android:padding="4dp"
+            app:mrl_rippleColor="?color_primary_text"
+            app:mrl_rippleDelayClick="true">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:drawableLeft="?theme_ic_action_action_about"
+                android:gravity="center_vertical"
+                android:padding="2dp"
+                android:text="@string/tab_wise_score_empty_hint1" />
+        </com.balysv.materialripple.MaterialRippleLayout>
+    </RelativeLayout>
+
+</RelativeLayout>

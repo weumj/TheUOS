@@ -12,13 +12,5 @@
         app:actionViewClass="android.support.v7.widget.SearchView"
         app:showAsAction="ifRoom|collapseActionView">
     </item>
-    <item
-        android:id="@+id/action_help"
-        android:icon="?menu_theme_ic_action_action_help"
-        android:orderInCategory="102"
-        android:showAsAction="ifRoom|withText"
-        android:title="@string/action_search_option"
-        app:showAsAction="ifRoom|withText">
-    </item>
 
 </menu>

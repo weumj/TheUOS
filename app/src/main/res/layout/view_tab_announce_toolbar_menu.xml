@@ -11,7 +11,7 @@
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:layout_marginLeft="48dp"
-        android:entries="@array/tab_anounce_action_spinner"
+        android:entries="@array/tab_announce_action_spinner"
         android:theme="?theme_inverse"/>
 
     <com.balysv.materialripple.MaterialRippleLayout

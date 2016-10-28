@@ -166,7 +166,7 @@ public class OApiUtil {
 
         Natural_Science(8, "자연과학관", "Natural Science Building", 37.582512, 127.059121),
 
-        Music(9, "음악관", "Music Building", 37.583953, 127.055685),
+        Music(9, "음악관", "Music Building", 37.583500, 127.062115),
 
         Architecture_Engineering_Lab(10, "경농관", "Architecture Engineering Lab", 37.582899, 127.056619),
 
@@ -182,7 +182,7 @@ public class OApiUtil {
 
         Design_and_Sculpture(16, "조형관", "Design and Sculpture Building", 37.584093, 127.056182),
 
-        Gymnaseum(17, "체육관", "University Gymnaseum", 37.58442, 127.055543),
+        CivilCultureEdu(17, "시민문화교육관", "Civil Culture Education Building", 37.58442, 127.055543),
 
         Birch_Hall(18, "자작마루", "Birch Hall", 37.582841, 127.057662),
 

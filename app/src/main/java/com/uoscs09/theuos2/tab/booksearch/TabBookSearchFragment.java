@@ -5,12 +5,10 @@ import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
@@ -20,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.ListView;
@@ -79,10 +78,6 @@ public class TabBookSearchFragment extends AbsProgressFragment<List<BookItem>> i
      */
     private Spinner os;
     /**
-     * 옵션을 선택하게 하는 Dialog
-     */
-    private AlertDialog optionDialog;
-    /**
      * 검색 메뉴, 검색할 단어가 입력되는 곳
      */
     private MenuItem searchMenu;
@@ -110,9 +105,28 @@ public class TabBookSearchFragment extends AbsProgressFragment<List<BookItem>> i
             mCurrentPage = 1;
         }
 
-        initOptionDialog(oiSelect, osSelect);
-
         super.onCreate(savedInstanceState);
+
+        initToolbarAndTab(oiSelect, osSelect);
+    }
+
+    private void initToolbarAndTab(int oiSelect, int osSelect) {
+        ViewGroup mTabParent = (ViewGroup) LayoutInflater.from(getActivity()).inflate(R.layout.view_tab_book_toolbar_menu, getToolbarParent(), false);
+        oi = (Spinner) mTabParent.findViewById(R.id.tab_book_action_spinner_oi);
+        os = (Spinner) mTabParent.findViewById(R.id.tab_book_action_spinner_os);
+        oi.setSelection(oiSelect);
+        os.setSelection(osSelect);
+
+        mTabParent.findViewById(R.id.tab_book_toolbar_menu_action).setOnClickListener(v -> {
+            if (!mBookList.isEmpty()) {
+                mBookList.clear();
+                mListView.scrollTo(0, 0);
+                mCurrentPage = 1;
+                execute();
+            }
+        });
+
+        registerTabParentView(mTabParent);
     }
 
     @Override
@@ -188,6 +202,8 @@ public class TabBookSearchFragment extends AbsProgressFragment<List<BookItem>> i
             case R.id.tab_booksearch_list_book_image: {
                 // Intent i = AppUtil.getWebPageIntent("http://mlibrary.uos.ac.kr" + item.url);
                 //AnimUtil.startActivityWithScaleUp(getActivity(), i, v);
+                sendClickEvent("detail book");
+
                 BookDetailActivity.start(getActivity(), v, holder.getItem());
                 break;
             }
@@ -210,11 +226,6 @@ public class TabBookSearchFragment extends AbsProgressFragment<List<BookItem>> i
         searchMenu.expandActionView();
     }
 
-    @OnClick(R.id.tab_book_search_empty_info2)
-    void showOptionDialog() {
-        sendClickEvent("option menu from empty view");
-        optionDialog.show();
-    }
 
     @Override
     public boolean onItemLongClick(BookItemViewHolder holder, View v) {
@@ -285,10 +296,6 @@ public class TabBookSearchFragment extends AbsProgressFragment<List<BookItem>> i
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_help:
-                sendClickEvent("option menu");
-                optionDialog.show();
-                return true;
             case R.id.action_search:
                 return true;
             default:
@@ -430,42 +437,6 @@ public class TabBookSearchFragment extends AbsProgressFragment<List<BookItem>> i
         } catch (ActivityNotFoundException e) {
             AppUtil.showToast(getActivity(), R.string.error_no_related_activity_found);
         }
-    }
-
-    private void initOptionDialog(int oiSelect, int osSelect) {
-        View dialogLayout = View.inflate(getActivity(), R.layout.dialog_tab_book_spinners, null);
-        oi = (Spinner) dialogLayout.findViewById(R.id.tab_book_action_spinner_oi);
-        os = (Spinner) dialogLayout.findViewById(R.id.tab_book_action_spinner_os);
-        oi.setSelection(oiSelect);
-        os.setSelection(osSelect);
-
-        DialogInterface.OnClickListener l = (dialog, which) -> {
-            switch (which) {
-                case DialogInterface.BUTTON_POSITIVE:
-                    if (!mBookList.isEmpty()) {
-                        mBookList.clear();
-                        mCurrentPage = 1;
-                        execute();
-                    }
-                    break;
-
-                case DialogInterface.BUTTON_NEGATIVE:
-                    oi.setSelection(0);
-                    os.setSelection(0);
-                    break;
-
-                default:
-                    break;
-            }
-        };
-        optionDialog = new AlertDialog.Builder(getActivity())
-                .setView(dialogLayout)
-                .setTitle(R.string.tab_book_book_opt)
-                .setMessage(R.string.tab_book_book_opt_sub)
-                .setIconAttribute(R.attr.theme_ic_action_action_help)
-                .setPositiveButton(R.string.confirm, l)
-                .setNegativeButton(android.R.string.cancel, l)
-                .create();
     }
 
     @Override

@@ -1,51 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.balysv.materialripple.MaterialRippleLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/ripple"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    app:mrl_rippleColor="?colorPrimaryDark"
-    app:mrl_rippleInAdapter="false">
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="?attr/cardBackgroundColor"
+    app:cardCornerRadius="0dp">
 
-    <LinearLayout
+    <com.balysv.materialripple.MaterialRippleLayout
+        android:id="@+id/ripple"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:divider="?attr/colorPrimaryDark"
-        android:dividerHeight="1dp"
-        android:orientation="horizontal"
-        android:weightSum="340">
+        app:mrl_rippleColor="?colorPrimaryDark"
+        app:mrl_rippleInAdapter="false">
 
-        <TextView
-            android:id="@+id/etc_search_empty_room_list_text_name"
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="90"
-            android:gravity="center"
-            android:padding="10dp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="?attr/colorPrimaryDark"
+            android:dividerHeight="1dp"
+            android:orientation="horizontal"
+            android:weightSum="340">
 
-        <TextView
-            android:id="@+id/etc_search_empty_room_list_text_room_no"
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="90"
-            android:gravity="center"
-            android:padding="10dp" />
+            <TextView
+                android:id="@+id/etc_search_empty_room_list_text_name"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="90"
+                android:gravity="center"
+                android:padding="10dp" />
 
-        <TextView
-            android:id="@+id/etc_search_empty_room_list_text_subj"
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="90"
-            android:gravity="center"
-            android:padding="10dp" />
+            <TextView
+                android:id="@+id/etc_search_empty_room_list_text_room_no"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="90"
+                android:gravity="center"
+                android:padding="10dp" />
 
-        <TextView
-            android:id="@+id/etc_search_empty_room_list_text_person"
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="70"
-            android:gravity="center"
-            android:padding="10dp" />
+            <TextView
+                android:id="@+id/etc_search_empty_room_list_text_subj"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="90"
+                android:gravity="center"
+                android:padding="10dp" />
 
-    </LinearLayout>
-</com.balysv.materialripple.MaterialRippleLayout>
+            <TextView
+                android:id="@+id/etc_search_empty_room_list_text_person"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="70"
+                android:gravity="center"
+                android:padding="10dp" />
+
+        </LinearLayout>
+    </com.balysv.materialripple.MaterialRippleLayout>
+</android.support.v7.widget.CardView>
