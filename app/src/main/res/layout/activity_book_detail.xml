@@ -73,7 +73,7 @@
                             android:layout_gravity="center_horizontal"
                             android:layout_marginBottom="10dp"
                             android:layout_marginTop="20dp"
-                            android:textColor="?color_actionbar_title"
+                            android:textColor="?attr/colorAccent"
                             android:textSize="18sp"
                             android:textStyle="bold" />
 

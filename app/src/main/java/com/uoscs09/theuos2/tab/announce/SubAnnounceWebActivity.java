@@ -137,6 +137,9 @@ public class SubAnnounceWebActivity extends WebViewActivity {
 
 
     void setScreenWithItem(DetailAnnounceItem detailAnnounceItem) {
+        if(mWebView == null || isFinishing())
+            return;
+
         mWebView.loadDataWithBaseURL("http://m.uos.ac.kr/", detailAnnounceItem.page, "text/html", "UTF-8", "");
         this.attachedFileUrlPairList = detailAnnounceItem.fileNameUrlPairList;
 

@@ -126,7 +126,7 @@ public class SeatDismissDialogFragment extends BaseDialogFragment {
         protected void setView(int position) {
             SeatDismissInfo info = getItem();
 
-            time.setText(time.getContext().getString(R.string.tab_library_seat_dismiss_info_time_within, info.time));
+            time.setText(itemView.getContext().getString(R.string.tab_library_seat_dismiss_info_time_within, info.time));
             count.setText(String.valueOf(info.seatCount));
         }
     }
