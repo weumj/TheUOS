@@ -165,7 +165,7 @@ class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements View.OnCl
 
         } else if (diff < 0) {
             // 홀더 삭제
-            //TODO  ConcurrentModificationException
+            //fixme  ConcurrentModificationException
             childHolderList.removeAll(childHolderList.subList(attachingViewsSize, availableRecyledHolderCount));
         }
 

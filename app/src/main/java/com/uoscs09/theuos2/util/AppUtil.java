@@ -105,7 +105,6 @@ public class AppUtil {
         AppUtil.theme = vals[v];
     }
 
-    // todo Page -> TabInfo
     public enum TabInfo {
         Home(0, TabHomeFragment.class, R.string.title_section0_home, R.drawable.ic_launcher, R.drawable.ic_launcher),
         Announce(1, TabAnnounceFragment.class, R.string.title_tab_announce, R.attr.theme_ic_action_action_view_list, R.drawable.ic_action_action_view_list_white),

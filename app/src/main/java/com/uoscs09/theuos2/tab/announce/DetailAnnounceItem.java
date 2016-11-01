@@ -7,5 +7,5 @@ import java.util.List;
 
 class DetailAnnounceItem {
     String page;
-    List<Pair<String, String>> fileNameUrlPairList;
+    List<Pair<String, String>> fileNameUrlPairList; // fileName - url
 }

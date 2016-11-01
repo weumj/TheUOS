@@ -36,6 +36,7 @@ public class WeekInformationDialogFragment extends AbsAnimDialogFragment {
 
     private RestWeekAdapter mRestWeekAdapter = new RestWeekAdapter(new ArrayList<>());
     private int mCurrentSelectionId;
+    private WeekRestItem weekRestItem;
     private Task<WeekRestItem> mTask;
 
     public static void fetchDataAndShow(final Fragment fragment, final int stringId, View v) {
@@ -62,6 +63,7 @@ public class WeekInformationDialogFragment extends AbsAnimDialogFragment {
     }
 
     public void setWeekRestItem(WeekRestItem weekRestItem) {
+        this.weekRestItem = weekRestItem;
         mRestWeekAdapter.restItemArrayList.clear();
         mRestWeekAdapter.restItemArrayList.addAll(weekRestItem.weekList);
         mRestWeekAdapter.notifyDataSetChanged();
@@ -74,7 +76,7 @@ public class WeekInformationDialogFragment extends AbsAnimDialogFragment {
         mToolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
         if (mCurrentSelectionId != 0) {
             mToolbar.setTitle(mCurrentSelectionId);
-
+            mToolbar.setSubtitle(weekRestItem.getPeriodString());
             sendTrackerEvent("view", getString(mCurrentSelectionId));
         } else {
             dismiss();

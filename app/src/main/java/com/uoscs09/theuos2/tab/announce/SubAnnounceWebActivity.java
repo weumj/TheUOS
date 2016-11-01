@@ -19,10 +19,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.widget.TextView;
 
+import com.pnikosis.materialishprogress.ProgressWheel;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
-import com.uoscs09.theuos2.common.WebViewActivity;
+import com.uoscs09.theuos2.base.BaseActivity;
 import com.uoscs09.theuos2.customview.NonLeakingWebView;
 import com.uoscs09.theuos2.http.NetworkRequests;
 import com.uoscs09.theuos2.util.AnimUtil;
@@ -33,15 +36,31 @@ import com.uoscs09.theuos2.util.PrefHelper;
 import java.io.File;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.Unbinder;
 import mj.android.utils.task.Task;
 
-public class SubAnnounceWebActivity extends WebViewActivity {
+public class SubAnnounceWebActivity extends BaseActivity {
     private static final int REQUEST_PERMISSION_FILE = 40;
 
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
+    @BindView(R.id.webview)
+    WebView mWebView;
+    WebSettings settings;
+    @BindView(R.id.progress_wheel)
+    ProgressWheel progressWheel;
+    @BindView(R.id.error)
+    TextView errorTextView;
+    Unbinder unbinder;
 
     private String url;
     private AnnounceItem mItem;
     private List<Pair<String, String>> attachedFileUrlPairList;
+    private Task<DetailAnnounceItem> task;
+
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -56,9 +75,7 @@ public class SubAnnounceWebActivity extends WebViewActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_announce_subweb);
-
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        mWebView = (NonLeakingWebView) findViewById(R.id.webview);
+        unbinder = ButterKnife.bind(this);
 
         setSupportActionBar(mToolbar);
 
@@ -94,7 +111,20 @@ public class SubAnnounceWebActivity extends WebViewActivity {
             //mWebView.destroy();
             mWebView = null;
         }
+        if (task != null) {
+            task.cancel();
+            task = null;
+        }
+        if (unbinder != null)
+            unbinder.unbind();
+
         super.onDestroy();
+    }
+
+
+    @OnClick(R.id.error)
+    void retry() {
+        showWebPageFromIntent(getIntent());
     }
 
     private void showWebPageFromIntent(Intent intent) {
@@ -125,19 +155,48 @@ public class SubAnnounceWebActivity extends WebViewActivity {
         // mWebView.setWebViewClient(new AnnounceWebViewClient(this));
         // mWebView.loadUrl(url);
 
-        ParseAnnounce.fileNameUrlPairTask(url).getAsync(
+        errorTextView.setVisibility(View.INVISIBLE);
+        progressWheel.setVisibility(View.VISIBLE);
+        progressWheel.spin();
+
+        task = ParseAnnounce.fileNameUrlPairTask(url).getAsync(
                 this::setScreenWithItem,
                 throwable -> {
-                    mWebView.loadDataWithBaseURL(null, "page not found", null, null, null);
+                    hideProgress();
+                    if (errorTextView != null)
+                        errorTextView.setVisibility(View.VISIBLE);
+                    if (mWebView != null)
+                        mWebView.loadDataWithBaseURL(null, "page not found", null, null, null);
                     throwable.printStackTrace();
                 }
         );
 
+        mWebView.setWebViewClient(new NonLeakingWebView.NonLeakingWebViewClient(this) {
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                hideProgress();
+            }
+
+            @Override
+            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+                super.onReceivedError(view, errorCode, description, failingUrl);
+                hideProgress();
+            }
+        });
+
+    }
+
+    private void hideProgress() {
+        if (progressWheel != null) {
+            progressWheel.stopSpinning();
+            progressWheel.setVisibility(View.INVISIBLE);
+        }
     }
 
 
     void setScreenWithItem(DetailAnnounceItem detailAnnounceItem) {
-        if(mWebView == null || isFinishing())
+        if (mWebView == null || isFinishing())
             return;
 
         mWebView.loadDataWithBaseURL("http://m.uos.ac.kr/", detailAnnounceItem.page, "text/html", "UTF-8", "");
@@ -148,6 +207,8 @@ public class SubAnnounceWebActivity extends WebViewActivity {
             v.setVisibility(View.VISIBLE);
             v.setOnClickListener(v1 -> showDownloadDialog());
         }
+
+        //hideProgress();
     }
 
     @NonNull
@@ -160,11 +221,6 @@ public class SubAnnounceWebActivity extends WebViewActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.tab_anounce_sub, menu);
         return true;
-    }
-
-    @Override
-    public void onBackPressed() {
-        supportFinishAfterTransition();
     }
 
     @Override
@@ -227,6 +283,7 @@ public class SubAnnounceWebActivity extends WebViewActivity {
         } else {
             new AlertDialog.Builder(this)
                     .setTitle(R.string.tab_announce_download_select_file)
+                    .setIconAttribute(R.attr.color_theme_ic_action_file_folder)
                     .setAdapter(new AbsArrayAdapter.SimpleAdapter<Pair<String, String>>(this, android.R.layout.simple_list_item_1, attachedFileUrlPairList) {
                                     @Override
                                     public String getTextFromItem(int position, Pair<String, String> item) {

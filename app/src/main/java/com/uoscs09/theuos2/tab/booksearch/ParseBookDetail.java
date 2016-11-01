@@ -112,7 +112,7 @@ public class ParseBookDetail extends JerichoParser<BookDetailItem> {
         if (contentsElement != null) {
 
 
-            // todo
+            // todo 보통 도서와 레이아웃이 다른경우 (논문 등등..) 처리
             // if(contentsElement.getFirstElementByClass("divLocationList")){
             //
             //  }else{
