@@ -48,33 +48,31 @@ public interface UosOApi {
             @NonNull @Field("year") String year
     );
 
-    @FormUrlEncoded
     @Headers({"Content-Type: charset=EUC-KR"})
-    @POST("api.ApiUcrCultTimeInq.oapi")
+    @GET("api.ApiUcrCultTimeInq.oapi")
     Task<TimeTableSubjectInfo> timetableCulture(
-            @NonNull @Field("apiKey") String apiKey,
-            @NonNull @Field("year") String year,
-            @NonNull @Field("term") String term,
-            @NonNull @Field("subjectDiv") String subjectDiv,
-            @Nullable @Field("subjectSubDiv") String subjectSubDiv,
-            @Nullable @Field("subjectNm") String subjectNm
+            @NonNull @Query("apiKey") String apiKey,
+            @NonNull @Query("year") String year,
+            @NonNull @Query("term") String term,
+            @NonNull @Query("subjectDiv") String subjectDiv,
+            @Nullable @Query("subjectSubDiv") String subjectSubDiv,
+            @Nullable @Query(value = "subjectNm", encoded = true) String subjectNm
     );
 
-    @FormUrlEncoded
     @Headers({"Content-Type: charset=EUC-KR"})
-    @POST("api.ApiUcrMjTimeInq.oapi")
+    @GET("api.ApiUcrMjTimeInq.oapi")
     Task<TimeTableSubjectInfo> timetableMajor(
-            @NonNull @Field("apiKey") String apiKey,
-            @NonNull @Field("year") String year,
-            @NonNull @Field("term") String term,
-            @NonNull @Field("deptDiv") String deptDiv,
-            @NonNull @Field("dept") String dept,
-            @NonNull @Field("subDept") String subDept,
-            @Nullable @Field("subjectDiv") String subjectDiv,
-            @Nullable @Field("subjectNo") String subjectNo,
-            @Nullable @Field("classDiv") String classDiv,
-            @Nullable @Field("subjectNm") String subjectNm,
-            @Nullable @Field("etcExc") String bEtcExcludeYN
+            @NonNull @Query("apiKey") String apiKey,
+            @NonNull @Query("year") String year,
+            @NonNull @Query("term") String term,
+            @NonNull @Query("deptDiv") String deptDiv,
+            @NonNull @Query("dept") String dept,
+            @NonNull @Query("subDept") String subDept,
+            @Nullable @Query("subjectDiv") String subjectDiv,
+            @Nullable @Query("subjectNo") String subjectNo,
+            @Nullable @Query("classDiv") String classDiv,
+            @Nullable @Query(value = "subjectNm",encoded = true) String subjectNm,
+            @Nullable @Query("etcExc") String bEtcExcludeYN
     );
 
 
@@ -90,7 +88,7 @@ public interface UosOApi {
             @Nullable @Query("subjectDiv") String subjectDiv,
             @Nullable @Query("dept") String dept,
             @Nullable @Query("deptDiv") String deptDiv,
-            @Nullable @Query("prof_nm") String profName
+            @Nullable @Query(value = "prof_nm",encoded = true) String profName
     );
 
     @FormUrlEncoded

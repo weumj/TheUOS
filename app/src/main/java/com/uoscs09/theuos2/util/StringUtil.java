@@ -1,5 +1,8 @@
 package com.uoscs09.theuos2.util;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 public final class StringUtil {
     public static final String STR_HOUR = "hour";
     public static final String STR_MIN = "min";
@@ -23,6 +26,23 @@ public final class StringUtil {
     public final static String CODE_SPACE = "&nbsp;";
     public final static String CODE_QUOT_CODE = "&quot;";
     public final static String CODE_QUOT = "\"";
+
+    public static String encodeEucKr(String s) {
+        return encode(s, ENCODE_EUC_KR);
+    }
+
+    public static String encodeUTF8(String s) {
+        return encode(s, ENCODE_UTF_8);
+    }
+
+    public static String encode(String s, String encoding) {
+        try {
+            return URLEncoder.encode(s, encoding);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return s;
+        }
+    }
 
     public static String remove(String target, String remove) {
         return target.replace(remove, NULL);

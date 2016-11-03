@@ -32,8 +32,6 @@ import com.uoscs09.theuos2.util.StringUtil;
 import com.uoscs09.theuos2.util.TaskUtil;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -262,7 +260,7 @@ public class NetworkRequests {
                     OApiUtil.Semester.getCodeByTermIndex(term),
                     subjectDiv,
                     null,
-                    subjectName
+                    StringUtil.encodeEucKr(subjectName) // 한글은 euc-kr로 인코딩 하여야 함.
             ).wrap(TimeTableSubjectInfo::subjectInfoList);
         }
 
@@ -277,7 +275,7 @@ public class NetworkRequests {
                     majorParams.get("subjectDiv"),
                     majorParams.get("subjectNo"),
                     majorParams.get("classDiv"),
-                    subjectName,
+                    StringUtil.encodeEucKr(subjectName), // 한글은 euc-kr로 인코딩 하여야 함.
                     null
             ).wrap(TimeTableSubjectInfo::subjectInfoList);
         }
@@ -295,19 +293,11 @@ public class NetworkRequests {
 
 
         public static Task<List<SubjectInfoItem>> requestSubjectInfo(String subjectName, int year, String termCode) {
-            String encodedSubjectName;
-            try {
-                // 한글은 euc-kr 로 인코딩 하여야 함.
-                encodedSubjectName =  URLEncoder.encode(subjectName, "euc-kr");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-                encodedSubjectName = subjectName;
-            }
             return oApi().subjectInformation(
                     OApiUtil.UOS_API_KEY,
                     year,
                     termCode,
-                    encodedSubjectName,
+                    StringUtil.encodeEucKr(subjectName), // 한글은 euc-kr로 인코딩 하여야 함.
                     null,
                     null,
                     null,
