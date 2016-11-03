@@ -122,8 +122,10 @@ dependencies {
 
 }
 
-apply plugin: 'com.google.gms.google-services'
 
 def propertyDesignatedFile(String property) {
     return file(project.getRootDir().getAbsolutePath() + project.property(property));
 }
+
+
+apply plugin: 'com.google.gms.google-services'

@@ -29,6 +29,8 @@ public class SubSeatWebActivity extends WebViewActivity {
         settings.setLoadWithOverviewMode(true);
         settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
         settings.setDefaultTextEncodingName(StringUtil.ENCODE_EUC_KR);
+        settings.setDomStorageEnabled(true);
+        settings.setDatabaseEnabled(true);
 
         showWebPageFromIntent(getIntent());
     }

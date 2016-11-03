@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 
 import com.google.android.gms.analytics.ExceptionParser;
+import com.google.android.gms.analytics.ExceptionReporter;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -94,6 +95,32 @@ public class TrackerUtil {
 
     public Tracker getTracker() {
         return mTracker;
+    }
+
+    public void init() {
+        if (mTracker == null)
+            return;
+
+        mTracker.enableAdvertisingIdCollection(true);
+        //t.enableAutoActivityTracking(true);
+        mTracker.enableExceptionReporting(true);
+        mTracker.setUseSecure(true);
+
+        Thread.UncaughtExceptionHandler uncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
+        if (uncaughtExceptionHandler instanceof ExceptionReporter) {
+            ExceptionReporter exceptionReporter = (ExceptionReporter) uncaughtExceptionHandler;
+            exceptionReporter.setExceptionParser(new TrackerUtil.AnalyticsExceptionParser());
+        }
+    }
+
+    public void debugInit() {
+        if (mTracker == null)
+            return;
+
+        mTracker.enableAdvertisingIdCollection(false);
+        //t.enableAutoActivityTracking(true);
+        mTracker.enableExceptionReporting(false);
+        mTracker.setUseSecure(true);
     }
 
     public void sendEvent(String category, String action) {

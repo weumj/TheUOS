@@ -2,10 +2,8 @@ package com.uoscs09.theuos2.base;
 
 
 import android.app.Application;
-import android.os.StrictMode;
 
-import com.google.android.gms.analytics.ExceptionReporter;
-import com.google.android.gms.analytics.Tracker;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.uoscs09.theuos2.BuildConfig;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.TrackerUtil;
@@ -22,6 +20,7 @@ public class UOSApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        /*
         StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
                 .detectAll()
                 .penaltyLog()
@@ -33,25 +32,20 @@ public class UOSApplication extends Application {
                 .penaltyLog()
                 .build()
         );
+        */
         AppUtil.init(this);
 
         taskQueue = new TaskQueue();
 
         mTrackerUtil = TrackerUtil.newInstance(this);
 
-        if (!DEBUG) {
-            Tracker t = mTrackerUtil.getTracker();
-            t.enableAdvertisingIdCollection(true);
-            t.enableAutoActivityTracking(true);
-            t.enableExceptionReporting(true);
-
-            Thread.UncaughtExceptionHandler uncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
-            if (uncaughtExceptionHandler instanceof ExceptionReporter) {
-                ExceptionReporter exceptionReporter = (ExceptionReporter) uncaughtExceptionHandler;
-                exceptionReporter.setExceptionParser(new TrackerUtil.AnalyticsExceptionParser());
-            }
-
+        if (DEBUG) {
+            mTrackerUtil.debugInit();
+        }else {
+            mTrackerUtil.init();
         }
+
+        FirebaseAnalytics.getInstance(this).setAnalyticsCollectionEnabled(false);
     }
 
 

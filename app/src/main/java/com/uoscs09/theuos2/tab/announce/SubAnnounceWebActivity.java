@@ -94,6 +94,8 @@ public class SubAnnounceWebActivity extends BaseActivity {
         settings.setUseWideViewPort(true);
         settings.setLoadWithOverviewMode(true);
         settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        settings.setDomStorageEnabled(true);
+        settings.setDatabaseEnabled(true);
 
         getSupportActionBar().setTitle(R.string.title_tab_announce);
 
