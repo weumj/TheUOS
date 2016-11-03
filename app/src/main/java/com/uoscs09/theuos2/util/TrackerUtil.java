@@ -47,19 +47,31 @@ public class TrackerUtil {
     }
 
     public static TrackerUtil getInstance(Activity activity) {
-        return ((UOSApplication) activity.getApplication()).getTrackerUtil();
+        if (activity == null)
+            return new NullTracker();
+        else
+            return ((UOSApplication) activity.getApplication()).getTrackerUtil();
     }
 
     public static TrackerUtil newInstance(UOSApplication application) {
-        return new TrackerUtil(application);
+        if (application == null)
+            return new NullTracker();
+        else
+            return new TrackerUtil(application);
     }
 
     public static TrackerUtil getInstance(Fragment fragment) {
-        return getInstance(fragment.getActivity());
+        if (fragment == null)
+            return new NullTracker();
+        else
+            return getInstance(fragment.getActivity());
     }
 
     public static TrackerUtil getInstance(android.app.Fragment fragment) {
-        return getInstance(fragment.getActivity());
+        if (fragment == null)
+            return new NullTracker();
+        else
+            return getInstance(fragment.getActivity());
     }
 
     private synchronized Tracker getTracker(Context context, TrackerName trackerId) {
@@ -159,5 +171,12 @@ public class TrackerUtil {
         void sendClickEvent(String label);
 
         void sendClickEvent(String label, long value);
+    }
+
+    private static class NullTracker extends TrackerUtil {
+
+        private NullTracker() {
+            super(null);
+        }
     }
 }

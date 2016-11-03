@@ -110,7 +110,8 @@ public abstract class WidgetTimeTableListService2 extends RemoteViewsService {
                     views.setTextViewText(subId, String.format("%s\n%s\n%s",
                             TextUtils.isEmpty(subject.professor()) ? "" : subject.professor(),
                             TextUtils.isEmpty(subject.location()) ? "" : subject.location(),
-                            subject.building() == null ? "" : subject.building().getLocaleName())
+                            subject.building() == null ? "" :
+                                    TextUtils.isEmpty(subject.building().getLocaleName()) ? "" : subject.building().getLocaleName())
                     );
                 }
 

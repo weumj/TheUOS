@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -73,10 +72,23 @@ public class TabWiseScoreFragment extends AbsProgressFragment<WiseScores> {
         final int viewCount = AppUtil.isScreenSizeSmall() ? 1 : 4;
         GridLayoutManager manager = new GridLayoutManager(getActivity(), viewCount);
         mRecyclerView.setLayoutManager(manager);
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getActivity(), manager.getOrientation());
-        mRecyclerView.addItemDecoration(dividerItemDecoration);
-        mRecyclerView.setAdapter(adapter = new ScoreRecyclerAdapter(savedInstanceState == null ? null : savedInstanceState.getParcelable(getScreenNameForTracker())));
+        //DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getActivity(), manager.getOrientation());
+        //mRecyclerView.addItemDecoration(dividerItemDecoration);
+
+        if (savedInstanceState == null) {
+            adapter = new ScoreRecyclerAdapter(null);
+        } else {
+            WiseScores wiseScores = savedInstanceState.getParcelable(getScreenNameForTracker());
+
+            if (wiseScores != null) {
+                empty.setVisibility(View.GONE);
+            }
+
+            adapter = new ScoreRecyclerAdapter(wiseScores);
+        }
+        mRecyclerView.setAdapter(adapter);
     }
+
 
     @OnClick(R.id.empty1)
     void emptyClick() {
@@ -266,6 +278,7 @@ public class TabWiseScoreFragment extends AbsProgressFragment<WiseScores> {
 
                 new AlertDialog.Builder(context)
                         .setView(vv)
+                        .setCancelable(true)
                         .show();
 
                 if (context instanceof TrackerUtil.TrackerScreen) {
