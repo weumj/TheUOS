@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.BaseDialogFragment;
+import com.uoscs09.theuos2.base.ViewHolder;
 
 import butterknife.BindView;
 import mj.android.utils.recyclerview.ListRecyclerAdapter;
@@ -72,16 +73,20 @@ public class SeatDismissDialogFragment extends BaseDialogFragment {
 
             recyclerView.setLayoutManager(manager);
 
-            mInfoAdapter = new ListRecyclerAdapter<>(mSeatInfo.seatDismissInfoList, new ViewHolderFactory<SeatDismissInfo, ListRecyclerAdapter.ViewHolder<SeatDismissInfo>>() {
-                @Override
-                public ListRecyclerAdapter.ViewHolder<SeatDismissInfo> newViewHolder(ViewGroup viewGroup, int i) {
-                    return new Holder(ListRecyclerUtil.makeViewHolderItemView(viewGroup, R.layout.list_layout_seat_dismiss_info));
-                }
-            });
-            recyclerView.setAdapter(mInfoAdapter);
+            if (mSeatInfo != null) {
+                mInfoAdapter = new ListRecyclerAdapter<>(mSeatInfo.seatDismissInfoList, new ViewHolderFactory<SeatDismissInfo, ListRecyclerAdapter.ViewHolder<SeatDismissInfo>>() {
+                    @Override
+                    public ListRecyclerAdapter.ViewHolder<SeatDismissInfo> newViewHolder(ViewGroup viewGroup, int i) {
+                        return new Holder(ListRecyclerUtil.makeViewHolderItemView(viewGroup, R.layout.list_layout_seat_dismiss_info));
+                    }
+                });
+                recyclerView.setAdapter(mInfoAdapter);
 
-            if (mSeatInfo.seatDismissInfoList.isEmpty())
-                showDismissInfoEmptyView();
+                if (mSeatInfo.seatDismissInfoList.isEmpty())
+                    showDismissInfoEmptyView();
+            } else {
+                dismiss();
+            }
         }
         return mDismissDialogView;
     }
@@ -112,7 +117,7 @@ public class SeatDismissDialogFragment extends BaseDialogFragment {
         return "SeatDismissDialogFragment";
     }
 
-    static class Holder extends ListRecyclerAdapter.ViewHolder<SeatDismissInfo> {
+    static class Holder extends ViewHolder<SeatDismissInfo> {
         @BindView(R.id.tab_library_seat_info_time)
         public TextView time;
         @BindView(R.id.tab_library_seat_info_number)
