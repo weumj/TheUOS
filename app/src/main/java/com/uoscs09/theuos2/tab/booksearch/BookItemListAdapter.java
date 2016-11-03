@@ -33,13 +33,20 @@ class BookItemListAdapter extends AbsArrayAdapter<BookItem, BookItemViewHolder> 
 
     @Override
     public void onBindViewHolder(int position, final BookItemViewHolder holder) {
-        final BookItem item = getItem(position);
+        BookItem item = getItem(position);
 
-        if (!TextUtils.isEmpty(item.coverSrc))
+        if (item == null) {
+            item = new BookItem();
+        }
+
+        if (!TextUtils.isEmpty(item.coverSrc)) {
             Glide.with(getContext())
                     .load(item.coverSrc)
                     .error(R.drawable.noimg_en)
                     .into(holder.coverImg);
+        } else {
+            holder.coverImg.setImageResource(R.drawable.noimg_en);
+        }
 
 
         holder.item = item;

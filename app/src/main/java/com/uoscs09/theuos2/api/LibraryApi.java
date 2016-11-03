@@ -11,33 +11,29 @@ import com.uoscs09.theuos2.tab.libraryseat.SeatInfo;
 import java.util.List;
 
 import mj.android.utils.task.Task;
-import retrofit2.http.Field;
-import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
-import retrofit2.http.POST;
+import retrofit2.http.Query;
 import retrofit2.http.Url;
 
 public interface LibraryApi {
     String BOOK_URL = "http://mlibrary.uos.ac.kr/search/tot/";
     String SEATS_URL = "http://203.249.102.34:8080/seat/domian5.asp";
 
-    @FormUrlEncoded
     @Headers({"Content-Type: charset=EUC-KR"})
-    @POST("result?sm=&st=KWRD&websysdiv=tot&si=TOTAL&websysdiv=tot")
+    @GET("result?sm=&st=KWRD&websysdiv=tot&si=TOTAL&websysdiv=tot")
     Task<List<BookItem>> books(
-            @Field("pn") int page,
-            @NonNull @Field("q") String query
+            @Query("pn") int page,
+            @NonNull @Query("q") String query
     );
 
-    @FormUrlEncoded
     @Headers({"Content-Type: charset=EUC-KR"})
-    @POST("result?sm=&st=KWRD&websysdiv=tot&si=TOTAL")
+    @GET("result?sm=&st=KWRD&websysdiv=tot&si=TOTAL")
     Task<List<BookItem>> books(
-            @Field("pn") int page,
-            @NonNull @Field("q") String query,
-            @Nullable @Field("oi") String optionIndex,
-            @Nullable @Field("os") String optionSort
+            @Query("pn") int page,
+            @NonNull @Query("q") String query,
+            @Nullable @Query("oi") String optionIndex,
+            @Nullable @Query("os") String optionSort
     );
 
     //@Headers({"Content-Type: charset=EUC-KR"})

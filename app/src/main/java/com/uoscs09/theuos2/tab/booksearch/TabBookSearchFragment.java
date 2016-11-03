@@ -69,19 +69,16 @@ public class TabBookSearchFragment extends AbsProgressFragment<List<BookItem>> i
     @BindView(R.id.tab_book_empty)
     View mEmptyView;
 
-    /**
-     * option : catergory
-     */
-    private Spinner oi;
-    /**
-     * option : sort
-     */
-    private Spinner os;
+    private Spinner oi;//option : catergory
+    private Spinner os; // option : sort
+    private int mOptionIndex = 0, mOptionSort = 0;
+
     /**
      * 검색 메뉴, 검색할 단어가 입력되는 곳
      */
     private MenuItem searchMenu;
     private ActionMode actionMode;
+
 
     private static final String BUNDLE_LIST = "BookList";
     private static final String BUNDLE_PAGE = "BookPage";
@@ -118,10 +115,20 @@ public class TabBookSearchFragment extends AbsProgressFragment<List<BookItem>> i
         os.setSelection(osSelect);
 
         mTabParent.findViewById(R.id.tab_book_toolbar_menu_action).setOnClickListener(v -> {
-            if (!mBookList.isEmpty()) {
+            if (!isOptionBothSelected()) {
+                AppUtil.showToast(getActivity(), R.string.tab_book_subject_opt_both);
+                return;
+            }
+            if (mBookList.isEmpty()) {
+                //AppUtil.showToast(getActivity(), R.string.tab_book_subject_opt_both);
+            } else {
+                mOptionIndex = oi.getSelectedItemPosition();
+                mOptionSort = os.getSelectedItemPosition();
+
                 mBookList.clear();
                 mListView.scrollTo(0, 0);
                 mCurrentPage = 1;
+                mBookListAdapter.notifyDataSetChanged();
                 execute();
             }
         });
@@ -132,8 +139,8 @@ public class TabBookSearchFragment extends AbsProgressFragment<List<BookItem>> i
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList(BUNDLE_LIST, mBookList);
-        outState.putInt(OI_SEL, oi.getSelectedItemPosition());
-        outState.putInt(OS_SEL, os.getSelectedItemPosition());
+        outState.putInt(OI_SEL, mOptionIndex);
+        outState.putInt(OS_SEL, mOptionSort);
         outState.putInt(BUNDLE_PAGE, mCurrentPage);
         outState.putString(QUERY, mEncodedQuery);
         outState.putString("mRawQuery", mRawQuery);
@@ -311,6 +318,11 @@ public class TabBookSearchFragment extends AbsProgressFragment<List<BookItem>> i
             AppUtil.showToast(getActivity(), R.string.search_input_empty, isMenuVisible());
 
         } else {
+            if (!isOptionBothSelected()) {
+                AppUtil.showToast(getActivity(), R.string.tab_book_subject_opt_both);
+                return true;
+            }
+
             InputMethodManager ipm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
             ipm.hideSoftInputFromWindow(searchMenu.getActionView().getWindowToken(), 0);
 
@@ -345,11 +357,16 @@ public class TabBookSearchFragment extends AbsProgressFragment<List<BookItem>> i
             mEmptyView.setVisibility(View.VISIBLE);
     }
 
+    private boolean isOptionBothSelected() {
+        int osSel = os.getSelectedItemPosition();
+        int oiSel = oi.getSelectedItemPosition();
+        return (oiSel == 0 && osSel == 0) || (oiSel != 0 && osSel != 0);
+    }
 
     private void execute() {
         mEmptyView.setVisibility(View.GONE);
 
-        execute(AppRequests.Books.request(mRawQuery/*mEncodedQuery*/, mCurrentPage, os.getSelectedItemPosition(), oi.getSelectedItemPosition()),
+        execute(AppRequests.Books.request(mRawQuery/*mEncodedQuery*/, mCurrentPage, mOptionSort, mOptionIndex),
                 result -> {
                     isResultEmpty = false;
                     if (result.isEmpty()) {

@@ -155,54 +155,65 @@ public class BookDetailActivity extends BaseActivity {
 
         title.setText(bookItem.title);
 
+        if (bookDetailItem == null)
+            return;
+
         LayoutInflater inflater = LayoutInflater.from(this);
-        for (Pair<String, Object> pair : bookDetailItem.detailInfoList) {
-            View v = inflater.inflate(R.layout.view_book_detail_info_list, infoLayout, false);
-            TextView textView1 = (TextView) v.findViewById(android.R.id.text1);
-            textView1.setText(pair.first);
 
-            LinearLayout layout = (LinearLayout) v.findViewById(android.R.id.text2);
-            if (pair.second instanceof String) {
-                TextView textView = new TextView(this);
-                textView.setText((String) pair.second);
-                textView.setTextIsSelectable(true);
-                layout.addView(textView);
-            } else if (pair.second instanceof List) {
-                //noinspection unchecked
-                List<Object> list = (List<Object>) pair.second;
-                for (int i = 0; i < list.size(); i++) {
-                    Object o = list.get(i);
-                    if (o instanceof BookDetailItem.UrlObject) {
-                        final BookDetailItem.UrlObject urlObject = (BookDetailItem.UrlObject) o;
-                        Spannable styledText = new Spannable.Factory().newSpannable(urlObject.info);
-                        styledText.setSpan(new URLSpan(urlObject.url), 0, urlObject.info.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-                        styledText.setSpan(new StyleSpan(Typeface.ITALIC), 0, urlObject.info.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+        if (bookDetailItem.detailInfoList != null) {
+            for (Pair<String, Object> pair : bookDetailItem.detailInfoList) {
+                View v = inflater.inflate(R.layout.view_book_detail_info_list, infoLayout, false);
+                TextView textView1 = (TextView) v.findViewById(android.R.id.text1);
+                textView1.setText(pair.first);
 
-                        TextView textView = new TextView(this);
-                        textView.setText(styledText);
-                        textView.setFocusable(true);
-                        textView.setFocusableInTouchMode(true);
+                LinearLayout layout = (LinearLayout) v.findViewById(android.R.id.text2);
+                if (pair.second instanceof String) {
+                    TextView textView = new TextView(this);
+                    textView.setText((String) pair.second);
+                    textView.setTextIsSelectable(true);
+                    layout.addView(textView);
+                } else if (pair.second instanceof List) {
+                    //noinspection unchecked
+                    List<Object> list = (List<Object>) pair.second;
+                    for (int i = 0; i < list.size(); i++) {
+                        Object o = list.get(i);
+                        if (o instanceof BookDetailItem.UrlObject) {
+                            final BookDetailItem.UrlObject urlObject = (BookDetailItem.UrlObject) o;
+                            Spannable styledText = new Spannable.Factory().newSpannable(urlObject.info);
+                            styledText.setSpan(new URLSpan(urlObject.url), 0, urlObject.info.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                            styledText.setSpan(new StyleSpan(Typeface.ITALIC), 0, urlObject.info.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
 
-                        int dp = getResources().getDimensionPixelSize(R.dimen.dp4);
-                        textView.setPadding(0, dp, 0, dp);
+                            TextView textView = new TextView(this);
+                            textView.setText(styledText);
+                            textView.setFocusable(true);
+                            textView.setFocusableInTouchMode(true);
 
-                        textView1.setPadding(0, dp, 0, dp);
+                            int dp = getResources().getDimensionPixelSize(R.dimen.dp4);
+                            textView.setPadding(0, dp, 0, dp);
 
-                        layout.addView(textView);
+                            textView1.setPadding(0, dp, 0, dp);
 
-                        textView.setOnClickListener(v1 -> {
-                            Intent intent = AppUtil.getWebPageIntent(urlObject.url);
-                            AnimUtil.startActivityWithScaleUp(BookDetailActivity.this, intent, v1);
-                        });
-                    } else if (o instanceof String) {
-                        TextView textView = new TextView(this);
-                        textView.setText((String) o);
-                        textView.setTextIsSelectable(true);
-                        layout.addView(textView);
+                            layout.addView(textView);
+
+                            textView.setOnClickListener(v1 -> {
+                                Intent intent = AppUtil.getWebPageIntent(urlObject.url);
+                                AnimUtil.startActivityWithScaleUp(BookDetailActivity.this, intent, v1);
+                            });
+                        } else if (o instanceof String) {
+                            TextView textView = new TextView(this);
+                            textView.setText((String) o);
+                            textView.setTextIsSelectable(true);
+                            layout.addView(textView);
+                        }
                     }
                 }
-            }
 
+                infoLayout.addView(v);
+            }
+        } else {
+            View v = inflater.inflate(R.layout.view_book_detail_info_list, infoLayout, false);
+            TextView textView1 = (TextView) v.findViewById(android.R.id.text1);
+            textView1.setText(R.string.tab_book_sub_could_not_load_info);
             infoLayout.addView(v);
         }
 
@@ -221,7 +232,7 @@ public class BookDetailActivity extends BaseActivity {
 
         relatedInfoLayoutTitle.setText(bookDetailItem.relationInfo.title);
 
-        for (BookDetailItem.SubRelationInfo subRelationInfo : bookDetailItem.relationInfo.subRelationInfoList) {
+        for (BookDetailItem.SubRelationInfo subRelationInfo : subRelationInfoList) {
             if (subRelationInfo instanceof BookDetailItem.LocationInfo) {
                 BookDetailItem.LocationInfo locationInfo = (BookDetailItem.LocationInfo) subRelationInfo;
 

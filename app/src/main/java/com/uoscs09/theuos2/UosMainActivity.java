@@ -91,10 +91,6 @@ public class UosMainActivity extends BaseActivity {
     }
 
     protected void onCreate(Bundle savedInstanceState) {
-        // StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-        // .detectAll().penaltyLog().penaltyDialog().build());
-        // StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll()
-        // .penaltyLog().penaltyDeath().build());
         /* 호출 순서를 바꾸지 말 것 */
         initValues();
         super.onCreate(savedInstanceState);

@@ -2,6 +2,7 @@ package com.uoscs09.theuos2.base;
 
 
 import android.app.Application;
+import android.os.StrictMode;
 
 import com.google.android.gms.analytics.ExceptionReporter;
 import com.google.android.gms.analytics.Tracker;
@@ -21,7 +22,17 @@ public class UOSApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
+        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+                .detectAll()
+                .penaltyLog()
+                .penaltyDialog()
+                .build()
+        );
+        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+                .detectAll()
+                .penaltyLog()
+                .build()
+        );
         AppUtil.init(this);
 
         taskQueue = new TaskQueue();
