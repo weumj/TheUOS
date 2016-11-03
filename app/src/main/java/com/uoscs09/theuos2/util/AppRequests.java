@@ -176,7 +176,6 @@ public class AppRequests {
                     .wrap(IOUtil.<Timetable2>newInternalFileWriteFunc(IOUtil.FILE_TIMETABLE));
         }
 
-
         public static Task<Timetable2> readFile() {
             return Tasks.newTask(() -> IOUtil.readInternalFileSilent(IOUtil.FILE_TIMETABLE));
         }

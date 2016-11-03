@@ -14,8 +14,10 @@ import com.uoscs09.theuos2.tab.subject.TimeTableSubjectInfo;
 import mj.android.utils.task.Task;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
+import retrofit2.http.Query;
 
 public interface UosOApi {
     String URL = "http://wise.uos.ac.kr/uosdoc/";
@@ -76,20 +78,19 @@ public interface UosOApi {
     );
 
 
-    @FormUrlEncoded
     @Headers({"Content-Type: charset=EUC-KR"})
-    @POST("api.ApiApiSubjectList.oapi")
+    @GET("api.ApiApiSubjectList.oapi")
     Task<SubjectInformation> subjectInformation(
-            @NonNull @Field("apiKey") String apiKey,
-            @Field("year") int year,
-            @NonNull @Field("term") String term,
-            @NonNull @Field("subjectNm") String subjectNm,
-            @Nullable @Field("subjectNo") String subjectNo,
-            @Nullable @Field("classDiv") String classDiv,
-            @Nullable @Field("subjectDiv") String subjectDiv,
-            @Nullable @Field("dept") String dept,
-            @Nullable @Field("deptDiv") String deptDiv,
-            @Nullable @Field("prof_nm") String profName
+            @NonNull @Query("apiKey") String apiKey,
+            @Query("year") int year,
+            @NonNull @Query("term") String term,
+            @NonNull @Query(value = "subjectNm", encoded = true) String subjectNm,
+            @Nullable @Query("subjectNo") String subjectNo,
+            @Nullable @Query("classDiv") String classDiv,
+            @Nullable @Query("subjectDiv") String subjectDiv,
+            @Nullable @Query("dept") String dept,
+            @Nullable @Query("deptDiv") String deptDiv,
+            @Nullable @Query("prof_nm") String profName
     );
 
     @FormUrlEncoded

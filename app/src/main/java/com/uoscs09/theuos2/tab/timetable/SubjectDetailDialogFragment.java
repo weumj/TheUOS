@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialog;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.View;
@@ -58,6 +59,16 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
 
     public SubjectDetailDialogFragment() {
         pieProgressDrawable.setLevel(100);
+    }
+
+    public static void showDialog(Fragment fragment, Timetable2.SubjectInfo subject, Timetable2 timetable, @Nullable ColorSelector.OnColorSelectedListener colorSelectedListener) {
+        SubjectDetailDialogFragment dialog = new SubjectDetailDialogFragment();
+        dialog.setSubject(subject);
+        dialog.setTimeTable(timetable);
+        dialog.setColorSelectedListener(colorSelectedListener);
+        dialog.setTargetFragment(fragment, 101);
+
+        dialog.show(fragment.getFragmentManager(), "subject");
     }
 
     public void setTimeTable(Timetable2 timeTable) {
@@ -283,7 +294,7 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
     private void initSelectDialog() {
         View dialogView = View.inflate(getActivity(), R.layout.dialog_timecallback, null);
         mClassDivSelectDialog = new AlertDialog.Builder(getActivity())
-                .setTitle(mSubject.name())
+                .setTitle(mSubject == null ? "" : mSubject.name())
                 .setView(dialogView)
                 .setOnDismissListener(dialog -> dismiss())
                 .create();
@@ -300,7 +311,7 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
     }
 
     private void showCoursePlan(SubjectItem2 subject, View v) {
-        CoursePlanDialogFragment.fetchCoursePlanAndShow(this, subject, v);
+        CoursePlanDialogFragment.fetchCoursePlanAndShow(getTargetFragment(), subject, v);
     }
 
     @NonNull

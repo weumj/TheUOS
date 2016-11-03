@@ -1,5 +1,7 @@
 package com.uoscs09.theuos2.util;
 
+import android.annotation.SuppressLint;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -66,32 +68,36 @@ public class OApiUtil {
         }
 
         /**
-         * 1, 2 : winter
-         * 3 - 6 : spring
-         * 7 - 8 : summer
-         * 9 - 12 : autumn
+         * 12, 1 : winter
+         * 2 - 5: spring
+         * 6 - 7 : summer
+         * 8 - 11 : autumn
          */
+        @NonNull
+        @SuppressLint("SwitchIntDef")
         public static Semester getByCurrentMonth() {
-            switch (Calendar.getInstance().get(Calendar.MONTH)) {
+            Calendar c = Calendar.getInstance();
+            switch (c.get(Calendar.MONTH)) {
+                case Calendar.DECEMBER:
                 case Calendar.JANUARY:
-                case Calendar.FEBRUARY:
                     return WINTER;
 
+                default:
+                case Calendar.FEBRUARY:
                 case Calendar.MARCH:
                 case Calendar.APRIL:
                 case Calendar.MAY:
-                case Calendar.JUNE:
                     return SPRING;
 
+                case Calendar.JUNE:
                 case Calendar.JULY:
-                case Calendar.AUGUST:
                     return SUMMER;
 
-                default:
+
+                case Calendar.AUGUST:
                 case Calendar.SEPTEMBER:
                 case Calendar.OCTOBER:
                 case Calendar.NOVEMBER:
-                case Calendar.DECEMBER:
                     return AUTUMN;
             }
         }

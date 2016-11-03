@@ -21,6 +21,7 @@ import android.widget.Spinner;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
+import com.uoscs09.theuos2.appwidget.timetable.TimeTableWidget;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
@@ -265,6 +266,8 @@ public class TabTimeTableFragment22 extends AbsProgressFragment<Timetable2> {
 
         executeWithQueue(TAG, AppRequests.TimeTables.request(mWiseIdView.getText(), mWisePasswdView.getText(), semester, mTimeTableYear),
                 r -> {
+                    TimeTableWidget.sendRefreshIntent(getActivity());
+
                     clearPassWd();
 
                     setTimetable(r);
@@ -403,6 +406,7 @@ public class TabTimeTableFragment22 extends AbsProgressFragment<Timetable2> {
                     if (result) {
                         AppUtil.showToast(getActivity(), R.string.execute_delete, isVisible());
                         setTimetable(null);
+                        TimeTableWidget.sendRefreshIntent(getActivity());
                     } else {
                         AppUtil.showToast(getActivity(), R.string.file_not_found, isMenuVisible());
                     }

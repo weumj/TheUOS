@@ -135,6 +135,7 @@
                 android:resource="@xml/widget_conf_timetable_4x4" />
 
             <intent-filter>
+                <action android:name="com.uoscs09.theuos2.widget.timetable.refresh_internal" />
                 <action android:name="com.uoscs09.theuos2.widget.timetable.refresh" />
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
@@ -153,6 +154,7 @@
                 android:resource="@xml/widget_conf_timetable_5x4" />
 
             <intent-filter>
+                <action android:name="com.uoscs09.theuos2.widget.timetable.refresh_internal" />
                 <action android:name="com.uoscs09.theuos2.widget.timetable.refresh" />
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

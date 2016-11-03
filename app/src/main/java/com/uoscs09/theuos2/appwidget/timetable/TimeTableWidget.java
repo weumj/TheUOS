@@ -2,6 +2,7 @@ package com.uoscs09.theuos2.appwidget.timetable;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -22,7 +23,23 @@ import java.util.Locale;
 import mj.android.utils.task.Tasks;
 
 public abstract class TimeTableWidget extends BaseAppWidgetProvider {
-    public final static String WIDGET_TIMETABLE_REFRESH = "com.uoscs09.theuos2.widget.timetable.refresh";
+    public final static String WIDGET_TIMETABLE_REFRESH_INTERNAL = "com.uoscs09.theuos2.widget.timetable.refresh_internal";
+    public final static String WIDGET_TIMETABLE_REFRESH = "com.uoscs09.theuos2.widget.timetable";
+
+    public static void sendRefreshIntent(Context context) {
+        // fix?
+        sendRefreshIntentInternal(context, TimeTableWidget5x4.class);
+        sendRefreshIntentInternal(context, TimeTableWidget4x4.class);
+    }
+
+    private static void sendRefreshIntentInternal(Context context, Class<? extends TimeTableWidget> clz) {
+        Intent intent = new Intent(context, clz);
+        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        int[] ids = AppWidgetManager.getInstance(context).getAppWidgetIds(new ComponentName(context, clz));
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+        context.sendBroadcast(intent);
+    }
+
 
     @Override
     public void onUpdate(final Context context, final AppWidgetManager appWidgetManager, final int[] appWidgetIds) {
@@ -50,7 +67,7 @@ public abstract class TimeTableWidget extends BaseAppWidgetProvider {
 
                 // refresh button
                 Intent refreshIntent = new Intent(context, getWidgetClass())
-                        .setAction(WIDGET_TIMETABLE_REFRESH)
+                        .setAction(WIDGET_TIMETABLE_REFRESH_INTERNAL)
                         .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
 
                 PendingIntent p = PendingIntent.getBroadcast(context, 0, refreshIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -99,7 +116,7 @@ public abstract class TimeTableWidget extends BaseAppWidgetProvider {
         super.onReceive(context, intent);
 
         switch (intent.getAction()) {
-            case WIDGET_TIMETABLE_REFRESH:
+            case WIDGET_TIMETABLE_REFRESH_INTERNAL:
                 long z = 0;
                 long waitTime = PrefUtil.getInstance(context).get("widget_timetable_refresh", z);
                 long wait = System.currentTimeMillis();
@@ -113,7 +130,7 @@ public abstract class TimeTableWidget extends BaseAppWidgetProvider {
                     return;
 
                 }
-
+            case WIDGET_TIMETABLE_REFRESH:
                 //context.sendBroadcast(new Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE));
 
                 callOnUpdate(context);

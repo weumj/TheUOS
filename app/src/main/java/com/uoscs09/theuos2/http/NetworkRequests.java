@@ -32,6 +32,8 @@ import com.uoscs09.theuos2.util.StringUtil;
 import com.uoscs09.theuos2.util.TaskUtil;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -293,11 +295,19 @@ public class NetworkRequests {
 
 
         public static Task<List<SubjectInfoItem>> requestSubjectInfo(String subjectName, int year, String termCode) {
+            String encodedSubjectName;
+            try {
+                // 한글은 euc-kr 로 인코딩 하여야 함.
+                encodedSubjectName =  URLEncoder.encode(subjectName, "euc-kr");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+                encodedSubjectName = subjectName;
+            }
             return oApi().subjectInformation(
                     OApiUtil.UOS_API_KEY,
                     year,
                     termCode,
-                    subjectName,
+                    encodedSubjectName,
                     null,
                     null,
                     null,

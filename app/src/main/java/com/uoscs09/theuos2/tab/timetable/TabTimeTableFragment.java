@@ -1,7 +1,6 @@
 package com.uoscs09.theuos2.tab.timetable;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -26,6 +25,7 @@ import android.widget.Spinner;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
+import com.uoscs09.theuos2.appwidget.timetable.TimeTableWidget;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.util.AnimUtil;
 import com.uoscs09.theuos2.util.AppRequests;
@@ -36,7 +36,6 @@ import com.uoscs09.theuos2.util.OApiUtil.Semester;
 import com.uoscs09.theuos2.util.TaskUtil;
 
 import java.io.IOException;
-import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -64,16 +63,12 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
     private Timetable2 mTimeTable;
     private TimeTableAdapter mTimeTableAdapter;
 
-    private final SubjectDetailDialogFragment mSubjectDetailDialog = new SubjectDetailDialogFragment();
-
     @SuppressWarnings("unchecked")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             mTimeTable = savedInstanceState.getParcelable(IOUtil.FILE_TIMETABLE);
         }
-
-        mSubjectDetailDialog.setColorSelectedListener(i -> mTimeTableAdapter.notifyDataSetChanged());
 
         super.onCreate(savedInstanceState);
 
@@ -85,18 +80,12 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
             if (subject == null)
                 return;
 
-            mSubjectDetailDialog.setSubject(subject);
-            mSubjectDetailDialog.setTimeTable(mTimeTable);
-
-            if (!mSubjectDetailDialog.isAdded()) {
-                mSubjectDetailDialog.show(getFragmentManager(), "subject");
-                sendClickEvent("detail subject");
-            }
+            SubjectDetailDialogFragment.showDialog(this, subject, mTimeTable, color -> mTimeTableAdapter.notifyDataSetChanged());
+            sendClickEvent("detail subject");
 
         });
 
         registerTabParentView(mTabParent);
-
     }
 
 
@@ -238,12 +227,15 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
 
         executeWithQueue(TAG, AppRequests.TimeTables.request(id, passwd, semester, year),
                 r -> {
+                    TimeTableWidget.sendRefreshIntent(getActivity());
+
                     setTimetable(r);
                     if (r == null)
                         AppUtil.showToast(getActivity(), R.string.tab_timetable_wise_login_warning_fail, isMenuVisible());
                 },
                 t -> {
-                    emptyView.setVisibility(View.VISIBLE);
+                    if (mTimeTable == null || mTimeTable.classTimeInformationTable() == null || mTimeTable.classTimeInformationTable().isEmpty())
+                        emptyView.setVisibility(View.VISIBLE);
 
                     if (t instanceof IOException || t instanceof NullPointerException) {
                         t.printStackTrace();
@@ -262,7 +254,6 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
         );
     }
 
-    @SuppressLint("SwitchIntDef")
     private void showLoginDialog() {
         Context context = getActivity();
         View wiseDialogLayout = View.inflate(context, R.layout.dialog_timetable_wise_login, null);
@@ -275,33 +266,7 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
         EditText wisePasswdView = (EditText) wiseDialogLayout.findViewById(R.id.dialog_wise_passwd_input);
         Spinner wiseTermSpinner = (Spinner) wiseDialogLayout.findViewById(R.id.dialog_wise_spinner_term);
 
-        Calendar c = Calendar.getInstance();
-        switch (c.get(Calendar.MONTH)) {
-            default:
-            case Calendar.FEBRUARY:
-            case Calendar.MARCH:
-            case Calendar.APRIL:
-            case Calendar.MAY:
-                wiseTermSpinner.setSelection(Semester.SPRING.ordinal());
-                break;
-
-            case Calendar.JUNE:
-            case Calendar.JULY:
-                wiseTermSpinner.setSelection(Semester.SUMMER.ordinal());
-                break;
-
-            case Calendar.AUGUST:
-            case Calendar.SEPTEMBER:
-            case Calendar.OCTOBER:
-            case Calendar.NOVEMBER:
-                wiseTermSpinner.setSelection(Semester.AUTUMN.ordinal());
-                break;
-
-            case Calendar.DECEMBER:
-            case Calendar.JANUARY:
-                wiseTermSpinner.setSelection(Semester.WINTER.ordinal());
-                break;
-        }
+        wiseTermSpinner.setSelection(Semester.getByCurrentMonth().ordinal());
 
         new AlertDialog.Builder(context)
                 .setTitle(R.string.tab_timetable_wise_login_title)
@@ -354,6 +319,7 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
                     if (result) {
                         AppUtil.showToast(getActivity(), R.string.execute_delete, isVisible());
                         setTimetable(null);
+                        TimeTableWidget.sendRefreshIntent(getActivity());
                     } else {
                         AppUtil.showToast(getActivity(), R.string.file_not_found, isMenuVisible());
                     }
