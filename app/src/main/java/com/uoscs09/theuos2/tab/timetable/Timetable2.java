@@ -281,6 +281,7 @@ public class Timetable2 implements Parcelable, Serializable {
             return isLocaleKor() ? location : locationEng;
         }
 
+        @Nullable
         public OApiUtil.UnivBuilding building() {
             return building;
         }

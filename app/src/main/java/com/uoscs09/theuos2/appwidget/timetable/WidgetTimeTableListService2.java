@@ -4,6 +4,7 @@ package com.uoscs09.theuos2.appwidget.timetable;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.text.TextUtils;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
@@ -101,13 +102,16 @@ public abstract class WidgetTimeTableListService2 extends RemoteViewsService {
                 Timetable2.SubjectInfo subject = period.getSubjectInfo(subjectIndex);
                 // 현재 표시하려는 과목과 리스트뷰의 한 단계 위의 과목의 이름이 같으면
                 // 내용을 표시하지 않음
-
                 if (subject == null || subject.isEqualPrior()) {
                     views.setTextViewText(id, StringUtil.NULL);
                     views.setTextViewText(subId, StringUtil.NULL);
                 } else {
-                    views.setTextViewText(id, subject.name());
-                    views.setTextViewText(subId, String.format("%s\n%s\n%s", subject.professor(), subject.location(), subject.building().getLocaleName()));
+                    views.setTextViewText(id, TextUtils.isEmpty(subject.name()) ? "" : subject.name());
+                    views.setTextViewText(subId, String.format("%s\n%s\n%s",
+                            TextUtils.isEmpty(subject.professor()) ? "" : subject.professor(),
+                            TextUtils.isEmpty(subject.location()) ? "" : subject.location(),
+                            subject.building() == null ? "" : subject.building().getLocaleName())
+                    );
                 }
 
                 // 과목 배경색 설정

@@ -1,5 +1,7 @@
 package com.uoscs09.theuos2.util;
 
+import android.support.annotation.Nullable;
+
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.Calendar;
@@ -33,8 +35,8 @@ public class OApiUtil {
             this.nameEng = nameEng;
         }
 
-        public String nameByLocale(){
-            if(Locale.getDefault().equals(Locale.KOREA))
+        public String nameByLocale() {
+            if (Locale.getDefault().equals(Locale.KOREA))
                 return nameKor;
             else
                 return nameEng;
@@ -55,7 +57,7 @@ public class OApiUtil {
             }
         }
 
-        public static Semester getSemesterByOrder(int order){
+        public static Semester getSemesterByOrder(int order) {
             return values()[order];
         }
 
@@ -68,8 +70,8 @@ public class OApiUtil {
          * 3 - 6 : spring
          * 7 - 8 : summer
          * 9 - 12 : autumn
-         * */
-        public static Semester getByCurrentMonth(){
+         */
+        public static Semester getByCurrentMonth() {
             switch (Calendar.getInstance().get(Calendar.MONTH)) {
                 case Calendar.JANUARY:
                 case Calendar.FEBRUARY:
@@ -79,11 +81,11 @@ public class OApiUtil {
                 case Calendar.APRIL:
                 case Calendar.MAY:
                 case Calendar.JUNE:
-                   return SPRING;
+                    return SPRING;
 
                 case Calendar.JULY:
                 case Calendar.AUGUST:
-                   return SUMMER;
+                    return SUMMER;
 
                 default:
                 case Calendar.SEPTEMBER:
@@ -237,9 +239,12 @@ public class OApiUtil {
             return new LatLng(lat, lang);
         }
 
+        @Nullable
         public static UnivBuilding fromNumber(int number) {
-            if (number > -1 && number < 36) {
-                return values()[number];
+            UnivBuilding[] univBuildings = values();
+
+            for (UnivBuilding univBuilding : univBuildings) {
+                if (univBuilding.code == number) return univBuilding;
             }
 
             return null;
