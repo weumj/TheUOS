@@ -134,28 +134,12 @@ public class AppRequests {
             return SerializableArrayMap.toSparseArray(IOUtil.readInternalFileSilent(IOUtil.FILE_REST));
         }
 
-        static final String WEEK_FILE_NAME = "FILE_REST_WEEK_ITEM";
-
-        public static Task<RestWeekItem> readWeekInfo(String code, boolean shouldUpdateUsingInternet) {
-
-            return Tasks.newTask(() -> {
-                // 이번주의 식단이 기록된 파일이 있으면, 인터넷에서 가져오지 않고 그 파일을 읽음
-                if (!shouldUpdateUsingInternet && PrefHelper.Restaurants.isTodayWithinWeekItemFetchTime(code, OApiUtil.getDate())) {
-
-                    RestWeekItem result = (RestWeekItem) IOUtil.internalFileOpenTask(WEEK_FILE_NAME + code).get();
-
-                    if (result != null)
-                        return result;
-                }
-
-                return NetworkRequests.Restaurants.requestWeekInfo(code)
-                        .map(IOUtil.<RestWeekItem>newInternalFileWriteFunc(WEEK_FILE_NAME + code))
-                        .map(item -> {
-                            PrefHelper.Restaurants.putWeekItemFetchTime(code, item);
-                            return item;
-                        })
-                        .get();
-            });
+        public static Task<RestWeekItem> readWeekInfo(String code) {
+            return NetworkRequests.Restaurants.requestWeekInfo(code)
+                    .map(item -> {
+                        PrefHelper.Restaurants.putWeekItemFetchTime(code, item);
+                        return item;
+                    });
 
         }
 

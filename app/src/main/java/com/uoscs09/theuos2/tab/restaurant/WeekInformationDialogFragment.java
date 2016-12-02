@@ -41,7 +41,7 @@ public class WeekInformationDialogFragment extends AbsAnimDialogFragment {
     private Task<RestWeekItem> mTask;
 
     public static void fetchDataAndShow(final Fragment fragment, final int stringId, View v) {
-        Task<RestWeekItem> task = AppRequests.Restaurants.readWeekInfo(getCode(stringId), false);
+        Task<RestWeekItem> task = AppRequests.Restaurants.readWeekInfo(getCode(stringId));
         Dialog d = AppUtil.getProgressDialog(fragment.getActivity(), false, (dialog, which) -> task.cancel());
         d.show();
 
@@ -129,7 +129,7 @@ public class WeekInformationDialogFragment extends AbsAnimDialogFragment {
             mFailView.setVisibility(View.GONE);
 
 
-        mTask = AppRequests.Restaurants.readWeekInfo(getCode(mCurrentSelectionId), shouldUpdateUsingInternet).getAsync(
+        mTask = AppRequests.Restaurants.readWeekInfo(getCode(mCurrentSelectionId)).getAsync(
                 result -> {
                     postExecute();
 
