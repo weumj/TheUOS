@@ -4,11 +4,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.uoscs09.theuos2.tab.buildings.BuildingRoom;
-import com.uoscs09.theuos2.tab.buildings.ClassroomTimeTable;
-import com.uoscs09.theuos2.tab.emptyroom.EmptyRoomInfo;
-import com.uoscs09.theuos2.tab.schedule.UnivScheduleInfo;
-import com.uoscs09.theuos2.tab.subject.CoursePlanInfo;
-import com.uoscs09.theuos2.tab.subject.SubjectInformation;
+import com.uoscs09.theuos2.tab.buildings.ClassRoomTimetable;
+import com.uoscs09.theuos2.tab.emptyroom.EmptyRoomWrapper;
+import com.uoscs09.theuos2.tab.schedule.UnivScheduleWrapper;
+import com.uoscs09.theuos2.tab.subject.CoursePlanWrapper;
+import com.uoscs09.theuos2.tab.subject.SubjectWrapper;
 import com.uoscs09.theuos2.tab.subject.TimeTableSubjectInfo;
 
 import mj.android.utils.task.Task;
@@ -25,7 +25,7 @@ public interface UosOApi {
     @FormUrlEncoded
     @Headers({"Content-Type: charset=EUC-KR"})
     @POST("api.ApiUcsFromToEmptyRoom.oapi")
-    Task<EmptyRoomInfo> emptyRooms(
+    Task<EmptyRoomWrapper> emptyRooms(
             @NonNull @Field("apiKey") String apiKey,
             @NonNull @Field("year") String year,
             @NonNull @Field("term") String term,
@@ -40,7 +40,7 @@ public interface UosOApi {
     @FormUrlEncoded
     @Headers({"Content-Type: charset=EUC-KR"})
     @POST("api.ApiApiCoursePlanView.oapi")
-    Task<CoursePlanInfo> coursePlans(
+    Task<CoursePlanWrapper> coursePlans(
             @NonNull @Field("apiKey") String apiKey,
             @NonNull @Field("term") String term,
             @NonNull @Field("subjectNo") String subjectNo,
@@ -78,7 +78,7 @@ public interface UosOApi {
 
     @Headers({"Content-Type: charset=EUC-KR"})
     @GET("api.ApiApiSubjectList.oapi")
-    Task<SubjectInformation> subjectInformation(
+    Task<SubjectWrapper> subjectInformation(
             @NonNull @Query("apiKey") String apiKey,
             @Query("year") int year,
             @NonNull @Query("term") String term,
@@ -94,7 +94,7 @@ public interface UosOApi {
     @FormUrlEncoded
     @Headers({"Content-Type: charset=EUC-KR"})
     @POST("api.ApiApiMainBd.oapi")
-    Task<UnivScheduleInfo> schedules(
+    Task<UnivScheduleWrapper> schedules(
             @NonNull @Field("apiKey") String apiKey
     );
 
@@ -108,7 +108,7 @@ public interface UosOApi {
     @FormUrlEncoded
     @Headers({"Content-Type: charset=EUC-KR"})
     @POST("api.ApiUcsCourseTimeTableRoomList.oapi")
-    Task<ClassroomTimeTable> classRoomTimeTables(
+    Task<ClassRoomTimetable> classRoomTimeTables(
             @Field("apiKey") String apiKey,
             @Field("year") String year,
             @Field("term") String term,

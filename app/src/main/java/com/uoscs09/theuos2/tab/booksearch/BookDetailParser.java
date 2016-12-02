@@ -12,7 +12,7 @@ import net.htmlparser.jericho.Source;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ParseBookDetail extends JerichoParser<BookDetailItem> {
+public class BookDetailParser extends JerichoParser<BookDetailItem> {
 
 
     @Override

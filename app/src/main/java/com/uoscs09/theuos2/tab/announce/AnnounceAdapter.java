@@ -21,15 +21,17 @@ class AnnounceAdapter extends AbsArrayAdapter<AnnounceItem, AnnounceAdapter.Hold
      * <내용> 형식의 공지사항을 제대로 표시하기 위해 설정한 패턴
      */
     //private static final Pattern HTML_PATTERN = Pattern.compile(".*<[[a-z][A-Z][0-9]]+>.*");
-
     @Override
     public void onBindViewHolder(int position, Holder holder) {
         AnnounceItem item = getItem(position);
 
-
-        holder.title.setText(item.title);
-        holder.date.setText(item.date);
-
+        if (item != null) {
+            holder.title.setText(item.title);
+            holder.date.setText(item.date);
+        } else {
+            holder.title.setText("");
+            holder.date.setText("");
+        }
         /*
         int i = 0;
         for (TextView tv : holder.textArray) {
@@ -59,6 +61,7 @@ class AnnounceAdapter extends AbsArrayAdapter<AnnounceItem, AnnounceAdapter.Hold
         public TextView title;
         @BindView(R.id.tab_announce_list_text_date)
         public TextView date;
+
         public Holder(View v) {
             super(v);
         }

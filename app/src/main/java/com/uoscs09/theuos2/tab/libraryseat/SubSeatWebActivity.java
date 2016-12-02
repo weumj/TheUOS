@@ -42,7 +42,7 @@ public class SubSeatWebActivity extends WebViewActivity {
         }
 
 
-        SeatItem item = getIntent().getParcelableExtra(TabLibrarySeatFragment.ITEM);
+        SeatInfo item = getIntent().getParcelableExtra(TabLibrarySeatFragment.ITEM);
         if (item == null) {
             finish();
             return;

@@ -1,7 +1,7 @@
 package com.uoscs09.theuos2.api;
 
 import com.uoscs09.theuos2.tab.announce.AnnounceItem;
-import com.uoscs09.theuos2.tab.announce.ParseAnnounce;
+import com.uoscs09.theuos2.tab.announce.AnnounceParser;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -11,7 +11,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Converter;
 
 class AnnounceHtmlConverter {
-    private static ParseAnnounce n, s;
+    private static AnnounceParser n, s;
 
     private static boolean annotationCheck(Annotation annotation, Class clazz) {
         return annotation.annotationType().getName().equals(clazz.getName());
@@ -35,7 +35,7 @@ class AnnounceHtmlConverter {
             return null;
         } else if (scholarship) {
             if (s == null)
-                s = ParseAnnounce.scholarship();
+                s = AnnounceParser.scholarship();
             return value -> {
                 try {
                     return s.parse(value.string());
@@ -48,7 +48,7 @@ class AnnounceHtmlConverter {
             };
         } else {
             if (n == null)
-                n = ParseAnnounce.normalWeb();
+                n = AnnounceParser.normalWeb();
             return value -> {
                 try {
                     return n.parse(value.string());

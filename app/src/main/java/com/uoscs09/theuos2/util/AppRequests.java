@@ -9,16 +9,16 @@ import com.uoscs09.theuos2.tab.announce.AnnounceItem;
 import com.uoscs09.theuos2.tab.booksearch.BookItem;
 import com.uoscs09.theuos2.tab.booksearch.BookStateInfo;
 import com.uoscs09.theuos2.tab.buildings.BuildingRoom;
-import com.uoscs09.theuos2.tab.buildings.ClassroomTimeTable;
+import com.uoscs09.theuos2.tab.buildings.ClassRoomTimetable;
 import com.uoscs09.theuos2.tab.emptyroom.EmptyRoom;
 import com.uoscs09.theuos2.tab.libraryseat.SeatInfo;
-import com.uoscs09.theuos2.tab.libraryseat.SeatItem;
+import com.uoscs09.theuos2.tab.libraryseat.SeatTotalInfo;
 import com.uoscs09.theuos2.tab.restaurant.RestItem;
-import com.uoscs09.theuos2.tab.restaurant.WeekRestItem;
+import com.uoscs09.theuos2.tab.restaurant.RestWeekItem;
 import com.uoscs09.theuos2.tab.schedule.UnivScheduleItem;
-import com.uoscs09.theuos2.tab.subject.CoursePlanItem;
-import com.uoscs09.theuos2.tab.subject.SubjectItem2;
-import com.uoscs09.theuos2.tab.timetable.SubjectInfoItem;
+import com.uoscs09.theuos2.tab.subject.CoursePlan;
+import com.uoscs09.theuos2.tab.subject.Subject;
+import com.uoscs09.theuos2.tab.timetable.SimpleSubject;
 import com.uoscs09.theuos2.tab.timetable.Timetable2;
 
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ public class AppRequests {
         public static Task<List<AnnounceItem>> normalRequest(int category, int page) {
             return NetworkRequests.Announces.normalRequest(category, page);
             /*
-                    .wrap(announceItems -> {
+                    .map(announceItems -> {
                         if (PrefHelper.Announces.isAnnounceExceptNoticeType()) {
                             final int size = announceItems.size();
                             for (int i = size - 1; i >= 0; i--) {
@@ -54,7 +54,7 @@ public class AppRequests {
         public static Task<List<AnnounceItem>> searchRequest(int category, int pageIndex, String query) {
             return NetworkRequests.Announces.searchRequest(category, pageIndex, query);
             /*
-                    .wrap(announceItems -> {
+                    .map(announceItems -> {
                         final int size = announceItems.size();
                         for (int i = size - 1; i >= 0; i--) {
                             AnnounceItem item = announceItems.get(i);
@@ -76,7 +76,7 @@ public class AppRequests {
 
         public static Task<List<BookItem>> request(String query, int page, int os, int oi) {
             return NetworkRequests.Books.request(query, page, os, oi)
-                    .wrap(originalList -> {
+                    .map(originalList -> {
                                 if (PrefHelper.Books.isFilterUnavailableBook() && originalList.size() > 0) {
                                     ArrayList<BookItem> newList = new ArrayList<>();
                                     String emptyMsg = AppUtil.context().getString(R.string.tab_book_not_found);
@@ -121,7 +121,7 @@ public class AppRequests {
                 }
 
                 return NetworkRequests.Restaurants.request()
-                        .wrap(restItemSparseArray -> {
+                        .map(restItemSparseArray -> {
                             SerializableArrayMap<Integer, RestItem> writingObject = SerializableArrayMap.fromSparseArray(restItemSparseArray);
                             IOUtil.writeObjectToInternalFile(IOUtil.FILE_REST, writingObject);
                             PrefHelper.Restaurants.putDownloadTime(OApiUtil.getDateTime());
@@ -134,23 +134,23 @@ public class AppRequests {
             return SerializableArrayMap.toSparseArray(IOUtil.readInternalFileSilent(IOUtil.FILE_REST));
         }
 
-        public static final String WEEK_FILE_NAME = "FILE_REST_WEEK_ITEM";
+        static final String WEEK_FILE_NAME = "FILE_REST_WEEK_ITEM";
 
-        public static Task<WeekRestItem> readWeekInfo(String code, boolean shouldUpdateUsingInternet) {
+        public static Task<RestWeekItem> readWeekInfo(String code, boolean shouldUpdateUsingInternet) {
 
             return Tasks.newTask(() -> {
                 // 이번주의 식단이 기록된 파일이 있으면, 인터넷에서 가져오지 않고 그 파일을 읽음
                 if (!shouldUpdateUsingInternet && PrefHelper.Restaurants.isTodayWithinWeekItemFetchTime(code, OApiUtil.getDate())) {
 
-                    WeekRestItem result = (WeekRestItem) IOUtil.internalFileOpenTask(WEEK_FILE_NAME + code).get();
+                    RestWeekItem result = (RestWeekItem) IOUtil.internalFileOpenTask(WEEK_FILE_NAME + code).get();
 
                     if (result != null)
                         return result;
                 }
 
                 return NetworkRequests.Restaurants.requestWeekInfo(code)
-                        .wrap(IOUtil.<WeekRestItem>newInternalFileWriteFunc(WEEK_FILE_NAME + code))
-                        .wrap(item -> {
+                        .map(IOUtil.<RestWeekItem>newInternalFileWriteFunc(WEEK_FILE_NAME + code))
+                        .map(item -> {
                             PrefHelper.Restaurants.putWeekItemFetchTime(code, item);
                             return item;
                         })
@@ -173,7 +173,7 @@ public class AppRequests {
 
         public static Task<Timetable2> request(CharSequence id, CharSequence passwd, OApiUtil.Semester semester, CharSequence year) {
             return NetworkRequests.TimeTables.request(id, passwd, semester, year)
-                    .wrap(IOUtil.<Timetable2>newInternalFileWriteFunc(IOUtil.FILE_TIMETABLE));
+                    .map(IOUtil.<Timetable2>newInternalFileWriteFunc(IOUtil.FILE_TIMETABLE));
         }
 
         public static Task<Timetable2> readFile() {
@@ -183,16 +183,16 @@ public class AppRequests {
 
 
     public static class LibrarySeats {
-        public static Task<SeatInfo> request() {
+        public static Task<SeatTotalInfo> request() {
             return NetworkRequests.LibrarySeats.request()
-                    .wrap(seatInfo -> {
+                    .map(seatInfo -> {
                         if (PrefHelper.LibrarySeats.isFilterOccupyingRoom()) {
-                            ArrayList<SeatItem> list = seatInfo.seatItemList;
+                            ArrayList<SeatInfo> list = seatInfo.seatInfoList;
                             // 스터디룸 인덱스
                             final int[] filterArr = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 23, 24, 25, 26, 27, 28};
                             final int size = filterArr.length;
                             for (int i = size - 1; i > -1; i--) {
-                                SeatItem item = list.get(filterArr[i]);
+                                SeatInfo item = list.get(filterArr[i]);
                                 if (item.utilizationRate >= 50)
                                     list.remove(item);
                             }
@@ -212,26 +212,26 @@ public class AppRequests {
 
 
     public static class Subjects {
-        public static Task<List<SubjectItem2>> requestCulture(String year, int term, String subjectDiv, String subjectName) {
+        public static Task<List<Subject>> requestCulture(String year, int term, String subjectDiv, String subjectName) {
             return NetworkRequests.Subjects.requestCulture(year, term, subjectDiv, subjectName);
         }
 
-        public static Task<List<SubjectItem2>> requestMajor(String year, int term, Map<String, String> majorParams, String subjectName) {
+        public static Task<List<Subject>> requestMajor(String year, int term, Map<String, String> majorParams, String subjectName) {
             return NetworkRequests.Subjects.requestMajor(year, term, majorParams, subjectName);
         }
 
-        public static Task<List<CoursePlanItem>> requestCoursePlan(SubjectItem2 item) {
+        public static Task<List<CoursePlan>> requestCoursePlan(Subject item) {
             return NetworkRequests.Subjects.requestCoursePlan(item);
         }
 
-        public static Task<List<SubjectInfoItem>> requestSubjectInfo(String subjectName, int year, String termCode) {
+        public static Task<List<SimpleSubject>> requestSubjectInfo(String subjectName, int year, String termCode) {
             return NetworkRequests.Subjects.requestSubjectInfo(subjectName, year, termCode);
         }
     }
 
 
     public static class UnivSchedules {
-        public static final String FILE_NAME = "file_univ_schedule_r1";
+        static final String FILE_NAME = "file_univ_schedule_r1";
 
         public static Task<List<UnivScheduleItem>> request(boolean force) {
             return Tasks.newTask(() -> {
@@ -249,13 +249,13 @@ public class AppRequests {
                 }
 
                 return NetworkRequests.UnivSchedules.request()
-                        .wrap(IOUtil.<List<UnivScheduleItem>>newInternalFileWriteFunc(AppRequests.UnivSchedules.FILE_NAME))
-                        .wrap(univScheduleItems -> {
+                        .map(IOUtil.<List<UnivScheduleItem>>newInternalFileWriteFunc(AppRequests.UnivSchedules.FILE_NAME))
+                        .map(univScheduleItems -> {
                             PrefHelper.UnivSchedules.putFetchMonth(univScheduleItems.get(0).getDate(true).get(Calendar.MONTH));
                             return univScheduleItems;
                         })
                         .get();
-            }).wrap(univScheduleItems -> {
+            }).map(univScheduleItems -> {
                 Collections.sort(univScheduleItems, (lhs, rhs) -> {
                     int lDay = lhs.dateStart.day, rDay = rhs.dateStart.day;
                     if (lDay == rDay)
@@ -307,15 +307,15 @@ public class AppRequests {
 
         private static Task<BuildingRoom> downloadBuildingRooms() {
             return NetworkRequests.Buildings.buildingRooms()
-                    .wrap(room -> {
+                    .map(room -> {
                         PrefHelper.Buildings.putDownloadTime(System.currentTimeMillis());
                         return room;
                     })
-                    .wrap(IOUtil.newInternalFileWriteFunc(FILE_BUILDINGS));
+                    .map(IOUtil.newInternalFileWriteFunc(FILE_BUILDINGS));
         }
 
-        public static Task<ClassroomTimeTable> classRoomTimeTables(String year, String term, EmptyRoom emptyRoom, boolean forceDownload) {
-            return buildingRooms(forceDownload).wrap(room -> {
+        public static Task<ClassRoomTimetable> classRoomTimeTables(String year, String term, EmptyRoom emptyRoom, boolean forceDownload) {
+            return buildingRooms(forceDownload).map(room -> {
                 int findingRoomNum = Integer.valueOf(emptyRoom.roomNo.split("-")[0]);
                 //todo search
                 /* roomName 에 대해 정렬 되어있지 않으므로 사용 불가
@@ -373,7 +373,7 @@ public class AppRequests {
             });
         }
 
-        public static Task<ClassroomTimeTable> classRoomTimeTables(String year, String term, BuildingRoom.RoomInfo roomInfo) {
+        public static Task<ClassRoomTimetable> classRoomTimeTables(String year, String term, BuildingRoom.RoomInfo roomInfo) {
             return NetworkRequests.Buildings.classRoomTimeTables(year, term, roomInfo);
         }
     }

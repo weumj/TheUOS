@@ -284,25 +284,25 @@ public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>>
     }
 
     private void executeSearchJob(boolean moreRequest, int newPageIndex, String query) {
-        execute(AppRequests.Announces.searchRequest(getCurrentCategoryIndex(), newPageIndex, query),
-                result -> {
+        task(AppRequests.Announces.searchRequest(getCurrentCategoryIndex(), newPageIndex, query))
+                .result(result -> {
                     mListFooterView.setClickable(true);
                     if (moreRequest) updateWithResultInMoreRequest(result, newPageIndex);
                     else updateWithResult(result, true, newPageIndex);
-                },
-                this::onError
-        );
+                })
+                .error(this::onError)
+                .execute();
     }
 
     private void executeJob(boolean moreRequest, int newPageIndex) {
-        execute(AppRequests.Announces.normalRequest(getCurrentCategoryIndex(), newPageIndex),
-                result -> {
+        task(AppRequests.Announces.normalRequest(getCurrentCategoryIndex(), newPageIndex))
+                .result(result -> {
                     mListFooterView.setClickable(true);
                     if (moreRequest) updateWithResultInMoreRequest(result, newPageIndex);
                     else updateWithResult(result, false, newPageIndex);
-                },
-                this::onError
-        );
+                })
+                .error(this::onError)
+                .execute();
     }
 
 

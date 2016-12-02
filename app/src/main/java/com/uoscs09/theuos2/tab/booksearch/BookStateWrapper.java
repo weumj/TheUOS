@@ -8,7 +8,7 @@ import mj.android.utils.xml.ListContainer;
 import mj.android.utils.xml.Root;
 
 @Root(name = "location", charset = "utf-8")
-public class BookStates implements IParser.IPostParsing {
+public class BookStateWrapper implements IParser.IPostParsing {
     @ListContainer(name = "noholding")
     private List<BookStateInfo> bookStateInfo;
 

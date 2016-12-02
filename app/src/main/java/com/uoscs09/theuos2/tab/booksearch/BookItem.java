@@ -4,7 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -130,7 +129,7 @@ public class BookItem implements Parcelable {
     }
 
     public BookItem() {
-        title = writer = bookInfo = site = bookState = coverSrc = url = infoUrl = StringUtil.NULL;
+        title = writer = bookInfo = site = bookState = coverSrc = url = infoUrl = "";
         bookStateInfoList = null;
     }
 

@@ -11,7 +11,7 @@ import net.htmlparser.jericho.Source;
 
 import java.util.List;
 
-public class ParseRest extends JerichoParser<SparseArray<RestItem>> {
+public class RestaurantMenuParser extends JerichoParser<SparseArray<RestItem>> {
     //private static final String BR = "*br*";
 
     @Override
@@ -23,7 +23,7 @@ public class ParseRest extends JerichoParser<SparseArray<RestItem>> {
 
         final int N = restList.size();
         for (int i = 0; i < N; i++) {
-            String title = restList.get(i).getTextExtractor().toString().split(StringUtil.SPACE)[0].trim();
+            String title = restList.get(i).getTextExtractor().toString().split(" ")[0].trim();
 
             String breakfast = extractContent(menuList.get(6 * i + 1));
             String lunch = extractContent(menuList.get(6 * i + 3));
@@ -31,7 +31,7 @@ public class ParseRest extends JerichoParser<SparseArray<RestItem>> {
 
             int nameIndex = RestItem.findRestNameIndex(title);
             if (nameIndex > -1)
-                result.put(nameIndex, new RestItem(title, StringUtil.NULL, breakfast, lunch, supper));
+                result.put(nameIndex, new RestItem(title, "", breakfast, lunch, supper));
         }
 
         return result;

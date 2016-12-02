@@ -35,6 +35,7 @@ import com.uoscs09.theuos2.util.PrefHelper;
 
 import java.io.File;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -59,7 +60,7 @@ public class SubAnnounceWebActivity extends BaseActivity {
     private String url;
     private AnnounceItem mItem;
     private List<Pair<String, String>> attachedFileUrlPairList;
-    private Task<DetailAnnounceItem> task;
+    private Task<AnnounceDetailItem> task;
 
 
     @Override
@@ -161,7 +162,7 @@ public class SubAnnounceWebActivity extends BaseActivity {
         progressWheel.setVisibility(View.VISIBLE);
         progressWheel.spin();
 
-        task = ParseAnnounce.fileNameUrlPairTask(url).getAsync(
+        task = AnnounceParser.fileNameUrlPairTask(url).getAsync(
                 this::setScreenWithItem,
                 throwable -> {
                     hideProgress();
@@ -185,6 +186,7 @@ public class SubAnnounceWebActivity extends BaseActivity {
                 super.onReceivedError(view, errorCode, description, failingUrl);
                 hideProgress();
             }
+
         });
 
     }
@@ -197,12 +199,12 @@ public class SubAnnounceWebActivity extends BaseActivity {
     }
 
 
-    void setScreenWithItem(DetailAnnounceItem detailAnnounceItem) {
+    void setScreenWithItem(AnnounceDetailItem announceDetailItem) {
         if (mWebView == null || isFinishing())
             return;
 
-        mWebView.loadDataWithBaseURL("http://m.uos.ac.kr/", detailAnnounceItem.page, "text/html", "UTF-8", "");
-        this.attachedFileUrlPairList = detailAnnounceItem.fileNameUrlPairList;
+        mWebView.loadDataWithBaseURL("http://m.uos.ac.kr/", announceDetailItem.page, "text/html", "UTF-8", "");
+        this.attachedFileUrlPairList = announceDetailItem.fileNameUrlPairList;
 
         if (!attachedFileUrlPairList.isEmpty()) {
             View v = findViewById(R.id.tab_announce_subweb_fab);
@@ -289,7 +291,7 @@ public class SubAnnounceWebActivity extends BaseActivity {
                     .setAdapter(new AbsArrayAdapter.SimpleAdapter<Pair<String, String>>(this, android.R.layout.simple_list_item_1, attachedFileUrlPairList) {
                                     @Override
                                     public String getTextFromItem(int position, Pair<String, String> item) {
-                                        return String.format("(%d)  ", position + 1) + item.first;
+                                        return String.format(Locale.getDefault(), "(%d)  ", position + 1) + item.first;
                                     }
                                 },
                             (dialog, which) -> downloadFile(which))

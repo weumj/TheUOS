@@ -12,8 +12,8 @@ import android.widget.TextView;
 
 import com.uoscs09.theuos2.base.BaseTabFragment;
 import com.uoscs09.theuos2.base.ViewHolder;
-import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.AppUtil.TabInfo;
+import com.uoscs09.theuos2.util.ResourceUtil;
 
 import java.util.List;
 
@@ -48,7 +48,7 @@ public class TabHomeFragment extends BaseTabFragment {
 
         List<TabInfo> list = loadEnabledTabOrderForHome();
 
-        final int viewCount = AppUtil.isScreenSizeSmall() ? 3 : 5;
+        final int viewCount = ResourceUtil.isScreenSizeSmall() ? 3 : 5;
 
         mRecyclerView.setNestedScrollingEnabled(false);
         mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), viewCount));
@@ -90,7 +90,7 @@ public class TabHomeFragment extends BaseTabFragment {
         @BindView(android.R.id.text1)
         TextView textView;
 
-        public HomeViewHolder(View itemView) {
+        HomeViewHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
         }

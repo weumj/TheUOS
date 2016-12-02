@@ -1,6 +1,7 @@
 package com.uoscs09.theuos2.base;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,9 +43,10 @@ public abstract class AbsArrayAdapter<T, VH extends AbsArrayAdapter.IViewHolder>
         this.layoutId = layout;
     }
 
+    @NonNull
     @SuppressWarnings("unchecked")
     @Override
-    public View getView(int position, View view, ViewGroup parent) {
+    public View getView(int position, View view, @NonNull ViewGroup parent) {
         VH holder;
         if (view == null) {
             view = LayoutInflater.from(parent.getContext()).inflate(layoutId, parent, false);

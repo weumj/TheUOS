@@ -29,6 +29,7 @@ import com.uoscs09.theuos2.api.UosApiService;
 import com.uoscs09.theuos2.base.BaseActivity;
 import com.uoscs09.theuos2.util.AnimUtil;
 import com.uoscs09.theuos2.util.AppUtil;
+import com.uoscs09.theuos2.util.ResourceUtil;
 
 import java.util.List;
 
@@ -97,7 +98,7 @@ public class BookDetailActivity extends BaseActivity {
 
 
         toolbar.setTitle(R.string.tab_book_sub_title);
-        toolbar.setNavigationIcon(AppUtil.getAttrValue(this, R.attr.menu_theme_ic_action_navigation_arrow_back));
+        toolbar.setNavigationIcon(ResourceUtil.getAttrValue(this, R.attr.menu_theme_ic_action_navigation_arrow_back));
         toolbar.setNavigationOnClickListener(v -> finish());
 
         load();

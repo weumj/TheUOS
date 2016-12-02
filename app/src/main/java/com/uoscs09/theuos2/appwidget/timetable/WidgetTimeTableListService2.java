@@ -13,8 +13,8 @@ import com.uoscs09.theuos2.base.AbsListRemoteViewsFactory;
 import com.uoscs09.theuos2.tab.timetable.Timetable2;
 import com.uoscs09.theuos2.tab.timetable.TimetableUtil;
 import com.uoscs09.theuos2.util.AppRequests;
+import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.PrefHelper;
-import com.uoscs09.theuos2.util.StringUtil;
 
 import java.util.Calendar;
 
@@ -56,7 +56,7 @@ public abstract class WidgetTimeTableListService2 extends RemoteViewsService {
 
         private final String[] periodTimeArray;
 
-        public ListRemoteViewsFactory(Context context, Intent intent) {
+        ListRemoteViewsFactory(Context context, Intent intent) {
             super(context, intent);
             periodTimeArray = context.getResources().getStringArray(R.array.tab_timetable_timelist_only_time);
 
@@ -103,15 +103,16 @@ public abstract class WidgetTimeTableListService2 extends RemoteViewsService {
                 // 현재 표시하려는 과목과 리스트뷰의 한 단계 위의 과목의 이름이 같으면
                 // 내용을 표시하지 않음
                 if (subject == null || subject.isEqualPrior()) {
-                    views.setTextViewText(id, StringUtil.NULL);
-                    views.setTextViewText(subId, StringUtil.NULL);
+                    views.setTextViewText(id, "");
+                    views.setTextViewText(subId, "");
                 } else {
+                    OApiUtil.UnivBuilding building = subject.building();
                     views.setTextViewText(id, TextUtils.isEmpty(subject.name()) ? "" : subject.name());
                     views.setTextViewText(subId, String.format("%s\n%s\n%s",
                             TextUtils.isEmpty(subject.professor()) ? "" : subject.professor(),
                             TextUtils.isEmpty(subject.location()) ? "" : subject.location(),
-                            subject.building() == null ? "" :
-                                    TextUtils.isEmpty(subject.building().getLocaleName()) ? "" : subject.building().getLocaleName())
+                            building == null ? "" :
+                                    TextUtils.isEmpty(building.getLocaleName()) ? "" : building.getLocaleName())
                     );
                 }
 

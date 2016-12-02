@@ -25,10 +25,12 @@ import com.uoscs09.theuos2.base.BaseDialogFragment;
 import com.uoscs09.theuos2.common.PieProgressDrawable;
 import com.uoscs09.theuos2.tab.map.GoogleMapActivity;
 import com.uoscs09.theuos2.tab.subject.CoursePlanDialogFragment;
-import com.uoscs09.theuos2.tab.subject.SubjectItem2;
+import com.uoscs09.theuos2.tab.subject.Subject;
 import com.uoscs09.theuos2.util.AnimUtil;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
+import com.uoscs09.theuos2.util.OApiUtil;
+import com.uoscs09.theuos2.util.ResourceUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +50,7 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
     @BindView(R.id.timetable_callback_alarm_spinner)
     Spinner mAlarmTimeSelectSpinner;
 
-    private ArrayAdapter<SubjectInfoItem> mClassDivSelectAdapter;
+    private ArrayAdapter<SimpleSubject> mClassDivSelectAdapter;
     private Timetable2.SubjectInfo mSubject;
     private Timetable2 mTimeTable;
 
@@ -95,7 +97,7 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
         super.onResume();
 
         if (mSubject != null) {
-            int color = AppUtil.getAttrColor(getActivity(), R.attr.colorPrimary);
+            int color = ResourceUtil.getAttrColor(getActivity(), R.attr.colorPrimary);
 
             if (mTimeTable.colorTable().size() > 0) {
                 int i = mTimeTable.color(mSubject);
@@ -217,9 +219,9 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
         if (getActivity() == null)
             return;
 
-        if (mSubject != null && mSubject.building() != null && mSubject.building().code > 0) {
-
-            Intent intent = GoogleMapActivity.startIntentWithErrorToast(getBaseActivity(), mSubject.building());
+        OApiUtil.UnivBuilding univBuilding = mSubject.building();
+        if ((mSubject != null) && (univBuilding != null) && (univBuilding.code > 0)) {
+            Intent intent = GoogleMapActivity.startIntentWithErrorToast(getBaseActivity(), univBuilding);
 
             if (intent != null) {
                 sendClickEvent("map");
@@ -257,7 +259,7 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
                             dismiss();
 
                         } else if (size == 1) {
-                            showCoursePlan(result.get(0).toSubjectItem(mTimeTable, mSubject), v);
+                            showCoursePlan(result.get(0).toSubject(mTimeTable, mSubject), v);
                             dismiss();
 
                         } else {
@@ -286,7 +288,7 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
         AppUtil.showErrorToast(getActivity(), e, isVisible());
     }
 
-    private void setOrCancelAlarm(Subject subject, int spinnerSelection) {
+    private void setOrCancelAlarm(TimetableSubject subject, int spinnerSelection) {
         TimetableAlarmUtil.setOrCancelAlarm(getActivity(), subject, spinnerSelection);
     }
 
@@ -304,13 +306,16 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
         ListView divListView = (ListView) dialogView.findViewById(R.id.dialog_timetable_callback_listview_div);
         divListView.setAdapter(mClassDivSelectAdapter);
         divListView.setOnItemClickListener((adapter, arg1, pos, arg3) -> {
-            showCoursePlan(mClassDivSelectAdapter.getItem(pos).toSubjectItem(mTimeTable, mSubject), arg1);
+
+            SimpleSubject item = mClassDivSelectAdapter.getItem(pos);
+            if (item != null)
+                showCoursePlan(item.toSubject(mTimeTable, mSubject), arg1);
 
             mClassDivSelectDialog.dismiss();
         });
     }
 
-    private void showCoursePlan(SubjectItem2 subject, View v) {
+    private void showCoursePlan(Subject subject, View v) {
         CoursePlanDialogFragment.fetchCoursePlanAndShow(getTargetFragment(), subject, v);
     }
 
@@ -320,15 +325,21 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
         return TAG;
     }
 
-    private static class ClassDivAdapter extends AbsArrayAdapter<SubjectInfoItem, ViewHolder> {
+    private static class ClassDivAdapter extends AbsArrayAdapter<SimpleSubject, ViewHolder> {
 
-        public ClassDivAdapter(Context context, List<SubjectInfoItem> list) {
+        ClassDivAdapter(Context context, List<SimpleSubject> list) {
             super(context, android.R.layout.simple_list_item_1, list);
         }
 
         @Override
         public void onBindViewHolder(int position, SubjectDetailDialogFragment.ViewHolder holder) {
-            holder.textView.setText(getItem(position).classDiv);
+            SimpleSubject item = getItem(position);
+
+            if (item != null) {
+                holder.textView.setText(item.classDiv);
+            } else {
+                holder.textView.setText("");
+            }
         }
 
         @Override

@@ -8,7 +8,7 @@ import mj.android.utils.xml.ListContainer;
 import mj.android.utils.xml.Root;
 
 @Root(name = "root", charset = "euc-kr")
-public class UnivScheduleInfo implements IParser.IPostParsing {
+public class UnivScheduleWrapper implements IParser.IPostParsing {
     @ListContainer(name = "schList")
     private List<UnivScheduleItem> univScheduleItemList;
 

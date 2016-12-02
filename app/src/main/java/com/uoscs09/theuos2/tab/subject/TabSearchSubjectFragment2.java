@@ -29,8 +29,10 @@ import com.uoscs09.theuos2.customview.CustomHorizontalScrollView;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
+import com.uoscs09.theuos2.util.ResourceUtil;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -38,7 +40,7 @@ import butterknife.BindView;
 import butterknife.OnItemClick;
 import mj.android.utils.task.Task;
 
-public class TabSearchSubjectFragment2 extends AbsProgressFragment<List<SubjectItem2>> implements AdapterView.OnItemSelectedListener {
+public class TabSearchSubjectFragment2 extends AbsProgressFragment<List<Subject>> implements AdapterView.OnItemSelectedListener {
     private AlertDialog mSearchDialog;
     private EditText mSearchEditText;
     private Spinner mDialogSpinner1, mDialogSpinner2, mDialogSpinner3, mDialogSpinner4, mDialogTermSpinner, mDialogYearSpinner;
@@ -62,7 +64,7 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<List<SubjectI
     private boolean mIsScrollViewScrolling = false;
 
     @AsyncData
-    private ArrayList<SubjectItem2> mSubjectList;
+    private ArrayList<Subject> mSubjectList;
 
     private SubjectAdapter2 mSubjectAdapter;
     private AlphaInAnimationAdapter mAminAdapter;
@@ -235,10 +237,13 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<List<SubjectI
         sendClickEvent("sort", index);
 
         textViews[index].setCompoundDrawablesWithIntrinsicBounds(
-                AppUtil.getAttrValue(getActivity(), isInverse ? R.attr.menu_theme_ic_action_navigation_arrow_drop_up : R.attr.menu_theme_ic_action_navigation_arrow_drop_down), 0, 0, 0);
+                ResourceUtil.getAttrValue(getActivity(), isInverse ? R.attr.menu_theme_ic_action_navigation_arrow_drop_up : R.attr.menu_theme_ic_action_navigation_arrow_drop_down), 0, 0, 0);
         tabStrips[index].setVisibility(View.VISIBLE);
 
-        mSubjectAdapter.sort(SubjectItem2.getComparator(index, isInverse));
+        Comparator<Subject> comparator = Subject.getComparator(index, isInverse);
+        if (comparator != null) {
+            mSubjectAdapter.sort(comparator);
+        }
         mAminAdapter.notifyDataSetChanged();
     }
 
@@ -260,9 +265,9 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<List<SubjectI
 
     @OnItemClick(R.id.tab_search_subject_list_view)
     public void onSubjectClicked(View v, int pos) {
-        SubjectItem2 subjectItem2 = mSubjectList.get(pos);
+        Subject subject = mSubjectList.get(pos);
 
-        CoursePlanDialogFragment.fetchCoursePlanAndShow(this, subjectItem2, v);
+        CoursePlanDialogFragment.fetchCoursePlanAndShow(this, subject, v);
     }
 
     private void initDialog(View v) {
@@ -281,16 +286,15 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<List<SubjectI
     private void execute() {
         mEmptyView.setVisibility(View.INVISIBLE);
 
-        boolean culture = mDialogSpinner1.getSelectedItemPosition() == 0;
-        Task<List<SubjectItem2>> request;
-
         String year = mDialogYearSpinner.getSelectedItem().toString();
         int term = mDialogTermSpinner.getSelectedItemPosition();
         String subjectName = mSearchEditText.getText().toString();
 
-        if (culture)
+        Task<List<Subject>> request;
+        boolean culture = mDialogSpinner1.getSelectedItemPosition() == 0;
+        if (culture) {
             request = AppRequests.Subjects.requestCulture(year, term, getCultSubjectDiv(mDialogSpinner2.getSelectedItemPosition()), subjectName);
-        else {
+        } else {
             Map<String, String> additionalParams;
             switch (selections[1]) {
                 case R.array.search_subj_major_2_0_0:
@@ -305,8 +309,8 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<List<SubjectI
             request = AppRequests.Subjects.requestMajor(year, term, additionalParams, subjectName);
         }
 
-        execute(request,
-                result -> {
+        task(request)
+                .result(result -> {
                     mSubjectAdapter.clear();
                     mSubjectAdapter.addAll(result);
                     mAminAdapter.reset();
@@ -320,13 +324,13 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<List<SubjectI
                     if (mSubjectAdapter.isEmpty()) {
                         mEmptyView.setVisibility(View.VISIBLE);
                     }
-            /*
-            if (result.isEmpty()) {
-                mTitleLayout.setVisibility(View.INVISIBLE);
-            } else {
-                mTitleLayout.setVisibility(View.VISIBLE);
-            }
-            */
+                    /*
+                    if (result.isEmpty()) {
+                        mTitleLayout.setVisibility(View.INVISIBLE);
+                    } else {
+                        mTitleLayout.setVisibility(View.VISIBLE);
+                    }
+                    */
 
                     AppUtil.showToast(getActivity(), getString(R.string.search_found_amount, result.size()), true);
 
@@ -334,9 +338,9 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<List<SubjectI
                             + " / "
                             + mDialogTermSpinner.getSelectedItem().toString();
                     setSubtitleWhenVisible(mSearchConditionString);
-                },
-                this::simpleErrorRespond
-        );
+                })
+                .error(t -> super.simpleErrorRespond(t))
+                .execute();
     }
 
     @Override

@@ -11,7 +11,7 @@ import mj.android.utils.xml.ListContainer;
 import mj.android.utils.xml.Root;
 
 @Root(name = "root")
-public class ClassroomTimeTable implements Parcelable, Serializable {
+public class ClassRoomTimetable implements Parcelable, Serializable {
 
     private static final long serialVersionUID = -8771076559473478423L;
 
@@ -32,22 +32,22 @@ public class ClassroomTimeTable implements Parcelable, Serializable {
         dest.writeTypedList(timetableList);
     }
 
-    public ClassroomTimeTable() {
+    public ClassRoomTimetable() {
     }
 
-    protected ClassroomTimeTable(Parcel in) {
+    protected ClassRoomTimetable(Parcel in) {
         this.timetableList = in.createTypedArrayList(Timetable.CREATOR);
     }
 
-    public static final Creator<ClassroomTimeTable> CREATOR = new Creator<ClassroomTimeTable>() {
+    public static final Creator<ClassRoomTimetable> CREATOR = new Creator<ClassRoomTimetable>() {
         @Override
-        public ClassroomTimeTable createFromParcel(Parcel source) {
-            return new ClassroomTimeTable(source);
+        public ClassRoomTimetable createFromParcel(Parcel source) {
+            return new ClassRoomTimetable(source);
         }
 
         @Override
-        public ClassroomTimeTable[] newArray(int size) {
-            return new ClassroomTimeTable[size];
+        public ClassRoomTimetable[] newArray(int size) {
+            return new ClassRoomTimetable[size];
         }
     };
 

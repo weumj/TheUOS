@@ -4,9 +4,11 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
+import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 import android.util.DisplayMetrics;
 
 /**
@@ -68,7 +70,7 @@ public class PieProgressDrawable extends Drawable {
     }
 
     @Override
-    public void draw(Canvas canvas) {
+    public void draw(@NonNull Canvas canvas) {
         int level = getLevel();
 
         canvas.rotate(-90f, getBounds().centerX(), getBounds().centerY());
@@ -131,6 +133,11 @@ public class PieProgressDrawable extends Drawable {
 
     @Override
     public int getOpacity() {
+        return PixelFormat.OPAQUE;
+    }
+
+    @Override
+    public int getAlpha() {
         return mPaint.getAlpha();
     }
 

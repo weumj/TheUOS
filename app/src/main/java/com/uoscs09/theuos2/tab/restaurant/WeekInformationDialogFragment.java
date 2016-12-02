@@ -20,6 +20,7 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsAnimDialogFragment;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
+import com.uoscs09.theuos2.util.ResourceUtil;
 
 import java.util.ArrayList;
 
@@ -36,11 +37,11 @@ public class WeekInformationDialogFragment extends AbsAnimDialogFragment {
 
     private RestWeekAdapter mRestWeekAdapter = new RestWeekAdapter(new ArrayList<>());
     private int mCurrentSelectionId;
-    private WeekRestItem weekRestItem;
-    private Task<WeekRestItem> mTask;
+    private RestWeekItem restWeekItem;
+    private Task<RestWeekItem> mTask;
 
     public static void fetchDataAndShow(final Fragment fragment, final int stringId, View v) {
-        Task<WeekRestItem> task = AppRequests.Restaurants.readWeekInfo(getCode(stringId), false);
+        Task<RestWeekItem> task = AppRequests.Restaurants.readWeekInfo(getCode(stringId), false);
         Dialog d = AppUtil.getProgressDialog(fragment.getActivity(), false, (dialog, which) -> task.cancel());
         d.show();
 
@@ -48,7 +49,7 @@ public class WeekInformationDialogFragment extends AbsAnimDialogFragment {
                     d.dismiss();
                     WeekInformationDialogFragment dialogFragment = new WeekInformationDialogFragment();
                     dialogFragment.setSelection(stringId);
-                    dialogFragment.setWeekRestItem(result);
+                    dialogFragment.setRestWeekItem(result);
                     dialogFragment.showFromView(fragment.getFragmentManager(), "week", v);
                 },
                 e -> {
@@ -62,10 +63,10 @@ public class WeekInformationDialogFragment extends AbsAnimDialogFragment {
         this.mCurrentSelectionId = stringId;
     }
 
-    public void setWeekRestItem(WeekRestItem weekRestItem) {
-        this.weekRestItem = weekRestItem;
+    public void setRestWeekItem(RestWeekItem restWeekItem) {
+        this.restWeekItem = restWeekItem;
         mRestWeekAdapter.restItemArrayList.clear();
-        mRestWeekAdapter.restItemArrayList.addAll(weekRestItem.weekList);
+        mRestWeekAdapter.restItemArrayList.addAll(restWeekItem.weekList);
         mRestWeekAdapter.notifyDataSetChanged();
     }
 
@@ -76,14 +77,14 @@ public class WeekInformationDialogFragment extends AbsAnimDialogFragment {
         mToolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
         if (mCurrentSelectionId != 0) {
             mToolbar.setTitle(mCurrentSelectionId);
-            mToolbar.setSubtitle(weekRestItem.getPeriodString());
+            mToolbar.setSubtitle(restWeekItem.getPeriodString());
             sendTrackerEvent("view", getString(mCurrentSelectionId));
         } else {
             dismiss();
         }
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.tab_rest_week_swipe_layout);
-        mSwipeRefreshLayout.setColorSchemeColors(AppUtil.getAttrColor(getActivity(), R.attr.colorPrimaryDark));
+        mSwipeRefreshLayout.setColorSchemeColors(ResourceUtil.getAttrColor(getActivity(), R.attr.colorPrimaryDark));
         mSwipeRefreshLayout.setOnRefreshListener(() -> {
             sendTrackerEvent("swipe", "SwipeRefreshView");
             execute(true);
@@ -133,7 +134,7 @@ public class WeekInformationDialogFragment extends AbsAnimDialogFragment {
                     postExecute();
 
                     ArrayList<RestItem> weekList = result.weekList;
-                    setWeekRestItem(result);
+                    setRestWeekItem(result);
 
                     if (weekList.isEmpty()) {
                         showEmptyView();
@@ -199,7 +200,7 @@ public class WeekInformationDialogFragment extends AbsAnimDialogFragment {
     private static class RestWeekAdapter extends RecyclerView.Adapter<ViewHolder> {
         final ArrayList<RestItem> restItemArrayList;
 
-        public RestWeekAdapter(ArrayList<RestItem> arrayList) {
+        RestWeekAdapter(ArrayList<RestItem> arrayList) {
             this.restItemArrayList = arrayList;
         }
 

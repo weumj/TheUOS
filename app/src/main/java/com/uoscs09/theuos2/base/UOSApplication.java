@@ -2,6 +2,7 @@ package com.uoscs09.theuos2.base;
 
 
 import android.app.Application;
+import android.os.StrictMode;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.uoscs09.theuos2.BuildConfig;
@@ -20,19 +21,21 @@ public class UOSApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        /*
-        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-                .detectAll()
-                .penaltyLog()
-                .penaltyDialog()
-                .build()
-        );
-        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-                .detectAll()
-                .penaltyLog()
-                .build()
-        );
-        */
+
+        if (DEBUG) {
+            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+                    .detectAll()
+                    .penaltyLog()
+                    .penaltyDialog()
+                    .build()
+            );
+            StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+                    .detectAll()
+                    .penaltyLog()
+                    .build()
+            );
+        }
+
         AppUtil.init(this);
 
         taskQueue = new TaskQueue();
@@ -41,7 +44,7 @@ public class UOSApplication extends Application {
 
         if (DEBUG) {
             mTrackerUtil.debugInit();
-        }else {
+        } else {
             mTrackerUtil.init();
         }
 

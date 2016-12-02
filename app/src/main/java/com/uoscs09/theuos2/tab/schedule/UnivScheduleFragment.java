@@ -25,6 +25,7 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
+import com.uoscs09.theuos2.util.ResourceUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -227,7 +228,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<List<UnivScheduleI
             ContentValues cv = mSelectedItem.toContentValues(calendarId);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
-                cv.put(CalendarContract.Events.EVENT_COLOR, AppUtil.getOrderedColor(getActivity(), mList.indexOf(mSelectedItem)));
+                cv.put(CalendarContract.Events.EVENT_COLOR, ResourceUtil.getOrderedColor(getActivity(), mList.indexOf(mSelectedItem)));
 
             Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, cv);
             c.close();
@@ -252,18 +253,16 @@ public class UnivScheduleFragment extends AbsProgressFragment<List<UnivScheduleI
     }
 
     private void execute(boolean force) {
-        execute(AppRequests.UnivSchedules.request(force),
-                result -> {
+        task(AppRequests.UnivSchedules.request(force))
+                .result(result -> {
                     mList.clear();
                     mList.addAll(result);
                     mAdapter.notifyDataSetChanged();
 
                     setSubtitleWhenVisible(mSubTitle = mDateFormat.format(mList.get(0).getDate(true).getTime()));
-                },
-                t -> {
-                    super.simpleErrorRespond(t);
-                }
-        );
+                })
+                .error(t -> super.simpleErrorRespond(t))
+                .execute();
     }
 
 

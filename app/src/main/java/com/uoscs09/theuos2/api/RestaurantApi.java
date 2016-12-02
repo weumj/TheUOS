@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 import android.util.SparseArray;
 
 import com.uoscs09.theuos2.tab.restaurant.RestItem;
-import com.uoscs09.theuos2.tab.restaurant.WeekRestItem;
+import com.uoscs09.theuos2.tab.restaurant.RestWeekItem;
 
 import mj.android.utils.task.Task;
 import retrofit2.http.GET;
@@ -23,7 +23,7 @@ public interface RestaurantApi {
 
     @Headers({"Content-Type: text/html; charset=EUC-KR"})
     @GET
-    Task<WeekRestItem> weekRestItem(
+    Task<RestWeekItem> weekRestItem(
             @NonNull @Url String url,
             @NonNull @Query("rstcde") String category
     );

@@ -10,6 +10,7 @@ import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.util.AppUtil;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import mj.android.utils.task.ErrorListener;
 import mj.android.utils.task.ResultListener;
 import mj.android.utils.task.Task;
+import mj.android.utils.task.TaskQueue;
 
 public abstract class AbsAsyncFragment<T> extends BaseTabFragment {
 
@@ -59,36 +61,105 @@ public abstract class AbsAsyncFragment<T> extends BaseTabFragment {
     protected void onPostExecute() {
     }
 
-    protected final void executeWithQueue(String tag, @NonNull Task<? extends T> task, @NonNull final ResultListener<T> r, @Nullable final ErrorListener e) {
-        if (taskQueue() == null) {
-            AppUtil.showToast(getActivity(), R.string.error_cannot_execute, true);
-            return;
+    protected static final class TaskHelper<T> {
+        private final WeakReference<AbsAsyncFragment<T>> ref;
+        private Task<T> task;
+        private ResultListener<T> r;
+        private ErrorListener e;
+
+        private TaskHelper(AbsAsyncFragment<T> fragment, @NonNull Task<T> task) {
+            ref = new WeakReference<>(fragment);
+            this.task = task;
         }
 
-        onPreExecute();
+        public static <T> TaskHelper<T> create(AbsAsyncFragment<T> fragment, @NonNull Task<T> task) {
+            return new TaskHelper<>(fragment, task);
+        }
 
-        sAsyncDataStoreMap.remove(getClass().getName());
 
-        //noinspection ConstantConditions
-        taskQueue().enqueue(tag, task, result -> {
-                    if (isVisible()) {
-                        onPostExecute();
+        public TaskHelper<T> result(@NonNull final ResultListener<T> r) {
+            this.r = result -> {
+                AbsAsyncFragment<T> f = ref.get();
+                if (f != null) {
+                    if (f.isVisible()) {
+                        f.onPostExecute();
                         r.onResult(result);
                     } else {
-                        putAsyncData(getClass().getName(), result);
-                    }
-                },
-                t -> {
-                    if (isVisible()) {
-                        onPostExecute();
-                        if (e != null) {
-                            e.onError(t);
-                        } else {
-                            Log.w(getTag(), "error", t);
-                        }
+                        f.putAsyncData(getClass().getName(), result);
                     }
                 }
-        );
+                // else
+                // putAsyncData
+            };
+            return this;
+        }
+
+        public TaskHelper<T> error(@Nullable final ErrorListener e) {
+            final String tag = ref.get().getTag();
+            this.e = t -> {
+                AbsAsyncFragment f = ref.get();
+                if (f != null && f.isVisible()) {
+                    f.onPostExecute();
+                    if (e != null) {
+                        e.onError(t);
+                    } else {
+                        Log.w(tag, "error", t);
+                    }
+                }
+            };
+            return this;
+        }
+
+        public Task<T> executeWithQueue(String tag) {
+            AbsAsyncFragment f = ref.get();
+            if (f == null) {
+                r = null;
+                e = null;
+                Log.w(tag, "error(host fragment == null)");
+                return task;
+            }
+            TaskQueue taskQueue = f.taskQueue();
+            if (taskQueue == null) {
+                AppUtil.showToast(f.getActivity(), R.string.error_cannot_execute, true);
+                r = null;
+                e = null;
+                return task;
+            }
+
+            f.onPreExecute();
+            sAsyncDataStoreMap.remove(getClass().getName());
+
+            taskQueue.enqueue(tag, task, r, e);
+
+            r = null;
+            e = null;
+            return task;
+        }
+
+        public Task<T> execute() {
+            AbsAsyncFragment f = ref.get();
+            if (f == null) {
+                r = null;
+                e = null;
+                Log.w("AbsAsyncFragment", "error(host fragment == null)");
+                return task;
+            }
+
+            f.onPreExecute();
+            sAsyncDataStoreMap.remove(getClass().getName());
+
+            task.getAsync(r, e);
+
+            r = null;
+            e = null;
+            return task;
+        }
+
+    }
+
+
+    protected final TaskHelper<T> task(@NonNull Task<T> task) {
+        return TaskHelper.create(this, task);
     }
 
     /**

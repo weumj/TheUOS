@@ -5,8 +5,8 @@ import android.support.annotation.Nullable;
 
 import com.uoscs09.theuos2.tab.booksearch.BookDetailItem;
 import com.uoscs09.theuos2.tab.booksearch.BookItem;
-import com.uoscs09.theuos2.tab.booksearch.BookStates;
-import com.uoscs09.theuos2.tab.libraryseat.SeatInfo;
+import com.uoscs09.theuos2.tab.booksearch.BookStateWrapper;
+import com.uoscs09.theuos2.tab.libraryseat.SeatTotalInfo;
 
 import java.util.List;
 
@@ -38,7 +38,7 @@ public interface LibraryApi {
 
     //@Headers({"Content-Type: charset=EUC-KR"})
     @GET
-    Task<BookStates> bookStateInformation(
+    Task<BookStateWrapper> bookStateInformation(
             @Url String url
     );
 
@@ -51,7 +51,7 @@ public interface LibraryApi {
 
     @Headers({"Content-Type: text/html; charset=EUC-KR"})
     @GET
-    Task<SeatInfo> seatInformation(
+    Task<SeatTotalInfo> seatInformation(
             @Url String url
     );
 }

@@ -7,7 +7,7 @@ import mj.android.utils.xml.Element;
 import mj.android.utils.xml.Root;
 
 @Root(name = "list")
-public class CoursePlanItem implements Parcelable {
+public class CoursePlan implements Parcelable {
 
     @Element(name = "subject_no", cdata = true)
     public String subject_no;
@@ -37,7 +37,7 @@ public class CoursePlanItem implements Parcelable {
     @Element(name = "prjt_etc", cdata = true)
     public String prjt_etc;
 
-    private CoursePlanItem(Parcel source) {
+    private CoursePlan(Parcel source) {
         subject_no = source.readString();
         subject_nm = source.readString();
         prof_nm = source.readString();
@@ -54,7 +54,7 @@ public class CoursePlanItem implements Parcelable {
         prjt_etc = source.readString();
     }
 
-    public CoursePlanItem() {
+    public CoursePlan() {
     }
 
     @Override
@@ -80,16 +80,16 @@ public class CoursePlanItem implements Parcelable {
         dest.writeString(prjt_etc);
     }
 
-    public static final Creator<CoursePlanItem> CREATOR = new Creator<CoursePlanItem>() {
+    public static final Creator<CoursePlan> CREATOR = new Creator<CoursePlan>() {
 
         @Override
-        public CoursePlanItem createFromParcel(Parcel source) {
-            return new CoursePlanItem(source);
+        public CoursePlan createFromParcel(Parcel source) {
+            return new CoursePlan(source);
         }
 
         @Override
-        public CoursePlanItem[] newArray(int size) {
-            return new CoursePlanItem[size];
+        public CoursePlan[] newArray(int size) {
+            return new CoursePlan[size];
         }
 
     };

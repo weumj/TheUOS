@@ -15,15 +15,15 @@ public class TabTest extends Fragment {
         scrollView.addView(textView);
 
         AsyncUtil.execute(
-                new Callable<WeekRestItem>() {
+                new Callable<RestWeekItem>() {
                     @Override
-                    public WeekRestItem call() throws Exception {
-                        return new ParseRestaurantWeek().parse(HttpRequest.getBody("http://www.uos.ac.kr/food/placeList.do?rstcde=020"));
+                    public RestWeekItem call() throws Exception {
+                        return new RestaurantWeekMenuParser().parse(HttpTask.getBody("http://www.uos.ac.kr/food/placeList.do?rstcde=020"));
                     }
                 },
-                new AsyncCallback.Base<WeekRestItem>() {
+                new AsyncCallback.Base<RestWeekItem>() {
                     @Override
-                    public void onResult(WeekRestItem result) {
+                    public void onResult(RestWeekItem result) {
                         StringBuilder sb = new StringBuilder();
                         for (RestItem item : result.weekList) {
                             sb.append(item.title)

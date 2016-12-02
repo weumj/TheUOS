@@ -2,7 +2,7 @@ package com.uoscs09.theuos2.tab.announce;
 
 import android.support.v4.util.Pair;
 
-import com.uoscs09.theuos2.http.HttpRequest;
+import com.uoscs09.theuos2.http.HttpTask;
 import com.uoscs09.theuos2.parse.JerichoParser;
 import com.uoscs09.theuos2.util.CollectionUtil;
 
@@ -18,25 +18,25 @@ import java.util.regex.Pattern;
 import mj.android.utils.task.Task;
 import mj.android.utils.task.Tasks;
 
-public abstract class ParseAnnounce extends JerichoParser<List<AnnounceItem>> {
-    public static ParseAnnounce mobileWeb() {
+public abstract class AnnounceParser extends JerichoParser<List<AnnounceItem>> {
+    public static AnnounceParser mobileWeb() {
         return new MobileWeb();
     }
 
-    public static ParseAnnounce normalWeb(){
+    public static AnnounceParser normalWeb(){
         return NormalWeb.getParser();
     }
 
-    public static ParseAnnounce scholarship(){
+    public static AnnounceParser scholarship(){
         return NormalWeb.getScholarshipParser();
     }
 
-    private abstract static class NormalWeb extends ParseAnnounce {
-        public static ParseAnnounce getParser() {
+    private abstract static class NormalWeb extends AnnounceParser {
+        public static AnnounceParser getParser() {
             return new Normal();
         }
 
-        public static ParseAnnounce getScholarshipParser() {
+        public static AnnounceParser getScholarshipParser() {
             return new Scholarship();
         }
 
@@ -202,7 +202,7 @@ public abstract class ParseAnnounce extends JerichoParser<List<AnnounceItem>> {
 
     }
 
-    private static class MobileWeb extends ParseAnnounce {
+    private static class MobileWeb extends AnnounceParser {
         private static final Pattern p = Pattern.compile("\'\\d*\'");
 
         @Override
@@ -296,11 +296,11 @@ public abstract class ParseAnnounce extends JerichoParser<List<AnnounceItem>> {
 
     }
 
-    public static Task<DetailAnnounceItem> fileNameUrlPairTask(String url) {
-        return HttpRequest.Builder.newStringRequestBuilder(url)
-                .build()
-                .wrap((s) -> {
-                    DetailAnnounceItem detailAnnounceItem = new DetailAnnounceItem();
+    public static Task<AnnounceDetailItem> fileNameUrlPairTask(String url) {
+        return new HttpTask.Builder(url)
+                .buildAsString()
+                .map((s) -> {
+                    AnnounceDetailItem announceDetailItem = new AnnounceDetailItem();
 
                     Source source = new Source(s);
 
@@ -319,7 +319,7 @@ public abstract class ParseAnnounce extends JerichoParser<List<AnnounceItem>> {
                             html = html.replace(boardNavigator.toString(), "");
                         }
 
-                        detailAnnounceItem.page = "<meta name=\"viewport\" content=\"initial-scale=1.0; width=device-width; target-densitydpi=device-dpi;\" />\n" +
+                        announceDetailItem.page = "<meta name=\"viewport\" content=\"initial-scale=1.0; width=device-width; target-densitydpi=device-dpi;\" />\n" +
                                 "<link rel=\"stylesheet\" href=\"/css/mkor/base.css\" type=\"text/css\" />\n" + html;
                     }
 
@@ -341,9 +341,9 @@ public abstract class ParseAnnounce extends JerichoParser<List<AnnounceItem>> {
                         fileUrlPairList.add(new Pair<>(list.get(2), fileUrl));
                     }
 
-                    detailAnnounceItem.fileNameUrlPairList = fileUrlPairList;
+                    announceDetailItem.fileNameUrlPairList = fileUrlPairList;
 
-                    return detailAnnounceItem;
+                    return announceDetailItem;
                 });
     }
 

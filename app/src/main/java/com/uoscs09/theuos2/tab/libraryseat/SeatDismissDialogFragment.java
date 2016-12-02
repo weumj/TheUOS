@@ -4,6 +4,7 @@ package com.uoscs09.theuos2.tab.libraryseat;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -24,13 +25,25 @@ import mj.android.utils.recyclerview.ViewHolderFactory;
 
 public class SeatDismissDialogFragment extends BaseDialogFragment {
 
+    private static final String TAG = "SeatDismissInfo";
+
+    public static void showFragment(Fragment f, SeatTotalInfo info) {
+        SeatDismissDialogFragment fragment = new SeatDismissDialogFragment();
+        fragment.setSeatInfo(info);
+        fragment.show(f.getFragmentManager(), TAG);
+    }
+
+    public static boolean isNotPresent(Fragment f) {
+        return f.getFragmentManager().findFragmentByTag(TAG) == null;
+    }
+
     private View mDismissDialogView, mDismissEmptyView;
     private RecyclerView.Adapter mInfoAdapter;
-    private SeatInfo mSeatInfo;
+    private SeatTotalInfo mSeatTotalInfo;
     // private Dialog mDialog;
 
-    public void setSeatInfo(SeatInfo info) {
-        mSeatInfo = info;
+    public void setSeatInfo(SeatTotalInfo info) {
+        mSeatTotalInfo = info;
     }
 
     @Override
@@ -58,7 +71,7 @@ public class SeatDismissDialogFragment extends BaseDialogFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        this.mSeatInfo = null;
+        this.mSeatTotalInfo = null;
     }
 
     protected View createView() {
@@ -73,8 +86,8 @@ public class SeatDismissDialogFragment extends BaseDialogFragment {
 
             recyclerView.setLayoutManager(manager);
 
-            if (mSeatInfo != null) {
-                mInfoAdapter = new ListRecyclerAdapter<>(mSeatInfo.seatDismissInfoList, new ViewHolderFactory<SeatDismissInfo, ListRecyclerAdapter.ViewHolder<SeatDismissInfo>>() {
+            if (mSeatTotalInfo != null) {
+                mInfoAdapter = new ListRecyclerAdapter<>(mSeatTotalInfo.seatDismissInfoList, new ViewHolderFactory<SeatDismissInfo, ListRecyclerAdapter.ViewHolder<SeatDismissInfo>>() {
                     @Override
                     public ListRecyclerAdapter.ViewHolder<SeatDismissInfo> newViewHolder(ViewGroup viewGroup, int i) {
                         return new Holder(ListRecyclerUtil.makeViewHolderItemView(viewGroup, R.layout.list_layout_seat_dismiss_info));
@@ -82,7 +95,7 @@ public class SeatDismissDialogFragment extends BaseDialogFragment {
                 });
                 recyclerView.setAdapter(mInfoAdapter);
 
-                if (mSeatInfo.seatDismissInfoList.isEmpty())
+                if (mSeatTotalInfo.seatDismissInfoList.isEmpty())
                     showDismissInfoEmptyView();
             } else {
                 dismiss();
@@ -104,7 +117,7 @@ public class SeatDismissDialogFragment extends BaseDialogFragment {
         if (mInfoAdapter != null) {
             mInfoAdapter.notifyDataSetChanged();
 
-            if (mSeatInfo.seatDismissInfoList.isEmpty())
+            if (mSeatTotalInfo.seatDismissInfoList.isEmpty())
                 showDismissInfoEmptyView();
             else if (mDismissEmptyView != null)
                 mDismissEmptyView.setVisibility(View.GONE);

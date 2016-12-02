@@ -188,7 +188,7 @@ public class WiseScores implements Parcelable {
 
     protected WiseScores(Parcel in) {
         int scoreMapSize = in.readInt();
-        this.scoreMap = new HashMap<String, String>(scoreMapSize);
+        this.scoreMap = new HashMap<>(scoreMapSize);
         for (int i = 0; i < scoreMapSize; i++) {
             String key = in.readString();
             String value = in.readString();

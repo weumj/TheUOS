@@ -8,7 +8,6 @@ import android.text.TextUtils;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.parse.IParser;
 import com.uoscs09.theuos2.util.AppUtil;
-import com.uoscs09.theuos2.util.StringUtil;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -19,7 +18,7 @@ import mj.android.utils.xml.Element;
 import mj.android.utils.xml.Root;
 
 @Root(name = "list")
-public class SubjectItem2 implements Parcelable, IParser.IPostParsing {
+public class Subject implements Parcelable, IParser.IPostParsing {
 
     /**
      * 학부
@@ -115,7 +114,7 @@ public class SubjectItem2 implements Parcelable, IParser.IPostParsing {
         return classInformationList;
     }
 
-    private transient String classRoomInformation = StringUtil.NULL;
+    private transient String classRoomInformation = "";
 
     public String getClassRoomInformation() {
         if (TextUtils.isEmpty(classRoomInformation)) {
@@ -135,10 +134,10 @@ public class SubjectItem2 implements Parcelable, IParser.IPostParsing {
         classRoomInformation = sb.toString();
     }
 
-    public SubjectItem2() {
+    public Subject() {
     }
 
-    protected SubjectItem2(Parcel in) {
+    protected Subject(Parcel in) {
         sub_dept = in.readString();
         subject_div = in.readString();
         subject_div2 = in.readString();
@@ -208,16 +207,16 @@ public class SubjectItem2 implements Parcelable, IParser.IPostParsing {
 
     }
 
-    public static final Creator<SubjectItem2> CREATOR = new Creator<SubjectItem2>() {
+    public static final Creator<Subject> CREATOR = new Creator<Subject>() {
 
         @Override
-        public SubjectItem2 createFromParcel(Parcel source) {
-            return new SubjectItem2(source);
+        public Subject createFromParcel(Parcel source) {
+            return new Subject(source);
         }
 
         @Override
-        public SubjectItem2[] newArray(int size) {
-            return new SubjectItem2[size];
+        public Subject[] newArray(int size) {
+            return new Subject[size];
         }
 
     };
@@ -234,7 +233,7 @@ public class SubjectItem2 implements Parcelable, IParser.IPostParsing {
             };
     }
 
-    public static Comparator<SubjectItem2> getComparator(final int field, final boolean isInverse) {
+    public static Comparator<Subject> getComparator(final int field, final boolean isInverse) {
         switch (field) {
             case 0:
             case 1:

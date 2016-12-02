@@ -26,6 +26,7 @@ import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.base.ViewHolder;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
+import com.uoscs09.theuos2.util.ResourceUtil;
 import com.uoscs09.theuos2.util.TrackerUtil;
 
 import java.util.Map;
@@ -69,7 +70,7 @@ public class TabWiseScoreFragment extends AbsProgressFragment<WiseScores> {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final int viewCount = AppUtil.isScreenSizeSmall() ? 1 : 4;
+        final int viewCount = ResourceUtil.isScreenSizeSmall() ? 1 : 4;
         GridLayoutManager manager = new GridLayoutManager(getActivity(), viewCount);
         mRecyclerView.setLayoutManager(manager);
         //DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getActivity(), manager.getOrientation());

@@ -20,8 +20,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class ParseBook extends JerichoParser<List<BookItem>> {
-    //private static final String LOG_TAG = "ParseBook";
+public class BookParser extends JerichoParser<List<BookItem>> {
+    //private static final String LOG_TAG = "BookParser";
 
     private static final String HREF = "href";
     private static final String SRC = "src";
@@ -104,7 +104,7 @@ public class ParseBook extends JerichoParser<List<BookItem>> {
 
             if (infoList.size() > 2) {
                 Element stateAndLocation = infoList.get(2);
-                String[] stateAndLocations = stateAndLocation.getTextExtractor().toString().split(StringUtil.SPACE);
+                String[] stateAndLocations = stateAndLocation.getTextExtractor().toString().split(" ");
                 String bookState = stateAndLocations[1];
 
                 item.site = stateAndLocations[0];
@@ -153,7 +153,7 @@ public class ParseBook extends JerichoParser<List<BookItem>> {
      * 책 커버 이미지의 주소를 얻어온다.
      */
     private static String getBookImgSrc(String imgUrl) {
-        String imgSrc = StringUtil.NULL;
+        String imgSrc = "";
         if (TextUtils.isEmpty(imgUrl))
             return imgSrc;
 
@@ -168,7 +168,7 @@ public class ParseBook extends JerichoParser<List<BookItem>> {
                 return imageHtmlParser.func(new String(response.body().bytes(), StringUtil.ENCODE_UTF_8));
             }
             /*
-            imgSrc = HttpRequest.Builder.newStringRequestBuilder(imgUrl)
+            imgSrc = HttpTask.Builder.newStringRequestBuilder(imgUrl)
                     .build()
                     .wrap(imageHtmlParser)
                     .get();

@@ -23,6 +23,7 @@ public abstract class BaseFragment extends Fragment implements TrackerUtil.Track
     /**
      * 현 Activity 의 ActionBar 를 가져온다
      */
+    @Nullable
     protected final ActionBar getActionBar() {
         if (isAdded())
             return getAppCompatActivity().getSupportActionBar();

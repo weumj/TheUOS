@@ -75,20 +75,21 @@ public class TabBuildingRoomFragment extends AbsProgressFragment<BuildingRoom> {
             dialog.show();
 
             final OApiUtil.Semester semester = OApiUtil.Semester.getSemesterByOrder(spinner.getSelectedItemPosition());
-            final Task<ClassroomTimeTable> task = AppRequests.Buildings.classRoomTimeTables(OApiUtil.getYear(), semester.code, item).getAsync(classroomTimeTable -> {
-                        ClassroomTimetableDialogFragment.showTimetableDialog(this, classroomTimeTable, semester, view1);
+            final Task<ClassRoomTimetable> task = AppRequests.Buildings.classRoomTimeTables(OApiUtil.getYear(), semester.code, item)
+                    .getAsync(classroomTimeTable -> {
+                                ClassroomTimetableDialogFragment.showTimetableDialog(this, classroomTimeTable, semester, view1);
 
-                        dialog.dismiss();
-                        dialog.setOnCancelListener(null);
+                                dialog.dismiss();
+                                dialog.setOnCancelListener(null);
 
-                        sendClickEvent("show classroom timetable");
-                    },
-                    throwable -> {
-                        AppUtil.showErrorToast(getActivity(), throwable, true);
-                        dialog.dismiss();
-                        dialog.setOnCancelListener(null);
-                    }
-            );
+                                sendClickEvent("show classroom timetable");
+                            },
+                            throwable -> {
+                                AppUtil.showErrorToast(getActivity(), throwable, true);
+                                dialog.dismiss();
+                                dialog.setOnCancelListener(null);
+                            }
+                    );
 
             dialog.setOnCancelListener(dialog1 -> task.cancel());
 
@@ -120,9 +121,9 @@ public class TabBuildingRoomFragment extends AbsProgressFragment<BuildingRoom> {
     }
 
     private void loadData(boolean force) {
-        execute(AppRequests.Buildings.buildingRooms(force),
-                room -> mListView.setAdapter(buildingRoomAdapter = new BuildingRoomAdapter(getActivity(), room)),
-                throwable -> simpleErrorRespond(throwable)
-        );
+        task(AppRequests.Buildings.buildingRooms(force))
+                .result(room -> mListView.setAdapter(buildingRoomAdapter = new BuildingRoomAdapter(getActivity(), room)))
+                .error(throwable -> simpleErrorRespond(throwable))
+                .execute();
     }
 }

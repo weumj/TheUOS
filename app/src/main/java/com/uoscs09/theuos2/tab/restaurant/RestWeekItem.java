@@ -8,12 +8,12 @@ import com.uoscs09.theuos2.parse.IParser;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class WeekRestItem implements Parcelable, Serializable, IParser.IPostParsing {
+public class RestWeekItem implements Parcelable, Serializable, IParser.IPostParsing {
 
     public ArrayList<RestItem> weekList = new ArrayList<>();
     public int startDate, endDate;
 
-    public WeekRestItem() {
+    public RestWeekItem() {
     }
 
     @Override
@@ -47,7 +47,7 @@ public class WeekRestItem implements Parcelable, Serializable, IParser.IPostPars
 
     }
 
-    WeekRestItem(Parcel in) {
+    RestWeekItem(Parcel in) {
         startDate = in.readInt();
         endDate = in.readInt();
 
@@ -72,16 +72,16 @@ public class WeekRestItem implements Parcelable, Serializable, IParser.IPostPars
             dest.writeParcelable(weekList.get(i), flags);
     }
 
-    public static final Creator<WeekRestItem> CREATOR = new Creator<WeekRestItem>() {
+    public static final Creator<RestWeekItem> CREATOR = new Creator<RestWeekItem>() {
 
         @Override
-        public WeekRestItem createFromParcel(Parcel source) {
-            return new WeekRestItem(source);
+        public RestWeekItem createFromParcel(Parcel source) {
+            return new RestWeekItem(source);
         }
 
         @Override
-        public WeekRestItem[] newArray(int size) {
-            return new WeekRestItem[size];
+        public RestWeekItem[] newArray(int size) {
+            return new RestWeekItem[size];
         }
 
     };

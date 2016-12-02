@@ -4,40 +4,37 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.uoscs09.theuos2.util.OApiUtil;
-import com.uoscs09.theuos2.util.StringUtil;
 
 import java.io.Serializable;
 import java.util.Locale;
 
-public class Subject implements Parcelable, Serializable {
+public class TimetableSubject implements Parcelable, Serializable {
     private static final long serialVersionUID = -5540327532775749251L;
-
-    public static final transient Subject EMPTY = new Subject();
 
     /**
      * 과목
      */
-    public String subjectName = StringUtil.NULL;
-    public String subjectNameEng = StringUtil.NULL;
+    public String subjectName = "";
+    public String subjectNameEng = "";
     /** */
-    public String subjectNameShort = StringUtil.NULL;
-    public String subjectNameEngShort = StringUtil.NULL;
+    public String subjectNameShort = "";
+    public String subjectNameEngShort = "";
 
     /**
      * 교수
      */
-    public String professor = StringUtil.NULL;
-    public String professorEng = StringUtil.NULL;
+    public String professor = "";
+    public String professorEng = "";
     /**
      * 건물
      */
-    public String building = StringUtil.NULL;
+    public String building = "";
     public OApiUtil.UnivBuilding univBuilding;
 
     /**
      * 강의실
      */
-    public String room = StringUtil.NULL;
+    public String room = "";
 
     /**
      * 요일
@@ -53,10 +50,10 @@ public class Subject implements Parcelable, Serializable {
      */
     public boolean isEqualToUpperPeriod = false;
 
-    public Subject() {
+    public TimetableSubject() {
     }
 
-    public Subject(String raw, int day, int period, boolean isEng) {
+    public TimetableSubject(String raw, int day, int period, boolean isEng) {
         this.day = day;
         this.period = period;
 
@@ -112,7 +109,7 @@ public class Subject implements Parcelable, Serializable {
         return Locale.getDefault().equals(Locale.KOREA) ? professor : professorEng;
     }
 
-    Subject(Parcel in) {
+    TimetableSubject(Parcel in) {
         setSubjectName(in.readString());
         setSubjectNameEng(in.readString());
         professor = in.readString();
@@ -136,7 +133,7 @@ public class Subject implements Parcelable, Serializable {
     /**
      * 같은 과목인지 확인한다.
      */
-    public boolean isEqualsTo(Subject another) {
+    public boolean isEqualsTo(TimetableSubject another) {
         return this.professor.equals(another.professor) && this.subjectName.equals(another.subjectName);
     }
 
@@ -164,15 +161,15 @@ public class Subject implements Parcelable, Serializable {
         dest.writeInt(isEqualToUpperPeriod ? 1 : 0);
     }
 
-    public static final Parcelable.Creator<Subject> CREATOR = new Parcelable.Creator<Subject>() {
+    public static final Parcelable.Creator<TimetableSubject> CREATOR = new Parcelable.Creator<TimetableSubject>() {
         @Override
-        public Subject[] newArray(int size) {
-            return new Subject[size];
+        public TimetableSubject[] newArray(int size) {
+            return new TimetableSubject[size];
         }
 
         @Override
-        public Subject createFromParcel(Parcel source) {
-            return new Subject(source);
+        public TimetableSubject createFromParcel(Parcel source) {
+            return new TimetableSubject(source);
         }
     };
 }

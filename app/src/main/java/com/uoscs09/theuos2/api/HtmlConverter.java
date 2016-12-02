@@ -4,17 +4,17 @@ import android.support.v4.util.ArrayMap;
 
 import com.uoscs09.theuos2.parse.JerichoParser;
 import com.uoscs09.theuos2.tab.announce.AnnounceItem;
-import com.uoscs09.theuos2.tab.announce.ParseAnnounce;
+import com.uoscs09.theuos2.tab.announce.AnnounceParser;
 import com.uoscs09.theuos2.tab.booksearch.BookDetailItem;
+import com.uoscs09.theuos2.tab.booksearch.BookDetailParser;
 import com.uoscs09.theuos2.tab.booksearch.BookItem;
-import com.uoscs09.theuos2.tab.booksearch.ParseBook;
-import com.uoscs09.theuos2.tab.booksearch.ParseBookDetail;
-import com.uoscs09.theuos2.tab.libraryseat.ParseSeat;
-import com.uoscs09.theuos2.tab.libraryseat.SeatInfo;
-import com.uoscs09.theuos2.tab.restaurant.ParseRest;
-import com.uoscs09.theuos2.tab.restaurant.ParseRestaurantWeek;
+import com.uoscs09.theuos2.tab.booksearch.BookParser;
+import com.uoscs09.theuos2.tab.libraryseat.LibararySeatParser;
+import com.uoscs09.theuos2.tab.libraryseat.SeatTotalInfo;
 import com.uoscs09.theuos2.tab.restaurant.RestItem;
-import com.uoscs09.theuos2.tab.restaurant.WeekRestItem;
+import com.uoscs09.theuos2.tab.restaurant.RestWeekItem;
+import com.uoscs09.theuos2.tab.restaurant.RestaurantMenuParser;
+import com.uoscs09.theuos2.tab.restaurant.RestaurantWeekMenuParser;
 
 import java.io.IOException;
 import java.util.Map;
@@ -43,18 +43,18 @@ class HtmlConverter implements Converter<ResponseBody, Object> {
             parser = PARSER_MAP.get(className);
         } else {
             if (clazz.equals(BookItem.class))
-                parser = new ParseBook();
-            else if (clazz.equals(SeatInfo.class)) {
-                parser = new ParseSeat();
+                parser = new BookParser();
+            else if (clazz.equals(SeatTotalInfo.class)) {
+                parser = new LibararySeatParser();
                 CHARSET_MAP.put(className, "euc-kr");
             } else if (clazz.equals(RestItem.class)) {
-                parser = new ParseRest();
-            } else if (clazz.equals(WeekRestItem.class))
-                parser = new ParseRestaurantWeek();
+                parser = new RestaurantMenuParser();
+            } else if (clazz.equals(RestWeekItem.class))
+                parser = new RestaurantWeekMenuParser();
             else if (clazz.equals(AnnounceItem.class)) {
-                parser = ParseAnnounce.mobileWeb();
+                parser = AnnounceParser.mobileWeb();
             } else if (clazz.equals(BookDetailItem.class)) {
-                parser = new ParseBookDetail();
+                parser = new BookDetailParser();
             } else
                 throw new IOException("incompatible class input : " + clazz.getName());
 

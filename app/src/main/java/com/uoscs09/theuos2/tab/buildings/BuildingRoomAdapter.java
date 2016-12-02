@@ -14,7 +14,7 @@ class BuildingRoomAdapter extends AbsArrayAdapter<BuildingRoom.RoomInfo, Buildin
 
     private BuildingRoom buildingRoom;
 
-    public BuildingRoomAdapter(Context context, BuildingRoom room) {
+    BuildingRoomAdapter(Context context, BuildingRoom room) {
         super(context, R.layout.list_layout_building_room, room.roomInfoList());
         this.buildingRoom = room;
     }
@@ -22,7 +22,12 @@ class BuildingRoomAdapter extends AbsArrayAdapter<BuildingRoom.RoomInfo, Buildin
     @Override
     public void onBindViewHolder(int position, ViewHolder holder) {
         BuildingRoom.RoomInfo roomInfo = getItem(position);
-        holder.textView.setText(roomInfo.roomName());
+
+        if (roomInfo != null) {
+            holder.textView.setText(roomInfo.roomName());
+        } else {
+            holder.textView.setText("");
+        }
     }
 
     @Override
@@ -42,18 +47,29 @@ class BuildingRoomAdapter extends AbsArrayAdapter<BuildingRoom.RoomInfo, Buildin
             holder = (HeaderViewHolder) convertView.getTag();
         }
 
-        String room = getItem(position).buildingCode();
-        holder.textView.setText(buildingRoom.roomInfoList(room).buildingInfo().name());
+        BuildingRoom.RoomInfo item = getItem(position);
 
+        if (item != null) {
+            String room = item.buildingCode();
+            BuildingRoom.Pair pair = buildingRoom.roomInfoList(room);
+            if (pair != null) {
+                holder.textView.setText(pair.buildingInfo().name());
+            } else {
+                holder.textView.setText("");
+            }
+        } else {
+            holder.textView.setText("");
+        }
         return convertView;
     }
 
     @Override
     public long getHeaderId(int position) {
-        return getItem(position).buildingCodeInt();
+        BuildingRoom.RoomInfo item = getItem(position);
+        return item != null ? item.buildingCodeInt() : -1;
     }
 
-    static class ViewHolder  extends AbsArrayAdapter.SimpleViewHolder {
+    static class ViewHolder extends AbsArrayAdapter.SimpleViewHolder {
         public ViewHolder(View view) {
             super(view);
         }
@@ -61,7 +77,7 @@ class BuildingRoomAdapter extends AbsArrayAdapter<BuildingRoom.RoomInfo, Buildin
 
     static class HeaderViewHolder extends AbsArrayAdapter.SimpleViewHolder {
 
-        public HeaderViewHolder(View view) {
+        HeaderViewHolder(View view) {
             super(view);
         }
 

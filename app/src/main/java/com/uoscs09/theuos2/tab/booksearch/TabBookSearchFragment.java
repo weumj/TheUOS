@@ -96,7 +96,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<List<BookItem>> i
             osSelect = savedInstanceState.getInt(OS_SEL);
             mEncodedQuery = savedInstanceState.getString(QUERY);
             mCurrentPage = savedInstanceState.getInt(BUNDLE_PAGE);
-            mRawQuery = savedInstanceState.getString("mRawQuery", StringUtil.NULL);
+            mRawQuery = savedInstanceState.getString("mRawQuery", "");
         } else {
             mBookList = new ArrayList<>();
             mCurrentPage = 1;
@@ -366,8 +366,8 @@ public class TabBookSearchFragment extends AbsProgressFragment<List<BookItem>> i
     private void execute() {
         mEmptyView.setVisibility(View.GONE);
 
-        execute(AppRequests.Books.request(mRawQuery/*mEncodedQuery*/, mCurrentPage, mOptionSort, mOptionIndex),
-                result -> {
+        task(AppRequests.Books.request(mRawQuery/*mEncodedQuery*/, mCurrentPage, mOptionSort, mOptionIndex))
+                .result(result -> {
                     isResultEmpty = false;
                     if (result.isEmpty()) {
                         AppUtil.showToast(getActivity(), R.string.search_result_empty, isMenuVisible());
@@ -380,14 +380,14 @@ public class TabBookSearchFragment extends AbsProgressFragment<List<BookItem>> i
                         mBookList.addAll(result);
                         mBookListAdapter.notifyDataSetChanged();
                     }
-                },
-                e -> {
+                })
+                .error(e -> {
                     e.printStackTrace();
                     isResultEmpty = false;
                     showEmptyView();
                     simpleErrorRespond(e);
-                }
-        );
+                })
+                .execute();
     }
 
 

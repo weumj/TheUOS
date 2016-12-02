@@ -17,6 +17,7 @@ import com.uoscs09.theuos2.base.AbsAnimDialogFragment;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
+import com.uoscs09.theuos2.util.ResourceUtil;
 
 import java.util.Calendar;
 import java.util.List;
@@ -39,14 +40,14 @@ public class ClassroomTimetableDialogFragment extends AbsAnimDialogFragment {
     @BindView(R.id.tab_time_bar_parent)
     ViewGroup timeBarParent;
 
-    ClassroomTimeTable classRoomTimeTable;
+    ClassRoomTimetable classRoomTimetable;
     OApiUtil.Semester semester;
 
-    public static void showTimetableDialog(Fragment f, ClassroomTimeTable classRoomTimeTable, OApiUtil.Semester semester, View fromView) {
+    public static void showTimetableDialog(Fragment f, ClassRoomTimetable classRoomTimetable, OApiUtil.Semester semester, View fromView) {
         ClassroomTimetableDialogFragment fragment = new ClassroomTimetableDialogFragment();
-        fragment.classRoomTimeTable = classRoomTimeTable;
+        fragment.classRoomTimetable = classRoomTimetable;
         fragment.semester = semester;
-        if (classRoomTimeTable.timetables().isEmpty()) {
+        if (classRoomTimetable.timetables().isEmpty()) {
             AppUtil.showToast(f.getActivity(), R.string.tab_building_classroom_timetable_result_empty);
         } else
             fragment.showFromView(f.getChildFragmentManager(), "timetable", fromView);
@@ -55,8 +56,8 @@ public class ClassroomTimetableDialogFragment extends AbsAnimDialogFragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (classRoomTimeTable != null)
-            outState.putParcelable("timetable", classRoomTimeTable);
+        if (classRoomTimetable != null)
+            outState.putParcelable("timetable", classRoomTimetable);
         if (semester != null)
             outState.putInt("semester", semester.ordinal());
     }
@@ -66,7 +67,7 @@ public class ClassroomTimetableDialogFragment extends AbsAnimDialogFragment {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState != null) {
-            classRoomTimeTable = savedInstanceState.getParcelable("timetable");
+            classRoomTimetable = savedInstanceState.getParcelable("timetable");
             semester = OApiUtil.Semester.values()[savedInstanceState.getInt("semester")];
         }
 
@@ -77,28 +78,28 @@ public class ClassroomTimetableDialogFragment extends AbsAnimDialogFragment {
         View view = View.inflate(getActivity(), R.layout.dialog_building_room_timetable, null);
         ButterKnife.bind(this, view);
 
-        if (classRoomTimeTable.timetables().isEmpty()) {
+        if (classRoomTimetable.timetables().isEmpty()) {
             AppUtil.showToast(getActivity(), R.string.tab_building_classroom_timetable_result_empty);
             dismiss();
         } else {
-            ClassroomTimeTable.Timetable timetable = classRoomTimeTable.timetables().get(0);
+            ClassRoomTimetable.Timetable timetable = classRoomTimetable.timetables().get(0);
 
             toolbar.setTitle(R.string.tab_building_classroom_timetable);
             toolbar.setSubtitle(String.format("%s / %s", timetable.roomNo(), semester.nameByLocale()));
 
             int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 1;
             if (dayOfWeek > 0) // '시간' 부분 제외
-                timeBarParent.getChildAt(dayOfWeek).setBackgroundColor(AppUtil.getAttrColor(getActivity(), R.attr.color_actionbar_title));
+                timeBarParent.getChildAt(dayOfWeek).setBackgroundColor(ResourceUtil.getAttrColor(getActivity(), R.attr.color_actionbar_title));
 
-            listView.setAdapter(new TimetableListAdapter(getActivity(), classRoomTimeTable.timetables()));
+            listView.setAdapter(new TimetableListAdapter(getActivity(), classRoomTimetable.timetables()));
         }
         return view;
     }
 
 
-    class TimetableListAdapter extends AbsArrayAdapter<ClassroomTimeTable.Timetable, TimetableListViewHolder> {
+    class TimetableListAdapter extends AbsArrayAdapter<ClassRoomTimetable.Timetable, TimetableListViewHolder> {
 
-        public TimetableListAdapter(Context context, List<ClassroomTimeTable.Timetable> list) {
+        public TimetableListAdapter(Context context, List<ClassRoomTimetable.Timetable> list) {
             super(context, R.layout.list_layout_building_classroom_timetable, list);
         }
 
@@ -127,7 +128,7 @@ public class ClassroomTimetableDialogFragment extends AbsAnimDialogFragment {
                 R.id.tab_timetable_list_text_sat
         })
         public TextView[] views;
-        ClassroomTimeTable.Timetable timetable;
+        ClassRoomTimetable.Timetable timetable;
 
         public TimetableListViewHolder(View itemView) {
             super(itemView);
@@ -137,7 +138,7 @@ public class ClassroomTimetableDialogFragment extends AbsAnimDialogFragment {
             textView.setTypeface(Typeface.DEFAULT_BOLD);
         }
 
-        void setView(int position, ClassroomTimeTable.Timetable timetable) {
+        void setView(int position, ClassRoomTimetable.Timetable timetable) {
             this.timetable = timetable;
 
             // period
@@ -156,7 +157,7 @@ public class ClassroomTimetableDialogFragment extends AbsAnimDialogFragment {
                     colorMap.put(hash, colorIndex++);
                 }
 
-                v.setBackgroundResource(AppUtil.getOrderedColorRes(colorMap.get(hash)));
+                v.setBackgroundResource(ResourceUtil.getOrderedColorRes(colorMap.get(hash)));
 
             }
 

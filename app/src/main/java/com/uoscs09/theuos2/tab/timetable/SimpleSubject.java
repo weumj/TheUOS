@@ -1,7 +1,7 @@
 package com.uoscs09.theuos2.tab.timetable;
 
 
-import com.uoscs09.theuos2.tab.subject.SubjectItem2;
+import com.uoscs09.theuos2.tab.subject.Subject;
 
 import java.util.ArrayList;
 
@@ -9,7 +9,7 @@ import mj.android.utils.xml.Element;
 import mj.android.utils.xml.Root;
 
 @Root(name = "list")
-public class SubjectInfoItem {
+public class SimpleSubject {
 
     @Element(name = "subject_no")
     public String subjectNo;
@@ -27,9 +27,8 @@ public class SubjectInfoItem {
     public String professorName;
 
     //todo refactor
-    @Deprecated
-    public SubjectItem2 toSubjectItem(Timetable2 timeTable, Timetable2.SubjectInfo subject) {
-        SubjectItem2 item = new SubjectItem2();
+    public Subject toSubject(Timetable2 timeTable, Timetable2.SubjectInfo subject) {
+        Subject item = new Subject();
         item.subject_no = subjectNo;
         item.subject_nm = subjectName;
         item.subject_div = subjectDiv;
@@ -41,7 +40,7 @@ public class SubjectInfoItem {
         item.term = timeTable.semester().code;
         item.year = Integer.toString(timeTable.year());
 
-        ArrayList<SubjectItem2.ClassInformation> classInformationList = timeTable.classTimeInformationTable().get(subject.nameKor());
+        ArrayList<Subject.ClassInformation> classInformationList = timeTable.classTimeInformationTable().get(subject.nameKor());
         if (classInformationList != null)
             item.classInformation().addAll(classInformationList);
 

@@ -6,7 +6,7 @@ import mj.android.utils.xml.ListContainer;
 import mj.android.utils.xml.Root;
 
 @Root(name = "root", charset = "euc-kr")
-public class EmptyRoomInfo {
+public class EmptyRoomWrapper {
     @ListContainer(name = "mainlist")
     private List<EmptyRoom> list;
 

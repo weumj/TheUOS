@@ -1,27 +1,40 @@
 package com.uoscs09.theuos2.tab.libraryseat;
 
-
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Serializable;
 
-public class SeatInfo implements Parcelable {
-    public ArrayList<SeatItem> seatItemList;
-    List<SeatDismissInfo> seatDismissInfoList;
+public class SeatInfo implements Parcelable, Serializable {
+    private static final long serialVersionUID = 2517523347755809098L;
+    public String roomName;
+    public String occupySeat;
+    public String vacancySeat;
+    public String utilizationRateStr;
+    public float utilizationRate;
+    public int index;
 
     public SeatInfo() {
-        seatItemList = new ArrayList<>();
-        seatDismissInfoList = new ArrayList<>();
+        roomName = occupySeat = vacancySeat = utilizationRateStr = "";
     }
 
-    public void clearAndAddAll(SeatInfo info){
-        seatDismissInfoList.clear();
-        seatDismissInfoList.addAll(info.seatDismissInfoList);
+    /*
+    public SeatInfo(String name, String occupySeat, String vacancySeat, String utilizationRateStr, int index) {
+        this.roomName = name.trim();
+        this.occupySeat = occupySeat.trim();
+        this.vacancySeat = vacancySeat.trim();
+        this.utilizationRateStr = utilizationRateStr.trim();
+        this.index = index;
+    }
+    */
 
-        seatItemList.clear();
-        seatItemList.addAll(info.seatItemList);
+    protected SeatInfo(Parcel source) {
+        roomName = source.readString();
+        occupySeat = source.readString();
+        vacancySeat = source.readString();
+        utilizationRateStr = source.readString();
+        utilizationRate = source.readFloat();
+        index = source.readInt();
     }
 
     @Override
@@ -31,20 +44,22 @@ public class SeatInfo implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeTypedList(seatItemList);
-        dest.writeTypedList(seatDismissInfoList);
-    }
-
-    protected SeatInfo(Parcel in) {
-        this.seatItemList = in.createTypedArrayList(SeatItem.CREATOR);
-        this.seatDismissInfoList = in.createTypedArrayList(SeatDismissInfo.CREATOR);
+        dest.writeString(this.roomName);
+        dest.writeString(this.occupySeat);
+        dest.writeString(this.vacancySeat);
+        dest.writeString(this.utilizationRateStr);
+        dest.writeFloat(this.utilizationRate);
+        dest.writeInt(this.index);
     }
 
     public static final Parcelable.Creator<SeatInfo> CREATOR = new Parcelable.Creator<SeatInfo>() {
+
+        @Override
         public SeatInfo createFromParcel(Parcel source) {
             return new SeatInfo(source);
         }
 
+        @Override
         public SeatInfo[] newArray(int size) {
             return new SeatInfo[size];
         }

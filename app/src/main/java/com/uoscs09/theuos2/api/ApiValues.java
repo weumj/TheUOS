@@ -11,7 +11,7 @@ import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class ApiValues {
+class ApiValues {
     static final class Networks {
 
         static final Interceptor CHECK_NETWORK = chain -> {

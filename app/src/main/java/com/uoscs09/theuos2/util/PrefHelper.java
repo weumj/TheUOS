@@ -4,7 +4,7 @@ import android.Manifest;
 import android.os.Environment;
 import android.support.annotation.RequiresPermission;
 
-import com.uoscs09.theuos2.tab.restaurant.WeekRestItem;
+import com.uoscs09.theuos2.tab.restaurant.RestWeekItem;
 
 import java.util.Calendar;
 
@@ -108,7 +108,7 @@ public class PrefHelper {
         }
         */
 
-        public static void putWeekItemFetchTime(String code, WeekRestItem item) {
+        public static void putWeekItemFetchTime(String code, RestWeekItem item) {
             pref().put(PrefUtil.KEY_REST_WEEK_FETCH_TIME + "_START_" + code, item.startDate);
             pref().put(PrefUtil.KEY_REST_WEEK_FETCH_TIME + "_END_" + code, item.endDate);
         }

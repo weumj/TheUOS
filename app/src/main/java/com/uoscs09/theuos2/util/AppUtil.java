@@ -6,19 +6,13 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.os.Build;
-import android.support.annotation.AttrRes;
-import android.support.annotation.ColorInt;
-import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.PermissionChecker;
-import android.util.TypedValue;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -119,14 +113,6 @@ public class AppUtil {
         WiseScore(9, TabWiseScoreFragment.class, R.string.title_tab_wise_score, R.attr.theme_ic_action_content_content_copy, R.drawable.ic_action_content_content_copy_white),
         //BuildingRoom(10, TabBuildingRoomFragment.class, R.string.title_tab_building_classroom, R.attr.theme_ic_action_action_about, R.drawable.ic_action_action_about_white),
 
-        /* disable
-        Phone(TabPhoneFragment.class, R.string.title_tab_phone, R.attr.theme_ic_action_communication_call,R.drawable.ic_action_communication_call_white),
-        CheckCourseEval(ScoreFragment.class, R.string.title_tab_score, R.attr.theme_ic_action_content_content_copy),
-        Transport(TabTransportFragment.class, R.string.title_tab_transport, R.attr.theme_ic_action_maps_directions,R.drawable.ic_action_maps_directions_white);
-        Map(TabMapFragment.class, R.string.title_tab_map, R.attr.theme_ic_action_maps_place,R.drawable.ic_action_maps_place_white),
-
-        */
-
         //ETC(,R.drawable.ic_action_navigation_check_white)
         //Exit(,R.drawable.ic_action_navigation_close_white)
         Setting(98, null, R.string.setting, R.attr.theme_ic_action_action_settings, R.drawable.ic_action_action_settings_white);
@@ -171,7 +157,7 @@ public class AppUtil {
             if (this.equals(Home))
                 return iconRes;
             else
-                return getAttrValue(context, iconRes);
+                return ResourceUtil.getAttrValue(context, iconRes);
         }
 
         @DrawableRes
@@ -286,24 +272,6 @@ public class AppUtil {
     }
 
     /**
-     * 현재 테마에 정의된, {@link R.attr}에 선언된 값을 가져온다.
-     *
-     * @param attrId 가져올 값의 Id
-     * @return 현재 테마에서 정의한 해당 값의 id
-     */
-    public static int getAttrValue(Context context, @AttrRes int attrId) {
-        TypedValue out = new TypedValue();
-        context.getTheme().resolveAttribute(attrId, out, true);
-
-        return out.resourceId;
-    }
-
-    @ColorInt
-    public static int getAttrColor(Context context, @AttrRes int attrColorId) {
-        return ContextCompat.getColor(context, getAttrValue(context, attrColorId));
-    }
-
-    /**
      * 메인 액티비티에 종료 인텐트를 보낸다.
      */
     public static void exit(Context context) {
@@ -412,71 +380,6 @@ public class AppUtil {
         }
 
         appContext.setTheme(theme.styleId);
-    }
-
-    public static int getOrderedColor(Context context, int index) {
-        return ContextCompat.getColor(context, getOrderedColorRes(index));
-    }
-
-    @ColorRes
-    public static int getOrderedColorRes(int index) {
-        switch (index % 17) {
-            case 0:
-            default:
-                return R.color.red_yellow;
-            case 1:
-                return R.color.light_blue;
-            case 2:
-                return R.color.material_light_blue_700;
-            case 3:
-                return R.color.purple;
-            case 4:
-                return R.color.green;
-            case 5:
-                return R.color.gray_blue;
-            case 6:
-                return R.color.material_blue_grey_400;
-            case 7:
-                return R.color.material_green_700;
-            case 8:
-                return R.color.material_deep_teal_500_1;
-            case 9:
-                return R.color.material_blue_grey_200;
-            case 10:
-                return R.color.material_deep_teal_200_1;
-            case 11:
-                return R.color.material_grey_600_;
-            case 12:
-                return R.color.material_red_200;
-            case 13:
-                return R.color.material_light_blue_200;
-            case 14:
-                return R.color.material_indigo_200;
-            case 15:
-                return R.color.material_green_200;
-            case 16:
-                return R.color.material_green_300;
-        }
-    }
-
-    /**
-     * 화면 크기를 판단한다.
-     *
-     * @return {@code true} - 화면 크기가
-     * {@link Configuration#SCREENLAYOUT_SIZE_NORMAL} 이하 일 경우<br>
-     * <br>
-     * {@code false} - 그 외
-     */
-    public static boolean isScreenSizeSmall() {
-        int sizeInfoMasked = context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
-
-        switch (sizeInfoMasked) {
-            case Configuration.SCREENLAYOUT_SIZE_NORMAL:
-            case Configuration.SCREENLAYOUT_SIZE_SMALL:
-                return true;
-            default:
-                return false;
-        }
     }
 
 

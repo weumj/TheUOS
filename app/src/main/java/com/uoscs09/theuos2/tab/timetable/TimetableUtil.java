@@ -2,6 +2,7 @@ package com.uoscs09.theuos2.tab.timetable;
 
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.RequiresPermission;
 import android.support.v4.content.ContextCompat;
@@ -87,12 +88,13 @@ public class TimetableUtil {
     public static Task<String> saveTimetableToImage(Timetable2 timetable, ListView listView, ListAdapter originalAdapter, View header) {
         //noinspection ResourceType
         final String picturePath = PrefHelper.Data.getPicturePath();
+        @SuppressLint("DefaultLocale")
         String savedPath = String.format("%s/timetable_%d_%s_%d.png", picturePath, timetable.year(), timetable.semester().name(), System.currentTimeMillis());
 
         return new ImageUtil.ListViewBitmapRequest.Builder(listView, originalAdapter)
                 .setHeaderView(header)
                 .build()
-                .wrap(new ImageUtil.ImageWriteProcessor(savedPath));
+                .map(new ImageUtil.ImageWriteProcessor(savedPath));
 
     }
 }

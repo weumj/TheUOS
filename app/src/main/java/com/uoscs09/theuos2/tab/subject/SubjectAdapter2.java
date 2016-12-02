@@ -12,26 +12,31 @@ import java.util.List;
 import butterknife.BindViews;
 
 
-class SubjectAdapter2 extends AbsArrayAdapter<SubjectItem2, SubjectAdapter2.ViewHolder> {
+class SubjectAdapter2 extends AbsArrayAdapter<Subject, SubjectAdapter2.ViewHolder> {
 
-    public SubjectAdapter2(Context context, List<SubjectItem2> list) {
+    SubjectAdapter2(Context context, List<Subject> list) {
         super(context, R.layout.list_layout_subject, list);
     }
 
     @Override
     public void onBindViewHolder(int position, ViewHolder holder) {
-        SubjectItem2 item = getItem(position);
+        Subject item = getItem(position);
 
         TextView[] array = holder.tvArray;
 
-        int i = 0;
-        item.setInfoArray();
-        for (String a : item.infoArray) {
-            array[i++].setText(a);
+        if (item != null) {
+            int i = 0;
+            item.setInfoArray();
+            for (String a : item.infoArray) {
+                array[i++].setText(a);
+            }
+
+            array[8].setText(item.getClassRoomInformation());
+        } else {
+            for (int i = 0; i < 9; i++) {
+                array[i++].setText("");
+            }
         }
-
-        array[8].setText(item.getClassRoomInformation());
-
         /*
         array[0].setText(item.sub_dept);
         array[1].setText(item.subject_div);
@@ -66,9 +71,9 @@ class SubjectAdapter2 extends AbsArrayAdapter<SubjectItem2, SubjectAdapter2.View
                 R.id.list_subject_text_tlsn_cnt,
                 R.id.list_subject_text_tlsn_limit
         })
-        public TextView[] tvArray;
+        TextView[] tvArray;
 
-        // public SubjectItem2 item;
+        // public Subject item;
 
         public ViewHolder(View view) {
             super(view);

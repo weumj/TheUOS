@@ -15,6 +15,7 @@ import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.common.PieProgressDrawable;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
+import com.uoscs09.theuos2.util.ResourceUtil;
 import com.uoscs09.theuos2.util.TaskUtil;
 
 import java.util.ArrayList;
@@ -208,7 +209,7 @@ class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements View.OnCl
             Resources r = itemView.getResources();
             drawable.setLevel(100);
             drawable.setBorderWidth(-1f, r.getDisplayMetrics());
-            drawable.setColor(AppUtil.getAttrColor(itemView.getContext(), R.attr.colorAccent));
+            drawable.setColor(ResourceUtil.getAttrColor(itemView.getContext(), R.attr.colorAccent));
             int size = r.getDimensionPixelSize(R.dimen.book_state_icon_size);
             drawable.setBounds(0, 0, size, size);
 

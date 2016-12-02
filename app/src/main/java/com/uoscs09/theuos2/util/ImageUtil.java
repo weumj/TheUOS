@@ -89,8 +89,7 @@ public class ImageUtil {
             fos = new FileOutputStream(src);
             return img.compress(Bitmap.CompressFormat.PNG, 100, fos);
         } finally {
-            if (fos != null)
-                fos.close();
+            IOUtil.closeStream(fos);
         }
     }
 
@@ -162,7 +161,7 @@ public class ImageUtil {
         }
     }
 
-    public static class ListViewBitmapRequest extends Tasks.AbstractTask<Bitmap> {
+    public static class ListViewBitmapRequest {
         private final WeakReference<ListView> listViewRef;
         private final ListAdapter adapter;
         private final WeakReference<View> headerViewRef;
@@ -173,13 +172,12 @@ public class ImageUtil {
             this.headerViewRef = headerViewRef;
         }
 
-        @Override
         public Bitmap get() {
             ListView listView = listViewRef.get();
             if (listView == null)
                 throw new IllegalArgumentException();
 
-            Bitmap listViewBitmap = getWholeListViewItemsToBitmap(listView, adapter, AppUtil.getAttrColor(listView.getContext(), R.attr.cardBackgroundColor));
+            Bitmap listViewBitmap = getWholeListViewItemsToBitmap(listView, adapter, ResourceUtil.getAttrColor(listView.getContext(), R.attr.cardBackgroundColor));
 
             Bitmap headerViewBitmap;
             if (headerViewRef != null) {
@@ -215,7 +213,7 @@ public class ImageUtil {
             }
 
             try {
-                return drawOnBackground(headerViewBitmap, AppUtil.getAttrColor(headerView.getContext(), R.attr.cardBackgroundColor));
+                return drawOnBackground(headerViewBitmap, ResourceUtil.getAttrColor(headerView.getContext(), R.attr.cardBackgroundColor));
             } finally {
                 if (headerViewBitmap != null && newBitmapCreated) headerViewBitmap.recycle();
             }
@@ -238,7 +236,7 @@ public class ImageUtil {
             }
 
             public Task<Bitmap> build() {
-                return new ListViewBitmapRequest(adapter, listViewRef, headerViewRef);
+                return Tasks.newTask(new ListViewBitmapRequest(adapter, listViewRef, headerViewRef)::get);
             }
         }
     }

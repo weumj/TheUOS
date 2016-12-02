@@ -1,7 +1,6 @@
 package com.uoscs09.theuos2.tab.restaurant;
 
 import com.uoscs09.theuos2.parse.JerichoParser;
-import com.uoscs09.theuos2.util.StringUtil;
 
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
@@ -10,22 +9,22 @@ import net.htmlparser.jericho.Source;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ParseRestaurantWeek extends JerichoParser<WeekRestItem> {
+public class RestaurantWeekMenuParser extends JerichoParser<RestWeekItem> {
     private static final String BR = "*br*";
 
     @Override
-    public WeekRestItem parse(String param) throws Throwable {
+    public RestWeekItem parse(String param) throws Throwable {
         param = param.replaceAll("<br*+/>", BR);
         return super.parse(param);
     }
 
     @Override
-    protected WeekRestItem parseHtmlBody(Source source) throws Throwable{
+    protected RestWeekItem parseHtmlBody(Source source) throws Throwable{
         Element restTable = source.getFirstElementByClass("tblType03 mt10");
 
-        WeekRestItem weekRestItem = new WeekRestItem();
+        RestWeekItem restWeekItem = new RestWeekItem();
 
-        ArrayList<RestItem> weekList = weekRestItem.weekList;
+        ArrayList<RestItem> weekList = restWeekItem.weekList;
         List<Element> trElementList = restTable.getFirstElement(HTMLElementName.TBODY).getChildElements();
 
         // 크기가 1이면 "글이 없습니다."
@@ -47,14 +46,14 @@ public class ParseRestaurantWeek extends JerichoParser<WeekRestItem> {
             }
         }
 
-        weekRestItem.afterParsing();
+        restWeekItem.afterParsing();
 
-        return weekRestItem;
+        return restWeekItem;
 
     }
 
     private static String extractContent(Element e) {
-        return e.getTextExtractor().toString().replace(BR, StringUtil.NEW_LINE).trim();
+        return e.getTextExtractor().toString().replace(BR, "\n").trim();
     }
 
 

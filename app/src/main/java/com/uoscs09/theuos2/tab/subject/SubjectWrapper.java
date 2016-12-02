@@ -1,16 +1,18 @@
 package com.uoscs09.theuos2.tab.subject;
 
+import com.uoscs09.theuos2.tab.timetable.SimpleSubject;
+
 import java.util.List;
 
 import mj.android.utils.xml.ListContainer;
 import mj.android.utils.xml.Root;
 
 @Root(name = "root", charset = "euc-kr")
-public class CoursePlanInfo {
+public class SubjectWrapper {
     @ListContainer(name = "mainlist")
-    private List<CoursePlanItem> list;
+    private List<SimpleSubject> simpleSubjects;
 
-    public List<CoursePlanItem> coursePlanList() {
-        return list;
+    public List<SimpleSubject> subjectInfoList() {
+        return simpleSubjects;
     }
 }

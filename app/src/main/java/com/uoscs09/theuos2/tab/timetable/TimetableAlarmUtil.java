@@ -12,10 +12,11 @@ import android.util.Log;
 import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.PrefHelper;
-import com.uoscs09.theuos2.util.TimeUtil;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import mj.android.utils.task.Tasks;
 
@@ -50,7 +51,7 @@ public class TimetableAlarmUtil {
     /**
      * 주어진 과목과 알람 시간 정보로 알람을 설정하거나 취소하고 그 정보를 파일에 기록한다.
      */
-    static void setOrCancelAlarm(final Context context, final Subject subject, final int alarmType) {
+    static void setOrCancelAlarm(final Context context, final TimetableSubject subject, final int alarmType) {
 
         // 알림 없음
         if (alarmType == 0) {
@@ -73,7 +74,7 @@ public class TimetableAlarmUtil {
     /**
      * 알람 정보를 기록한다.
      */
-    private static void recordAlarmInfo(Context context, Subject subject, int alarmType) {
+    private static void recordAlarmInfo(Context context, TimetableSubject subject, int alarmType) {
 
         int period = subject.period, day = subject.day;
         int alarmCount = readAlarmCount();
@@ -122,7 +123,7 @@ public class TimetableAlarmUtil {
     }
 
     private static void registerAlarmFromFileOnStart(Context context, int period, int day) {
-        Subject subject = TimetableAlarmUtil.readSubject(period, day);
+        TimetableSubject subject = TimetableAlarmUtil.readSubject(period, day);
         int alarmTimeSelection = TimetableAlarmUtil.readTimeSelection(period, day);
 
         // 파일이 정확히 등록되어 있는 경우만 알람을 설정함.
@@ -190,7 +191,7 @@ public class TimetableAlarmUtil {
         Log.i(TAG, "cancel alarm : " + " [period : " + period + " / day : " + day + "]");
     }
 
-    private static void setAlarm(Context context, Subject subject, int alarmType) {
+    private static void setAlarm(Context context, TimetableSubject subject, int alarmType) {
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
         int period = subject.period, day = subject.day;
@@ -209,7 +210,8 @@ public class TimetableAlarmUtil {
             am.cancel(pi);
 
         } else {
-            Log.i(TAG, "set alarm : " + subject.subjectName + " [period : " + period + " / day : " + day + " / time : " + TimeUtil.getFormat_yMd_kms().format(new Date(notiTime)) + "]");
+            Log.i(TAG, "set alarm : " + subject.subjectName + " [period : " + period + " / day : " + day + " / time : "
+                    + new SimpleDateFormat("yyyy-MM-dd  kk:mm:ss", Locale.getDefault()).format(new Date(notiTime)) + "]");
             am.setRepeating(AlarmManager.RTC_WAKEUP, notiTime, AlarmManager.INTERVAL_DAY * 7, pi);
 
         }
@@ -346,11 +348,11 @@ public class TimetableAlarmUtil {
 
     //*************** I / O ****************
 
-    static void writeSubject(int period, int day, Subject subject) {
+    static void writeSubject(int period, int day, TimetableSubject subject) {
         IOUtil.writeObjectToInternalFileSilent(FILE_PREFIX_SUBJECT + getAlarmCodeString(period, day), subject);
     }
 
-    static Subject readSubject(int period, int day) {
+    static TimetableSubject readSubject(int period, int day) {
         return IOUtil.readInternalFileSilent(FILE_PREFIX_SUBJECT + getAlarmCodeString(period, day));
     }
 

@@ -22,7 +22,7 @@ import android.widget.TextView;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.common.PieProgressDrawable;
-import com.uoscs09.theuos2.http.HttpRequest;
+import com.uoscs09.theuos2.http.HttpTask;
 import com.uoscs09.theuos2.parse.JerichoParser;
 import com.uoscs09.theuos2.tab.buildings.BuildingRoom;
 import com.uoscs09.theuos2.util.AppRequests;
@@ -174,9 +174,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
         final Dialog progress = AppUtil.getProgressDialog(getActivity(), false, getText(R.string.progress_version_check), null);
         progress.show();
 
-        HttpRequest.Builder.newStringRequestBuilder(APP_URL)
-                .build()
-                .wrap(new JerichoParser<String>() {
+       new HttpTask.Builder(APP_URL)
+                .buildAsString()
+                .map(new JerichoParser<String>() {
                     @Override
                     protected String parseHtmlBody(Source source) throws Exception {
                         Element e = source.getAllElementsByClass("details-section metadata").get(0)

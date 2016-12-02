@@ -1,12 +1,13 @@
 package com.uoscs09.theuos2.tab.timetable;
 
+import android.annotation.SuppressLint;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.uoscs09.theuos2.common.SerializableArrayMap;
-import com.uoscs09.theuos2.tab.subject.SubjectItem2;
+import com.uoscs09.theuos2.tab.subject.Subject;
 import com.uoscs09.theuos2.util.OApiUtil;
 
 import java.io.Serializable;
@@ -22,7 +23,7 @@ public class Timetable2 implements Parcelable, Serializable {
 
     public Timetable2(OApiUtil.Semester semester, int year, StudentInfo studentInfo,
                       List<Period> periods, SerializableArrayMap<String, Integer> colorTable,
-                      int maxPeriod, SerializableArrayMap<String, ArrayList<SubjectItem2.ClassInformation>> classInformationTable) {
+                      int maxPeriod, SerializableArrayMap<String, ArrayList<Subject.ClassInformation>> classInformationTable) {
         this.semester = semester;
         this.year = year;
         this.studentInfo = studentInfo;
@@ -45,8 +46,8 @@ public class Timetable2 implements Parcelable, Serializable {
     private ArrayList<LayoutInfo> layoutInfo;
 
 
-    // Key - 과목 이름 hashCode, Value - 과목의 시간 & 장소 정보(SubjectItem2.ClassInformation 클래스)의 리스트
-    private SerializableArrayMap<String, ArrayList<SubjectItem2.ClassInformation>> classInformationTable;
+    // Key - 과목 이름 hashCode, Value - 과목의 시간 & 장소 정보(Subject.ClassInformation 클래스)의 리스트
+    private SerializableArrayMap<String, ArrayList<Subject.ClassInformation>> classInformationTable;
 
     private int maxPeriod;
 
@@ -75,11 +76,12 @@ public class Timetable2 implements Parcelable, Serializable {
         return maxPeriod;
     }
 
+    @SuppressLint("DefaultLocale")
     public String getYearAndSemester() {
         return isLocaleKor() ? String.format("%d / %s", year, semester.nameKor) : String.format("%s / %d", semester.nameEng, year);
     }
 
-    public Map<String, ArrayList<SubjectItem2.ClassInformation>> classTimeInformationTable() {
+    public Map<String, ArrayList<Subject.ClassInformation>> classTimeInformationTable() {
         return classInformationTable;
     }
 
@@ -489,7 +491,7 @@ public class Timetable2 implements Parcelable, Serializable {
         this.periods = in.createTypedArrayList(Period.CREATOR);
         this.colorTable = (SerializableArrayMap<String, Integer>) in.readSerializable();
         this.layoutInfo = in.createTypedArrayList(LayoutInfo.CREATOR);
-        this.classInformationTable = (SerializableArrayMap<String, ArrayList<SubjectItem2.ClassInformation>>) in.readSerializable();
+        this.classInformationTable = (SerializableArrayMap<String, ArrayList<Subject.ClassInformation>>) in.readSerializable();
         this.maxPeriod = in.readInt();
     }
 

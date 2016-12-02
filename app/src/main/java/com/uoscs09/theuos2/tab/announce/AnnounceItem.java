@@ -3,12 +3,10 @@ package com.uoscs09.theuos2.tab.announce;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.uoscs09.theuos2.util.StringUtil;
-
 public class AnnounceItem implements Parcelable {
-    public String title = StringUtil.NULL;
-    public String date = StringUtil.NULL;
-    public String pageURL = StringUtil.NULL;
+    public String title = "";
+    public String date = "";
+    public String pageURL = "";
 
     public AnnounceItem(){
     }

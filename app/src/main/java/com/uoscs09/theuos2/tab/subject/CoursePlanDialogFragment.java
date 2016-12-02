@@ -31,7 +31,6 @@ import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.ImageUtil;
 import com.uoscs09.theuos2.util.PrefHelper;
-import com.uoscs09.theuos2.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,15 +54,14 @@ public class CoursePlanDialogFragment extends AbsAnimDialogFragment implements T
 
     @BindView(R.id.fragment_course_plan_listview)
     ListView mListView;
-    private ArrayAdapter<CoursePlanItem> mAdapter;
+    private ArrayAdapter<CoursePlan> mAdapter;
 
-    private ArrayList<CoursePlanItem> infoList = new ArrayList<>();
-    private AnimationAdapter aAdapter;
+    private ArrayList<CoursePlan> infoList = new ArrayList<>();
 
-    private SubjectItem2 mSubject;
+    private Subject mSubject;
 
-    public static void fetchCoursePlanAndShow(final Fragment fragment, SubjectItem2 subjectItem2, View v) {
-        Task<List<CoursePlanItem>> task = AppRequests.Subjects.requestCoursePlan(subjectItem2);
+    public static void fetchCoursePlanAndShow(final Fragment fragment, Subject subject, View v) {
+        Task<List<CoursePlan>> task = AppRequests.Subjects.requestCoursePlan(subject);
         Dialog d = AppUtil.getProgressDialog(fragment.getActivity(), false, (dialog, which) -> task.cancel());
 
         d.show();
@@ -72,7 +70,7 @@ public class CoursePlanDialogFragment extends AbsAnimDialogFragment implements T
 
                     if (!coursePlanItems.isEmpty()) {
                         CoursePlanDialogFragment f = new CoursePlanDialogFragment();
-                        f.initValues(subjectItem2, coursePlanItems);
+                        f.initValues(subject, coursePlanItems);
                         f.showFromView(fragment.getFragmentManager(), "course", v);
                     } else {
                         AppUtil.showToast(fragment.getActivity(), R.string.tab_course_plan_result_empty);
@@ -86,7 +84,7 @@ public class CoursePlanDialogFragment extends AbsAnimDialogFragment implements T
     }
 
 
-    public void initValues(SubjectItem2 item, List<CoursePlanItem> infoList) {
+    public void initValues(Subject item, List<CoursePlan> infoList) {
         this.mSubject = item;
         this.infoList.clear();
         this.infoList.addAll(infoList);
@@ -140,7 +138,7 @@ public class CoursePlanDialogFragment extends AbsAnimDialogFragment implements T
         mListView.addHeaderView(mCourseTitle);
 
         mAdapter = new CoursePlanAdapter(getActivity(), infoList);
-        aAdapter = new AlphaInAnimationAdapter(mAdapter);
+        AnimationAdapter aAdapter = new AlphaInAnimationAdapter(mAdapter);
         aAdapter.setAbsListView(mListView);
 
         mListView.setAdapter(aAdapter);
@@ -170,7 +168,7 @@ public class CoursePlanDialogFragment extends AbsAnimDialogFragment implements T
         }
     }
 
-    private void setCourseTitle(CoursePlanItem course) {
+    private void setCourseTitle(CoursePlan course) {
         mCourseName.setText(course.subject_nm);
         mCourseCode.setText(course.subject_no);
         mCourseProf.setText(course.prof_nm);
@@ -234,7 +232,7 @@ public class CoursePlanDialogFragment extends AbsAnimDialogFragment implements T
         final Task<String> task = new ImageUtil.ListViewBitmapRequest.Builder(mListView, mAdapter)
                 .setHeaderView(mCourseTitle)
                 .build()
-                .wrap(new ImageUtil.ImageWriteProcessor(dir));
+                .map(new ImageUtil.ImageWriteProcessor(dir));
 
         Dialog d = AppUtil.getProgressDialog(getActivity(), false, (dialog, which) -> task.cancel());
 
@@ -284,7 +282,7 @@ public class CoursePlanDialogFragment extends AbsAnimDialogFragment implements T
                 writeWeek(sb, infoList.get(i));
             }
             return sb.toString();
-        }).wrap(IOUtil.<String>newExternalFileWriteFunc(fileName));
+        }).map(IOUtil.<String>newExternalFileWriteFunc(fileName));
 
         Dialog d = AppUtil.getProgressDialog(getActivity(), false, (dialog, which) -> task.cancel());
 
@@ -317,81 +315,81 @@ public class CoursePlanDialogFragment extends AbsAnimDialogFragment implements T
 
 
     private void writeHeader(StringBuilder sb) {
-        CoursePlanItem course = infoList.get(0);
+        CoursePlan course = infoList.get(0);
 
         sb.append(course.subject_nm);
-        sb.append(StringUtil.NEW_LINE);
-        sb.append(StringUtil.NEW_LINE);
+        sb.append("\n");
+        sb.append("\n");
 
         sb.append(course.subject_no);
-        sb.append(StringUtil.NEW_LINE);
-        sb.append(StringUtil.NEW_LINE);
+        sb.append("\n");
+        sb.append("\n");
 
         sb.append(getString(R.string.tab_course_plan_prof));
         sb.append(" : ");
         sb.append(course.prof_nm);
-        sb.append(StringUtil.NEW_LINE);
+        sb.append("\n");
 
         sb.append(getString(R.string.tab_course_plan_location));
         sb.append(" : ");
         sb.append(mSubject.getClassRoomInformation());
-        sb.append(StringUtil.NEW_LINE);
+        sb.append("\n");
 
         sb.append(getString(R.string.tab_course_plan_prof_tel));
         sb.append(" : ");
         sb.append(course.tel_no);
-        sb.append(StringUtil.NEW_LINE);
-        sb.append(StringUtil.NEW_LINE);
+        sb.append("\n");
+        sb.append("\n");
 
         sb.append(getString(R.string.tab_course_plan_eval));
         sb.append(" : ");
-        sb.append(StringUtil.NEW_LINE);
+        sb.append("\n");
         sb.append(course.score_eval_rate);
-        sb.append(StringUtil.NEW_LINE);
-        sb.append(StringUtil.NEW_LINE);
+        sb.append("\n");
+        sb.append("\n");
 
         sb.append(getString(R.string.tab_course_plan_book));
         sb.append(" : ");
-        sb.append(StringUtil.NEW_LINE);
+        sb.append("\n");
         sb.append(course.book_nm);
-        sb.append(StringUtil.NEW_LINE);
-        sb.append(StringUtil.NEW_LINE);
+        sb.append("\n");
+        sb.append("\n");
     }
 
-    private void writeWeek(StringBuilder sb, CoursePlanItem item) {
+    private void writeWeek(StringBuilder sb, CoursePlan item) {
         sb.append(item.week);
         sb.append(getString(R.string.tab_course_week));
         sb.append("  ----------------------");
-        sb.append(StringUtil.NEW_LINE);
-        sb.append(StringUtil.NEW_LINE);
+        sb.append("\n");
+        sb.append("\n");
 
         sb.append(" + ");
         sb.append(getString(R.string.tab_course_week_class_cont));
-        sb.append(StringUtil.NEW_LINE);
+        sb.append("\n");
         sb.append(item.class_cont);
-        sb.append(StringUtil.NEW_LINE);
-        sb.append(StringUtil.NEW_LINE);
+        sb.append("\n");
+        sb.append("\n");
 
         sb.append(" + ");
         sb.append(getString(R.string.tab_course_week_class_meth));
-        sb.append(StringUtil.NEW_LINE);
+        sb.append("\n");
         sb.append(item.class_meth);
-        sb.append(StringUtil.NEW_LINE);
-        sb.append(StringUtil.NEW_LINE);
+        sb.append("\n");
+        sb.append("\n");
 
         sb.append(" + ");
         sb.append(getString(R.string.tab_course_week_book));
-        sb.append(StringUtil.NEW_LINE);
+        sb.append("\n");
         sb.append(item.week_book);
-        sb.append(StringUtil.NEW_LINE);
-        sb.append(StringUtil.NEW_LINE);
+        sb.append("\n");
+        sb.append("\n");
 
         sb.append(" + ");
         sb.append(getString(R.string.tab_course_week_prjt_etc));
-        sb.append(StringUtil.NEW_LINE);
+        sb.append("\n");
         sb.append(item.prjt_etc);
-        sb.append(StringUtil.NEW_LINE);
-        sb.append(StringUtil.NEW_LINE);
+        sb.append("\n");
+        sb.append("\n");
     }
 
     @NonNull
@@ -400,20 +398,28 @@ public class CoursePlanDialogFragment extends AbsAnimDialogFragment implements T
         return TAG;
     }
 
-    static class CoursePlanAdapter extends AbsArrayAdapter<CoursePlanItem, CoursePlanAdapter.ViewHolder> {
-        public CoursePlanAdapter(Context context, List<CoursePlanItem> list) {
+    static class CoursePlanAdapter extends AbsArrayAdapter<CoursePlan, CoursePlanAdapter.ViewHolder> {
+        CoursePlanAdapter(Context context, List<CoursePlan> list) {
             super(context, R.layout.list_layout_course_plan, list);
         }
 
         @Override
         public void onBindViewHolder(int position, ViewHolder holder) {
-            CoursePlanItem item = getItem(position);
+            CoursePlan item = getItem(position);
 
-            holder.week.setText(String.valueOf(item.week));
-            holder.content.setText(item.class_cont);
-            holder.meth.setText(item.class_meth);
-            holder.book.setText(item.week_book);
-            holder.etc.setText(item.prjt_etc);
+            if (item != null) {
+                holder.week.setText(String.valueOf(item.week));
+                holder.content.setText(item.class_cont);
+                holder.meth.setText(item.class_meth);
+                holder.book.setText(item.week_book);
+                holder.etc.setText(item.prjt_etc);
+            } else {
+                holder.week.setText("");
+                holder.content.setText("");
+                holder.meth.setText("");
+                holder.book.setText("");
+                holder.etc.setText("");
+            }
         }
 
         @Override
@@ -423,15 +429,15 @@ public class CoursePlanDialogFragment extends AbsAnimDialogFragment implements T
 
         static class ViewHolder extends AbsArrayAdapter.ViewHolder {
             @BindView(R.id.course_plan_week)
-            public TextView week;
+            TextView week;
             @BindView(R.id.course_plan_content)
-            public TextView content;
+            TextView content;
             @BindView(R.id.course_plan_meth)
-            public TextView meth;
+            TextView meth;
             @BindView(R.id.course_plan_book)
-            public TextView book;
+            TextView book;
             @BindView(R.id.course_plan_etc)
-            public TextView etc;
+            TextView etc;
 
             public ViewHolder(View view) {
                 super(view);

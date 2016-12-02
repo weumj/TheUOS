@@ -23,11 +23,11 @@ import com.uoscs09.theuos2.base.ViewHolder;
 import com.uoscs09.theuos2.common.PieProgressDrawable;
 import com.uoscs09.theuos2.util.AnimUtil;
 import com.uoscs09.theuos2.util.AppRequests;
-import com.uoscs09.theuos2.util.AppUtil;
-import com.uoscs09.theuos2.util.StringUtil;
-import com.uoscs09.theuos2.util.TimeUtil;
+import com.uoscs09.theuos2.util.ResourceUtil;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import butterknife.BindView;
 import jp.wasabeef.recyclerview.animators.SlideInDownAnimator;
@@ -38,7 +38,7 @@ import mj.android.utils.recyclerview.ViewHolderFactory;
 /**
  * 도서관 좌석 정보 현황을 보여주는 페이지
  */
-public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> {
+public class TabLibrarySeatFragment extends AbsProgressFragment<SeatTotalInfo> {
 
 
     /**
@@ -62,7 +62,7 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> {
     @BindView(R.id.tab_library_list_seat)
     RecyclerView mSeatListView;
 
-    private SeatInfo mSeatInfo;
+    private SeatTotalInfo mSeatTotalInfo;
     private boolean isAdapterItemClicked = false;
 
     /**
@@ -70,7 +70,7 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> {
      * <p>
      * {@code onSaveInstanceState()} 에서 "COMMIT_TIME"라는 이름으로 저장된다.
      */
-    private String mSearchTime = StringUtil.NULL;
+    private String mSearchTime = "";
 
 
     @Override
@@ -78,11 +78,11 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> {
 
         if (savedInstanceState != null) {
             mSearchTime = savedInstanceState.getString(COMMIT_TIME);
-            mSeatInfo = savedInstanceState.getParcelable(INFO_LIST);
+            mSeatTotalInfo = savedInstanceState.getParcelable(INFO_LIST);
 
             setSubtitleWhenVisible(mSearchTime);
         } else {
-            mSeatInfo = new SeatInfo();
+            mSeatTotalInfo = new SeatTotalInfo();
         }
 
         super.onCreate(savedInstanceState);
@@ -98,16 +98,16 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> {
         super.onViewCreated(view, savedInstanceState);
 
         mSwipeRefreshLayout.setColorSchemeResources(
-                AppUtil.getAttrValue(getActivity(), R.attr.color_actionbar_title),
-                AppUtil.getAttrValue(getActivity(), R.attr.colorAccent)
+                ResourceUtil.getAttrValue(getActivity(), R.attr.color_actionbar_title),
+                ResourceUtil.getAttrValue(getActivity(), R.attr.colorAccent)
         );
-        mSwipeRefreshLayout.setProgressBackgroundColorSchemeResource(AppUtil.getAttrValue(getActivity(), R.attr.colorPrimary));
+        mSwipeRefreshLayout.setProgressBackgroundColorSchemeResource(ResourceUtil.getAttrValue(getActivity(), R.attr.colorPrimary));
         mSwipeRefreshLayout.setOnRefreshListener(() -> {
             sendTrackerEvent("swipe", "SwipeRefreshView");
             execute();
         });
 
-        ListRecyclerAdapter<SeatItem, SeatViewHolder> mSeatAdapter = new ListRecyclerAdapter<>(mSeatInfo.seatItemList, new ViewHolderFactory<SeatItem, SeatViewHolder>() {
+        ListRecyclerAdapter<SeatInfo, SeatViewHolder> mSeatAdapter = new ListRecyclerAdapter<>(mSeatTotalInfo.seatInfoList, new ViewHolderFactory<SeatInfo, SeatViewHolder>() {
             @Override
             public SeatViewHolder newViewHolder(ViewGroup viewGroup, int i) {
                 return new SeatViewHolder(ListRecyclerUtil.makeViewHolderItemView(viewGroup, R.layout.list_layout_seat));
@@ -130,14 +130,16 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> {
 
         StaggeredGridLayoutManager mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
+        mSeatListView.setLayoutManager(mLayoutManager);
 
         mSeatListView.setAdapter(mSeatAdapter);
-        mSeatListView.setLayoutManager(mLayoutManager);
+        mSeatAdapter.notifyDataSetChanged();
+
         mSeatListView.setItemAnimator(new SlideInDownAnimator());
 
         registerProgressView(view.findViewById(R.id.progress_layout));
 
-        if (mSeatInfo.seatItemList.isEmpty()) {
+        if (mSeatTotalInfo.seatInfoList.isEmpty()) {
             execute();
         }
     }
@@ -146,7 +148,7 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putString(COMMIT_TIME, mSearchTime);
-        outState.putParcelable(INFO_LIST, mSeatInfo);
+        outState.putParcelable(INFO_LIST, mSeatTotalInfo);
         super.onSaveInstanceState(outState);
     }
 
@@ -173,13 +175,9 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> {
 
                 sendClickEvent("dismiss info");
 
-                final String tag = "SeatDismissInfo";
-                if (getFragmentManager().findFragmentByTag(tag) == null) {
-                    SeatDismissDialogFragment fragment = new SeatDismissDialogFragment();
-                    fragment.setSeatInfo(mSeatInfo);
-                    fragment.show(getFragmentManager(), "SeatDismissInfo");
+                if (SeatDismissDialogFragment.isNotPresent(this)) {
+                    SeatDismissDialogFragment.showFragment(this, mSeatTotalInfo);
                 }
-
                 return true;
 
             default:
@@ -188,28 +186,28 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> {
     }
 
     private void execute() {
-        mSeatListView.getAdapter().notifyItemRangeRemoved(0, mSeatInfo.seatItemList.size());
-        mSeatInfo.seatItemList.clear();
+        mSeatListView.getAdapter().notifyItemRangeRemoved(0, mSeatTotalInfo.seatInfoList.size());
+        mSeatTotalInfo.seatInfoList.clear();
 
-        execute(AppRequests.LibrarySeats.request(),
-                result -> {
+        task(AppRequests.LibrarySeats.request())
+                .result(result -> {
                     if (mSwipeRefreshLayout != null)
                         mSwipeRefreshLayout.setRefreshing(false);
 
                     updateTimeView();
 
-                    mSeatInfo.clearAndAddAll(result);
+                    mSeatTotalInfo.clearAndAddAll(result);
 
-                    mSeatListView.getAdapter().notifyItemRangeInserted(0, result.seatItemList.size());
-                },
-                e -> {
+                    mSeatListView.getAdapter().notifyItemRangeInserted(0, result.seatInfoList.size());
+                })
+                .error(e -> {
                     e.printStackTrace();
                     if (mSwipeRefreshLayout != null)
                         mSwipeRefreshLayout.setRefreshing(false);
 
                     simpleErrorRespond(e);
-                }
-        );
+                })
+                .execute();
     }
 
 
@@ -222,7 +220,7 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> {
     }
 
     private void updateTimeView() {
-        mSearchTime = TimeUtil.getFormat_am_hms().format(new Date());
+        mSearchTime = new SimpleDateFormat("a hh:mm:ss", Locale.getDefault()).format(new Date());
         setSubtitleWhenVisible(mSearchTime);
     }
 
@@ -238,7 +236,7 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> {
     }
 
 
-    static class SeatViewHolder extends ViewHolder<SeatItem> {
+    static class SeatViewHolder extends ViewHolder<SeatInfo> {
         @BindView(R.id.tab_library_seat_list_text_room_name)
         TextView roomName;
         @BindView(R.id.ripple)
@@ -258,9 +256,9 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> {
             drawable.setBorderWidth(2, dm);
 
             drawable.setTextSize(15 * dm.scaledDensity);
-            drawable.setTextColor(AppUtil.getAttrColor(context, R.attr.color_primary_text));
+            drawable.setTextColor(ResourceUtil.getAttrColor(context, R.attr.color_primary_text));
             drawable.setColor(ContextCompat.getColor(context, R.color.gray_red));
-            drawable.setCenterColor(AppUtil.getAttrColor(context, R.attr.cardBackgroundColor));
+            drawable.setCenterColor(ResourceUtil.getAttrColor(context, R.attr.cardBackgroundColor));
             //noinspection deprecation
             progressImg.setBackgroundDrawable(drawable);
         }
@@ -269,7 +267,7 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatInfo> {
         protected void setView(int position) {
             super.setView(position);
 
-            SeatItem item = getItem();
+            SeatInfo item = getItem();
             roomName.setText(item.roomName);
             int progress = Math.round(item.utilizationRate);
             drawable.setText(item.vacancySeat.trim() + " / " + (Integer.parseInt(item.occupySeat.trim()) + Integer.parseInt(item.vacancySeat.trim())));

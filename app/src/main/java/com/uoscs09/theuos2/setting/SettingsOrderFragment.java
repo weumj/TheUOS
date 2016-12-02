@@ -160,9 +160,15 @@ public class SettingsOrderFragment extends BaseFragment {
             AppUtil.TabInfo item = getItem(position);
             holder.item = item;
 
-            holder.textView.setText(item.titleResId);
-            holder.textView.setCompoundDrawablesWithIntrinsicBounds(item.getIcon(holder.itemView.getContext()), 0,0,0);
-            holder.checkBox.setChecked(item.isEnable());
+            if (item != null) {
+                holder.textView.setText(item.titleResId);
+                holder.textView.setCompoundDrawablesWithIntrinsicBounds(item.getIcon(holder.itemView.getContext()), 0, 0, 0);
+                holder.checkBox.setChecked(item.isEnable());
+            } else {
+                holder.textView.setText("");
+                holder.textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                holder.checkBox.setChecked(false);
+            }
         }
 
         @Override
@@ -177,7 +183,8 @@ public class SettingsOrderFragment extends BaseFragment {
 
         @Override
         public long getItemId(int position) {
-            return getItem(position).titleResId;
+            AppUtil.TabInfo item = getItem(position);
+            return item != null ? item.titleResId : 0;
         }
 
         @Override

@@ -11,10 +11,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ParseSeat extends JerichoParser<SeatInfo> {
+public class LibararySeatParser extends JerichoParser<SeatTotalInfo> {
 
     @Override
-    protected SeatInfo parseHtmlBody(Source src) throws IOException {
+    protected SeatTotalInfo parseHtmlBody(Source src) throws IOException {
         List<Element> tableList = src.getAllElements(HTMLElementName.TABLE);
 
         // 페이지 에러
@@ -23,20 +23,20 @@ public class ParseSeat extends JerichoParser<SeatInfo> {
         }
 
         Element seatListHtmlTable = tableList.get(1);
-        ArrayList<SeatItem> resultList = parseHtmlToSeatList(seatListHtmlTable);
+        ArrayList<SeatInfo> resultList = parseHtmlToSeatList(seatListHtmlTable);
 
         Element dismissTable = tableList.get(3);
         List<SeatDismissInfo> seatDismissInfoList = parseHtmlToDismissInfoList(dismissTable);
 
-        SeatInfo info = new SeatInfo();
-        info.seatItemList = resultList;
+        SeatTotalInfo info = new SeatTotalInfo();
+        info.seatInfoList = resultList;
         info.seatDismissInfoList = seatDismissInfoList;
 
         return info;
     }
 
-    private ArrayList<SeatItem> parseHtmlToSeatList(Element seatListHtmlTable) {
-        ArrayList<SeatItem> resultList = new ArrayList<>();
+    private ArrayList<SeatInfo> parseHtmlToSeatList(Element seatListHtmlTable) {
+        ArrayList<SeatInfo> resultList = new ArrayList<>();
         int index;
 
         List<Element> trList = seatListHtmlTable.getAllElements(HTMLElementName.TR);
@@ -92,12 +92,12 @@ public class ParseSeat extends JerichoParser<SeatInfo> {
         return list;
     }
 
-    private SeatItem parseWeb(Element tr, int i) {
+    private SeatInfo parseWeb(Element tr, int i) {
         // roomName 열람실명 얻기. 예) 중앙도서관 제 1 열람실
         Element td = tr.getAllElements(HTMLElementName.TD).get(1);
         Element a = td.getFirstElement(HTMLElementName.A);
 
-        SeatItem item = new SeatItem();
+        SeatInfo item = new SeatInfo();
         String tmp = a.getTextExtractor().toString().substring(1);
         // 원문 앞에" " 빈 문자가 들어가 있음
         // tmp = new String(tmp.getBytes(), "EUC-KR"); //글자 깨짐 방지 인코딩 변경!

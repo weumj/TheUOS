@@ -20,7 +20,7 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.util.AppRequests;
-import com.uoscs09.theuos2.util.AppUtil;
+import com.uoscs09.theuos2.util.ResourceUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -124,10 +124,10 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
         super.onViewCreated(view, savedInstanceState);
 
         mSwipeRefreshLayout.setColorSchemeResources(
-                AppUtil.getAttrValue(getActivity(), R.attr.color_actionbar_title),
-                AppUtil.getAttrValue(getActivity(), R.attr.colorAccent)
+                ResourceUtil.getAttrValue(getActivity(), R.attr.color_actionbar_title),
+                ResourceUtil.getAttrValue(getActivity(), R.attr.colorAccent)
         );
-        mSwipeRefreshLayout.setProgressBackgroundColorSchemeResource(AppUtil.getAttrValue(getActivity(), R.attr.colorPrimary));
+        mSwipeRefreshLayout.setProgressBackgroundColorSchemeResource(ResourceUtil.getAttrValue(getActivity(), R.attr.colorPrimary));
         mSwipeRefreshLayout.setOnRefreshListener(() -> {
             sendTrackerEvent("refresh", "SwipeRefreshView");
             execute(true);
@@ -194,8 +194,8 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
         mRestItemAdapter.mItems.clear();
         mRestItemAdapter.notifyItemRangeRemoved(0, 5);
 
-        execute(AppRequests.Restaurants.request(force),
-                result -> {
+        task(AppRequests.Restaurants.request(force))
+                .result(result -> {
                     mRestTable = result;
                     mRestItemAdapter.mItems = mRestTable;
                     //mRestItemAdapter.notifyItemRangeInserted(0, 5);
@@ -203,12 +203,12 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
                     performTabClick(mCurrentSelection);
 
                     mSwipeRefreshLayout.setRefreshing(false);
-                },
-                t -> {
+                })
+                .error(t -> {
                     simpleErrorRespond(t);
                     mSwipeRefreshLayout.setRefreshing(false);
-                }
-        );
+                })
+                .execute();
     }
 
 
@@ -230,15 +230,15 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
         private View.OnClickListener l;
 
 
-        public RestItemAdapter(SparseArray<RestItem> items) {
+        RestItemAdapter(SparseArray<RestItem> items) {
             this.mItems = items;
         }
 
-        public void setRestMenu(int menu) {
+        void setRestMenu(int menu) {
             this.restMenu = menu;
         }
 
-        public void setExtraMenuListener(View.OnClickListener l) {
+        void setExtraMenuListener(View.OnClickListener l) {
             this.l = l;
         }
 
@@ -300,7 +300,7 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
 
         }
 
-        public int getItemViewRes(int viewType) {
+        int getItemViewRes(int viewType) {
             if (viewType == VIEW_TYPE_TIME)
                 return R.layout.list_layout_rest_time;
             else if (viewType == VIEW_TYPE_EXTRA)
@@ -345,13 +345,13 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
     }
 */
     protected static class Tab {
-        public final FrameLayout tabView;
+        final FrameLayout tabView;
         @BindView(R.id.tab_rest_tab_text)
-        public TextView mTextView;
+        TextView mTextView;
         @BindView(R.id.ripple)
         public View ripple;
         @BindView(R.id.tab_rest_tab_strip)
-        public View mStrip;
+        View mStrip;
         // public int id;
 
         private final int mSelectedColor;
@@ -361,11 +361,11 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
             tabView = (FrameLayout) LayoutInflater.from(parent.getContext()).inflate(R.layout.view_tab_rest_tab, parent, false);
             ButterKnife.bind(this, tabView);
 
-            mSelectedColor = AppUtil.getAttrColor(parent.getContext(), R.attr.color_actionbar_title);
+            mSelectedColor = ResourceUtil.getAttrColor(parent.getContext(), R.attr.color_actionbar_title);
             mNormalColor = mSelectedColor | 0xaa << 24;
         }
 
-        public void setSelected(boolean selected) {
+        void setSelected(boolean selected) {
             mStrip.setVisibility(selected ? View.VISIBLE : View.INVISIBLE);
             mTextView.setTextColor(selected ? mSelectedColor : mNormalColor);
         }

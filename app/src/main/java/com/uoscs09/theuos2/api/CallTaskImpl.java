@@ -17,8 +17,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-class CallTaskImpl<T> implements Task<T> {
-    final Call<T> call;
+class CallTaskImpl<T> implements Task<T>, Cloneable {
+
     private static final Executor CALLBACK_EXECUTOR = new Executor() {
         final Handler handler = new Handler(Looper.getMainLooper());
 
@@ -28,11 +28,14 @@ class CallTaskImpl<T> implements Task<T> {
         }
     };
 
+
+    private Call<T> call;
+
     public CallTaskImpl(Call<T> call) {
         this.call = call;
     }
 
-    private T handleResponse(Response<T> response) throws Throwable {
+    private static <T> T handleResponse(Response<T> response) throws Throwable {
 
         if (response.isSuccessful()) {
             return response.body();
@@ -91,7 +94,7 @@ class CallTaskImpl<T> implements Task<T> {
     }
 
     @Override
-    public <V> Task<V> wrap(Func<T, V> func) {
+    public <V> Task<V> map(Func<T, V> func) {
         return Tasks.newTask(() -> func.func(get()));
     }
 
@@ -102,7 +105,19 @@ class CallTaskImpl<T> implements Task<T> {
     }
 
     @Override
-    public Task<T> clone() {
+    public CallTaskImpl<T> clone() {
+        try {
+            Object o = super.clone();
+            if (o instanceof CallTaskImpl) {
+                //noinspection unchecked
+                CallTaskImpl<T> callTask = (CallTaskImpl<T>) o;
+                callTask.call = call.clone();
+                return callTask;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return new CallTaskImpl<>(call.clone());
     }
 }

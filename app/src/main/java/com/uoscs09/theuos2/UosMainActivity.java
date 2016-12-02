@@ -32,6 +32,7 @@ import com.uoscs09.theuos2.tab.map.GoogleMapActivity;
 import com.uoscs09.theuos2.util.AnimUtil;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.PrefHelper;
+import com.uoscs09.theuos2.util.ResourceUtil;
 
 import java.util.ArrayList;
 
@@ -430,7 +431,7 @@ public class UosMainActivity extends BaseActivity {
         if (onBackPressListener != null && onBackPressListener.onBackPress())
             return;
 
-        if (AppUtil.isScreenSizeSmall() && mDrawerLayout.isDrawerOpen(mLeftDrawerLayout)) {
+        if (ResourceUtil.isScreenSizeSmall() && mDrawerLayout.isDrawerOpen(mLeftDrawerLayout)) {
             mDrawerLayout.closeDrawer(mLeftDrawerLayout);
 
         }/* else if (PrefUtil.getInstance(getApplicationContext()).get(PrefUtil.KEY_HOME, true)) {
@@ -608,8 +609,8 @@ public class UosMainActivity extends BaseActivity {
                     return new DrawerViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_layout_drawer, viewGroup, false));
                 }
             });
-            mDefaultTextColor = AppUtil.getAttrColor(UosMainActivity.this, R.attr.colorControlNormal);
-            mSelectedTextColor = AppUtil.getAttrColor(UosMainActivity.this, R.attr.color_primary_text);
+            mDefaultTextColor = ResourceUtil.getAttrColor(UosMainActivity.this, R.attr.colorControlNormal);
+            mSelectedTextColor = ResourceUtil.getAttrColor(UosMainActivity.this, R.attr.color_primary_text);
             mColorFilter = new PorterDuffColorFilter(mSelectedTextColor, PorterDuff.Mode.SRC_IN);
             // isHomeEnable = PrefHelper.isHomeEnable();
         }

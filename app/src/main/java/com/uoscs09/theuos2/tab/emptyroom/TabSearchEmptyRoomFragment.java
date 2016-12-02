@@ -23,7 +23,7 @@ import com.uoscs09.theuos2.tab.buildings.ClassroomTimetableDialogFragment;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
-import com.uoscs09.theuos2.util.StringUtil;
+import com.uoscs09.theuos2.util.ResourceUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -202,29 +202,29 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<List<EmptyRo
     private void execute() {
         mEmptyView.setVisibility(View.INVISIBLE);
 
-        String building = ((String) mBuildingSpinner.getSelectedItem()).split(StringUtil.SPACE)[0];
+        String building = ((String) mBuildingSpinner.getSelectedItem()).split(" ")[0];
         int time = mTimeSpinner.getSelectedItemPosition() + 1;
         int term = mTermSpinner.getSelectedItemPosition();
 
-        execute(AppRequests.EmptyRooms.request(building, time, term),
-                result -> {
+        task(AppRequests.EmptyRooms.request(building, time, term))
+                .result(result -> {
                     mClassRoomList.clear();
                     mClassRoomList.addAll(result);
                     mAdapter.notifyDataSetChanged();
                     AppUtil.showToast(getActivity(), getString(R.string.search_found_amount, result.size()), true);
 
-                    mTermString = mTimeSpinner.getSelectedItem().toString().split(StringUtil.NEW_LINE)[1] + StringUtil.NEW_LINE + mTermSpinner.getSelectedItem();
+                    mTermString = mTimeSpinner.getSelectedItem().toString().split("\n")[1] + "\n" + mTermSpinner.getSelectedItem();
                     setSubtitleWhenVisible(mTermString);
 
                     mEmptyView.setVisibility(mClassRoomList.isEmpty() ? View.VISIBLE : View.INVISIBLE);
-                },
-                e -> {
+                })
+                .error(e -> {
                     e.printStackTrace();
 
                     mEmptyView.setVisibility(mClassRoomList.isEmpty() ? View.VISIBLE : View.INVISIBLE);
                     simpleErrorRespond(e);
-                }
-        );
+                })
+                .execute();
     }
 
     private void onTabClick(int field) {
@@ -263,7 +263,7 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<List<EmptyRo
 
 
         textViews[field].setCompoundDrawablesWithIntrinsicBounds(
-                AppUtil.getAttrValue(getActivity(), isReverse ?
+                ResourceUtil.getAttrValue(getActivity(), isReverse ?
                         R.attr.menu_theme_ic_action_navigation_arrow_drop_up : R.attr.menu_theme_ic_action_navigation_arrow_drop_down), 0, 0, 0);
         tabStrips[field].setVisibility(View.VISIBLE);
 

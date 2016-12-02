@@ -40,6 +40,7 @@ import java.io.IOException;
 import butterknife.BindView;
 import butterknife.OnClick;
 import mj.android.utils.task.Task;
+import mj.android.utils.task.TaskQueue;
 import mj.android.utils.task.Tasks;
 
 public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
@@ -125,7 +126,8 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_wise:
-                if (taskQueue().exist(TAG))
+                TaskQueue taskQueue = taskQueue();
+                if (taskQueue != null && taskQueue.exist(TAG))
                     AppUtil.showToast(getActivity(), R.string.progress_ongoing, true);
                 else {
                     sendClickEvent("wise login");
@@ -224,16 +226,15 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
         emptyView.setVisibility(View.INVISIBLE);
 
         // dummy : AppRequests.TimeTables.dummyRequest(id, passwd, semester, year)
-
-        executeWithQueue(TAG, AppRequests.TimeTables.request(id, passwd, semester, year),
-                r -> {
+        task(AppRequests.TimeTables.request(id, passwd, semester, year))
+                .result(r -> {
                     TimeTableWidget.sendRefreshIntent(getActivity());
 
                     setTimetable(r);
                     if (r == null)
                         AppUtil.showToast(getActivity(), R.string.tab_timetable_wise_login_warning_fail, isMenuVisible());
-                },
-                t -> {
+                })
+                .error(t -> {
                     if (mTimeTable == null || mTimeTable.classTimeInformationTable() == null || mTimeTable.classTimeInformationTable().isEmpty())
                         emptyView.setVisibility(View.VISIBLE);
 
@@ -243,8 +244,8 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
                     } else {
                         simpleErrorRespond(t);
                     }
-                }
-        );
+                })
+                .executeWithQueue(TAG);
     }
 
     private void readTimetableFromFile() {
@@ -304,9 +305,7 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
     private AlertDialog deleteDialog() {
         return new AlertDialog.Builder(getActivity())
                 .setMessage(R.string.confirm_delete)
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                    deleteTimetable();
-                })
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> deleteTimetable())
                 .setNegativeButton(R.string.cancel, null)
                 .create();
     }

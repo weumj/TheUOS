@@ -1,6 +1,7 @@
 package com.uoscs09.theuos2.tab.schedule;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +10,7 @@ import android.widget.TextView;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.common.PieProgressDrawable;
-import com.uoscs09.theuos2.util.AppUtil;
+import com.uoscs09.theuos2.util.ResourceUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -22,7 +23,7 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 
 class UnivScheduleAdapter extends AbsArrayAdapter<UnivScheduleItem, UnivScheduleAdapter.ViewHolder> implements StickyListHeadersAdapter {
 
-    public UnivScheduleAdapter(Context context, List<UnivScheduleItem> list) {
+    UnivScheduleAdapter(Context context, List<UnivScheduleItem> list) {
         super(context, R.layout.list_layout_univ_schedule, list);
     }
 
@@ -32,15 +33,25 @@ class UnivScheduleAdapter extends AbsArrayAdapter<UnivScheduleItem, UnivSchedule
 
         //holder.item = item;
 
-        holder.textView1.setText(item.content);
-        holder.textView2.setText(item.scheduleDate);
+        if (item != null) {
+            holder.textView1.setText(item.content);
+            holder.textView2.setText(item.scheduleDate);
 
 
-        holder.drawable.setColor(AppUtil.getOrderedColor(getContext(), position));
-        //holder.drawable.setCentorColor(getContext().getResources().getColor(AppUtil.getColor(position)));
+            holder.drawable.setColor(ResourceUtil.getOrderedColor(getContext(), position));
+            //holder.drawable.setCentorColor(getContext().getResources().getColor(AppUtil.getColor(position)));
 
-        holder.textView1.invalidateDrawable(holder.drawable);
+            holder.textView1.invalidateDrawable(holder.drawable);
+        } else {
+            holder.textView1.setText("");
+            holder.textView2.setText("");
 
+
+            holder.drawable.setColor(Color.TRANSPARENT);
+            //holder.drawable.setCentorColor(getContext().getResources().getColor(AppUtil.getColor(position)));
+
+            holder.textView1.invalidateDrawable(holder.drawable);
+        }
     }
 
     @Override
@@ -60,15 +71,16 @@ class UnivScheduleAdapter extends AbsArrayAdapter<UnivScheduleItem, UnivSchedule
             holder = (HeaderViewHolder) convertView.getTag();
         }
 
-        UnivScheduleItem.ScheduleDate date = getItem(position).dateStart;
-        Calendar c = getItem(position).getDate(true);
+        UnivScheduleItem item = getItem(position);
+        if (item != null) {
+            UnivScheduleItem.ScheduleDate date = item.dateStart;
+            Calendar c = item.getDate(true);
 
-        if (c == null) {
-            holder.textView.setText("");
-            holder.textView2.setText("");
-        } else {
             holder.textView.setText(String.valueOf(date.day));
             holder.textView2.setText(dateFormat.format(new Date(c.getTimeInMillis())));
+        } else {
+            holder.textView.setText("");
+            holder.textView2.setText("");
         }
 
         return convertView;
@@ -78,8 +90,13 @@ class UnivScheduleAdapter extends AbsArrayAdapter<UnivScheduleItem, UnivSchedule
 
     @Override
     public long getHeaderId(int position) {
-        UnivScheduleItem.ScheduleDate date = getItem(position).dateStart;
-        return date.month * 100 + date.day;
+        UnivScheduleItem item = getItem(position);
+        if (item != null) {
+            UnivScheduleItem.ScheduleDate date = item.dateStart;
+            return date.month * 100 + date.day;
+        } else {
+            return -1;
+        }
     }
 
 
@@ -113,7 +130,7 @@ class UnivScheduleAdapter extends AbsArrayAdapter<UnivScheduleItem, UnivSchedule
         @BindView(android.R.id.text2)
         TextView textView2;
 
-        public HeaderViewHolder(View view) {
+        HeaderViewHolder(View view) {
             super(view);
         }
 

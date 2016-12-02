@@ -4,6 +4,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.NetworkUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 
@@ -23,82 +24,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import mj.android.utils.task.Func;
+import mj.android.utils.task.Task;
 import mj.android.utils.task.Tasks;
 
 /**
  * Http 요청을 처리하는 Request 클래스
  */
-public abstract class HttpRequest<T> extends Tasks.AbstractTask<T> {
+public final class HttpTask {
     //public static final int RETURN_TYPE_STRING = 0;
     // public static final int RETURN_TYPE_CONNECTION = 1;
     public static final int HTTP_METHOD_GET = 0;
     public static final int HTTP_METHOD_POST = 1;
-
-    final String url;
-    private final String encodedParams;
-    final String resultEncoding;
-    private final int method;
-
-    HttpRequest(String url, String encodedParams, String resultEncoding, int method) {
-        this.url = url;
-        this.resultEncoding = resultEncoding;
-        this.encodedParams = encodedParams;
-        this.method = method;
-    }
-
-    /**
-     * Http 요청을 전송한다.
-     */
-    HttpURLConnection getHttpResult() throws IOException {
-        checkNetworkStateAndThrowException();
-
-        HttpURLConnection connection;
-        if (method == HTTP_METHOD_GET && encodedParams != null)
-            connection = getConnection(url + '?' + encodedParams);
-        else
-            connection = getConnection(url);
-
-        if (method == HTTP_METHOD_POST)
-            setUpPostSetting(connection, encodedParams);
-
-        checkResponseAndThrowException(connection);
-
-        return connection;
-
-    }
-
-    /**
-     * Post 연결 설정을 한다.
-     */
-    void setUpPostSetting(HttpURLConnection connection, @Nullable String encodedParams) throws IOException {
-        connection.setDefaultUseCaches(false);
-        connection.setDoInput(true);
-        connection.setDoOutput(true);
-        connection.setRequestMethod("POST");
-        connection.setRequestProperty("content-type", "application/x-www-form-urlencoded");
-        connection.setRequestProperty("accept-encoding", "gzip, deflate");
-
-        if (encodedParams != null) {
-            DataOutputStream out = new DataOutputStream(connection.getOutputStream());
-            out.write(encodedParams.getBytes());
-            out.close();
-        }
-
-    }
-
-
-    //**** util method
-
-    private static HttpURLConnection getConnection(String url) throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-
-        if (connection == null) {
-            throw new IOException("HttpURLConnection returns null.");
-        }
-        connection.setConnectTimeout(5000);
-
-        return connection;
-    }
 
     public static void checkNetworkStateAndThrowException() throws IOException {
         if (!NetworkUtil.isConnectivityEnable())
@@ -126,7 +62,7 @@ public abstract class HttpRequest<T> extends Tasks.AbstractTask<T> {
     static void checkResponseAndThrowException(HttpURLConnection connection) throws IOException {
         int response = connection.getResponseCode();
         if (response != HttpURLConnection.HTTP_OK) {
-            Log.e("HttpRequest", connection.getURL().toExternalForm() + " / response : " + response);
+            Log.e("HttpTask", connection.getURL().toExternalForm() + " / response : " + response);
             throw new IOException("HttpURLConnection responses bad result.");
         }
     }
@@ -142,15 +78,83 @@ public abstract class HttpRequest<T> extends Tasks.AbstractTask<T> {
             }
             return builder.toString();
         } finally {
-            reader.close();
+            IOUtil.closeStream(reader);
         }
     }
 
+
+    private static class HttpRequest {
+        final String url;
+        private final String encodedParams;
+        final String resultEncoding;
+        private final int method;
+
+        HttpRequest(String url, String encodedParams, String resultEncoding, int method) {
+            this.url = url;
+            this.resultEncoding = resultEncoding;
+            this.encodedParams = encodedParams;
+            this.method = method;
+        }
+
+        /**
+         * Http 요청을 전송한다.
+         */
+        HttpURLConnection getHttpResult() throws IOException {
+            checkNetworkStateAndThrowException();
+
+            HttpURLConnection connection;
+            if (method == HTTP_METHOD_GET && encodedParams != null)
+                connection = getConnection(url + '?' + encodedParams);
+            else
+                connection = getConnection(url);
+
+            if (method == HTTP_METHOD_POST)
+                setUpPostSetting(connection, encodedParams);
+
+            checkResponseAndThrowException(connection);
+
+            return connection;
+
+        }
+
+        /**
+         * Post 연결 설정을 한다.
+         */
+        void setUpPostSetting(HttpURLConnection connection, @Nullable String encodedParams) throws IOException {
+            connection.setDefaultUseCaches(false);
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("content-type", "application/x-www-form-urlencoded");
+            connection.setRequestProperty("accept-encoding", "gzip, deflate");
+
+            if (encodedParams != null) {
+                DataOutputStream out = new DataOutputStream(connection.getOutputStream());
+                out.write(encodedParams.getBytes());
+                out.close();
+            }
+
+        }
+
+        //**** util method
+
+        private static HttpURLConnection getConnection(String url) throws IOException {
+            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+
+            if (connection == null) {
+                throw new IOException("HttpURLConnection returns null.");
+            }
+            connection.setConnectTimeout(5000);
+
+            return connection;
+        }
+    }
+
+
     //** Request Impl
+    private static class StringRequest extends HttpRequest {
 
-    static class StringRequest extends HttpRequest<String> {
-
-        private StringRequest(String url, String encodedParams, String resultEncoding, int method) {
+        StringRequest(String url, String encodedParams, String resultEncoding, int method) {
             super(url, encodedParams, resultEncoding, method);
         }
 
@@ -165,13 +169,12 @@ public abstract class HttpRequest<T> extends Tasks.AbstractTask<T> {
                     connection.disconnect();
                 }
             }
-
         }
     }
 
-    static class ConnectionRequest extends HttpRequest<HttpURLConnection> {
+    private static class ConnectionRequest extends HttpRequest {
 
-        public ConnectionRequest(String url, String encodedParams, String resultEncoding, int method) {
+        ConnectionRequest(String url, String encodedParams, String resultEncoding, int method) {
             super(url, encodedParams, resultEncoding, method);
         }
 
@@ -183,21 +186,21 @@ public abstract class HttpRequest<T> extends Tasks.AbstractTask<T> {
 
     //** Request Builder
 
-    public static abstract class Builder<T> {
+    public static class Builder {
         String url;
         String resultEncoding = StringUtil.ENCODE_UTF_8, paramsEncoding = StringUtil.ENCODE_UTF_8;
         Map<? extends CharSequence, ? extends CharSequence> params = null;
         int method = HTTP_METHOD_GET;
 
-        public static Builder<String> newStringRequestBuilder(String url) {
-            return new StringBuilder(url);
+        public Task<String> buildAsString() {
+            return Tasks.newTask(new StringRequest(url, encodeParams(), resultEncoding, method)::get);
         }
 
-        public static Builder<HttpURLConnection> newConnectionRequestBuilder(String url) {
-            return new ConnectionBuilder(url);
+        public Task<HttpURLConnection> buildAsHttpURLConnection() {
+            return Tasks.newTask(new ConnectionRequest(url, encodeParams(), resultEncoding, method)::get);
         }
 
-        Builder(String url) {
+        public Builder(String url) {
             this.url = url;
         }
 
@@ -208,22 +211,22 @@ public abstract class HttpRequest<T> extends Tasks.AbstractTask<T> {
         }
         */
 
-        public Builder<T> setResultEncoding(String encoding) {
+        public Builder setResultEncoding(String encoding) {
             resultEncoding = encoding;
             return this;
         }
 
-        public Builder<T> setParamsEncoding(String encoding) {
+        public Builder setParamsEncoding(String encoding) {
             paramsEncoding = encoding;
             return this;
         }
 
-        public Builder<T> setParams(Map<? extends CharSequence, ? extends CharSequence> params) {
+        public Builder setParams(Map<? extends CharSequence, ? extends CharSequence> params) {
             this.params = params;
             return this;
         }
 
-        public Builder<T> setHttpMethod(int method) {
+        public Builder setHttpMethod(int method) {
             this.method = method;
             return this;
         }
@@ -242,31 +245,6 @@ public abstract class HttpRequest<T> extends Tasks.AbstractTask<T> {
 
         }
 
-        public abstract HttpRequest<T> build();
-
-        private static class StringBuilder extends Builder<String> {
-            StringBuilder(String url) {
-                super(url);
-            }
-
-            @Override
-            public HttpRequest<String> build() {
-                return new StringRequest(url, encodeParams(), resultEncoding, method);
-            }
-        }
-
-        private static class ConnectionBuilder extends Builder<HttpURLConnection> {
-            ConnectionBuilder(String url) {
-                super(url);
-            }
-
-            @Override
-            public HttpRequest<HttpURLConnection> build() {
-                return new ConnectionRequest(url, encodeParams(), resultEncoding, method);
-            }
-        }
-
-
     }
 
 
@@ -283,7 +261,7 @@ public abstract class HttpRequest<T> extends Tasks.AbstractTask<T> {
 
         @Override
         public File func(HttpURLConnection connection) throws IOException {
-            String fileNameAndExtension = TextUtils.isEmpty(suggestFileName)? getFileName(connection) : suggestFileName;
+            String fileNameAndExtension = TextUtils.isEmpty(suggestFileName) ? getFileName(connection) : suggestFileName;
             File downloadFile = makeFile(fileNameAndExtension);
 
             writeContentsToFile(downloadFile, connection.getInputStream());
@@ -365,8 +343,8 @@ public abstract class HttpRequest<T> extends Tasks.AbstractTask<T> {
 
                 fileOutputStream.flush();
             } finally {
-                fileOutputStream.close();
-                inputStream.close();
+                IOUtil.closeStream(fileOutputStream);
+                IOUtil.closeStream(inputStream);
             }
 
         }

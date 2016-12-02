@@ -33,6 +33,7 @@ import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import mj.android.utils.task.TaskQueue;
 import mj.android.utils.task.Tasks;
 
 public class TabTimeTableFragment22 extends AbsProgressFragment<Timetable2> {
@@ -82,7 +83,7 @@ public class TabTimeTableFragment22 extends AbsProgressFragment<Timetable2> {
 /*
         mTimeTableAdapter2 = new TimeTableAdapter(getActivity(), mTimeTable);
         mTimeTableAdapter2.setOnItemClickListener((vh, v, subject) -> {
-            if (subject.isEqualsTo(Subject.EMPTY))
+            if (subject.isEqualsTo(TimetableSubject.EMPTY))
                 return;
 
             mSubjectDetailDialog.setSubject(subject);
@@ -155,7 +156,8 @@ public class TabTimeTableFragment22 extends AbsProgressFragment<Timetable2> {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_wise:
-                if (taskQueue().exist(TAG))
+                TaskQueue taskQueue = taskQueue();
+                if (taskQueue != null && taskQueue.exist(TAG))
                     AppUtil.showToast(getActivity(), R.string.progress_ongoing, true);
                 else {
                     sendClickEvent("wise login");
@@ -264,8 +266,8 @@ public class TabTimeTableFragment22 extends AbsProgressFragment<Timetable2> {
         Semester semester = Semester.values()[mWiseTermSpinner.getSelectedItemPosition()];
         String mTimeTableYear = mWiseYearSpinner.getSelectedItem().toString();
 
-        executeWithQueue(TAG, AppRequests.TimeTables.request(mWiseIdView.getText(), mWisePasswdView.getText(), semester, mTimeTableYear),
-                r -> {
+        task(AppRequests.TimeTables.request(mWiseIdView.getText(), mWisePasswdView.getText(), semester, mTimeTableYear))
+                .result(r -> {
                     TimeTableWidget.sendRefreshIntent(getActivity());
 
                     clearPassWd();
@@ -273,8 +275,8 @@ public class TabTimeTableFragment22 extends AbsProgressFragment<Timetable2> {
                     setTimetable(r);
                     if (r == null)
                         AppUtil.showToast(getActivity(), R.string.tab_timetable_wise_login_warning_fail, isMenuVisible());
-                },
-                t -> {
+                })
+                .error(t -> {
                     emptyView.setVisibility(View.VISIBLE);
 
                     if (t instanceof IOException || t instanceof NullPointerException) {
@@ -283,40 +285,8 @@ public class TabTimeTableFragment22 extends AbsProgressFragment<Timetable2> {
                     } else {
                         simpleErrorRespond(t);
                     }
-                }
-        );
-/*
-        executeWithQueue(TAG, AppRequests.TimeTables.request(mWiseIdView.getText(), mWisePasswdView.getText(), semester, mTimeTableYear),
-                result -> {
-                    clearPassWd();
-                    if (result == null  ) {
-                        AppUtil.showToast(getActivity(), R.string.tab_timetable_wise_login_warning_fail, isMenuVisible());
-
-                        if (mTimeTableAdapter2.isEmpty())
-                            emptyView.setVisibility(View.VISIBLE);
-
-                        return;
-                    }
-
-                    mTimeTable.copyFrom(result);
-                    mTimeTableAdapter2.notifyDataSetChanged();
-
-                    setTermTextViewText(mTimeTable);
-                },
-                e -> {
-                    //clearPassWd();
-
-                    emptyView.setVisibility(View.VISIBLE);
-
-                    if (e instanceof IOException || e instanceof NullPointerException) {
-                        e.printStackTrace();
-                        AppUtil.showToast(getActivity(), R.string.tab_timetable_wise_login_warning_fail, isMenuVisible());
-                    } else {
-                        simpleErrorRespond(e);
-                    }
-                }
-        );
-    */
+                })
+                .executeWithQueue(TAG);
     }
 
     private void readTimetableFromFile() {

@@ -4,21 +4,14 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
-import android.transition.ArcMotion;
 import android.view.View;
 import android.view.ViewAnimationUtils;
-import android.view.Window;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.AnimationUtils;
-import android.view.animation.Interpolator;
-
-import com.uoscs09.theuos2.R;
 
 public class AnimUtil {
     public static Dialog applyRevealAnim(Dialog dialog, View v) {
@@ -109,39 +102,6 @@ public class AnimUtil {
 
     public static void startActivityWithScaleUp(Activity activity, Intent intent, View v) {
         ActivityCompat.startActivity(activity, intent, ActivityOptionsCompat.makeScaleUpAnimation(v, 0, 0, v.getWidth(), v.getHeight()).toBundle());
-    }
-
-
-    public static void setupSharedElementTransitions(Dialog dialog, View container) {
-        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.LOLLIPOP)
-            return;
-
-        Context context = dialog.getContext();
-
-        ArcMotion arcMotion = new ArcMotion();
-        arcMotion.setMinimumHorizontalAngle(50f);
-        arcMotion.setMinimumVerticalAngle(50f);
-
-        Interpolator easeInOut = AnimationUtils.loadInterpolator(context, android.R.interpolator.fast_out_slow_in);
-
-        MorphTransition sharedEnter = new MorphTransition(AppUtil.getAttrColor(context, R.attr.colorPrimary),
-                AppUtil.getAttrColor(context, R.attr.color_background), 100, context.getResources().getDimensionPixelSize(R.dimen.dp28), true);
-        sharedEnter.setPathMotion(arcMotion);
-        sharedEnter.setInterpolator(easeInOut);
-
-        MorphTransition sharedReturn = new MorphTransition(AppUtil.getAttrColor(context, R.attr.colorPrimary),
-                AppUtil.getAttrColor(context, R.attr.color_background), 100, context.getResources().getDimensionPixelSize(R.dimen.dp28), false);
-        sharedReturn.setPathMotion(arcMotion);
-        sharedReturn.setInterpolator(easeInOut);
-
-        if (container != null) {
-            sharedEnter.addTarget(container);
-            sharedReturn.addTarget(container);
-        }
-
-        dialog.getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
-        dialog.getWindow().setSharedElementEnterTransition(sharedEnter);
-        dialog.getWindow().setSharedElementReturnTransition(sharedReturn);
     }
 
 }

@@ -8,9 +8,8 @@ import android.widget.TextView;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
-import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.PrefHelper;
-import com.uoscs09.theuos2.util.StringUtil;
+import com.uoscs09.theuos2.util.ResourceUtil;
 
 import java.util.ArrayList;
 
@@ -29,7 +28,7 @@ class TimeTableAdapter extends AbsArrayAdapter<Timetable2.Period, TimeTableAdapt
     public TimeTableAdapter(Context context) {
         super(context, R.layout.list_layout_timetable2, new ArrayList<>());
         periodTimeArray = context.getResources().getStringArray(R.array.tab_timetable_timelist_only_time);
-        cardBackgroundColor = AppUtil.getAttrColor(context, R.attr.cardBackgroundColor);
+        cardBackgroundColor = ResourceUtil.getAttrColor(context, R.attr.cardBackgroundColor);
     }
 
     public void setTimeTable(Timetable2 timeTable) {
@@ -203,9 +202,9 @@ class TimeTableAdapter extends AbsArrayAdapter<Timetable2.Period, TimeTableAdapt
 
         public void setView(Timetable2.SubjectInfo item) {
             if (item == null || item.isEqualPrior()) {
-                subject.setText(StringUtil.NULL);
-                professor.setText(StringUtil.NULL);
-                location.setText(StringUtil.NULL);
+                subject.setText("");
+                professor.setText("");
+                location.setText("");
             } else {
                 subject.setText(item.name());
                 professor.setText(item.professor());
