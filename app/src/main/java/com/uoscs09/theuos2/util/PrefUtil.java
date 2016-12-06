@@ -86,9 +86,14 @@ public class PrefUtil {
     private static PrefUtil instance;
     private SharedPreferences pref;
 
-    public static synchronized PrefUtil getInstance(Context context) {
-        if (instance == null)
-            instance = new PrefUtil(context);
+    public static PrefUtil getInstance(Context context) {
+        if (instance == null) {
+            synchronized (PrefUtil.class) {
+                if (instance == null) {
+                    instance = new PrefUtil(context);
+                }
+            }
+        }
         return instance;
     }
 
@@ -96,11 +101,13 @@ public class PrefUtil {
         this.pref = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
     }
 
+    /*
     @Override
     protected void finalize() throws Throwable {
         instance = null;
         super.finalize();
     }
+    */
 
     public boolean put(String key, boolean value) {
         return pref.edit().putBoolean(key, value).commit();

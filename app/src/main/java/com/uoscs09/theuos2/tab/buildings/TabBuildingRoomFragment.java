@@ -121,7 +121,7 @@ public class TabBuildingRoomFragment extends AbsProgressFragment<BuildingRoom> {
     }
 
     private void loadData(boolean force) {
-        task(AppRequests.Buildings.buildingRooms(force))
+        appTask(AppRequests.Buildings.buildingRooms(force))
                 .result(room -> mListView.setAdapter(buildingRoomAdapter = new BuildingRoomAdapter(getActivity(), room)))
                 .error(throwable -> simpleErrorRespond(throwable))
                 .execute();

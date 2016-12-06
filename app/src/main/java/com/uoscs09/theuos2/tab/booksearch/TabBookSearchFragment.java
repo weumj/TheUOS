@@ -366,7 +366,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<List<BookItem>> i
     private void execute() {
         mEmptyView.setVisibility(View.GONE);
 
-        task(AppRequests.Books.request(mRawQuery/*mEncodedQuery*/, mCurrentPage, mOptionSort, mOptionIndex))
+        appTask(AppRequests.Books.request(mRawQuery/*mEncodedQuery*/, mCurrentPage, mOptionSort, mOptionIndex))
                 .result(result -> {
                     isResultEmpty = false;
                     if (result.isEmpty()) {

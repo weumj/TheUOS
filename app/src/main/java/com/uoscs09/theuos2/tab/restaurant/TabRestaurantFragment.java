@@ -194,7 +194,7 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
         mRestItemAdapter.mItems.clear();
         mRestItemAdapter.notifyItemRangeRemoved(0, 5);
 
-        task(AppRequests.Restaurants.request(force))
+        appTask(AppRequests.Restaurants.request(force))
                 .result(result -> {
                     mRestTable = result;
                     mRestItemAdapter.mItems = mRestTable;

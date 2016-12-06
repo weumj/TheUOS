@@ -61,6 +61,7 @@ public abstract class AbsAsyncFragment<T> extends BaseTabFragment {
     protected void onPostExecute() {
     }
 
+    // todo 클래스 외부로 리팩토링
     protected static final class TaskHelper<T> {
         private final WeakReference<AbsAsyncFragment<T>> ref;
         private Task<T> task;
@@ -158,7 +159,7 @@ public abstract class AbsAsyncFragment<T> extends BaseTabFragment {
     }
 
 
-    protected final TaskHelper<T> task(@NonNull Task<T> task) {
+    protected final TaskHelper<T> appTask(@NonNull Task<T> task) {
         return TaskHelper.create(this, task);
     }
 

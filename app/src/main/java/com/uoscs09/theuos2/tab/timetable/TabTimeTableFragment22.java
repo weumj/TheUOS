@@ -221,8 +221,8 @@ public class TabTimeTableFragment22 extends AbsProgressFragment<Timetable2> {
 
         mTimeTableAdapter2.changeLayout(true);
 
-        final Task<String> task = TimetableUtil.saveTimetableToImage(mTimeTable, mTimetableListView, mTimeTableAdapter2, getTabParentView());
-        task.getAsync(
+        final Task<String> appTask = TimetableUtil.saveTimetableToImage(mTimeTable, mTimetableListView, mTimeTableAdapter2, getTabParentView());
+        appTask.getAsync(
                 result -> {
                     dismissProgressDialog();
                     mTimeTableAdapter2.changeLayout(false);
@@ -254,7 +254,7 @@ public class TabTimeTableFragment22 extends AbsProgressFragment<Timetable2> {
                     AppUtil.showErrorToast(getActivity(), e, true);
                 }
         );
-        mProgressDialog.setOnCancelListener(dialog -> TaskUtil.cancel(task));
+        mProgressDialog.setOnCancelListener(dialog -> TaskUtil.cancel(appTask));
         mProgressDialog.show();
 */
     }
@@ -266,7 +266,7 @@ public class TabTimeTableFragment22 extends AbsProgressFragment<Timetable2> {
         Semester semester = Semester.values()[mWiseTermSpinner.getSelectedItemPosition()];
         String mTimeTableYear = mWiseYearSpinner.getSelectedItem().toString();
 
-        task(AppRequests.TimeTables.request(mWiseIdView.getText(), mWisePasswdView.getText(), semester, mTimeTableYear))
+        appTask(AppRequests.TimeTables.request(mWiseIdView.getText(), mWisePasswdView.getText(), semester, mTimeTableYear))
                 .result(r -> {
                     TimeTableWidget.sendRefreshIntent(getActivity());
 

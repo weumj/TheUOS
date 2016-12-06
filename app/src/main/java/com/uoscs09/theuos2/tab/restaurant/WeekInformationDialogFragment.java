@@ -129,25 +129,26 @@ public class WeekInformationDialogFragment extends AbsAnimDialogFragment {
             mFailView.setVisibility(View.GONE);
 
 
-        mTask = AppRequests.Restaurants.readWeekInfo(getCode(mCurrentSelectionId)).getAsync(
-                result -> {
-                    postExecute();
+        mTask = AppRequests.Restaurants.readWeekInfo(getCode(mCurrentSelectionId))
+                .getAsync(
+                        result -> {
+                            postExecute();
 
-                    ArrayList<RestItem> weekList = result.weekList;
-                    setRestWeekItem(result);
+                            ArrayList<RestItem> weekList = result.weekList;
+                            setRestWeekItem(result);
 
-                    if (weekList.isEmpty()) {
-                        showEmptyView();
-                    } else {
-                        mToolbar.setSubtitle(result.getPeriodString());
-                    }
-                },
-                e -> {
-                    postExecute();
-                    AppUtil.showErrorToast(getActivity(), e, true);
-                    showReloadView();
-                }
-        );
+                            if (weekList.isEmpty()) {
+                                showEmptyView();
+                            } else {
+                                mToolbar.setSubtitle(result.getPeriodString());
+                            }
+                        },
+                        e -> {
+                            postExecute();
+                            AppUtil.showErrorToast(getActivity(), e, true);
+                            showReloadView();
+                        }
+                );
     }
 
     private void postExecute() {

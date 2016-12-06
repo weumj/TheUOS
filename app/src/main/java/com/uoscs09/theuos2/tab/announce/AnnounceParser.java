@@ -213,7 +213,7 @@ public abstract class AnnounceParser extends JerichoParser<List<AnnounceItem>> {
             Task<List<AnnounceItem>> task;
             // final int size = elementList.size();
             //if (size > 7 && OptimizeStrategy.isSafeToOptimize()) {
-            //     task = parseListElementUsing2Thread(elementList, size);
+            //     appTask = parseListElementUsing2Thread(elementList, size);
             // } else {
             task = parseTask(elementList);
             // }

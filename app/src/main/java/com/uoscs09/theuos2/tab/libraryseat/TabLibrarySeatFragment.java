@@ -34,6 +34,7 @@ import jp.wasabeef.recyclerview.animators.SlideInDownAnimator;
 import mj.android.utils.recyclerview.ListRecyclerAdapter;
 import mj.android.utils.recyclerview.ListRecyclerUtil;
 import mj.android.utils.recyclerview.ViewHolderFactory;
+import mj.android.utils.task.Task;
 
 /**
  * 도서관 좌석 정보 현황을 보여주는 페이지
@@ -71,7 +72,7 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatTotalInfo> {
      * {@code onSaveInstanceState()} 에서 "COMMIT_TIME"라는 이름으로 저장된다.
      */
     private String mSearchTime = "";
-
+    private Task<SeatTotalInfo> mCurrentTask = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -186,10 +187,14 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatTotalInfo> {
     }
 
     private void execute() {
+        if (mCurrentTask != null) {
+            mCurrentTask.cancel();
+            mCurrentTask = null;
+        }
         mSeatListView.getAdapter().notifyItemRangeRemoved(0, mSeatTotalInfo.seatInfoList.size());
         mSeatTotalInfo.seatInfoList.clear();
 
-        task(AppRequests.LibrarySeats.request())
+        mCurrentTask = appTask(AppRequests.LibrarySeats.request())
                 .result(result -> {
                     if (mSwipeRefreshLayout != null)
                         mSwipeRefreshLayout.setRefreshing(false);

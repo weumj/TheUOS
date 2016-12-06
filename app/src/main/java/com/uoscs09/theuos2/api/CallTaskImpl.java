@@ -8,6 +8,7 @@ import android.util.Log;
 import java.io.IOException;
 import java.util.concurrent.Executor;
 
+import mj.android.utils.task.Callable2;
 import mj.android.utils.task.ErrorListener;
 import mj.android.utils.task.Func;
 import mj.android.utils.task.ResultListener;
@@ -28,20 +29,10 @@ class CallTaskImpl<T> implements Task<T>, Cloneable {
         }
     };
 
-
     private Call<T> call;
 
-    public CallTaskImpl(Call<T> call) {
+    CallTaskImpl(Call<T> call) {
         this.call = call;
-    }
-
-    private static <T> T handleResponse(Response<T> response) throws Throwable {
-
-        if (response.isSuccessful()) {
-            return response.body();
-        } else {
-            throw new IOException(response.errorBody().string());
-        }
     }
 
     @Override
@@ -51,51 +42,22 @@ class CallTaskImpl<T> implements Task<T>, Cloneable {
 
     @Override
     public Task<T> getAsync(ResultListener<T> r, ErrorListener e) {
-        call.enqueue(new Callback<T>() {
-            @Override
-            public void onResponse(Call<T> call, Response<T> response) {
-                try {
-                    deliverResult(handleResponse(response));
-                } catch (Throwable throwable) {
-                    deliverError(throwable);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<T> call, Throwable t) {
-                deliverError(t);
-            }
-
-            private void deliverResult(T t) {
-                if (r != null) {
-                    CALLBACK_EXECUTOR.execute(() -> r.onResult(t));
-                } else {
-                    Log.w("TASK", "ResultListener == null, result : " + t);
-                }
-            }
-
-            private void deliverError(Throwable t) {
-                if (e != null) {
-                    CALLBACK_EXECUTOR.execute(() -> e.onError(t));
-                } else {
-                    Log.w("TASK", "ErrorListener == null, error : " + t);
-                }
-            }
-
-        });
+        call.enqueue(new ResultCallback<T>(r, e));
         return this;
     }
 
 
     @Override
     public Task<T> getAsync(ResultListener<T> resultListener, ErrorListener errorListener, Executor executor) {
-        Tasks.newTask(this::get).getAsync(resultListener, errorListener, executor);
+        Tasks.newTask(new CallCallable<>(call)).getAsync(resultListener, errorListener, executor);
+        //Tasks.newTask(this::get).getAsync(resultListener, errorListener, executor);
         return this;
     }
 
     @Override
     public <V> Task<V> map(Func<T, V> func) {
-        return Tasks.newTask(() -> func.func(get()));
+        return Tasks.newTask(new CallFuncCallable<T, V>(new CallCallable<T>(call), func));
+        //return Tasks.newTask(() -> func.func(get()));
     }
 
     @Override
@@ -120,4 +82,102 @@ class CallTaskImpl<T> implements Task<T>, Cloneable {
 
         return new CallTaskImpl<>(call.clone());
     }
+
+
+    private static <T> T handleResponse(Response<T> response) throws Throwable {
+        if (response.isSuccessful()) {
+            return response.body();
+        } else {
+            throw new IOException(response.errorBody().string());
+        }
+    }
+
+    private static class CallFuncCallable<T, V> implements Callable2<V> {
+        private CallCallable<T> callCallable;
+        private Func<T, V> func;
+
+        CallFuncCallable(CallCallable<T> callCallable, Func<T, V> func) {
+            this.callCallable = callCallable;
+            this.func = func;
+        }
+
+        @Override
+        public V call() throws Throwable {
+            try {
+                return func.func(callCallable.call());
+            } finally {
+                callCallable = null;
+                func = null;
+            }
+        }
+    }
+
+    private static class CallCallable<T> implements Callable2<T> {
+        private retrofit2.Call<T> call;
+
+        CallCallable(Call<T> call) {
+            this.call = call;
+        }
+
+        @Override
+        public T call() throws Throwable {
+            try {
+                return handleResponse(call.execute());
+            } finally {
+                call = null;
+            }
+        }
+    }
+
+
+    private static class ResultCallback<T> implements Callback<T> {
+        private ResultListener<T> r;
+        private ErrorListener e;
+
+        ResultCallback(ResultListener<T> r, ErrorListener e) {
+            this.r = r;
+            this.e = e;
+        }
+
+        @Override
+        public void onResponse(retrofit2.Call<T> call, Response<T> response) {
+            try {
+                deliverResult(handleResponse(response), r);
+            } catch (Throwable throwable) {
+                deliverError(throwable, e);
+            } finally {
+                r = null;
+                e = null;
+            }
+        }
+
+        @Override
+        public void onFailure(Call<T> call, Throwable t) {
+            try {
+                deliverError(t, e);
+            } finally {
+                r = null;
+                e = null;
+            }
+        }
+
+
+        private static <T> void deliverResult(T t, ResultListener<T> r) {
+            if (r != null) {
+                CALLBACK_EXECUTOR.execute(() -> r.onResult(t));
+            } else {
+                Log.w("TASK", "ResultListener == null, result : " + t);
+            }
+        }
+
+        private static void deliverError(Throwable t, ErrorListener e) {
+            if (e != null) {
+                CALLBACK_EXECUTOR.execute(() -> e.onError(t));
+            } else {
+                Log.w("TASK", "ErrorListener == null, error : " + t);
+
+            }
+        }
+    }
+
 }

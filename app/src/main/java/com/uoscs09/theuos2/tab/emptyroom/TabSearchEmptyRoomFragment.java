@@ -206,7 +206,7 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<List<EmptyRo
         int time = mTimeSpinner.getSelectedItemPosition() + 1;
         int term = mTermSpinner.getSelectedItemPosition();
 
-        task(AppRequests.EmptyRooms.request(building, time, term))
+        appTask(AppRequests.EmptyRooms.request(building, time, term))
                 .result(result -> {
                     mClassRoomList.clear();
                     mClassRoomList.addAll(result);

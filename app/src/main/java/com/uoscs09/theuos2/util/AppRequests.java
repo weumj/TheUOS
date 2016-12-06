@@ -126,7 +126,8 @@ public class AppRequests {
                             IOUtil.writeObjectToInternalFile(IOUtil.FILE_REST, writingObject);
                             PrefHelper.Restaurants.putDownloadTime(OApiUtil.getDateTime());
                             return restItemSparseArray;
-                        }).get();
+                        })
+                        .get();
             });
         }
 

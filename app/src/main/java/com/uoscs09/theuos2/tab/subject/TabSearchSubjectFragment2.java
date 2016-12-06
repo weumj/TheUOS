@@ -309,7 +309,7 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<List<Subject>
             request = AppRequests.Subjects.requestMajor(year, term, additionalParams, subjectName);
         }
 
-        task(request)
+        appTask(request)
                 .result(result -> {
                     mSubjectAdapter.clear();
                     mSubjectAdapter.addAll(result);

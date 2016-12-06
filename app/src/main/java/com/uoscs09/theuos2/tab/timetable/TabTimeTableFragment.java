@@ -226,7 +226,7 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
         emptyView.setVisibility(View.INVISIBLE);
 
         // dummy : AppRequests.TimeTables.dummyRequest(id, passwd, semester, year)
-        task(AppRequests.TimeTables.request(id, passwd, semester, year))
+        appTask(AppRequests.TimeTables.request(id, passwd, semester, year))
                 .result(r -> {
                     TimeTableWidget.sendRefreshIntent(getActivity());
 

@@ -253,7 +253,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<List<UnivScheduleI
     }
 
     private void execute(boolean force) {
-        task(AppRequests.UnivSchedules.request(force))
+        appTask(AppRequests.UnivSchedules.request(force))
                 .result(result -> {
                     mList.clear();
                     mList.addAll(result);
