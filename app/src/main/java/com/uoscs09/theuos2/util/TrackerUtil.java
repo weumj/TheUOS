@@ -3,6 +3,7 @@ package com.uoscs09.theuos2.util;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -178,11 +179,11 @@ public class TrackerUtil {
     }
 
 
-    public static class AnalyticsExceptionParser implements ExceptionParser {
+    private static class AnalyticsExceptionParser implements ExceptionParser {
 
         @Override
         public String getDescription(String p_thread, Throwable p_throwable) {
-            return "Thread: " + p_thread + ", Exception: " + Log.getStackTraceString(p_throwable);
+            return "Thread: " + p_thread + ", API:" + Build.VERSION.SDK_INT + ", Exception: " + Log.getStackTraceString(p_throwable);
         }
     }
 

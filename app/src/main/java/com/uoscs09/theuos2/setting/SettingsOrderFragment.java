@@ -94,7 +94,6 @@ public class SettingsOrderFragment extends BaseFragment {
     }
 
     private void saveTabOrderList() {
-
         StringBuilder sb = new StringBuilder();
 
         for (AppUtil.TabInfo p : orderList) {
@@ -106,10 +105,22 @@ public class SettingsOrderFragment extends BaseFragment {
         AppUtil.TabInfo.saveTabOrderList(orderList);
     }
 
+    private boolean isOrderListNothingEnabled() {
+        int count = 0;
+        for (AppUtil.TabInfo p : orderList) {
+            if (p.isEnable()) count++;
+        }
+        return count == 0;
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_apply:
+                if (isOrderListNothingEnabled()) {
+                    AppUtil.showToast(getActivity(), R.string.setting_order_nothing);
+                    return true;
+                }
                 saveTabOrderList();
                 getActivity().setResult(AppUtil.RELAUNCH_ACTIVITY);
                 finish();

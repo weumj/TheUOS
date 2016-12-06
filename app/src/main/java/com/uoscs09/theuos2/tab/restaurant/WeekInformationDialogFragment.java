@@ -130,8 +130,7 @@ public class WeekInformationDialogFragment extends AbsAnimDialogFragment {
 
 
         mTask = AppRequests.Restaurants.readWeekInfo(getCode(mCurrentSelectionId))
-                .getAsync(
-                        result -> {
+                .getAsync(result -> {
                             postExecute();
 
                             ArrayList<RestItem> weekList = result.weekList;

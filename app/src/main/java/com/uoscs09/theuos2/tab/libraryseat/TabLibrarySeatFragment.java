@@ -204,6 +204,8 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatTotalInfo> {
                     mSeatTotalInfo.clearAndAddAll(result);
 
                     mSeatListView.getAdapter().notifyItemRangeInserted(0, result.seatInfoList.size());
+
+                    mCurrentTask = null;
                 })
                 .error(e -> {
                     e.printStackTrace();
@@ -211,6 +213,8 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatTotalInfo> {
                         mSwipeRefreshLayout.setRefreshing(false);
 
                     simpleErrorRespond(e);
+
+                    mCurrentTask = null;
                 })
                 .execute();
     }

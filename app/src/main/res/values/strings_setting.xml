@@ -16,6 +16,7 @@
     <string name="setting_order">순서 설정</string>
     <string name="setting_order_goto_default">초기값으로</string>
     <string name="setting_order_desc">어플리케이션 각 화면의 순서를 변경합니다.</string>
+    <string name="setting_order_nothing">사용할 화면을 하나도 설정하지 않았습니다.</string>
     <string name="setting_theme">테마 변경</string>
     <string name="setting_theme_desc">어플리케이션의 테마를 변경합니다.\n현재 적용된 테마 : %1$s</string>
 

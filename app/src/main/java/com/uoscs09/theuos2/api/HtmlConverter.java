@@ -42,22 +42,22 @@ class HtmlConverter implements Converter<ResponseBody, Object> {
         if (PARSER_MAP.containsKey(className)) {
             parser = PARSER_MAP.get(className);
         } else {
-            if (clazz.equals(BookItem.class))
+            if (clazz.equals(BookItem.class)) {
                 parser = new BookParser();
-            else if (clazz.equals(SeatTotalInfo.class)) {
+            } else if (clazz.equals(SeatTotalInfo.class)) {
                 parser = new LibararySeatParser();
                 CHARSET_MAP.put(className, "euc-kr");
             } else if (clazz.equals(RestItem.class)) {
                 parser = new RestaurantMenuParser();
-            } else if (clazz.equals(RestWeekItem.class))
+            } else if (clazz.equals(RestWeekItem.class)) {
                 parser = new RestaurantWeekMenuParser();
-            else if (clazz.equals(AnnounceItem.class)) {
+            } else if (clazz.equals(AnnounceItem.class)) {
                 parser = AnnounceParser.mobileWeb();
             } else if (clazz.equals(BookDetailItem.class)) {
                 parser = new BookDetailParser();
-            } else
-                throw new IOException("incompatible class input : " + clazz.getName());
-
+            } else {
+                throw new IOException("[HtmlConverter] incompatible class input : " + clazz.getName());
+            }
             PARSER_MAP.put(className, parser);
         }
 

@@ -144,7 +144,8 @@ public class UosMainActivity extends BaseActivity {
     }
 
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putInt(SAVED_TAB_NUM, getCurrentPageId());
+        if (!mTabOrderList.isEmpty())
+            outState.putInt(SAVED_TAB_NUM, getCurrentPageId());
         super.onSaveInstanceState(outState);
     }
 
@@ -158,6 +159,15 @@ public class UosMainActivity extends BaseActivity {
     void navigateItem(int position, boolean isFromPager) {
         if (position < 0) {
             navigateItem(1, isFromPager);
+            return;
+        }
+        if (position >= mTabOrderList.size()) {
+            if (mTabOrderList.isEmpty()) {
+                AppUtil.showToast(this, R.string.setting_order_nothing);
+                toSetting();
+            } else {
+                navigateItem(0, isFromPager);
+            }
             return;
         }
 
@@ -465,8 +475,10 @@ public class UosMainActivity extends BaseActivity {
 
             finish();
             overridePendingTransition(R.anim.enter_fade, R.anim.exit_hold);
-
-            startActivity(getIntent().putExtra(SAVED_TAB_NUM, getCurrentPageId()));
+            Intent newIntent = getIntent();
+            if (!mTabOrderList.isEmpty())
+                newIntent.putExtra(SAVED_TAB_NUM, getCurrentPageId());
+            startActivity(newIntent);
         }
 
     }
