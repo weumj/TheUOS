@@ -17,7 +17,6 @@ import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.util.AnimUtil;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.PrefHelper;
-import com.uoscs09.theuos2.util.TrackerUtil;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -61,8 +60,6 @@ public class SettingsFileSelectDialogFragment extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        TrackerUtil.getInstance(this).sendVisibleEvent(TAG);
 
         mFileList = new ArrayList<>();
         path = getPathFromPref();

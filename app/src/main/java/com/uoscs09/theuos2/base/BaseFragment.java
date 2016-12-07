@@ -1,5 +1,6 @@
 package com.uoscs09.theuos2.base;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -18,7 +19,9 @@ import com.uoscs09.theuos2.util.TrackerUtil;
  * {@link #setSubtitleWhenVisible(CharSequence)} - Fragment 가 UI에 보여질 때,
  * subTitle 을 설정한다.</>
  */
-public abstract class BaseFragment extends Fragment implements TrackerUtil.TrackerScreen {
+public abstract class BaseFragment extends Fragment {
+
+    private TrackerUtil trackerUtil;
 
     /**
      * 현 Activity 의 ActionBar 를 가져온다
@@ -62,6 +65,17 @@ public abstract class BaseFragment extends Fragment implements TrackerUtil.Track
         }
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (getBaseActivity() != null)
+            trackerUtil = getBaseActivity().getTrackerUtil();
+        else
+            trackerUtil = new TrackerUtil(getActivity());
+
+    }
+
     /*
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
@@ -73,6 +87,8 @@ public abstract class BaseFragment extends Fragment implements TrackerUtil.Track
     }
     */
 
+    public abstract String getScreenNameForTracker();
+
     /**
      * ActionBar 의 subTitle
      */
@@ -82,19 +98,19 @@ public abstract class BaseFragment extends Fragment implements TrackerUtil.Track
     }
 
     public void sendTrackerEvent(String action, String label) {
-        TrackerUtil.getInstance(this).sendEvent(getScreenNameForTracker(), action, label);
+        trackerUtil.sendEvent(getScreenNameForTracker(), action, label);
     }
 
     public void sendTrackerEvent(String action, String label, long value) {
-        TrackerUtil.getInstance(this).sendEvent(getScreenNameForTracker(), action, label, value);
+        trackerUtil.sendEvent(getScreenNameForTracker(), action, label, value);
     }
 
     public void sendClickEvent(String label) {
-        TrackerUtil.getInstance(this).sendClickEvent(getScreenNameForTracker(), label);
+        trackerUtil.sendClickEvent(getScreenNameForTracker(), label);
     }
 
     public void sendClickEvent(String label, long value) {
-        TrackerUtil.getInstance(this).sendClickEvent(getScreenNameForTracker(), label, value);
+        trackerUtil.sendClickEvent(getScreenNameForTracker(), label, value);
     }
 
     protected void sendEmptyViewClickEvent() {

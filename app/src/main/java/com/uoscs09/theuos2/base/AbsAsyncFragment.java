@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.google.firebase.crash.FirebaseCrash;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.util.AppUtil;
@@ -185,7 +186,9 @@ public abstract class AbsAsyncFragment<T> extends BaseTabFragment {
                         if (errorListener != null) {
                             errorListener.onError(e);
                         } else {
-                            Log.w(getTag(), "error", e);
+                            FirebaseCrash.logcat(Log.ERROR, getTag(), "AsyncFragment background error");
+                            FirebaseCrash.report(e);
+                            //Log.w(getTag(), "error", e);
                         }
                     }
                 }

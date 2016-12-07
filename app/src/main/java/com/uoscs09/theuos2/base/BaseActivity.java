@@ -7,41 +7,19 @@ import android.support.v4.content.PermissionChecker;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
-import com.google.android.gms.analytics.GoogleAnalytics;
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.TrackerUtil;
 
-public abstract class BaseActivity extends AppCompatActivity implements TrackerUtil.TrackerScreen {
+public abstract class BaseActivity extends AppCompatActivity {
 
+    private TrackerUtil trackerUtil;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         AppUtil.applyTheme(this);
 
         super.onCreate(savedInstanceState);
 
-        if (!UOSApplication.DEBUG) {
-            Tracker t = TrackerUtil.getInstance(this).getTracker();
-            t.setScreenName(getScreenNameForTracker());
-            t.send(new HitBuilders.ScreenViewBuilder().build());
-        }
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        if (!UOSApplication.DEBUG)
-            GoogleAnalytics.getInstance(this).reportActivityStart(this);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        if (!UOSApplication.DEBUG)
-            GoogleAnalytics.getInstance(this).reportActivityStop(this);
+        trackerUtil = new TrackerUtil(this);
     }
 
     @Override
@@ -55,20 +33,26 @@ public abstract class BaseActivity extends AppCompatActivity implements TrackerU
         }
     }
 
+    public abstract String getScreenNameForTracker();
+
+    public TrackerUtil getTrackerUtil() {
+        return trackerUtil;
+    }
+
     public void sendTrackerEvent(String action, String label) {
-        TrackerUtil.getInstance(this).sendEvent(getScreenNameForTracker(), action, label);
+        getTrackerUtil().sendEvent(getScreenNameForTracker(), action, label);
     }
 
     public void sendTrackerEvent(String action, String label, long value) {
-        TrackerUtil.getInstance(this).sendEvent(getScreenNameForTracker(), action, label, value);
+        getTrackerUtil().sendEvent(getScreenNameForTracker(), action, label, value);
     }
 
     public void sendClickEvent(String label) {
-        TrackerUtil.getInstance(this).sendClickEvent(getScreenNameForTracker(), label);
+        getTrackerUtil().sendClickEvent(getScreenNameForTracker(), label);
     }
 
     public void sendClickEvent(String label, long value) {
-        TrackerUtil.getInstance(this).sendClickEvent(getScreenNameForTracker(), label, value);
+        getTrackerUtil().sendClickEvent(getScreenNameForTracker(), label, value);
     }
 
     @PermissionChecker.PermissionResult

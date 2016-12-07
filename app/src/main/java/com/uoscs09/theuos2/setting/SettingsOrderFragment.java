@@ -20,7 +20,6 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.base.BaseFragment;
 import com.uoscs09.theuos2.util.AppUtil;
-import com.uoscs09.theuos2.util.TrackerUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,8 +49,6 @@ public class SettingsOrderFragment extends BaseFragment {
         orderList = AppUtil.TabInfo.loadEnabledTabOrderForSetting();
         mAdapter = new SwapAdapter(getActivity(), orderList);
         super.onCreate(savedInstanceState);
-
-        TrackerUtil.getInstance(this).sendVisibleEvent(TAG);
     }
 
     @Override

@@ -15,15 +15,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.text.TextUtils;
-import android.util.TypedValue;
 import android.view.View;
-import android.widget.TextView;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.common.PieProgressDrawable;
-import com.uoscs09.theuos2.http.HttpTask;
-import com.uoscs09.theuos2.parse.JerichoParser;
 import com.uoscs09.theuos2.tab.buildings.BuildingRoom;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
@@ -31,9 +27,6 @@ import com.uoscs09.theuos2.util.AppUtil.AppTheme;
 import com.uoscs09.theuos2.util.PrefHelper;
 import com.uoscs09.theuos2.util.PrefUtil;
 import com.uoscs09.theuos2.util.TrackerUtil;
-
-import net.htmlparser.jericho.Element;
-import net.htmlparser.jericho.Source;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -46,10 +39,8 @@ import mj.android.utils.task.Tasks;
  * 메인 설정화면을 나타내는 {@code PreferenceFragment}
  */
 public class SettingsFragment extends PreferenceFragmentCompat implements OnSharedPreferenceChangeListener {
-    private AlertDialog mThemeSelectorDialog;
-
     private static final String TAG = "SettingsFragment";
-    private static final String APP_URL = "https://play.google.com/store/apps/details?id=com.uoscs09.theuos2";
+    private AlertDialog mThemeSelectorDialog;
 
     private FragmentManager.OnBackStackChangedListener onBackStackChangedListener = () -> {
         if (getFragmentManager() != null) {
@@ -61,16 +52,19 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
         }
     };
 
+
+    private TrackerUtil trackerUtil;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        trackerUtil = new TrackerUtil(getContext());
+
         super.onCreate(savedInstanceState);
 
         // Fragment가 재생성 되었을 때, 표시 화면을 정확히 복구하기 위한 설정
         getFragmentManager().addOnBackStackChangedListener(onBackStackChangedListener);
 
         setHasOptionsMenu(true);
-
-        TrackerUtil.getInstance(this).sendVisibleEvent(TAG);
     }
 
     @Override
@@ -95,7 +89,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
 
         CharSequence title = preference.getTitle();
 
-        if(TextUtils.isEmpty(title))
+        if (TextUtils.isEmpty(title))
             return false;
 
         if (title.equals(getText(R.string.setting_order))) {
@@ -109,7 +103,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
             return true;
             */
         } else if (title.equals(getText(R.string.setting_delete_cache))) {
-            TrackerUtil.getInstance(this).sendEvent(TAG, "delete cache");
+            trackerUtil.sendEvent(TAG, "delete cache");
             deleteCache();
             return true;
 
@@ -122,7 +116,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
             return true;
 
         } else if (title.equals(getText(R.string.setting_save_doc_sub_title))) {
-            TrackerUtil.getInstance(this).sendEvent(TAG, "change directory - " + "text");
+            trackerUtil.sendEvent(TAG, "change directory", "text");
             SettingsFileSelectDialogFragment f = new SettingsFileSelectDialogFragment();
             f.setSavePathKey(preference.getKey());
             f.setTitle(title);
@@ -130,7 +124,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
             return true;
 
         } else if (title.equals(getText(R.string.setting_save_image_sub_title))) {
-            TrackerUtil.getInstance(this).sendEvent(TAG, "change directory - " + "image");
+            trackerUtil.sendEvent(TAG, "change directory", "image");
             SettingsFileSelectDialogFragment f = new SettingsFileSelectDialogFragment();
             f.setSavePathKey(preference.getKey());
             f.setTitle(title);
@@ -139,11 +133,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
 
         } else if (title.equals(getText(R.string.setting_web_page))) {
             changeFragment(SettingsWebPageFragment.class);
-            return true;
-
-        } else if (title.equals(getText(R.string.setting_app_version_update))) {
-            TrackerUtil.getInstance(this).sendEvent(TAG, "check app version");
-            showAppVersionDialog();
             return true;
 
         }
@@ -169,53 +158,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
         dialog.setOnCancelListener(dialog1 -> task.cancel());
     }
 
-    private void showAppVersionDialog() {
-
-        final Dialog progress = AppUtil.getProgressDialog(getActivity(), false, getText(R.string.progress_version_check), null);
-        progress.show();
-
-       new HttpTask.Builder(APP_URL)
-                .buildAsString()
-                .map(new JerichoParser<String>() {
-                    @Override
-                    protected String parseHtmlBody(Source source) throws Exception {
-                        Element e = source.getAllElementsByClass("details-section metadata").get(0)
-                                .getAllElementsByClass("details-section-contents").get(0).getAllElementsByClass("meta-info").get(3)
-                                .getAllElementsByClass("content").get(0);
-                        return e.getTextExtractor().toString().trim();
-                    }
-                })
-                .getAsync(result -> {
-                            progress.dismiss();
-                            String thisVersion = getString(R.string.setting_app_version_name);
-                            if (thisVersion.equals(result)) {
-                                AppUtil.showToast(getActivity(), R.string.setting_app_version_update_this_new, true);
-                            } else {
-
-                                TextView tv = new TextView(getActivity());
-                                tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
-                                tv.setPadding(100, 20, 20, 20);
-
-                                tv.setText(getString(R.string.setting_app_version_update_this_old, thisVersion, result));
-
-                                AlertDialog d = new AlertDialog.Builder(getActivity())
-                                        .setView(tv)
-                                        .setTitle(R.string.setting_app_version_update_exist)
-                                        .setIcon(R.drawable.theme_ic_action_action_about)
-                                        .setPositiveButton(R.string.update, (dialog, which) -> {
-                                            startActivity(AppUtil.getWebPageIntent(APP_URL));
-                                        })
-                                        .setNegativeButton(R.string.later, null)
-                                        .create();
-                                d.show();
-                            }
-                        },
-                        e -> {
-                            progress.dismiss();
-                            AppUtil.showErrorToast(getActivity(), e, true);
-                        }
-                );
-    }
 
     /**
      * 테마를 선택하는 dialog 를 보여준다. dialog 가 null 일시 초기화도 같이한다.
@@ -230,7 +172,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
 
                         if (originalValue != i) {
 
-                            TrackerUtil.getInstance(SettingsFragment.this).sendEvent(TAG, "apply theme", AppTheme.values()[i].name(), i);
+                            trackerUtil.sendEvent(TAG, "apply theme", AppTheme.values()[i].name(), i);
 
                             PrefHelper.Screens.putAppTheme(i);
                             onSharedPreferenceChanged(getPreferenceScreen().getSharedPreferences(), PrefUtil.KEY_THEME);
@@ -245,7 +187,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
     }
 
     private static class ThemeSelectAdapter extends AbsArrayAdapter<AppTheme, ViewHolder> {
-        public ThemeSelectAdapter(Context context) {
+        ThemeSelectAdapter(Context context) {
             super(context, android.R.layout.simple_list_item_1, AppTheme.values());
         }
 
@@ -426,7 +368,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
                 break;
 
             case PrefUtil.KEY_HOME:
-                TrackerUtil.getInstance(this).sendEvent(TAG, "enable home fragment", Boolean.toString(sharedPreferences.getBoolean(key, true)));
+                trackerUtil.sendEvent(TAG, "enable home fragment", Boolean.toString(sharedPreferences.getBoolean(key, true)));
 
                 setPrefScreenSummary(sharedPreferences, key, R.string.setting_home_desc_enable, R.string.setting_home_desc_disable);
 
@@ -454,7 +396,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
 
     private void setPrefScreenSummary(SharedPreferences pref, String key, int enableID, int disableID) {
         boolean value = pref.getBoolean(key, false);
-        TrackerUtil.getInstance(this).sendEvent(TAG, key, String.valueOf(value));
+        trackerUtil.sendEvent(TAG, key, String.valueOf(value));
         findPreference(key).setSummary(value ? enableID : disableID);
     }
 }

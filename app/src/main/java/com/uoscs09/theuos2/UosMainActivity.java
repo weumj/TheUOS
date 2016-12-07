@@ -47,6 +47,8 @@ import mj.android.utils.recyclerview.ViewHolderFactory;
  */
 @SuppressWarnings("ConstantConditions")
 public class UosMainActivity extends BaseActivity {
+    private static final int START_SETTING = 999;
+    private static final String SAVED_TAB_NUM = "saved_tab_num";
 
     @BindView(R.id.activity_pager_viewpager)
     ViewPager mViewPager;
@@ -56,8 +58,6 @@ public class UosMainActivity extends BaseActivity {
     /**
      * 화면 순서를 나타내는 리스트
      */
-    //private ArrayList<Integer> mTabOrderList;
-
     private ArrayList<AppUtil.TabInfo> mTabOrderList;
     @BindView(R.id.activity_uos_drawer_layout)
     DrawerLayout mDrawerLayout;
@@ -68,11 +68,7 @@ public class UosMainActivity extends BaseActivity {
     RecyclerView mDrawerListView;
     private DrawerAdapter mDrawerAdapter;
 
-    /**
-     * ActionBar Toggle
-     */
     private ActionBarDrawerToggle mDrawerToggle;
-
     @BindView(R.id.toolbar_parent)
     AppBarLayout mToolBarParent;
     @BindView(R.id.toolbar)
@@ -81,9 +77,6 @@ public class UosMainActivity extends BaseActivity {
     private CoordinatorLayout.Behavior mAppBarBehavior;
 
     private OnBackPressListener onBackPressListener = null;
-
-    private static final int START_SETTING = 999;
-    private static final String SAVED_TAB_NUM = "saved_tab_num";
 
 
     private void initValues() {

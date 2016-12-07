@@ -11,18 +11,22 @@ import com.uoscs09.theuos2.util.TrackerUtil;
 
 public abstract class BaseAppWidgetProvider extends AppWidgetProvider {
 
+    private TrackerUtil trackerUtil;
+
     @Override
     public void onEnabled(Context context) {
         super.onEnabled(context);
 
-        sendTrackerEvent(context, "enabled");
+        trackerUtil = new TrackerUtil(context);
+
+        sendTrackerEvent("enabled");
     }
 
     @Override
     public void onDisabled(Context context) {
         super.onDisabled(context);
 
-        sendTrackerEvent(context, "disabled");
+        sendTrackerEvent("disabled");
     }
 
     protected void callOnUpdate(Context context) {
@@ -35,31 +39,25 @@ public abstract class BaseAppWidgetProvider extends AppWidgetProvider {
     @NonNull
     public abstract String getScreenNameForTracker();
 
-    protected boolean isApplication(Context context) {
-        return context.getApplicationContext() instanceof UOSApplication;
+
+
+    public void sendTrackerEvent(String action) {
+        trackerUtil.sendEvent(getScreenNameForTracker(), action);
     }
 
-    protected TrackerUtil getTrackerUtil(Context context) {
-        return isApplication(context) ? ((UOSApplication) context.getApplicationContext()).getTrackerUtil() : TrackerUtil.newInstance(context);
+    public void sendTrackerEvent(String action, String label) {
+        trackerUtil.sendEvent(getScreenNameForTracker(), action, label);
     }
 
-    public void sendTrackerEvent(Context context, String action) {
-        getTrackerUtil(context).sendEvent(getScreenNameForTracker(), action);
+    public void sendTrackerEvent(String action, String label, long value) {
+        trackerUtil.sendEvent(getScreenNameForTracker(), action, label, value);
     }
 
-    public void sendTrackerEvent(Context context, String action, String label) {
-        getTrackerUtil(context).sendEvent(getScreenNameForTracker(), action, label);
+    public void sendClickEvent(String label) {
+        trackerUtil.sendClickEvent(getScreenNameForTracker(), label);
     }
 
-    public void sendTrackerEvent(Context context, String action, String label, long value) {
-        getTrackerUtil(context).sendEvent(getScreenNameForTracker(), action, label, value);
-    }
-
-    public void sendClickEvent(Context context, String label) {
-        getTrackerUtil(context).sendClickEvent(getScreenNameForTracker(), label);
-    }
-
-    public void sendClickEvent(Context context, String label, long value) {
-        getTrackerUtil(context).sendClickEvent(getScreenNameForTracker(), label, value);
+    public void sendClickEvent(String label, long value) {
+        trackerUtil.sendClickEvent(getScreenNameForTracker(), label, value);
     }
 }

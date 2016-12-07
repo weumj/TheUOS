@@ -23,11 +23,11 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
+import com.uoscs09.theuos2.base.BaseActivity;
 import com.uoscs09.theuos2.base.ViewHolder;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.ResourceUtil;
-import com.uoscs09.theuos2.util.TrackerUtil;
 
 import java.util.Map;
 
@@ -282,8 +282,8 @@ public class TabWiseScoreFragment extends AbsProgressFragment<WiseScores> {
                         .setCancelable(true)
                         .show();
 
-                if (context instanceof TrackerUtil.TrackerScreen) {
-                    ((TrackerUtil.TrackerScreen) context).sendClickEvent("detail score");
+                if (context instanceof BaseActivity) {
+                    ((BaseActivity) context).getTrackerUtil().sendClickEvent("TabWiseScoreFragment", "detail score");
                 }
             });
         }
@@ -311,7 +311,7 @@ public class TabWiseScoreFragment extends AbsProgressFragment<WiseScores> {
         })
         TextView[] textViews;
 
-        public SubScoreViewHolder(View itemView) {
+        SubScoreViewHolder(View itemView) {
             super(itemView);
         }
 

@@ -8,7 +8,6 @@ import android.support.v7.preference.PreferenceFragmentCompat;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.util.AppUtil;
-import com.uoscs09.theuos2.util.TrackerUtil;
 
 public class SettingsWebPageFragment extends PreferenceFragmentCompat {
 
@@ -18,8 +17,6 @@ public class SettingsWebPageFragment extends PreferenceFragmentCompat {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        TrackerUtil.getInstance(this).sendVisibleEvent(TAG);
     }
 
     @Override

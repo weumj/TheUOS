@@ -8,29 +8,36 @@ import android.support.v4.content.PermissionChecker;
 import com.uoscs09.theuos2.util.TrackerUtil;
 
 
-public abstract class BaseDialogFragment extends DialogFragment implements TrackerUtil.TrackerScreen {
+public abstract class BaseDialogFragment extends DialogFragment {
+
+    private TrackerUtil trackerUtil;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        TrackerUtil.getInstance(this).sendVisibleEvent(getScreenNameForTracker());
+        if (getBaseActivity() != null)
+            trackerUtil = getBaseActivity().getTrackerUtil();
+        else
+            trackerUtil = new TrackerUtil(getActivity());
     }
 
+    public abstract String getScreenNameForTracker();
+
     public void sendTrackerEvent(String action, String label) {
-        TrackerUtil.getInstance(this).sendEvent(getScreenNameForTracker(), action, label);
+        trackerUtil.sendEvent(getScreenNameForTracker(), action, label);
     }
 
     public void sendTrackerEvent(String action, String label, long value) {
-        TrackerUtil.getInstance(this).sendEvent(getScreenNameForTracker(), action, label, value);
+        trackerUtil.sendEvent(getScreenNameForTracker(), action, label, value);
     }
 
     public void sendClickEvent(String label) {
-        TrackerUtil.getInstance(this).sendClickEvent(getScreenNameForTracker(), label);
+        trackerUtil.sendClickEvent(getScreenNameForTracker(), label);
     }
 
     public void sendClickEvent(String label, long value) {
-        TrackerUtil.getInstance(this).sendClickEvent(getScreenNameForTracker(), label, value);
+        trackerUtil.sendClickEvent(getScreenNameForTracker(), label, value);
     }
 
     protected final BaseActivity getBaseActivity() {

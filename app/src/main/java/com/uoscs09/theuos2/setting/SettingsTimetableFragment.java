@@ -15,11 +15,11 @@ import com.uoscs09.theuos2.util.TrackerUtil;
 public class SettingsTimetableFragment extends PreferenceFragmentCompat implements OnSharedPreferenceChangeListener {
     private static final String TAG = "SettingsTimetableFragment";
 
+    private TrackerUtil trackerUtil;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        TrackerUtil.getInstance(this).sendVisibleEvent(TAG);
+        trackerUtil = new TrackerUtil(getActivity());
     }
 
     @Override
@@ -94,7 +94,7 @@ public class SettingsTimetableFragment extends PreferenceFragmentCompat implemen
                 Preference connectionPref = findPreference(key);
                 boolean limit = sharedPreferences.getBoolean(key, false);
 
-                TrackerUtil.getInstance(this).sendEvent(TAG, key, "" + limit);
+                trackerUtil.sendEvent(TAG, key, "" + limit);
 
                 connectionPref.setSummary(limit ? R.string.setting_timetable_limit_desc_check : R.string.setting_timetable_limit_desc);
                 break;
