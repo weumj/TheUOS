@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.concurrent.Executor;
 
 import mj.android.utils.task.Callable2;
+import mj.android.utils.task.Cancelable;
 import mj.android.utils.task.ErrorListener;
 import mj.android.utils.task.Func;
 import mj.android.utils.task.ResultListener;
@@ -29,40 +30,48 @@ class CallTaskImpl<T> implements Task<T>, Cloneable {
         }
     };
 
-    private Call<T> call;
+    private CallCallable<T> callCallable;
+    private ResultCallback<T> resultCallback;
 
     CallTaskImpl(Call<T> call) {
-        this.call = call;
+        this.callCallable = new CallCallable<T>(call);
     }
 
     @Override
     public T get() throws Throwable {
-        return handleResponse(call.execute());
+        try {
+            return callCallable.call();
+        } finally {
+            callCallable = null;
+        }
     }
 
     @Override
     public Task<T> getAsync(ResultListener<T> r, ErrorListener e) {
-        call.enqueue(new ResultCallback<T>(r, e));
+        callCallable.call.enqueue(resultCallback = new ResultCallback<T>(r, e));
         return this;
     }
 
 
     @Override
     public Task<T> getAsync(ResultListener<T> resultListener, ErrorListener errorListener, Executor executor) {
-        Tasks.newTask(new CallCallable<>(call)).getAsync(resultListener, errorListener, executor);
+        Tasks.newTask(new CallCallable<>(callCallable.call)).getAsync(resultListener, errorListener, executor);
         //Tasks.newTask(this::get).getAsync(resultListener, errorListener, executor);
         return this;
     }
 
     @Override
     public <V> Task<V> map(Func<T, V> func) {
-        return Tasks.newTask(new CallFuncCallable<T, V>(new CallCallable<T>(call), func));
+        return Tasks.newTask(new CallFuncCallable<T, V>(new CallCallable<T>(callCallable.call), func));
         //return Tasks.newTask(() -> func.func(get()));
     }
 
     @Override
     public boolean cancel() {
-        call.cancel();
+        callCallable.cancel();
+        if (resultCallback != null)
+            resultCallback.cancel();
+
         return true;
     }
 
@@ -73,14 +82,14 @@ class CallTaskImpl<T> implements Task<T>, Cloneable {
             if (o instanceof CallTaskImpl) {
                 //noinspection unchecked
                 CallTaskImpl<T> callTask = (CallTaskImpl<T>) o;
-                callTask.call = call.clone();
+                callTask.callCallable = new CallCallable<T>(callCallable.call.clone());
                 return callTask;
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return new CallTaskImpl<>(call.clone());
+        return new CallTaskImpl<>(callCallable.call.clone());
     }
 
 
@@ -92,9 +101,10 @@ class CallTaskImpl<T> implements Task<T>, Cloneable {
         }
     }
 
-    private static class CallFuncCallable<T, V> implements Callable2<V> {
+    private static class CallFuncCallable<T, V> implements Callable2<V>, Cancelable {
         private CallCallable<T> callCallable;
         private Func<T, V> func;
+        private boolean isCanceled = false;
 
         CallFuncCallable(CallCallable<T> callCallable, Func<T, V> func) {
             this.callCallable = callCallable;
@@ -104,16 +114,41 @@ class CallTaskImpl<T> implements Task<T>, Cloneable {
         @Override
         public V call() throws Throwable {
             try {
-                return func.func(callCallable.call());
+                if (isCanceled) {
+                    callCallable.cancel();
+                    Tasks.sendCancelToCancelable(func);
+                    return null;
+                }
+
+                T t = callCallable.call();
+                if (isCanceled) {
+                    Tasks.sendCancelToCancelable(func);
+                    return null;
+                }
+
+                V v = func.func(t);
+                if (isCanceled) {
+                    return null;
+                }
+                return v;
             } finally {
                 callCallable = null;
                 func = null;
             }
         }
+
+        @Override
+        public boolean cancel() {
+            isCanceled = true;
+            Tasks.sendCancelToCancelable(callCallable);
+            Tasks.sendCancelToCancelable(func);
+            return true;
+        }
     }
 
-    private static class CallCallable<T> implements Callable2<T> {
+    private static class CallCallable<T> implements Callable2<T>, Cancelable {
         private retrofit2.Call<T> call;
+        private boolean isCanceled = false;
 
         CallCallable(Call<T> call) {
             this.call = call;
@@ -122,17 +157,35 @@ class CallTaskImpl<T> implements Task<T>, Cloneable {
         @Override
         public T call() throws Throwable {
             try {
-                return handleResponse(call.execute());
+                if (isCanceled) {
+                    call.cancel();
+                    return null;
+                }
+
+                Response<T> executed = call.execute();
+                if (isCanceled) {
+                    return null;
+                }
+
+                return handleResponse(executed);
             } finally {
                 call = null;
             }
         }
+
+        @Override
+        public boolean cancel() {
+            isCanceled = true;
+            call.cancel();
+            return true;
+        }
     }
 
 
-    private static class ResultCallback<T> implements Callback<T> {
+    private static class ResultCallback<T> implements Callback<T>, Cancelable {
         private ResultListener<T> r;
         private ErrorListener e;
+        private boolean isCanceled = false;
 
         ResultCallback(ResultListener<T> r, ErrorListener e) {
             this.r = r;
@@ -142,6 +195,9 @@ class CallTaskImpl<T> implements Task<T>, Cloneable {
         @Override
         public void onResponse(retrofit2.Call<T> call, Response<T> response) {
             try {
+                if (isCanceled)
+                    return;
+
                 deliverResult(handleResponse(response), r);
             } catch (Throwable throwable) {
                 deliverError(throwable, e);
@@ -154,6 +210,9 @@ class CallTaskImpl<T> implements Task<T>, Cloneable {
         @Override
         public void onFailure(Call<T> call, Throwable t) {
             try {
+                if (isCanceled)
+                    return;
+
                 deliverError(t, e);
             } finally {
                 r = null;
@@ -161,6 +220,11 @@ class CallTaskImpl<T> implements Task<T>, Cloneable {
             }
         }
 
+        @Override
+        public boolean cancel() {
+            isCanceled = true;
+            return false;
+        }
 
         private static <T> void deliverResult(T t, ResultListener<T> r) {
             if (r != null) {
@@ -178,6 +242,7 @@ class CallTaskImpl<T> implements Task<T>, Cloneable {
 
             }
         }
+
     }
 
 }

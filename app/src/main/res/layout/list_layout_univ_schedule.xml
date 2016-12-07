@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:paddingLeft="70dp">
 
     <android.support.v7.widget.CardView
@@ -26,16 +26,14 @@
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:minHeight="60dp"
                 android:orientation="vertical"
                 android:padding="10dp">
 
                 <TextView
                     android:id="@android:id/text1"
                     android:layout_width="wrap_content"
-                    android:layout_height="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_weight="40"
                     android:drawablePadding="10dp"
                     android:gravity="center_vertical"
                     android:textSize="16sp" />
@@ -43,10 +41,9 @@
                 <TextView
                     android:id="@android:id/text2"
                     android:layout_width="wrap_content"
-                    android:layout_height="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginLeft="24dp"
-                    android:layout_marginTop="4dp"
-                    android:layout_weight="5" />
+                    android:layout_marginTop="4dp" />
             </LinearLayout>
         </com.balysv.materialripple.MaterialRippleLayout>
     </android.support.v7.widget.CardView>

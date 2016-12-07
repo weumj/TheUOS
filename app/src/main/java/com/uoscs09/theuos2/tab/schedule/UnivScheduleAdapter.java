@@ -14,7 +14,6 @@ import com.uoscs09.theuos2.util.ResourceUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -23,35 +22,16 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 
 class UnivScheduleAdapter extends AbsArrayAdapter<UnivScheduleItem, UnivScheduleAdapter.ViewHolder> implements StickyListHeadersAdapter {
 
+    private LayoutInflater inflater;
+
     UnivScheduleAdapter(Context context, List<UnivScheduleItem> list) {
         super(context, R.layout.list_layout_univ_schedule, list);
+        inflater = LayoutInflater.from(context);
     }
 
     @Override
     public void onBindViewHolder(int position, ViewHolder holder) {
-        UnivScheduleItem item = getItem(position);
-
-        //holder.item = item;
-
-        if (item != null) {
-            holder.textView1.setText(item.content);
-            holder.textView2.setText(item.scheduleDate);
-
-
-            holder.drawable.setColor(ResourceUtil.getOrderedColor(getContext(), position));
-            //holder.drawable.setCentorColor(getContext().getResources().getColor(AppUtil.getColor(position)));
-
-            holder.textView1.invalidateDrawable(holder.drawable);
-        } else {
-            holder.textView1.setText("");
-            holder.textView2.setText("");
-
-
-            holder.drawable.setColor(Color.TRANSPARENT);
-            //holder.drawable.setCentorColor(getContext().getResources().getColor(AppUtil.getColor(position)));
-
-            holder.textView1.invalidateDrawable(holder.drawable);
-        }
+        holder.setView(position, getItem(position));
     }
 
     @Override
@@ -63,30 +43,18 @@ class UnivScheduleAdapter extends AbsArrayAdapter<UnivScheduleItem, UnivSchedule
     public View getHeaderView(int position, View convertView, ViewGroup viewGroup) {
         HeaderViewHolder holder;
         if (convertView == null) {
-            holder = new HeaderViewHolder(LayoutInflater.from(getContext()).inflate(R.layout.list_layout_univ_schedule_header, viewGroup, false));
+            holder = new HeaderViewHolder(inflater.inflate(R.layout.list_layout_univ_schedule_header, viewGroup, false));
             convertView = holder.itemView;
             convertView.setTag(holder);
-
         } else {
             holder = (HeaderViewHolder) convertView.getTag();
         }
 
-        UnivScheduleItem item = getItem(position);
-        if (item != null) {
-            UnivScheduleItem.ScheduleDate date = item.dateStart;
-            Calendar c = item.getDate(true);
-
-            holder.textView.setText(String.valueOf(date.day));
-            holder.textView2.setText(dateFormat.format(new Date(c.getTimeInMillis())));
-        } else {
-            holder.textView.setText("");
-            holder.textView2.setText("");
-        }
-
+        holder.setView(getItem(position));
         return convertView;
     }
 
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("E", Locale.getDefault());
+
 
     @Override
     public long getHeaderId(int position) {
@@ -124,16 +92,59 @@ class UnivScheduleAdapter extends AbsArrayAdapter<UnivScheduleItem, UnivSchedule
             textView1.setCompoundDrawables(drawable, null, null, null);
         }
 
+
+        void setView(int position, UnivScheduleItem item) {
+            if (item != null) {
+                textView1.setText(item.content);
+                textView2.setText(item.scheduleDate);
+
+                drawable.setColor(ResourceUtil.getOrderedColor(textView1.getContext(), position));
+                //holder.drawable.setCentorColor(getContext().getResources().getColor(AppUtil.getColor(position)));
+
+                textView1.invalidateDrawable(drawable);
+            } else {
+                textView1.setText("");
+                textView2.setText("");
+
+                drawable.setColor(Color.TRANSPARENT);
+                //holder.drawable.setCentorColor(getContext().getResources().getColor(AppUtil.getColor(position)));
+
+                textView1.invalidateDrawable(drawable);
+            }
+        }
+
     }
 
     static class HeaderViewHolder extends AbsArrayAdapter.SimpleViewHolder {
         @BindView(android.R.id.text2)
         TextView textView2;
+        @BindView(R.id.bar)
+        View bar;
+
+        private static final SimpleDateFormat dateFormat = new SimpleDateFormat("E", Locale.getDefault());
 
         HeaderViewHolder(View view) {
             super(view);
         }
 
+        void setView(UnivScheduleItem item) {
+            if (item != null) {
+                UnivScheduleItem.ScheduleDate date = item.dateStart;
+                Calendar c = item.getDate(true);
+
+                textView.setText(String.valueOf(date.day));
+                if (c != null)
+                    textView2.setText(dateFormat.format(c.getTime()));
+            } else {
+                textView.setText("");
+                textView2.setText("");
+            }
+        }
+
+        void setBarVisible(boolean visible){
+            bar.setVisibility(visible? View.VISIBLE : View.INVISIBLE);
+        }
     }
+
 }
 

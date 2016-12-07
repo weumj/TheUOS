@@ -104,11 +104,19 @@ public class UnivScheduleFragment extends AbsProgressFragment<List<UnivScheduleI
 
         mListView.setAdapter(mAdapter);
         mListView.setOnHeaderClickListener((l, header, itemPosition, headerId, currentlySticky) -> {
-            if (mListView.isHeaderCollapsed(headerId)) {
+            boolean collapsed = mListView.isHeaderCollapsed(headerId);
+            if (collapsed) {
                 mListView.expand(headerId);
+
             } else {
                 mListView.collapse(headerId);
             }
+
+            Object o = header.getTag();
+            if (o != null && o instanceof UnivScheduleAdapter.HeaderViewHolder) {
+                ((UnivScheduleAdapter.HeaderViewHolder) o).setBarVisible(!collapsed);
+            }
+
         });
 
         registerProgressView(view.findViewById(R.id.progress_layout));
@@ -249,6 +257,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<List<UnivScheduleI
                     AppUtil.showErrorToast(getActivity(), e, isMenuVisible());
                 }
         );
+
 
     }
 
