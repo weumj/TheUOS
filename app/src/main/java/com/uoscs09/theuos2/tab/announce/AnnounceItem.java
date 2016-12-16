@@ -4,6 +4,26 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class AnnounceItem implements Parcelable {
+    public enum Category {
+
+        GENERAL("FA1"),  // 일반공지
+        AFFAIRS("FA2"), // 학사공지
+        SCHOLARSHIP("SCHOLARSHIP"), // 장학공지
+        EMPLOY("FA34") // 채용공지
+        ;
+
+        public final String tag;
+
+        Category(String tag) {
+            this.tag = tag;
+        }
+
+        public static Category fromIndex(int index){
+            return values()[index];
+        }
+    }
+
+
     public String title = "";
     public String date = "";
     public String pageURL = "";
@@ -41,4 +61,5 @@ public class AnnounceItem implements Parcelable {
             return new AnnounceItem(source);
         }
     };
+
 }

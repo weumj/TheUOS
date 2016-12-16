@@ -29,6 +29,7 @@ import com.uoscs09.theuos2.base.BaseActivity;
 import com.uoscs09.theuos2.customview.NonLeakingWebView;
 import com.uoscs09.theuos2.http.NetworkRequests;
 import com.uoscs09.theuos2.util.AnimUtil;
+import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.CollectionUtil;
 import com.uoscs09.theuos2.util.PrefHelper;
@@ -145,7 +146,7 @@ public class SubAnnounceWebActivity extends BaseActivity {
             case 4:
             case 2:
             case 1:
-                url = mItem.pageURL + NetworkRequests.Announces.Category.values()[category - 1].tag;
+                url = mItem.pageURL + AnnounceItem.Category.values()[category - 1].tag;
                 break;
             default:
                 supportFinishAfterTransition();
@@ -162,7 +163,7 @@ public class SubAnnounceWebActivity extends BaseActivity {
         progressWheel.setVisibility(View.VISIBLE);
         progressWheel.spin();
 
-        task = AnnounceParser.fileNameUrlPairTask(url).getAsync(
+        task = AppRequests.Announces.announceInfo(category, url).getAsync(
                 this::setScreenWithItem,
                 throwable -> {
                     hideProgress();
@@ -203,10 +204,10 @@ public class SubAnnounceWebActivity extends BaseActivity {
         if (mWebView == null || isFinishing())
             return;
 
-        mWebView.loadDataWithBaseURL("http://m.uos.ac.kr/", announceDetailItem.page, "text/html", "UTF-8", "");
+        mWebView.loadDataWithBaseURL("http://www.uos.ac.kr/", announceDetailItem.page, "text/html", "UTF-8", "");
         this.attachedFileUrlPairList = announceDetailItem.fileNameUrlPairList;
 
-        if (!attachedFileUrlPairList.isEmpty()) {
+        if (attachedFileUrlPairList != null && !attachedFileUrlPairList.isEmpty()) {
             View v = findViewById(R.id.tab_announce_subweb_fab);
             v.setVisibility(View.VISIBLE);
             v.setOnClickListener(v1 -> showDownloadDialog());
@@ -235,8 +236,15 @@ public class SubAnnounceWebActivity extends BaseActivity {
                 return true;
 
             case R.id.action_web:
-                sendClickEvent("to web");
-                startActivity(AppUtil.getWebPageIntent(url));
+                try {
+                    startActivity(AppUtil.getWebPageIntent(url));
+                    sendClickEvent("to web");
+                } catch (ActivityNotFoundException e) {
+                    //e.printStackTrace();
+                    AppUtil.showToast(this, R.string.error_no_related_activity_found);
+                } catch (Exception e) {
+                    AppUtil.showErrorToast(this, e, true);
+                }
                 return true;
 
             case R.id.action_share:
@@ -245,15 +253,17 @@ public class SubAnnounceWebActivity extends BaseActivity {
                 sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, mItem.title);
                 sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, mItem.title + " - \'" + url + "\'");
 
-                startActivity(Intent.createChooser(sharingIntent, getResources().getString(R.string.action_share)));
+                try {
+                    startActivity(Intent.createChooser(sharingIntent, getResources().getString(R.string.action_share)));
+                    sendClickEvent("share");
+                } catch (ActivityNotFoundException e) {
+                    //e.printStackTrace();
+                    AppUtil.showToast(this, R.string.error_no_related_activity_found);
+                } catch (Exception e) {
+                    AppUtil.showErrorToast(this, e, true);
+                }
 
-                sendClickEvent("share");
                 return true;
-/*
-            case R.id.action_download:
-                showDownloadDialog();
-                return true;
-*/
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -339,7 +349,6 @@ public class SubAnnounceWebActivity extends BaseActivity {
                                 try {
                                     AnimUtil.startActivityWithScaleUp(SubAnnounceWebActivity.this, intent, v);
                                 } catch (ActivityNotFoundException e) {
-                                    //e.printStackTrace();
                                     AppUtil.showToast(SubAnnounceWebActivity.this, R.string.error_no_activity_found_to_handle_file);
                                 } catch (Exception e) {
                                     AppUtil.showErrorToast(SubAnnounceWebActivity.this, e, true);
@@ -360,39 +369,4 @@ public class SubAnnounceWebActivity extends BaseActivity {
 
         sendClickEvent("download file");
     }
-
-    /*
-
-    private class AnnounceWebViewClient extends NonLeakingWebView.NonLeakingWebViewClient {
-
-        private boolean firstLoading = true;
-
-        public AnnounceWebViewClient(Activity activity) {
-            super(activity);
-        }
-
-        @Override
-        public void onPageStarted(WebView view, String url, Bitmap favicon) {
-            super.onPageStarted(view, url, favicon);
-            view.setVisibility(View.INVISIBLE);
-        }
-
-        @Override
-        public void onPageFinished(WebView view, String url) {
-            if (firstLoading) {
-
-                view.loadUrl("javascript:(function() { " +
-                        "document.body.style.background = \"transparent\";" +
-                        "var viewType = document.getElementsByClassName('con_text_board')[0]; " +
-                        "viewType.getElementsByClassName('board_num')[0].outerHTML = \"\"" +
-                        "document.body.innerHTML = viewType.outerHTML;" +
-                        "})()");
-
-                firstLoading = false;
-            }
-
-            view.setVisibility(View.VISIBLE);
-        }
-    }
-*/
 }

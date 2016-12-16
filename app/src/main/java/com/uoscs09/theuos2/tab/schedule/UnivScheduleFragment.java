@@ -4,13 +4,7 @@ import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Dialog;
-import android.content.ContentResolver;
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.CalendarContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
@@ -25,7 +19,6 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
-import com.uoscs09.theuos2.util.ResourceUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -33,7 +26,6 @@ import java.util.List;
 import java.util.Locale;
 
 import butterknife.BindView;
-import mj.android.utils.task.Tasks;
 import se.emilsjolander.stickylistheaders.ExpandableStickyListHeadersListView;
 
 
@@ -46,13 +38,6 @@ public class UnivScheduleFragment extends AbsProgressFragment<List<UnivScheduleI
 
     private static final int PERMISSION_REQUEST_CALENDAR = 12;
 
-    private static final String SELECTION = "((" + CalendarContract.Calendars.ACCOUNT_NAME + " = ?) AND ("
-            + CalendarContract.Calendars.ACCOUNT_TYPE + " = ?) AND ("
-            + CalendarContract.Calendars.OWNER_ACCOUNT + " = ?))";
-    private static final String[] EVENT_PROJECTION = {
-            CalendarContract.Calendars._ID
-    };
-
     @BindView(R.id.list)
     ExpandableStickyListHeadersListView mListView;
     private AlertDialog mItemSelectDialog;
@@ -64,7 +49,6 @@ public class UnivScheduleFragment extends AbsProgressFragment<List<UnivScheduleI
     private String mSubTitle;
     private final SimpleDateFormat mDateFormat = new SimpleDateFormat("MMMM", Locale.getDefault());
 
-    private String[] selectionArgs;
     private String mAccount;
 
 
@@ -107,11 +91,11 @@ public class UnivScheduleFragment extends AbsProgressFragment<List<UnivScheduleI
             boolean collapsed = mListView.isHeaderCollapsed(headerId);
             if (collapsed) {
                 mListView.expand(headerId);
-
             } else {
                 mListView.collapse(headerId);
             }
 
+            //todo fix
             Object o = header.getTag();
             if (o != null && o instanceof UnivScheduleAdapter.HeaderViewHolder) {
                 ((UnivScheduleAdapter.HeaderViewHolder) o).setBarVisible(!collapsed);
@@ -175,7 +159,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<List<UnivScheduleI
             return;
         }
 
-        if (mAccount != null && selectionArgs != null) {
+        if (mAccount != null) {
             addUnivScheduleToCalender();
             return;
         }
@@ -186,7 +170,6 @@ public class UnivScheduleFragment extends AbsProgressFragment<List<UnivScheduleI
             AppUtil.showToast(getActivity(), R.string.tab_univ_schedule_google_account_not_exist);
         } else if (accounts.length == 1) {
             mAccount = accounts[0].name;
-            selectionArgs = new String[]{mAccount, "com.google", mAccount};
             addUnivScheduleToCalender();
         } else {
             CharSequence[] accountOptions = new CharSequence[accounts.length];
@@ -204,12 +187,10 @@ public class UnivScheduleFragment extends AbsProgressFragment<List<UnivScheduleI
                         if (TextUtils.isEmpty(mAccount)) {
                             AppUtil.showToast(getActivity(), R.string.tab_univ_schedule_google_account_selection_not_exist);
                         } else {
-                            selectionArgs = new String[]{mAccount, "com.google", mAccount};
                             addUnivScheduleToCalender();
                         }
                     })
                     .setNegativeButton(android.R.string.no, (dialog1, which2) -> {
-                        selectionArgs = null;
                         mAccount = null;
                     })
                     .show();
@@ -220,45 +201,22 @@ public class UnivScheduleFragment extends AbsProgressFragment<List<UnivScheduleI
     private void addUnivScheduleToCalender() {
         mProgressDialog.show();
 
-        Tasks.newTask(() -> {
-            ContentResolver cr = getActivity().getContentResolver();
+        AppRequests.UnivSchedules.addUnivScheduleToCalender(getActivity(), mAccount, mSelectedItem, mList.indexOf(mSelectedItem))
+                .getAsync(result -> {
+                            mSelectedItem = null;
+                            mProgressDialog.dismiss();
+                            if (result != null)
+                                AppUtil.showToast(getActivity(), R.string.tab_univ_schedule_add_to_calendar_success, isMenuVisible());
+                            else
+                                AppUtil.showToast(getActivity(), R.string.tab_univ_schedule_add_to_calendar_fail, isMenuVisible());
+                        },
+                        e -> {
+                            mSelectedItem = null;
+                            mProgressDialog.dismiss();
 
-            Cursor c = cr.query(CalendarContract.Calendars.CONTENT_URI, EVENT_PROJECTION, SELECTION, selectionArgs, null);
-
-            if (c == null) {
-                throw new Exception(getString(R.string.tab_univ_schedule_calendar_not_exist));
-            } else if (!c.moveToFirst()) {
-                c.close();
-                throw new Exception(getString(R.string.tab_univ_schedule_calendar_not_exist));
-            }
-
-            long calendarId = c.getLong(0);
-            ContentValues cv = mSelectedItem.toContentValues(calendarId);
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
-                cv.put(CalendarContract.Events.EVENT_COLOR, ResourceUtil.getOrderedColor(getActivity(), mList.indexOf(mSelectedItem)));
-
-            Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, cv);
-            c.close();
-            mSelectedItem = null;
-
-            return uri;
-        }).getAsync(
-                result -> {
-                    mProgressDialog.dismiss();
-                    if (result != null)
-                        AppUtil.showToast(getActivity(), R.string.tab_univ_schedule_add_to_calendar_success, isMenuVisible());
-                    else
-                        AppUtil.showToast(getActivity(), R.string.tab_univ_schedule_add_to_calendar_fail, isMenuVisible());
-                },
-                e -> {
-                    mProgressDialog.dismiss();
-
-                    AppUtil.showErrorToast(getActivity(), e, isMenuVisible());
-                }
-        );
-
-
+                            AppUtil.showErrorToast(getActivity(), e, isMenuVisible());
+                        }
+                );
     }
 
     private void execute(boolean force) {

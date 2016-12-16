@@ -69,11 +69,17 @@ public abstract class BaseFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getBaseActivity() != null)
-            trackerUtil = getBaseActivity().getTrackerUtil();
-        else
-            trackerUtil = new TrackerUtil(getActivity());
+        trackerUtil = getTrackerUtil();
+    }
 
+    private TrackerUtil getTrackerUtil() {
+        if (trackerUtil == null) {
+            if (getBaseActivity() != null)
+                return getBaseActivity().getTrackerUtil();
+            else
+                return new TrackerUtil(getActivity());
+        }
+        return trackerUtil;
     }
 
     /*
@@ -98,19 +104,19 @@ public abstract class BaseFragment extends Fragment {
     }
 
     public void sendTrackerEvent(String action, String label) {
-        trackerUtil.sendEvent(getScreenNameForTracker(), action, label);
+        getTrackerUtil().sendEvent(getScreenNameForTracker(), action, label);
     }
 
     public void sendTrackerEvent(String action, String label, long value) {
-        trackerUtil.sendEvent(getScreenNameForTracker(), action, label, value);
+        getTrackerUtil().sendEvent(getScreenNameForTracker(), action, label, value);
     }
 
     public void sendClickEvent(String label) {
-        trackerUtil.sendClickEvent(getScreenNameForTracker(), label);
+        getTrackerUtil().sendClickEvent(getScreenNameForTracker(), label);
     }
 
     public void sendClickEvent(String label, long value) {
-        trackerUtil.sendClickEvent(getScreenNameForTracker(), label, value);
+        getTrackerUtil().sendClickEvent(getScreenNameForTracker(), label, value);
     }
 
     protected void sendEmptyViewClickEvent() {

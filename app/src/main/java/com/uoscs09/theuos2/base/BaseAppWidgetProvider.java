@@ -40,24 +40,28 @@ public abstract class BaseAppWidgetProvider extends AppWidgetProvider {
     public abstract String getScreenNameForTracker();
 
 
-
     public void sendTrackerEvent(String action) {
-        trackerUtil.sendEvent(getScreenNameForTracker(), action);
+        if (trackerUtil != null)
+            trackerUtil.sendEvent(getScreenNameForTracker(), action);
     }
 
     public void sendTrackerEvent(String action, String label) {
-        trackerUtil.sendEvent(getScreenNameForTracker(), action, label);
+        if (trackerUtil != null)
+            trackerUtil.sendEvent(getScreenNameForTracker(), action, label);
     }
 
     public void sendTrackerEvent(String action, String label, long value) {
-        trackerUtil.sendEvent(getScreenNameForTracker(), action, label, value);
+        if (trackerUtil != null)
+            trackerUtil.sendEvent(getScreenNameForTracker(), action, label, value);
     }
 
     public void sendClickEvent(String label) {
-        trackerUtil.sendClickEvent(getScreenNameForTracker(), label);
+        if (trackerUtil != null)
+            trackerUtil.sendClickEvent(getScreenNameForTracker(), label);
     }
 
     public void sendClickEvent(String label, long value) {
-        trackerUtil.sendClickEvent(getScreenNameForTracker(), label, value);
+        if (trackerUtil != null)
+            trackerUtil.sendClickEvent(getScreenNameForTracker(), label, value);
     }
 }

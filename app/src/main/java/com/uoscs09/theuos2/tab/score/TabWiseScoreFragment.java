@@ -63,7 +63,8 @@ public class TabWiseScoreFragment extends AbsProgressFragment<WiseScores> {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(getScreenNameForTracker(), adapter == null ? null : adapter.wiseScores);
+        if (adapter != null && adapter.wiseScores != null)
+            outState.putParcelable(getScreenNameForTracker(), adapter.wiseScores);
     }
 
     @Override

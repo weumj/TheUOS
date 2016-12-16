@@ -33,7 +33,7 @@ public abstract class AbsListRemoteViewsFactory<T> implements RemoteViewsFactory
     }
 
     protected boolean addAll(Collection<? extends T> collection) {
-        return mDataList.addAll(collection);
+        return collection != null && mDataList.addAll(collection);
     }
 
     protected void clear() {

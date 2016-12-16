@@ -305,8 +305,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>>
                 .execute();
     }
 
-
-    public void onError(Throwable e) {
+    void onError(Throwable e) {
         simpleErrorRespond(e);
 
         mListFooterView.setClickable(true);
@@ -315,7 +314,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>>
     }
 
 
-    public void updateWithResult(List<AnnounceItem> result, boolean searchRequest, int newPageIndex) {
+    void updateWithResult(List<AnnounceItem> result, boolean searchRequest, int newPageIndex) {
         if (checkResultNotEmpty(result)) {
 
             mAnnounceAdapter.clear();
@@ -339,7 +338,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>>
         updatePageNumber(newPageIndex);
     }
 
-    public void updateWithResultInMoreRequest(List<AnnounceItem> result, int newPage) {
+    void updateWithResultInMoreRequest(List<AnnounceItem> result, int newPage) {
         if (checkResultNotEmpty(result)) {
             mAnnounceAdapter.addAll(result);
             mAnnounceAdapter.notifyDataSetChanged();
@@ -353,21 +352,6 @@ public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>>
         // '다음 페이지 요청'의 경우 검색된 결과가 없다는 것은 마지막 페이지를 지났다는 것 이므로
         // 페이지를 업데이트 하지 않는다.
     }
-/*
-    private int getMaximumAnnounceIndex(List<AnnounceItem> announceItems) {
-        final int size = announceItems.size();
-
-        for (int i = 0; i < size; i++) {
-            AnnounceItem item = announceItems.get(i);
-            if (item.isTypeNotice())
-                continue;
-
-            return item.number;
-        }
-
-        return 0;
-    }
-    */
 
     private boolean checkResultNotEmpty(List<AnnounceItem> result) {
         if (result == null || result.size() == 0) {

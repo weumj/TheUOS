@@ -2,7 +2,6 @@ package com.uoscs09.theuos2.tab.announce;
 
 import android.support.v4.util.Pair;
 
-import com.uoscs09.theuos2.http.HttpTask;
 import com.uoscs09.theuos2.parse.JerichoParser;
 import com.uoscs09.theuos2.util.CollectionUtil;
 
@@ -23,11 +22,11 @@ public abstract class AnnounceParser extends JerichoParser<List<AnnounceItem>> {
         return new MobileWeb();
     }
 
-    public static AnnounceParser normalWeb(){
+    public static AnnounceParser normalWeb() {
         return NormalWeb.getParser();
     }
 
-    public static AnnounceParser scholarship(){
+    public static AnnounceParser scholarship() {
         return NormalWeb.getScholarshipParser();
     }
 
@@ -257,8 +256,7 @@ public abstract class AnnounceParser extends JerichoParser<List<AnnounceItem>> {
 
                 String viewUrl = arr.length < 2 ? "" :
                         arr.length == 3 ? String.format("http://m.uos.ac.kr/mkor/schBoard/view.do?sort=%s&seq=%s&board_id=%s", arr[0], arr[1], arr[2]) // scholarship
-                                : String.format("http://m.uos.ac.kr/mkor/notBoard/view.do?sort=%s&seq=%s&list_id=", arr[0], arr[1]);
-
+                                : String.format(" http://www.uos.ac.kr/korNotice/view.do?sort=%s&seq=%s&list_id=", arr[0], arr[1]);
                 Element contentElement = element.getFirstElementByClass("list_text");
                 if (contentElement == null) {
                     return null;
@@ -293,58 +291,127 @@ public abstract class AnnounceParser extends JerichoParser<List<AnnounceItem>> {
 
             return list.toArray(new String[list.size()]);
         }
-
     }
 
-    public static Task<AnnounceDetailItem> fileNameUrlPairTask(String url) {
-        return new HttpTask.Builder(url)
-                .buildAsString()
-                .map((s) -> {
-                    AnnounceDetailItem announceDetailItem = new AnnounceDetailItem();
 
-                    Source source = new Source(s);
+    public static JerichoParser<AnnounceDetailItem> announcePageParser(AnnounceItem.Category category) {
+        if (category == AnnounceItem.Category.SCHOLARSHIP)
+            return new ScholarshipAnnouncePageParser();
+        else return new AnnouncePageParser();
+    }
 
-                    Element conTextBoard = CollectionUtil.elementAt(source.getAllElementsByClass("con_text_board"), 0);
+    private static class AnnouncePageParser extends JerichoParser<AnnounceDetailItem> {
 
-                    if (conTextBoard != null) {
-                        Element file = CollectionUtil.elementAt(conTextBoard.getAllElementsByClass("file"), 0);
+        @Override
+        protected AnnounceDetailItem parseHtmlBody(Source source) throws Throwable {
+            AnnounceDetailItem announceDetailItem = new AnnounceDetailItem();
+            Element listTypeView = CollectionUtil.elementAt(source.getAllElementsByClass("listType view"), 0);
 
-                        String html = conTextBoard.toString();
-                        if (file != null) {
-                            html = html.replace(file.toString(), "");
-                        }
+            if (listTypeView != null) {
+                Element file = CollectionUtil.elementAt(listTypeView.getAllElementsByClass("file"), 0);
 
-                        Element boardNavigator = CollectionUtil.elementAt(conTextBoard.getAllElementsByClass("board_num"), 0);
-                        if (boardNavigator != null) {
-                            html = html.replace(boardNavigator.toString(), "");
-                        }
+                String html = listTypeView.toString();
+                if (file != null) {
+                    html = html.replace(file.toString(), "");
+                }
 
-                        announceDetailItem.page = "<meta name=\"viewport\" content=\"initial-scale=1.0; width=device-width; target-densitydpi=device-dpi;\" />\n" +
-                                "<link rel=\"stylesheet\" href=\"/css/mkor/base.css\" type=\"text/css\" />\n" + html;
+                Pattern p = Pattern.compile("<img.+?>");
+                Matcher m = p.matcher(html);
+                while (m.find()) {
+                    html = html.replace(m.group(), m.group()
+                            //.replaceAll("width=\".+?\"", "")
+                            //.replaceAll("height=\".+?\"", "")
+                            .replaceAll("style=\".+?\"", "")
+                            .replace(">", " style=\"max-width: 96%; height: auto; >"));
+                }
+
+                announceDetailItem.page = "<meta name=\"viewport\" content=\"initial-scale=1.0; width=device-width; target-densitydpi=device-dpi; user-scalable=yes\" />\n" +
+                        "<link rel=\"stylesheet\" href=\"/css/kor2016/style.css\" type=\"text/css\" />\n" + html;
+            }
+
+
+            Element fileLayer = CollectionUtil.elementAt(source.getAllElementsByClass("fileLyaer") /*uos 웹페이지 오타*/, 0);
+            if (fileLayer != null) {
+                List<Element> fileAElement = fileLayer.getAllElementsByClass("dbtn");
+
+                Pattern p = Pattern.compile("\'.+?\'");
+                ArrayList<Pair<String, String>> fileUrlPairList = new ArrayList<>(fileAElement.size());
+                for (Element e : fileAElement) {
+                    String onclick = e.getAttributeValue("onclick");
+                    Matcher m = p.matcher(onclick);
+
+                    ArrayList<String> list = new ArrayList<>(3);
+                    while (m.find()) {
+                        list.add(m.group().replaceAll("'", ""));
                     }
 
-
-                    List<Element> fileDivElement = source.getAllElementsByClass("pb4 hwp");
-
-                    Pattern p = Pattern.compile("\'.+?\'");
-                    ArrayList<Pair<String, String>> fileUrlPairList = new ArrayList<>(fileDivElement.size());
-                    for (Element e : fileDivElement) {
-                        String href = e.getChildElements().get(0).getAttributeValue("href");
-                        Matcher m = p.matcher(href);
-
-                        ArrayList<String> list = new ArrayList<>(3);
-                        while (m.find()) {
-                            list.add(m.group().replaceAll("'", ""));
-                        }
-
+                    if (list.size() > 2) {
                         String fileUrl = String.format("http://m.uos.ac.kr/common/view/FileDown.do?file_path=%s&file_upNm=%s&file_orgNm=%s", list.get(0), list.get(1), list.get(2));
                         fileUrlPairList.add(new Pair<>(list.get(2), fileUrl));
                     }
+                }
 
-                    announceDetailItem.fileNameUrlPairList = fileUrlPairList;
-
-                    return announceDetailItem;
-                });
+                announceDetailItem.fileNameUrlPairList = fileUrlPairList;
+            }
+            return announceDetailItem;
+        }
     }
 
+    private static class ScholarshipAnnouncePageParser extends JerichoParser<AnnounceDetailItem> {
+
+        @Override
+        protected AnnounceDetailItem parseHtmlBody(Source source) throws Throwable {
+            AnnounceDetailItem announceDetailItem = new AnnounceDetailItem();
+            Element conTextBoard = CollectionUtil.elementAt(source.getAllElementsByClass("con_text_board"), 0);
+
+            if (conTextBoard != null) {
+                Element file = CollectionUtil.elementAt(conTextBoard.getAllElementsByClass("file"), 0);
+
+                String html = conTextBoard.toString();
+                if (file != null) {
+                    html = html.replace(file.toString(), "");
+                }
+
+                Element boardNavigator = CollectionUtil.elementAt(conTextBoard.getAllElementsByClass("board_num"), 0);
+                if (boardNavigator != null) {
+                    html = html.replace(boardNavigator.toString(), "");
+                }
+
+                Pattern p = Pattern.compile("<img.+?>");
+                Matcher m = p.matcher(html);
+                while (m.find()) {
+                    html = html.replace(m.group(), m.group()
+                            //.replaceAll("width=\".+?\"", "")
+                            //.replaceAll("height=\".+?\"", "")
+                            .replaceAll("style=\".+?\"", "")
+                            .replace(">", " style=\"max-width: 96%; height: auto; >"));
+                }
+
+                announceDetailItem.page = "<meta name=\"viewport\" content=\"initial-scale=1.0; width=device-width; target-densitydpi=device-dpi; user-scalable=yes\" />\n" +
+                        "<link rel=\"stylesheet\" href=\"/css/mkor/base.css\" type=\"text/css\" />\n" + html;
+            }
+
+
+            List<Element> fileDivElement = source.getAllElementsByClass("pb4 hwp");
+
+            Pattern p = Pattern.compile("\'.+?\'");
+            ArrayList<Pair<String, String>> fileUrlPairList = new ArrayList<>(fileDivElement.size());
+            for (Element e : fileDivElement) {
+                String href = e.getChildElements().get(0).getAttributeValue("href");
+                Matcher m = p.matcher(href);
+
+                ArrayList<String> list = new ArrayList<>(3);
+                while (m.find()) {
+                    list.add(m.group().replaceAll("'", ""));
+                }
+
+                String fileUrl = String.format("http://m.uos.ac.kr/common/view/FileDown.do?file_path=%s&file_upNm=%s&file_orgNm=%s", list.get(0), list.get(1), list.get(2));
+                fileUrlPairList.add(new Pair<>(list.get(2), fileUrl));
+            }
+
+            announceDetailItem.fileNameUrlPairList = fileUrlPairList;
+
+            return announceDetailItem;
+        }
+    }
 }

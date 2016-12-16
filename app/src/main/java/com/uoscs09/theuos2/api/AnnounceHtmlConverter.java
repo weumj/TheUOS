@@ -34,8 +34,7 @@ class AnnounceHtmlConverter {
         if (mobile) {
             return null;
         } else if (scholarship) {
-            if (s == null)
-                s = AnnounceParser.scholarship();
+            if (s == null) s = AnnounceParser.scholarship();
             return value -> {
                 try {
                     return s.parse(value.string());
@@ -47,8 +46,7 @@ class AnnounceHtmlConverter {
                 }
             };
         } else {
-            if (n == null)
-                n = AnnounceParser.normalWeb();
+            if (n == null) n = AnnounceParser.normalWeb();
             return value -> {
                 try {
                     return n.parse(value.string());

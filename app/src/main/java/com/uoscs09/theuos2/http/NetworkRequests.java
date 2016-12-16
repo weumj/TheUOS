@@ -5,7 +5,9 @@ import android.util.SparseArray;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.api.WiseApiService;
+import com.uoscs09.theuos2.tab.announce.AnnounceDetailItem;
 import com.uoscs09.theuos2.tab.announce.AnnounceItem;
+import com.uoscs09.theuos2.tab.announce.AnnounceParser;
 import com.uoscs09.theuos2.tab.booksearch.BookItem;
 import com.uoscs09.theuos2.tab.booksearch.BookStateInfo;
 import com.uoscs09.theuos2.tab.booksearch.BookStateWrapper;
@@ -55,28 +57,13 @@ import static com.uoscs09.theuos2.api.UosApiService.restaurantApi;
 public class NetworkRequests {
 
     public static class Announces {
-        public enum Category {
-
-            GENERAL("FA1"),  // 일반공지
-            AFFAIRS("FA2"), // 학사공지
-            SCHOLARSHIP("SCHOLARSHIP"), // 장학공지
-            EMPLOY("FA34") // 채용공지
-            ;
-
-            public final String tag;
-
-            Category(String tag) {
-                this.tag = tag;
-            }
-
-        }
 
         public static Task<List<AnnounceItem>> normalRequest(int category, int page) {
-            return normalRequest(Category.values()[category - 1], page);
+            return normalRequest(AnnounceItem.Category.fromIndex(category - 1), page);
         }
 
-        public static Task<List<AnnounceItem>> normalRequest(Category category, int pageIndex) {
-            boolean scholarship = category == Category.SCHOLARSHIP;
+        public static Task<List<AnnounceItem>> normalRequest(AnnounceItem.Category category, int pageIndex) {
+            boolean scholarship = category == AnnounceItem.Category.SCHOLARSHIP;
              /*
             if (scholarship) {
                 return PrefHelper.Announces.isSearchOnMobile() ?
@@ -98,11 +85,11 @@ public class NetworkRequests {
         }
 
         public static Task<List<AnnounceItem>> searchRequest(int category, int pageIndex, String query) {
-            return searchRequest(Category.values()[category - 1], pageIndex, query);
+            return searchRequest(AnnounceItem.Category.fromIndex(category - 1), pageIndex, query);
         }
 
-        public static Task<List<AnnounceItem>> searchRequest(Category category, int pageIndex, String query) {
-            boolean scholarship = category == Category.SCHOLARSHIP;
+        public static Task<List<AnnounceItem>> searchRequest(AnnounceItem.Category category, int pageIndex, String query) {
+            boolean scholarship = category == AnnounceItem.Category.SCHOLARSHIP;
             /*
             if (scholarship) {
                 return PrefHelper.Announces.isSearchOnMobile() ?
@@ -124,8 +111,13 @@ public class NetworkRequests {
                 });
             } else {
                 return announceApi().announcesMobile(URL_M_ANNOUNCE, category.tag, pageIndex, "1", query);
-
             }
+        }
+
+        public static Task<AnnounceDetailItem> announceInfo(int category, String url) {
+            return new HttpTask.Builder(url)
+                    .buildAsString()
+                    .map(AnnounceParser.announcePageParser(AnnounceItem.Category.fromIndex(category - 1))::parse);
         }
 
         public static Task<File> attachedFileDownloadRequest(String url, String docPath, String fileName) {

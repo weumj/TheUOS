@@ -1,10 +1,21 @@
 package com.uoscs09.theuos2.util;
 
+import android.Manifest;
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Build;
+import android.provider.CalendarContract;
+import android.support.annotation.RequiresPermission;
+import android.text.TextUtils;
 import android.util.SparseArray;
 
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.common.SerializableArrayMap;
 import com.uoscs09.theuos2.http.NetworkRequests;
+import com.uoscs09.theuos2.tab.announce.AnnounceDetailItem;
 import com.uoscs09.theuos2.tab.announce.AnnounceItem;
 import com.uoscs09.theuos2.tab.booksearch.BookItem;
 import com.uoscs09.theuos2.tab.booksearch.BookStateInfo;
@@ -33,6 +44,10 @@ import mj.android.utils.task.Tasks;
 public class AppRequests {
 
     public static class Announces {
+        public static Task<AnnounceDetailItem> announceInfo(int category, String url) {
+            return NetworkRequests.Announces.announceInfo(category, url);
+        }
+
         public static Task<List<AnnounceItem>> normalRequest(int category, int page) {
             return NetworkRequests.Announces.normalRequest(category, page);
             /*
@@ -254,6 +269,47 @@ public class AppRequests {
                 return univScheduleItems;
             });
         }
+
+        private static final String SELECTION = String.format("((%s = ?) AND (%s = ?) AND (%s = ?))",
+                CalendarContract.Calendars.ACCOUNT_NAME, CalendarContract.Calendars.ACCOUNT_TYPE, CalendarContract.Calendars.OWNER_ACCOUNT);
+        private static final String[] EVENT_PROJECTION = {
+                CalendarContract.Calendars._ID
+        };
+
+        @SuppressWarnings("ResourceType")
+        @RequiresPermission(allOf = {Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR, Manifest.permission.GET_ACCOUNTS})
+        public static Task<Uri> addUnivScheduleToCalender(final Context context, final String account, final UnivScheduleItem mSelectedItem, final int itemIndex) {
+            return Tasks.newTask(() -> {
+                if (TextUtils.isEmpty(account) || mSelectedItem == null) {
+                    throw new NullPointerException("account or scheduleItem == null");
+                }
+
+                ContentResolver cr = context.getContentResolver();
+
+                String[] selectionArgs = new String[]{account, "com.google", account};
+                Cursor c = cr.query(CalendarContract.Calendars.CONTENT_URI, EVENT_PROJECTION, SELECTION, selectionArgs, null);
+
+                if (c == null) {
+                    throw new Exception(context.getString(R.string.tab_univ_schedule_calendar_not_exist));
+                } else if (!c.moveToFirst()) {
+                    c.close();
+                    throw new Exception(context.getString(R.string.tab_univ_schedule_calendar_not_exist));
+                }
+
+                long calendarId = c.getLong(0);
+                ContentValues cv = mSelectedItem.toContentValues(calendarId);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
+                    cv.put(CalendarContract.Events.EVENT_COLOR, ResourceUtil.getOrderedColor(context, itemIndex));
+
+                Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, cv);
+                c.close();
+
+                return uri;
+            });
+        }
+
+
     }
 
     public static class Buildings {
