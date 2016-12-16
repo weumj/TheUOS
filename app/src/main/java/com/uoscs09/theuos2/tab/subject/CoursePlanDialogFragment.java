@@ -28,7 +28,6 @@ import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.util.AnimUtil;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
-import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.ImageUtil;
 import com.uoscs09.theuos2.util.PrefHelper;
 
@@ -38,7 +37,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import mj.android.utils.task.Task;
-import mj.android.utils.task.Tasks;
 
 public class CoursePlanDialogFragment extends AbsAnimDialogFragment implements Toolbar.OnMenuItemClickListener {
 
@@ -127,13 +125,13 @@ public class CoursePlanDialogFragment extends AbsAnimDialogFragment implements T
         mToolbar.setOnMenuItemClickListener(this);
 
         mCourseTitle = LayoutInflater.from(getActivity()).inflate(R.layout.view_course_plan_header, mListView, false);
-        mCourseName = (TextView) mCourseTitle.findViewById(R.id.fragment_course_plan_subject_name);
-        mCourseCode = (TextView) mCourseTitle.findViewById(R.id.fragment_course_plan_subject_code);
-        mCourseProf = (TextView) mCourseTitle.findViewById(R.id.fragment_course_plan_prof_name);
-        mCourseProfTel = (TextView) mCourseTitle.findViewById(R.id.fragment_course_plan_prof_tel);
-        mCourseLocation = (TextView) mCourseTitle.findViewById(R.id.fragment_course_plan_location);
-        mCourseEval = (TextView) mCourseTitle.findViewById(R.id.fragment_course_plan_eval);
-        mCourseBook = (TextView) mCourseTitle.findViewById(R.id.fragment_course_plan_book);
+        mCourseName = ButterKnife.findById(mCourseTitle, R.id.fragment_course_plan_subject_name);
+        mCourseCode = ButterKnife.findById(mCourseTitle, R.id.fragment_course_plan_subject_code);
+        mCourseProf = ButterKnife.findById(mCourseTitle, R.id.fragment_course_plan_prof_name);
+        mCourseProfTel = ButterKnife.findById(mCourseTitle, R.id.fragment_course_plan_prof_tel);
+        mCourseLocation = ButterKnife.findById(mCourseTitle, R.id.fragment_course_plan_location);
+        mCourseEval = ButterKnife.findById(mCourseTitle, R.id.fragment_course_plan_eval);
+        mCourseBook = ButterKnife.findById(mCourseTitle, R.id.fragment_course_plan_book);
 
         mListView.addHeaderView(mCourseTitle);
 
@@ -191,7 +189,7 @@ public class CoursePlanDialogFragment extends AbsAnimDialogFragment implements T
     }
 
 
-    public void onError(Dialog d, Throwable e) {
+    void onError(Dialog d, Throwable e) {
         d.dismiss();
         AppUtil.showErrorToast(getActivity(), e, true);
     }
@@ -228,11 +226,11 @@ public class CoursePlanDialogFragment extends AbsAnimDialogFragment implements T
 
 
         final String picturePath = PrefHelper.Data.getPicturePath();
-        String dir = picturePath + "/" + getString(R.string.tab_course_plan_title) + '_' + mSubject.subject_nm + '_' + mSubject.prof_nm + '_' + mSubject.class_div + ".jpeg";
+        final String fileName = String.format("%s/%s_%s_%s_%s.png", picturePath, getString(R.string.tab_course_plan_title), mSubject.subject_nm, mSubject.prof_nm, mSubject.class_div);
         final Task<String> task = new ImageUtil.ListViewBitmapRequest.Builder(mListView, mAdapter)
                 .setHeaderView(mCourseTitle)
                 .build()
-                .map(new ImageUtil.ImageWriteProcessor(dir));
+                .map(new ImageUtil.ImageWriteProcessor(fileName));
 
         Dialog d = AppUtil.getProgressDialog(getActivity(), false, (dialog, which) -> task.cancel());
 
@@ -271,18 +269,9 @@ public class CoursePlanDialogFragment extends AbsAnimDialogFragment implements T
         }
 
         final String docPath = PrefHelper.Data.getDocumentPath();
-        final String fileName = docPath + "/" + getString(R.string.tab_course_plan_title) + '_' + mSubject.subject_nm + '_' + mSubject.prof_nm + '_' + mSubject.class_div + ".txt";
+        final String fileName = String.format("%s/%s_%s_%s_%s.txt", docPath, getString(R.string.tab_course_plan_title), mSubject.subject_nm, mSubject.prof_nm, mSubject.class_div);
 
-        final Task<String> task = Tasks.newTask(() -> {
-            StringBuilder sb = new StringBuilder();
-            writeHeader(sb);
-
-            int size = infoList.size();
-            for (int i = 0; i < size; i++) {
-                writeWeek(sb, infoList.get(i));
-            }
-            return sb.toString();
-        }).map(IOUtil.<String>newExternalFileWriteFunc(fileName));
+        final Task<String> task = AppRequests.Subjects.writeCoursePlanToTextFile(fileName, infoList, mSubject.getClassRoomInformation());
 
         Dialog d = AppUtil.getProgressDialog(getActivity(), false, (dialog, which) -> task.cancel());
 
@@ -294,7 +283,7 @@ public class CoursePlanDialogFragment extends AbsAnimDialogFragment implements T
                             .setAction(R.string.action_open, v -> {
                                 Intent intent = new Intent();
                                 intent.setAction(Intent.ACTION_VIEW);
-                                intent.setDataAndType(Uri.parse("file://" + fileName), "text/*");
+                                intent.setDataAndType(Uri.parse("file://" + result), "text/*");
 
                                 try {
                                     AnimUtil.startActivityWithScaleUp(getActivity(), intent, v);
@@ -311,85 +300,6 @@ public class CoursePlanDialogFragment extends AbsAnimDialogFragment implements T
                 },
                 throwable -> onError(d, throwable)
         );
-    }
-
-
-    private void writeHeader(StringBuilder sb) {
-        CoursePlan course = infoList.get(0);
-
-        sb.append(course.subject_nm);
-        sb.append("\n");
-        sb.append("\n");
-
-        sb.append(course.subject_no);
-        sb.append("\n");
-        sb.append("\n");
-
-        sb.append(getString(R.string.tab_course_plan_prof));
-        sb.append(" : ");
-        sb.append(course.prof_nm);
-        sb.append("\n");
-
-        sb.append(getString(R.string.tab_course_plan_location));
-        sb.append(" : ");
-        sb.append(mSubject.getClassRoomInformation());
-        sb.append("\n");
-
-        sb.append(getString(R.string.tab_course_plan_prof_tel));
-        sb.append(" : ");
-        sb.append(course.tel_no);
-        sb.append("\n");
-        sb.append("\n");
-
-        sb.append(getString(R.string.tab_course_plan_eval));
-        sb.append(" : ");
-        sb.append("\n");
-        sb.append(course.score_eval_rate);
-        sb.append("\n");
-        sb.append("\n");
-
-        sb.append(getString(R.string.tab_course_plan_book));
-        sb.append(" : ");
-        sb.append("\n");
-        sb.append(course.book_nm);
-        sb.append("\n");
-        sb.append("\n");
-    }
-
-    private void writeWeek(StringBuilder sb, CoursePlan item) {
-        sb.append(item.week);
-        sb.append(getString(R.string.tab_course_week));
-        sb.append("  ----------------------");
-        sb.append("\n");
-        sb.append("\n");
-
-        sb.append(" + ");
-        sb.append(getString(R.string.tab_course_week_class_cont));
-        sb.append("\n");
-        sb.append(item.class_cont);
-        sb.append("\n");
-        sb.append("\n");
-
-        sb.append(" + ");
-        sb.append(getString(R.string.tab_course_week_class_meth));
-        sb.append("\n");
-        sb.append(item.class_meth);
-        sb.append("\n");
-        sb.append("\n");
-
-        sb.append(" + ");
-        sb.append(getString(R.string.tab_course_week_book));
-        sb.append("\n");
-        sb.append(item.week_book);
-        sb.append("\n");
-        sb.append("\n");
-
-        sb.append(" + ");
-        sb.append(getString(R.string.tab_course_week_prjt_etc));
-        sb.append("\n");
-        sb.append(item.prjt_etc);
-        sb.append("\n");
-        sb.append("\n");
     }
 
     @NonNull

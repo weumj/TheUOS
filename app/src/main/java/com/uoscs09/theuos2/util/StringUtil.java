@@ -1,7 +1,11 @@
 package com.uoscs09.theuos2.util;
 
+import android.support.annotation.Nullable;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+
+import static android.text.TextUtils.isEmpty;
 
 public final class StringUtil {
     public static final String ENCODE_EUC_KR = "EUC-KR";
@@ -39,6 +43,10 @@ public final class StringUtil {
                 .replace("&lt;", "<")
                 .replace("&#40;", "(")
                 .replace("&quot;", "\"");
+    }
+
+    public static String emptyStringIfNull(@Nullable String str) {
+        return isEmpty(str) ? "" : str;
     }
 
     // from class Html

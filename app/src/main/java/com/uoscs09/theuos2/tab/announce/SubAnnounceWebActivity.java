@@ -146,7 +146,7 @@ public class SubAnnounceWebActivity extends BaseActivity {
             case 4:
             case 2:
             case 1:
-                url = mItem.pageURL + AnnounceItem.Category.values()[category - 1].tag;
+                url = mItem.pageURL + AnnounceItem.Category.fromIndex(category - 1).tag;
                 break;
             default:
                 supportFinishAfterTransition();

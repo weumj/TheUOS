@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:minHeight="60dp"
-    android:minWidth="400dp"
+    android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="4dp">
 
     <TextView
         android:id="@+id/course_plan_week"
         android:layout_width="30dp"
-        android:layout_height="fill_parent"
+        android:layout_height="match_parent"
         android:gravity="center"
         android:paddingLeft="2dp"
         android:paddingRight="2dp"
@@ -23,14 +21,13 @@
         android:orientation="vertical">
 
         <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="0dp"
-            android:layout_weight="210"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <TextView
                 android:layout_width="34dp"
-                android:layout_height="fill_parent"
+                android:layout_height="wrap_content"
                 android:paddingRight="6dp"
                 android:text="@string/tab_course_week_class_cont"
                 android:textColor="?color_primary_text"
@@ -39,7 +36,7 @@
             <TextView
                 android:id="@+id/course_plan_content"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
+                android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:paddingLeft="2dp"
                 android:paddingRight="2dp" />
@@ -47,14 +44,13 @@
 
         <LinearLayout
             android:layout_width="fill_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:layout_weight="60"
             android:orientation="horizontal">
 
             <TextView
                 android:layout_width="34dp"
-                android:layout_height="fill_parent"
+                android:layout_height="wrap_content"
                 android:paddingRight="6dp"
                 android:text="@string/tab_course_week_class_meth"
                 android:textColor="?color_primary_text"
@@ -71,14 +67,13 @@
 
         <LinearLayout
             android:layout_width="fill_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:layout_weight="90"
             android:orientation="horizontal">
 
             <TextView
                 android:layout_width="34dp"
-                android:layout_height="fill_parent"
+                android:layout_height="wrap_content"
                 android:text="@string/tab_course_week_book"
                 android:textColor="?color_primary_text"
                 android:textSize="10sp" />
@@ -86,7 +81,7 @@
             <TextView
                 android:id="@+id/course_plan_book"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
+                android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:paddingLeft="2dp"
                 android:paddingRight="2dp" />
@@ -95,14 +90,13 @@
 
         <LinearLayout
             android:layout_width="fill_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:layout_weight="70"
             android:orientation="horizontal">
 
             <TextView
                 android:layout_width="34dp"
-                android:layout_height="fill_parent"
+                android:layout_height="wrap_content"
                 android:text="@string/tab_course_week_prjt_etc"
                 android:textColor="?color_primary_text"
                 android:textSize="10sp" />
@@ -110,7 +104,7 @@
             <TextView
                 android:id="@+id/course_plan_etc"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
+                android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:paddingLeft="2dp"
                 android:paddingRight="2dp" />

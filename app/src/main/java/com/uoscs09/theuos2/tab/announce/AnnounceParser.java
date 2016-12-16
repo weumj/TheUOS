@@ -256,7 +256,7 @@ public abstract class AnnounceParser extends JerichoParser<List<AnnounceItem>> {
 
                 String viewUrl = arr.length < 2 ? "" :
                         arr.length == 3 ? String.format("http://m.uos.ac.kr/mkor/schBoard/view.do?sort=%s&seq=%s&board_id=%s", arr[0], arr[1], arr[2]) // scholarship
-                                : String.format(" http://www.uos.ac.kr/korNotice/view.do?sort=%s&seq=%s&list_id=", arr[0], arr[1]);
+                                : String.format("http://www.uos.ac.kr/korNotice/view.do?sort=%s&seq=%s&list_id=", arr[0], arr[1]);
                 Element contentElement = element.getFirstElementByClass("list_text");
                 if (contentElement == null) {
                     return null;

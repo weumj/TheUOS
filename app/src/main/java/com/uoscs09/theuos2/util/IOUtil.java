@@ -36,8 +36,13 @@ public class IOUtil {
      * @throws ClassNotFoundException
      */
     public static <T> T readFromInternalFile(String fileName) throws IOException, ClassNotFoundException {
-        return IOUtils.readFile(context(), fileName);
+        return IOUtils.readInternalFile(context(), fileName);
     }
+
+    public static String readStringFromInternalFile(String fileName) throws IOException {
+        return IOUtils.readInternalStringFile(context(), fileName);
+    }
+
 
     /**
      * 주어진 이름의 파일을 읽어온다.
@@ -49,9 +54,12 @@ public class IOUtil {
      * @throws ClassNotFoundException
      */
     public static <T> T readFromExternalFile(File file) throws IOException, ClassNotFoundException {
-        return IOUtils.readFile(file);
+        return IOUtils.readExternalFile(file);
     }
 
+    public static String readStringFromExternalFile(File file) throws IOException {
+        return IOUtils.readExternalStringFile(file);
+    }
 
     /**
      * 외부 저장소 (ex : storage)에 주어진 이름으로 파일을 저장한다.
@@ -59,10 +67,11 @@ public class IOUtil {
      * @param obj 저장할 객체
      * @throws IOException
      */
+    @SuppressWarnings("MissingPermission")
     @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     public static void writeObjectToExternalFile(String fileName, Object obj) throws IOException {
-        //noinspection ResourceType
-        IOUtils.writeObjectToExternalFile(fileName, obj);
+        if (obj instanceof String) IOUtils.writeExternalFile(fileName, (String) obj);
+        else IOUtils.writeExternalFile(fileName, obj);
     }
 
     /**
@@ -72,7 +81,8 @@ public class IOUtil {
      * @throws IOException
      */
     public static void writeObjectToInternalFile(String fileName, Object obj) throws IOException {
-        IOUtils.writeObjectToFile(context(), fileName, obj);
+        if (obj instanceof String) IOUtils.writeInternalFile(context(), fileName, (String) obj);
+        else IOUtils.writeInternalFile(context(), fileName, obj);
     }
 
 
@@ -163,11 +173,23 @@ public class IOUtil {
         return new FileWriteFunc<>(fileName, false);
     }
 
+    @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    public static Func<String, String> newStringExternalFileWriteFunc(String fileName) {
+        return new StringFileWriteFunc(fileName, true);
+    }
+
+    public static Func<String, String> newStringInternalFileWriteFunc(String fileName) {
+        return new StringFileWriteFunc(fileName, false);
+    }
+
+    /*
+    * 처리 후 반환값은 Input Object 이다.
+    * */
     static class FileWriteFunc<T> implements Func<T, T> {
-        private final String fileName;
+        final String fileName;
         private final boolean isExternal;
 
-        public FileWriteFunc(String fileName, boolean isExternal) {
+        FileWriteFunc(String fileName, boolean isExternal) {
             this.fileName = fileName;
             this.isExternal = isExternal;
         }
@@ -183,4 +205,18 @@ public class IOUtil {
         }
     }
 
+    /*
+    * 처리 후 반환값은 fileName 이다.
+    * */
+    private static class StringFileWriteFunc extends FileWriteFunc<String> {
+        StringFileWriteFunc(String fileName, boolean isExternal) {
+            super(fileName, isExternal);
+        }
+
+        @Override
+        public String func(String t) throws IOException {
+            super.func(t);
+            return fileName;
+        }
+    }
 }

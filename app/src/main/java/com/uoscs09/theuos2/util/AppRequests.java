@@ -41,6 +41,8 @@ import java.util.Map;
 import mj.android.utils.task.Task;
 import mj.android.utils.task.Tasks;
 
+import static com.uoscs09.theuos2.util.AppUtil.context;
+
 public class AppRequests {
 
     public static class Announces {
@@ -94,7 +96,7 @@ public class AppRequests {
                     .map(originalList -> {
                                 if (PrefHelper.Books.isFilterUnavailableBook() && originalList.size() > 0) {
                                     ArrayList<BookItem> newList = new ArrayList<>();
-                                    String emptyMsg = AppUtil.context().getString(R.string.tab_book_not_found);
+                                    String emptyMsg = context().getString(R.string.tab_book_not_found);
                                     final int N = originalList.size();
                                     for (int i = 0; i < N; i++) {
                                         BookItem item = originalList.get(i);
@@ -226,6 +228,102 @@ public class AppRequests {
 
         public static Task<List<SimpleSubject>> requestSubjectInfo(String subjectName, int year, String termCode) {
             return NetworkRequests.Subjects.requestSubjectInfo(subjectName, year, termCode);
+        }
+
+        @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        public static Task<String> writeCoursePlanToTextFile(final String fileName, final List<CoursePlan> infoList, final String classRoomInformation) {
+            //noinspection MissingPermission
+            return Tasks.newTask(() -> {
+                StringBuilder sb = new StringBuilder();
+                writeHeader(sb, infoList.get(0), classRoomInformation);
+
+                int size = infoList.size();
+                for (int i = 0; i < size; i++) {
+                    writeWeek(sb, infoList.get(i));
+                }
+                return sb.toString();
+            }).map(IOUtil.newStringExternalFileWriteFunc(fileName));
+        }
+
+
+        private static void writeHeader(StringBuilder sb, CoursePlan course, String classRoomInformation) {
+            Context context = context();
+
+            sb.append(course.subject_nm);
+            sb.append("\n");
+
+            sb.append(course.subject_no);
+            sb.append("\n");
+            sb.append("\n");
+
+            sb.append(context.getString(R.string.tab_course_plan_prof));
+            sb.append(" : ");
+            sb.append(StringUtil.emptyStringIfNull(course.prof_nm));
+            sb.append("\n");
+
+            sb.append(context.getString(R.string.tab_course_plan_location));
+            sb.append(" : ");
+            sb.append(StringUtil.emptyStringIfNull(classRoomInformation));
+            sb.append("\n");
+
+            sb.append(context.getString(R.string.tab_course_plan_prof_tel));
+            sb.append(" : ");
+            sb.append(StringUtil.emptyStringIfNull(course.tel_no));
+            sb.append("\n");
+            sb.append("\n");
+
+            sb.append(context.getString(R.string.tab_course_plan_eval));
+            sb.append(" : ");
+            sb.append("\n");
+            sb.append(StringUtil.emptyStringIfNull(course.score_eval_rate));
+            sb.append("\n");
+            sb.append("\n");
+
+            sb.append(context.getString(R.string.tab_course_plan_book));
+            sb.append(" : ");
+            sb.append("\n");
+            sb.append(StringUtil.emptyStringIfNull(course.book_nm));
+            sb.append("\n");
+            sb.append("\n");
+        }
+
+        private static void writeWeek(StringBuilder sb, CoursePlan item) {
+            Context context = context();
+
+            sb.append("---  ");
+            sb.append(item.week);
+            sb.append(context.getString(R.string.tab_course_week));
+            sb.append("  ----------------------");
+            sb.append("\n");
+            sb.append("\n");
+
+            sb.append("[");
+            sb.append(context.getString(R.string.tab_course_week_class_cont));
+            sb.append("]\n");
+            sb.append(StringUtil.emptyStringIfNull(item.class_cont));
+            sb.append("\n");
+            sb.append("\n");
+
+            sb.append("[");
+            sb.append(context.getString(R.string.tab_course_week_class_meth));
+            sb.append("]\n");
+            sb.append(StringUtil.emptyStringIfNull(item.class_meth));
+            sb.append("\n");
+            sb.append("\n");
+
+            sb.append("[");
+            sb.append(context.getString(R.string.tab_course_week_book));
+            sb.append("]\n");
+            sb.append(StringUtil.emptyStringIfNull(item.week_book));
+            sb.append("\n");
+            sb.append("\n");
+
+            sb.append("[");
+            sb.append(context.getString(R.string.tab_course_week_prjt_etc));
+            sb.append("]\n");
+            sb.append(StringUtil.emptyStringIfNull(item.prjt_etc));
+            sb.append("\n");
+            sb.append("\n");
         }
     }
 
