@@ -44,7 +44,7 @@ public class SimpleSubject {
         if (classInformationList != null)
             item.classInformation().addAll(classInformationList);
 
-        item.setInfoArray();
+        item.getInfoArray();
 
         return item;
 
