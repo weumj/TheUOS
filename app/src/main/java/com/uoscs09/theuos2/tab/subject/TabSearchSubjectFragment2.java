@@ -172,7 +172,6 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<List<Subject>
 
             textViews[i] = (TextView) ripple.findViewById(id);
             tabStrips[i++] = ripple.findViewById(R.id.tab_tab_strip);
-
         }
 
         registerProgressView(view.findViewById(R.id.progress_layout));
@@ -524,8 +523,8 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<List<Subject>
         }
     }
 
-    private static ArrayMap<String, String> getMajorDeptDiv(int deptDiv, int subDept) {
-        ArrayMap<String, String> table = new ArrayMap<>(3);
+    private static Map<String, String> getMajorDeptDiv(int deptDiv, int subDept) {
+        Map<String, String> table = new ArrayMap<>(3);
         switch (deptDiv) {
             case 0:// 정경대학
                 table.put("deptDiv", "210");
@@ -699,8 +698,8 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<List<Subject>
         return table;
     }
 
-    private static ArrayMap<String, String> getMajorDeptDiv2(int deptDiv, int subDept) {
-        ArrayMap<String, String> table = new ArrayMap<>(3);
+    private static Map<String, String> getMajorDeptDiv2(int deptDiv, int subDept) {
+        Map<String, String> table = new ArrayMap<>(3);
         switch (deptDiv) {
             case R.array.search_subj_major_2_0_1:// 대학원
                 table.put("deptDiv", "310");

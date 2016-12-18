@@ -19,12 +19,12 @@
             android:baselineAligned="false"
             android:minWidth="1000dp"
             android:orientation="horizontal"
-            android:weightSum="660">
+            android:weightSum="600">
 
             <com.balysv.materialripple.MaterialRippleLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="60"
+                android:layout_weight="40"
                 app:mrl_rippleColor="?colorAccent"
                 app:mrl_rippleDelayClick="true">
 
@@ -58,7 +58,7 @@
             <com.balysv.materialripple.MaterialRippleLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="80"
+                android:layout_weight="50"
                 app:mrl_rippleColor="?colorAccent"
                 app:mrl_rippleDelayClick="true">
 
@@ -91,7 +91,7 @@
             <com.balysv.materialripple.MaterialRippleLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="60"
+                android:layout_weight="40"
                 app:mrl_rippleColor="?colorAccent"
                 app:mrl_rippleDelayClick="true">
 
@@ -124,7 +124,7 @@
             <com.balysv.materialripple.MaterialRippleLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="40"
+                android:layout_weight="30"
                 app:mrl_rippleColor="?colorAccent"
                 app:mrl_rippleDelayClick="true">
 
@@ -157,7 +157,7 @@
             <com.balysv.materialripple.MaterialRippleLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="80"
+                android:layout_weight="100"
                 app:mrl_rippleColor="?colorAccent"
                 app:mrl_rippleDelayClick="true">
 

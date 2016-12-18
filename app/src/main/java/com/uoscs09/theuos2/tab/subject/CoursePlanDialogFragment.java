@@ -174,7 +174,8 @@ public class CoursePlanDialogFragment extends AbsAnimDialogFragment implements T
         mCourseEval.setText(course.score_eval_rate);
         mCourseBook.setText(course.book_nm);
 
-        mCourseLocation.setText(mSubject.getClassRoomInformation());
+        if (mSubject != null)
+            mCourseLocation.setText(mSubject.getClassRoomTimeInformation());
 
         mToolbar.setTitle(course.subject_nm);
         mToolbar.setSubtitle(course.prof_nm);
@@ -271,7 +272,7 @@ public class CoursePlanDialogFragment extends AbsAnimDialogFragment implements T
         final String docPath = PrefHelper.Data.getDocumentPath();
         final String fileName = String.format("%s/%s_%s_%s_%s.txt", docPath, getString(R.string.tab_course_plan_title), mSubject.subject_nm, mSubject.prof_nm, mSubject.class_div);
 
-        final Task<String> task = AppRequests.Subjects.writeCoursePlanToTextFile(fileName, infoList, mSubject.getClassRoomInformation());
+        final Task<String> task = AppRequests.Subjects.writeCoursePlanToTextFile(fileName, infoList, mSubject.getClassRoomTimeInformation());
 
         Dialog d = AppUtil.getProgressDialog(getActivity(), false, (dialog, which) -> task.cancel());
 
@@ -315,21 +316,7 @@ public class CoursePlanDialogFragment extends AbsAnimDialogFragment implements T
 
         @Override
         public void onBindViewHolder(int position, ViewHolder holder) {
-            CoursePlan item = getItem(position);
-
-            if (item != null) {
-                holder.week.setText(String.valueOf(item.week));
-                holder.content.setText(item.class_cont);
-                holder.meth.setText(item.class_meth);
-                holder.book.setText(item.week_book);
-                holder.etc.setText(item.prjt_etc);
-            } else {
-                holder.week.setText("");
-                holder.content.setText("");
-                holder.meth.setText("");
-                holder.book.setText("");
-                holder.etc.setText("");
-            }
+            holder.setView(getItem(position));
         }
 
         @Override
@@ -351,6 +338,22 @@ public class CoursePlanDialogFragment extends AbsAnimDialogFragment implements T
 
             public ViewHolder(View view) {
                 super(view);
+            }
+
+            void setView(CoursePlan item) {
+                if (item != null) {
+                    week.setText(String.valueOf(item.week));
+                    content.setText(item.class_cont);
+                    meth.setText(item.class_meth);
+                    book.setText(item.week_book);
+                    etc.setText(item.prjt_etc);
+                } else {
+                    week.setText("");
+                    content.setText("");
+                    meth.setText("");
+                    book.setText("");
+                    etc.setText("");
+                }
             }
         }
     }

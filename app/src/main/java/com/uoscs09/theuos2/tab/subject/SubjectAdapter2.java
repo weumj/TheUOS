@@ -26,15 +26,14 @@ class SubjectAdapter2 extends AbsArrayAdapter<Subject, SubjectAdapter2.ViewHolde
 
         if (item != null) {
             int i = 0;
-            item.setInfoArray();
-            for (String a : item.infoArray) {
+            for (String a : item.getInfoArray()) {
                 array[i++].setText(a);
             }
 
-            array[8].setText(item.getClassRoomInformation());
+            array[8].setText(item.getClassRoomTimeInformation());
         } else {
             for (int i = 0; i < 9; i++) {
-                array[i++].setText("");
+                array[i].setText("");
             }
         }
         /*

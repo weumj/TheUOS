@@ -16,18 +16,20 @@
         android:textSize="15sp" />
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:minHeight="40dp"
             android:orientation="horizontal">
 
             <TextView
                 android:layout_width="34dp"
                 android:layout_height="wrap_content"
+                android:gravity="center_vertical"
                 android:paddingRight="6dp"
                 android:text="@string/tab_course_week_class_cont"
                 android:textColor="?color_primary_text"
@@ -44,13 +46,21 @@
 
         <LinearLayout
             android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="?android:listDivider"
+            android:orientation="horizontal" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
+            android:minHeight="40dp"
             android:orientation="horizontal">
 
             <TextView
                 android:layout_width="34dp"
                 android:layout_height="wrap_content"
+                android:gravity="center_vertical"
                 android:paddingRight="6dp"
                 android:text="@string/tab_course_week_class_meth"
                 android:textColor="?color_primary_text"
@@ -67,13 +77,21 @@
 
         <LinearLayout
             android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="?android:listDivider"
+            android:orientation="horizontal" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
+            android:minHeight="30dp"
             android:orientation="horizontal">
 
             <TextView
                 android:layout_width="34dp"
                 android:layout_height="wrap_content"
+                android:gravity="center_vertical"
                 android:text="@string/tab_course_week_book"
                 android:textColor="?color_primary_text"
                 android:textSize="10sp" />
@@ -87,11 +105,17 @@
                 android:paddingRight="2dp" />
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="?android:listDivider"
+            android:orientation="horizontal" />
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
+            android:minHeight="60dp"
             android:orientation="horizontal">
 
             <TextView

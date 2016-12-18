@@ -13,34 +13,10 @@
         android:minHeight="60dp"
         android:minWidth="1000dp"
         android:orientation="horizontal"
-        android:weightSum="660">
+        android:weightSum="600">
 
         <TextView
             android:id="@+id/list_subject_text_sub_dept"
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="60"
-            android:gravity="center"
-            android:padding="4dp" />
-
-        <TextView
-            android:id="@+id/list_subject_text_sub_div"
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="80"
-            android:gravity="center"
-            android:padding="4dp" />
-
-        <TextView
-            android:id="@+id/list_subject_text_no"
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="60"
-            android:gravity="center"
-            android:padding="4dp" />
-
-        <TextView
-            android:id="@+id/list_subject_text_class_div"
             android:layout_width="0dp"
             android:layout_height="fill_parent"
             android:layout_weight="40"
@@ -48,10 +24,34 @@
             android:padding="4dp" />
 
         <TextView
+            android:id="@+id/list_subject_text_sub_div"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="50"
+            android:gravity="center"
+            android:padding="4dp" />
+
+        <TextView
+            android:id="@+id/list_subject_text_no"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="40"
+            android:gravity="center"
+            android:padding="4dp" />
+
+        <TextView
+            android:id="@+id/list_subject_text_class_div"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="30"
+            android:gravity="center"
+            android:padding="4dp" />
+
+        <TextView
             android:id="@+id/list_subject_text_sub_nm"
             android:layout_width="0dp"
             android:layout_height="fill_parent"
-            android:layout_weight="80"
+            android:layout_weight="100"
             android:gravity="center"
             android:padding="4dp" />
 

@@ -108,34 +108,97 @@ public class Subject implements Parcelable, IParser.IPostParsing {
     @Element(name = "term", cdata = true)
     public String term;
 
-    public transient ArrayList<ClassInformation> classInformationList = new ArrayList<>();
+    private transient ArrayList<ClassInformation> classInformationList = new ArrayList<>();
+    private transient String classRoomTimeInformation = "";
+    private transient String[] infoArray = null;
 
     public List<ClassInformation> classInformation() {
         return classInformationList;
     }
 
-    private transient String classRoomInformation = "";
-
-    public String getClassRoomInformation() {
-        if (TextUtils.isEmpty(classRoomInformation)) {
-            buildClassRoomInfoString();
+    public String getClassRoomTimeInformation() {
+        if (TextUtils.isEmpty(classRoomTimeInformation)) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < classInformationList.size(); i++) {
+                sb.append(classInformationList.get(i).toString()).append('\n');
+            }
+            if (!classInformationList.isEmpty())
+                sb.deleteCharAt(sb.length() - 1);
+            classRoomTimeInformation = sb.toString();
         }
-
-        return classRoomInformation;
+        return classRoomTimeInformation;
     }
 
-    private void buildClassRoomInfoString() {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < classInformationList.size(); i++) {
-            sb.append(classInformationList.get(i).toString()).append('\n');
+    public String[] getInfoArray() {
+        if (infoArray == null) {
+            infoArray = new String[]{
+                    sub_dept, subject_div, subject_no, class_div, subject_nm,
+                    Integer.toString(shyr), Integer.toString(credit), prof_nm, class_nm,
+                    Integer.toString(tlsn_count), Integer.toString(tlsn_limit_count)
+
+            };
         }
-        if (!classInformationList.isEmpty())
-            sb.deleteCharAt(sb.length() - 1);
-        classRoomInformation = sb.toString();
+        return infoArray;
+    }
+
+    public static Comparator<Subject> getComparator(final int field, final boolean isInverse) {
+        switch (field) {
+            case 0:
+            case 1:
+            case 4:
+            case 7:
+            case 8:
+                return (lhs, rhs) -> isInverse ? rhs.getInfoArray()[field].compareTo(lhs.getInfoArray()[field])
+                        : lhs.getInfoArray()[field].compareTo(rhs.getInfoArray()[field]);
+            case 2:
+            case 3:
+            case 5:
+            case 6:
+            case 9:
+            case 10:
+                return (lhs, rhs) -> {
+                    int r, l;
+                    try {
+                        r = Integer.parseInt(rhs.getInfoArray()[field]);
+                    } catch (Exception e) {
+                        r = Integer.MAX_VALUE;
+                    }
+                    try {
+                        l = Integer.parseInt(lhs.getInfoArray()[field]);
+                    } catch (Exception e) {
+                        l = Integer.MAX_VALUE;
+                    }
+                    return isInverse ? r - l : l - r;
+                };
+            default:
+                return null;
+        }
+    }
+
+    @Override
+    public void afterParsing() {
+        getInfoArray();
+
+        parseClassTimeAndRoom();
+    }
+
+    private void parseClassTimeAndRoom() {
+        if (TextUtils.isEmpty(class_nm)) {
+            return;
+        }
+        ClassInfoParser parser = new ClassInfoParser();
+        try {
+            classInformationList.addAll(parser.parse(class_nm));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public Subject() {
     }
+
+
+    /* Parcelable ---------------------*/
 
     protected Subject(Parcel in) {
         sub_dept = in.readString();
@@ -165,7 +228,7 @@ public class Subject implements Parcelable, IParser.IPostParsing {
             classInformationList.add(information);
         }
 
-        classRoomInformation = in.readString();
+        classRoomTimeInformation = in.readString();
     }
 
     @Override
@@ -203,7 +266,7 @@ public class Subject implements Parcelable, IParser.IPostParsing {
             dest.writeParcelable(information, information.describeContents());
         }
 
-        dest.writeString(classRoomInformation);
+        dest.writeString(classRoomTimeInformation);
 
     }
 
@@ -221,259 +284,9 @@ public class Subject implements Parcelable, IParser.IPostParsing {
 
     };
 
-    public String[] infoArray = null;
+    /* ----------------- Parcelable */
 
-    public void setInfoArray() {
-        if (infoArray == null)
-            infoArray = new String[]{
-                    sub_dept, subject_div, subject_no, class_div, subject_nm,
-                    Integer.toString(shyr), Integer.toString(credit), prof_nm, class_nm,
-                    Integer.toString(tlsn_count), Integer.toString(tlsn_limit_count)
-
-            };
-    }
-
-    public static Comparator<Subject> getComparator(final int field, final boolean isInverse) {
-        switch (field) {
-            case 0:
-            case 1:
-            case 4:
-            case 7:
-            case 8:
-                return (lhs, rhs) -> {
-                    lhs.setInfoArray();
-                    rhs.setInfoArray();
-                    return isInverse ? rhs.infoArray[field].compareTo(lhs.infoArray[field])
-                            : lhs.infoArray[field].compareTo(rhs.infoArray[field]);
-                };
-            case 2:
-            case 3:
-            case 5:
-            case 6:
-            case 9:
-            case 10:
-                return (lhs, rhs) -> {
-                    lhs.setInfoArray();
-                    rhs.setInfoArray();
-                    int r, l;
-                    try {
-                        r = Integer.parseInt(rhs.infoArray[field]);
-                    } catch (Exception e) {
-                        r = Integer.MAX_VALUE;
-                    }
-                    try {
-                        l = Integer.parseInt(lhs.infoArray[field]);
-                    } catch (Exception e) {
-                        l = Integer.MAX_VALUE;
-                    }
-                    return isInverse ? r - l : l - r;
-                };
-            default:
-                return null;
-        }
-    }
-
-    @Override
-    public void afterParsing() {
-        setInfoArray();
-
-        parseClassTimeAndRoom();
-    }
-
-    private void parseClassTimeAndRoom() {
-        if (TextUtils.isEmpty(class_nm)) {
-            return;
-        }
-
-        ClassInfoParser parser = new ClassInfoParser();
-
-        try {
-            classInformationList.addAll(parser.parse(class_nm));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
-    }
-
-    private static class ClassInfoParser extends IParser.Base<String, ArrayList<ClassInformation>> {
-
-        private int i;
-        private String class_nm;
-
-        private int prevParsed;
-
-        private static final int PARSED_DAY_IN_WEEK = 0;
-        private static final int PARSED_TIME = 1;
-        private static final int PARSED_BUILDING_AND_ROOM = 2;
-
-        @Override
-        public ArrayList<ClassInformation> parse(String class_nm) throws Exception {
-            this.class_nm = class_nm;
-            i = 0;
-
-            ArrayList<ClassInformation> list = new ArrayList<>();
-            ClassInformation information = new ClassInformation();
-            int length = class_nm.length();
-            parseWeek(information);
-            parseTimes(information);
-
-            do {
-                char peek = peek();
-                switch (peek) {
-                    case ',':
-
-                        switch (prevParsed) {
-                            //다음에 올 것은 시간 (',00')
-                            case PARSED_TIME:
-                                parseTime(information);
-                                break;
-
-                            case PARSED_BUILDING_AND_ROOM:
-                                skip();
-                                // 다음에 올 것은 다음과목 (', 월~~')
-                                if (peek() == ' ') {
-                                    skip();
-
-                                    information = new ClassInformation();
-                                    parseWeek(information);
-                                    parseTimes(information);
-
-                                }
-
-                                break;
-
-                            default:
-                                break;
-
-                        }
-                        break;
-
-                    case '/':
-
-                        switch (prevParsed) {
-                            // ',' 가 나타날때까지의 문자열이 건물과 강의실 정보
-                            case PARSED_TIME:
-                                skip();
-                                int index = class_nm.indexOf(',', i);
-                                if (index == -1)
-                                    index = length;
-
-                                information.buildingAndRoom = getString(index);
-                                prevParsed = PARSED_BUILDING_AND_ROOM;
-
-                                list.add(information);
-
-                                break;
-
-                            default:
-                                break;
-                        }
-
-                        break;
-
-                    default:
-                        /*
-                        int value = getTimeInt();
-                        if(value )
-                        */
-                        break;
-                }
-
-            } while (i < length);
-
-            return list;
-        }
-
-        private void parseTimes(ClassInformation information) {
-            int index = class_nm.indexOf('/', i);
-
-            if (index == -1)
-                return;
-
-            String timeString = getString(index);
-
-            String[] timeArray = timeString.split(",");
-
-            for (String str : timeArray) {
-                information.times.add(Integer.valueOf(str));
-            }
-            prevParsed = PARSED_TIME;
-        }
-
-        private void parseWeek(ClassInformation information) {
-            information.dayInWeek = getWeekInt();
-            prevParsed = PARSED_DAY_IN_WEEK;
-        }
-
-        private void parseTime(ClassInformation information) {
-            int value = getTimeInt();
-            information.times.add(value);
-            prevParsed = PARSED_TIME;
-        }
-
-
-        private char peek() {
-            return class_nm.charAt(i);
-        }
-
-        private void skip() {
-            i++;
-        }
-
-        private String getString(int end) {
-            String result = class_nm.substring(i, end);
-            i = end;
-            return result;
-        }
-
-        /**
-         * 시작지점부터 2글자 읽어서 강의 시간을 반환
-         */
-        private int getTimeInt() {
-            int result = Integer.parseInt(class_nm.substring(i, i + 2));
-            i += 2;
-            return result;
-        }
-
-
-        private int getWeekInt() {
-            int result;
-            char weekInChar = peek();
-            switch (weekInChar) {
-                case '월':
-                    result = 0;
-                    break;
-                case '화':
-                    result = 1;
-                    break;
-                case '수':
-                    result = 2;
-                    break;
-                case '목':
-                    result = 3;
-                    break;
-                case '금':
-                    result = 4;
-                    break;
-                case '토':
-                    result = 5;
-                    break;
-
-                case '일':
-                    result = 6;
-                    break;
-
-                default:
-                    return -1;
-            }
-
-            i++;
-            return result;
-        }
-    }
-
-
+    /** 수업의 요일/교시/장소 정보*/
     public static class ClassInformation implements Parcelable, Serializable {
 
         private static final long serialVersionUID = 8612642740508029423L;
@@ -487,11 +300,13 @@ public class Subject implements Parcelable, IParser.IPostParsing {
 
         @Override
         public String toString() {
-            return (getDayInWeek() != -1 ? AppUtil.context().getString(getDayInWeek()) : "") + times.toString() + " / " + buildingAndRoom;
+            int dayInWeekStringRes = dayInWeekStringRes();
+            // ex) 월[5, 6, 7] / 20-311
+            return String.format("%s %s / %s", (dayInWeekStringRes != -1 ? AppUtil.context().getString(dayInWeekStringRes) : ""), times.toString(), buildingAndRoom);
         }
 
         @StringRes
-        public int getDayInWeek() {
+        int dayInWeekStringRes() {
             switch (dayInWeek) {
                 case 0:
                     return R.string.tab_timetable_mon;
@@ -524,7 +339,7 @@ public class Subject implements Parcelable, IParser.IPostParsing {
             dest.writeString(this.buildingAndRoom);
         }
 
-        protected ClassInformation(Parcel in) {
+        ClassInformation(Parcel in) {
             this.dayInWeek = in.readInt();
             this.times = new ArrayList<>(7);
             in.readList(this.times, List.class.getClassLoader());
