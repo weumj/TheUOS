@@ -149,7 +149,7 @@ public class AppRequests {
         }
 
         public static SparseArray<RestItem> readFromFile() {
-            return SerializableArrayMap.toSparseArray(IOUtil.readInternalFileSilent(IOUtil.FILE_REST));
+            return SerializableArrayMap.toIntegerKeySparseArray(IOUtil.readInternalFileSilent(IOUtil.FILE_REST));
         }
 
         public static Task<RestWeekItem> readWeekInfo(String code) {
@@ -189,7 +189,7 @@ public class AppRequests {
             return NetworkRequests.LibrarySeats.request()
                     .map(seatInfo -> {
                         if (PrefHelper.LibrarySeats.isFilterOccupyingRoom()) {
-                            ArrayList<SeatInfo> list = seatInfo.seatInfoList;
+                            List<SeatInfo> list = seatInfo.seatInfoList;
                             // 스터디룸 인덱스
                             final int[] filterArr = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 23, 24, 25, 26, 27, 28};
                             final int size = filterArr.length;
@@ -202,6 +202,31 @@ public class AppRequests {
 
                         return seatInfo;
                     });
+        }
+
+        private final static int[] STUDY_ROOM_NUMBER_ARRAY = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 23, 24, 25, 26, 27, 28};
+
+        public static Task<List<SeatInfo>> widgetDataRequest() {
+            return NetworkRequests.LibrarySeats.request()
+                    .map(info -> info.seatInfoList)
+                    .map(list -> {
+                        // filter
+                        if (PrefHelper.LibrarySeats.isShowingWidgetStudyRoom()) {
+                            List<SeatInfo> newList = new ArrayList<>();
+                            for (int i : STUDY_ROOM_NUMBER_ARRAY) {
+                                SeatInfo item = list.get(i);
+                                // if (Double.parseDouble(item.utilizationRateStr) < 50d)
+                                newList.add(item);
+                            }
+                            return newList;
+                        } else {
+                            return list;
+                        }
+                    });
+        }
+
+        public static Task<List<SeatInfo>> readFile() {
+            return IOUtil.internalFileOpenTask(IOUtil.FILE_LIBRARY_SEAT);
         }
     }
 

@@ -18,9 +18,9 @@ import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.ResourceUtil;
 import com.uoscs09.theuos2.util.TaskUtil;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -47,7 +47,7 @@ class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements View.OnCl
     /**
      * 책의 세부 위치 정보를 표현하는 뷰를 담은 리스트
      */
-    private final ArrayList<ChildHolder> mChildHolderList = new ArrayList<>();
+    private final List<ChildHolder> mChildHolderList = new CopyOnWriteArrayList<>();
 
     private Task<List<BookStateInfo>> task;
 
@@ -166,7 +166,7 @@ class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements View.OnCl
 
         } else if (diff < 0) {
             // 홀더 삭제
-            //fixme  ConcurrentModificationException
+            //possible ConcurrentModificationException
             childHolderList.removeAll(childHolderList.subList(attachingViewsSize, availableRecyledHolderCount));
         }
 

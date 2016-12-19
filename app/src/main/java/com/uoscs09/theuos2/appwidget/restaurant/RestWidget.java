@@ -10,12 +10,13 @@ import android.util.SparseArray;
 import android.widget.RemoteViews;
 
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.base.AbsAsyncWidgetProvider;
+import com.uoscs09.theuos2.base.BaseAppWidgetProvider;
 import com.uoscs09.theuos2.tab.restaurant.RestItem;
 import com.uoscs09.theuos2.util.AppRequests;
+import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.PrefUtil;
 
-public class RestWidget extends AbsAsyncWidgetProvider<SparseArray<RestItem>> {
+public class RestWidget extends BaseAppWidgetProvider {
     public static final String REST_WIDGET_NEXT_ACTION = "com.uoscs09.theuos2.widget.restaurant.NEXT";
     public static final String REST_WIDGET_PREV_ACTION = "com.uoscs09.theuos2.widget.restaurant.PREV";
     public static final String REST_WIDGET_POSITION = "REST_WIDGET_POSITION";
@@ -27,6 +28,19 @@ public class RestWidget extends AbsAsyncWidgetProvider<SparseArray<RestItem>> {
     public void onUpdate(final Context context, final AppWidgetManager appWidgetManager, final int[] appWidgetIds) {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
         setWidgetDefaultLayout(context, appWidgetManager, appWidgetIds);
+
+
+        final PendingResult pendingResult = goAsync();
+        AppRequests.Restaurants.request(false).getAsync(
+                result -> {
+                    onBackgroundTaskResult(context, appWidgetManager, appWidgetIds, result);
+                    pendingResult.finish();
+                },
+                e -> {
+                    exceptionOccurred(context, appWidgetManager, appWidgetIds, e);
+                    pendingResult.finish();
+                }
+        );
     }
 
     @Override
@@ -71,19 +85,12 @@ public class RestWidget extends AbsAsyncWidgetProvider<SparseArray<RestItem>> {
         }
     }
 
-    @Override
-    protected SparseArray<RestItem> doInBackGround(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) throws Throwable {
-        return AppRequests.Restaurants.request(false).get();
-    }
-
-    @Override
-    protected void onBackgroundTaskResult(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds, SparseArray<RestItem> result) {
+    void onBackgroundTaskResult(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds, SparseArray<RestItem> result) {
         RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.widget_rest);
 
         int position = PrefUtil.getInstance(context).get(REST_WIDGET_POSITION, 0);
 
         for (int id : appWidgetIds) {
-
             PrefUtil.getInstance(context).put(REST_WIDGET_POSITION, position);
 
             //Bundle bundle = new Bundle();
@@ -112,6 +119,11 @@ public class RestWidget extends AbsAsyncWidgetProvider<SparseArray<RestItem>> {
         }
     }
 
+    void exceptionOccurred(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds, Throwable e) {
+        AppUtil.showErrorToast(context, e, true);
+        setWidgetDefaultLayout(context, appWidgetManager, appWidgetIds);
+    }
+
     /**
      * 다음 메뉴로 움직일 버튼의 눌렸을 때 사용 될 PendingIntent를 설정한다.
      */
@@ -121,12 +133,6 @@ public class RestWidget extends AbsAsyncWidgetProvider<SparseArray<RestItem>> {
         i.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id);
         i.putExtra(REST_WIDGET_POSITION, position);
         return PendingIntent.getBroadcast(context, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
-    }
-
-    @Override
-    protected void exceptionOccurred(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds, Throwable e) {
-        super.exceptionOccurred(context, appWidgetManager, appWidgetIds, e);
-        setWidgetDefaultLayout(context, appWidgetManager, appWidgetIds);
     }
 
     /**

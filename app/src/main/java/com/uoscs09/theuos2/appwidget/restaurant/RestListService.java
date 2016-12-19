@@ -22,7 +22,7 @@ public class RestListService extends RemoteViewsService {
         private SparseArray<RestItem> mTable;
         private Context context;
 
-        public ListRemoteViewsFactory(Context context, Intent intent) {
+        ListRemoteViewsFactory(Context context, Intent intent) {
             this.context = context;
             this.mRestPosition = intent.getIntExtra(RestWidget.REST_WIDGET_POSITION, 0);
         }

@@ -20,8 +20,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import mj.android.utils.task.Tasks;
-
 public abstract class TimeTableWidget extends BaseAppWidgetProvider {
     public final static String WIDGET_TIMETABLE_REFRESH_INTERNAL = "com.uoscs09.theuos2.widget.timetable.refresh_internal";
     public final static String WIDGET_TIMETABLE_REFRESH = "com.uoscs09.theuos2.widget.timetable";
@@ -46,56 +44,20 @@ public abstract class TimeTableWidget extends BaseAppWidgetProvider {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
 
         final PendingResult pendingResult = goAsync();
-        Tasks.execute(() -> {
-            Timetable2 timeTable = null;
-            try {
-                timeTable = AppRequests.TimeTables.readFile().get();
-            } catch (Throwable e) {
-                e.printStackTrace();
-            }
-
-            RemoteViews views = getRemoteViews(context);
-
-            for (int appWidgetId : appWidgetIds) {
-                // adapter
-                Intent adapterIntent = new Intent(context, getListServiceClass())
-                        .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-                adapterIntent.setData(Uri.parse(adapterIntent.toUri(Intent.URI_INTENT_SCHEME)));
-
-                views.setRemoteAdapter(R.id.widget_timetable_listview, adapterIntent);
-                views.setEmptyView(R.id.widget_timetable_listview, R.id.widget_timetable_empty);
-
-                // refresh button
-                Intent refreshIntent = new Intent(context, getWidgetClass())
-                        .setAction(WIDGET_TIMETABLE_REFRESH_INTERNAL)
-                        .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-
-                PendingIntent p = PendingIntent.getBroadcast(context, 0, refreshIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-                views.setOnClickPendingIntent(R.id.widget_time_refresh, p);
-
-                // title
-                SimpleDateFormat date = new SimpleDateFormat("yyyy MMM dd E", Locale.getDefault());
-                views.setTextViewText(R.id.widget_time_date, date.format(new Date()));
-
-                if (timeTable != null) {
-                    views.setTextViewText(R.id.widget_time_term, timeTable.getYearAndSemester());
-
-                } else {
-                    views.setTextViewText(R.id.widget_time_term, "");
-                }
-
-                // Intent serviceIntent = new Intent(context,
-                // getListServiceClass());
-                // serviceIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
-                // appWidgetId);
-                // context.startService(serviceIntent);
-
-                appWidgetManager.updateAppWidget(appWidgetId, views);
-                appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_timetable_listview);
-            }
-
-            pendingResult.finish();
-        });
+        AppRequests.TimeTables.readFile()
+                .map(result -> {
+                    if (result != null) return result;
+                    else throw new RuntimeException("Widget: Timetable == null");
+                })
+                .getAsync(result -> {
+                            onResult(context, appWidgetManager, appWidgetIds, result);
+                            pendingResult.finish();
+                        },
+                        error -> {
+                            error.printStackTrace();
+                            pendingResult.finish();
+                        }
+                );
     }
 
     @Override
@@ -104,8 +66,52 @@ public abstract class TimeTableWidget extends BaseAppWidgetProvider {
         context.stopService(new Intent(context, getListServiceClass()));
     }
 
+    void onResult(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds, Timetable2 timeTable) {
+        RemoteViews views = getRemoteViews(context);
+
+        for (int appWidgetId : appWidgetIds) {
+            // adapter
+            Intent adapterIntent = new Intent(context, getListServiceClass())
+                    .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+            adapterIntent.setData(Uri.parse(adapterIntent.toUri(Intent.URI_INTENT_SCHEME)));
+
+            views.setRemoteAdapter(R.id.widget_timetable_listview, adapterIntent);
+            views.setEmptyView(R.id.widget_timetable_listview, R.id.widget_timetable_empty);
+
+            // refresh button
+            Intent refreshIntent = new Intent(context, getWidgetClass())
+                    .setAction(WIDGET_TIMETABLE_REFRESH_INTERNAL)
+                    .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+
+            PendingIntent p = PendingIntent.getBroadcast(context, 0, refreshIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            views.setOnClickPendingIntent(R.id.widget_time_refresh, p);
+
+            // title
+            SimpleDateFormat date = new SimpleDateFormat("yyyy MMM dd E", Locale.getDefault());
+            views.setTextViewText(R.id.widget_time_date, date.format(new Date()));
+
+            if (timeTable != null) {
+                views.setTextViewText(R.id.widget_time_term, timeTable.getYearAndSemester());
+
+            } else {
+                views.setTextViewText(R.id.widget_time_term, "");
+            }
+
+            // Intent serviceIntent = new Intent(context,
+            // getListServiceClass());
+            // serviceIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
+            // appWidgetId);
+            // context.startService(serviceIntent);
+
+            appWidgetManager.updateAppWidget(appWidgetId, views);
+            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_timetable_listview);
+        }
+    }
+
+
     protected abstract RemoteViews getRemoteViews(Context context);
 
+    //fix
     protected abstract Class<? extends WidgetTimeTableListService2> getListServiceClass();
 
     protected abstract Class<? extends TimeTableWidget> getWidgetClass();

@@ -10,10 +10,9 @@ public class Widget5x4ListService extends WidgetTimeTableListService2 {
         return new BigSizeListRemoteViewsFactory(context, intent);
     }
 
-    protected class BigSizeListRemoteViewsFactory extends
-            WidgetTimeTableListService2.ListRemoteViewsFactory {
+    protected class BigSizeListRemoteViewsFactory extends WidgetTimeTableListService2.ListRemoteViewsFactory {
 
-        public BigSizeListRemoteViewsFactory(Context applicationContext, Intent intent) {
+        BigSizeListRemoteViewsFactory(Context applicationContext, Intent intent) {
             super(applicationContext, intent);
         }
 

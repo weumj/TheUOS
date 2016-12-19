@@ -11,7 +11,7 @@ public class Widget4x4ListService extends WidgetTimeTableListService2 {
 	}
 
 	protected static class SmallSizeListRemoteViewsFactory extends ListRemoteViewsFactory {
-		public SmallSizeListRemoteViewsFactory(Context applicationContext,	Intent intent) {
+		SmallSizeListRemoteViewsFactory(Context applicationContext, Intent intent) {
 			super(applicationContext, intent);
 		}
 

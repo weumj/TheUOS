@@ -47,7 +47,7 @@ public class SerializableArrayMap<K, V> extends android.support.v4.util.ArrayMap
     }
 
     @NonNull
-    public static <V> SparseArray<V> toSparseArray(ArrayMap<Integer, V> map) {
+    public static <V> SparseArray<V> toIntegerKeySparseArray(ArrayMap<Integer, V> map) {
 
         final int N = map != null ? map.size() : 0;
         SparseArray<V> sparseArray = new SparseArray<>(N);

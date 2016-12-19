@@ -6,6 +6,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.TrackerUtil;
 
 
@@ -17,7 +18,7 @@ public abstract class BaseAppWidgetProvider extends AppWidgetProvider {
     public void onEnabled(Context context) {
         super.onEnabled(context);
 
-        trackerUtil = new TrackerUtil(context);
+        trackerUtil = getTrackerUtil(context);
 
         sendTrackerEvent("enabled");
     }
@@ -39,29 +40,38 @@ public abstract class BaseAppWidgetProvider extends AppWidgetProvider {
     @NonNull
     public abstract String getScreenNameForTracker();
 
+    private TrackerUtil getTrackerUtil(Context context){
+        if(trackerUtil == null){
+            if(context == null) context = AppUtil.context();
+            if(context == null) return null;
+            trackerUtil = new TrackerUtil(context);
+        }
+        return trackerUtil;
+    }
+
 
     public void sendTrackerEvent(String action) {
-        if (trackerUtil != null)
+        if ((trackerUtil = getTrackerUtil(null)) != null)
             trackerUtil.sendEvent(getScreenNameForTracker(), action);
     }
 
     public void sendTrackerEvent(String action, String label) {
-        if (trackerUtil != null)
+        if ((trackerUtil = getTrackerUtil(null)) != null)
             trackerUtil.sendEvent(getScreenNameForTracker(), action, label);
     }
 
     public void sendTrackerEvent(String action, String label, long value) {
-        if (trackerUtil != null)
+        if ((trackerUtil = getTrackerUtil(null)) != null)
             trackerUtil.sendEvent(getScreenNameForTracker(), action, label, value);
     }
 
     public void sendClickEvent(String label) {
-        if (trackerUtil != null)
+        if ((trackerUtil = getTrackerUtil(null)) != null)
             trackerUtil.sendClickEvent(getScreenNameForTracker(), label);
     }
 
     public void sendClickEvent(String label, long value) {
-        if (trackerUtil != null)
+        if ((trackerUtil = getTrackerUtil(null)) != null)
             trackerUtil.sendClickEvent(getScreenNameForTracker(), label, value);
     }
 }
