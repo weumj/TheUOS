@@ -68,8 +68,13 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         trackerUtil = getTrackerUtil();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        trackerUtil = null;
     }
 
     private TrackerUtil getTrackerUtil() {

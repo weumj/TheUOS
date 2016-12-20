@@ -32,6 +32,12 @@ public abstract class BaseDialogFragment extends DialogFragment {
         return trackerUtil;
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        trackerUtil = null;
+    }
+
     public abstract String getScreenNameForTracker();
 
     public void sendTrackerEvent(String action, String label) {

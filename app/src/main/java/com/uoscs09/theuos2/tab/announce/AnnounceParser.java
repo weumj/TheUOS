@@ -325,7 +325,7 @@ public abstract class AnnounceParser extends JerichoParser<List<AnnounceItem>> {
                             .replace(">", " style=\"max-width: 96%; height: auto; >"));
                 }
 
-                announceDetailItem.page = "<meta name=\"viewport\" content=\"initial-scale=1.0; width=device-width; target-densitydpi=device-dpi; user-scalable=yes\" />\n" +
+                announceDetailItem.page = "<meta name=\"viewport\" content=\"initial-scale=1.0, width=device-width, target-densitydpi=device-dpi, user-scalable=yes\" />\n" +
                         "<link rel=\"stylesheet\" href=\"/css/kor2016/style.css\" type=\"text/css\" />\n" + html;
             }
 
@@ -387,7 +387,7 @@ public abstract class AnnounceParser extends JerichoParser<List<AnnounceItem>> {
                             .replace(">", " style=\"max-width: 96%; height: auto; >"));
                 }
 
-                announceDetailItem.page = "<meta name=\"viewport\" content=\"initial-scale=1.0; width=device-width; target-densitydpi=device-dpi; user-scalable=yes\" />\n" +
+                announceDetailItem.page = "<meta name=\"viewport\" content=\"initial-scale=1.0, width=device-width, target-densitydpi=device-dpi, user-scalable=yes\" />\n" +
                         "<link rel=\"stylesheet\" href=\"/css/mkor/base.css\" type=\"text/css\" />\n" + html;
             }
 

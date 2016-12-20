@@ -34,7 +34,7 @@ class TaskCallAdapterFactory extends CallAdapter.Factory {
         };
     }
 
-    static Type getCallResponseType(Type returnType) {
+    private static Type getCallResponseType(Type returnType) {
         if (!(returnType instanceof ParameterizedType)) {
             throw new IllegalArgumentException("Call return type must be parameterized as Call<Foo> or Call<? extends Foo>");
         }

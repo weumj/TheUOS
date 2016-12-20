@@ -35,6 +35,7 @@ public class Timetable2 implements Parcelable, Serializable {
         buildLayoutInfo();
     }
 
+    @Nullable
     private OApiUtil.Semester semester;
     private int year;
 
@@ -78,7 +79,9 @@ public class Timetable2 implements Parcelable, Serializable {
 
     @SuppressLint("DefaultLocale")
     public String getYearAndSemester() {
-        return isLocaleKor() ? String.format("%d / %s", year, semester.nameKor) : String.format("%s / %d", semester.nameEng, year);
+        boolean localeKor = isLocaleKor();
+        String semesterName = this.semester == null? "" : localeKor? semester.nameKor : semester.nameEng;
+        return localeKor ? String.format("%d / %s", year, semesterName) : String.format("%s / %d", semesterName, year);
     }
 
     public Map<String, ArrayList<Subject.ClassInformation>> classTimeInformationTable() {

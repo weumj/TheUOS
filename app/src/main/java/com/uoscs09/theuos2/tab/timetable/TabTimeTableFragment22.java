@@ -34,8 +34,7 @@ import java.io.IOException;
 import butterknife.BindView;
 import butterknife.OnClick;
 import mj.android.utils.task.TaskQueue;
-import mj.android.utils.task.Tasks;
-
+// future use
 public class TabTimeTableFragment22 extends AbsProgressFragment<Timetable2> {
 
     private static final String TAG = "TabTimeTableFragment";
@@ -370,22 +369,20 @@ public class TabTimeTableFragment22 extends AbsProgressFragment<Timetable2> {
 
     void deleteTimetable() {
         AlertDialog dialog = deleteDialog();
-        Tasks.newTask(() -> TimetableUtil.deleteTimetable(getActivity())).getAsync(
-                result -> {
-                    dialog.dismiss();
-                    if (result) {
-                        AppUtil.showToast(getActivity(), R.string.execute_delete, isVisible());
-                        setTimetable(null);
-                        TimeTableWidget.sendRefreshIntent(getActivity());
-                    } else {
-                        AppUtil.showToast(getActivity(), R.string.file_not_found, isMenuVisible());
-                    }
-                },
-                e -> {
-                    dialog.dismiss();
-                    AppUtil.showToast(getActivity(), R.string.file_not_found, isMenuVisible());
-                }
-        );
+        AppRequests.TimeTables.deleteTimetable()
+                .getAsync(result -> {
+                            dialog.dismiss();
+                            if (result) {
+                                AppUtil.showToast(getActivity(), R.string.execute_delete, isVisible());
+                                setTimetable(null);
+                            } else {
+                                AppUtil.showToast(getActivity(), R.string.file_not_found, isMenuVisible());
+                            }
+                        },
+                        e -> {
+                            dialog.dismiss();
+                            AppUtil.showToast(getActivity(), R.string.file_not_found, isMenuVisible());
+                        });
 
     }
 

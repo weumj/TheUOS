@@ -33,6 +33,12 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        trackerUtil = null;
+    }
+
     public abstract String getScreenNameForTracker();
 
     public TrackerUtil getTrackerUtil() {

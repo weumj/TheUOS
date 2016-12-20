@@ -1,6 +1,7 @@
 package com.uoscs09.theuos2.util;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -11,8 +12,12 @@ import android.provider.CalendarContract;
 import android.support.annotation.RequiresPermission;
 import android.text.TextUtils;
 import android.util.SparseArray;
+import android.view.View;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 
 import com.uoscs09.theuos2.R;
+import com.uoscs09.theuos2.appwidget.timetable.TimeTableWidget;
 import com.uoscs09.theuos2.common.SerializableArrayMap;
 import com.uoscs09.theuos2.http.NetworkRequests;
 import com.uoscs09.theuos2.tab.announce.AnnounceDetailItem;
@@ -31,6 +36,7 @@ import com.uoscs09.theuos2.tab.subject.CoursePlan;
 import com.uoscs09.theuos2.tab.subject.Subject;
 import com.uoscs09.theuos2.tab.timetable.SimpleSubject;
 import com.uoscs09.theuos2.tab.timetable.Timetable2;
+import com.uoscs09.theuos2.tab.timetable.TimetableUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -175,11 +181,41 @@ public class AppRequests {
 
         public static Task<Timetable2> request(CharSequence id, CharSequence passwd, OApiUtil.Semester semester, CharSequence year) {
             return NetworkRequests.TimeTables.request(id, passwd, semester, year)
-                    .map(IOUtil.<Timetable2>newInternalFileWriteFunc(IOUtil.FILE_TIMETABLE));
+                    .map(data -> {
+                        IOUtil.<Timetable2>newInternalFileWriteFunc(IOUtil.FILE_TIMETABLE).func(data);
+                        TimeTableWidget.sendRefreshIntent(context());
+                        return data;
+                    });
         }
 
         public static Task<Timetable2> readFile() {
             return Tasks.newTask(() -> IOUtil.readInternalFileSilent(IOUtil.FILE_TIMETABLE));
+        }
+
+        public static Task<Boolean> deleteTimetable() {
+            return Tasks.newTask(() -> {
+                Context context = context();
+                boolean result = context.deleteFile(IOUtil.FILE_TIMETABLE);
+                TimetableUtil.clearTimeTableColor(context);
+                //TimetableAlarmUtil.clearAllAlarm(context);
+                TimeTableWidget.sendRefreshIntent(context);
+                return result;
+            });
+        }
+
+        /* 반환값은 저장된 파일의 경로*/
+        @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        public static Task<String> saveTimetableToImage(Timetable2 timetable, ListView listView, ListAdapter originalAdapter, View header) {
+            //noinspection ResourceType
+            final String picturePath = PrefHelper.Data.getPicturePath();
+            @SuppressLint("DefaultLocale")
+            String savedPath = String.format("%s/timetable_%d_%s_%d.png", picturePath, timetable.year(), timetable.semester().name(), System.currentTimeMillis());
+
+            return new ImageUtil.ListViewBitmapRequest.Builder(listView, originalAdapter)
+                    .setHeaderView(header)
+                    .build()
+                    .map(new ImageUtil.ImageWriteProcessor(savedPath));
+
         }
     }
 
@@ -255,12 +291,29 @@ public class AppRequests {
             return NetworkRequests.Subjects.requestSubjectInfo(subjectName, year, termCode);
         }
 
+        /* 반환값은 저장된 파일의 경로*/
+        @SuppressWarnings("MissingPermission")
         @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        public static Task<String> writeCoursePlanToTextFile(final String fileName, final List<CoursePlan> infoList, final String classRoomInformation) {
-            //noinspection MissingPermission
+        public static Task<String> saveCoursePlanToImage(ListView listView, ListAdapter adapter, View header, final Subject subject) {
+            final String picturePath = PrefHelper.Data.getPicturePath();
+            final String fileName = String.format("%s/%s_%s_%s_%s.png", picturePath, context().getString(R.string.tab_course_plan_title), subject.subject_nm, subject.prof_nm, subject.class_div);
+            return new ImageUtil.ListViewBitmapRequest.Builder(listView, adapter)
+                    .setHeaderView(header)
+                    .build()
+                    .map(new ImageUtil.ImageWriteProcessor(fileName));
+        }
+
+        /* 반환값은 저장된 파일의 경로*/
+        @SuppressWarnings("MissingPermission")
+        @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        public static Task<String> saveCoursePlanToTextFile(final List<CoursePlan> infoList, final Subject subject) {
+
+            final String docPath = PrefHelper.Data.getDocumentPath();
+            final String fileName = String.format("%s/%s_%s_%s_%s.txt", docPath, context().getString(R.string.tab_course_plan_title), subject.subject_nm, subject.prof_nm, subject.class_div);
+
             return Tasks.newTask(() -> {
                 StringBuilder sb = new StringBuilder();
-                writeHeader(sb, infoList.get(0), classRoomInformation);
+                writeHeader(sb, infoList.get(0), subject.getClassRoomTimeInformation());
 
                 int size = infoList.size();
                 for (int i = 0; i < size; i++) {

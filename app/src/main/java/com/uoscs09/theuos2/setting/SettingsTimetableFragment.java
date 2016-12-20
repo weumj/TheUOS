@@ -18,8 +18,8 @@ public class SettingsTimetableFragment extends PreferenceFragmentCompat implemen
     private TrackerUtil trackerUtil;
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         trackerUtil = new TrackerUtil(getActivity());
+        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -37,6 +37,12 @@ public class SettingsTimetableFragment extends PreferenceFragmentCompat implemen
             actionBar.setTitle(R.string.setting_timetable);
         }
 
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        trackerUtil = null;
     }
 
     @Override

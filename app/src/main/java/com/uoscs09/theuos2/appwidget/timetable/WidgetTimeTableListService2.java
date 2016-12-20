@@ -4,7 +4,7 @@ package com.uoscs09.theuos2.appwidget.timetable;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.text.TextUtils;
+import android.support.annotation.Nullable;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
@@ -15,6 +15,7 @@ import com.uoscs09.theuos2.tab.timetable.TimetableUtil;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.PrefHelper;
+import com.uoscs09.theuos2.util.StringUtil;
 
 import java.util.Calendar;
 
@@ -28,6 +29,7 @@ public abstract class WidgetTimeTableListService2 extends RemoteViewsService {
     protected abstract ListRemoteViewsFactory getListRemoteViewsFactory(Context context, Intent intent);
 
     protected static abstract class ListRemoteViewsFactory extends AbsListRemoteViewsFactory<Timetable2.Period> {
+        @Nullable
         private Timetable2 mTimeTable;
         private final int[] viewIds = {
                 R.id.widget_time_table_list_peroid,
@@ -100,19 +102,18 @@ public abstract class WidgetTimeTableListService2 extends RemoteViewsService {
                 }
 
                 Timetable2.SubjectInfo subject = period.getSubjectInfo(subjectIndex);
-                // 현재 표시하려는 과목과 리스트뷰의 한 단계 위의 과목의 이름이 같으면
+                // 현재 표시하려는 과목과 한 단계 위의 과목의 이름이 같으면
                 // 내용을 표시하지 않음
                 if (subject == null || subject.isEqualPrior()) {
                     views.setTextViewText(id, "");
                     views.setTextViewText(subId, "");
                 } else {
                     OApiUtil.UnivBuilding building = subject.building();
-                    views.setTextViewText(id, TextUtils.isEmpty(subject.name()) ? "" : subject.name());
+                    views.setTextViewText(id, StringUtil.emptyStringIfNull(subject.name()));
                     views.setTextViewText(subId, String.format("%s\n%s\n%s",
-                            TextUtils.isEmpty(subject.professor()) ? "" : subject.professor(),
-                            TextUtils.isEmpty(subject.location()) ? "" : subject.location(),
-                            building == null ? "" :
-                                    TextUtils.isEmpty(building.getLocaleName()) ? "" : building.getLocaleName())
+                            StringUtil.emptyStringIfNull(subject.professor()),
+                            StringUtil.emptyStringIfNull(subject.location()),
+                            building == null ? "" : StringUtil.emptyStringIfNull(building.getLocaleName()))
                     );
                 }
 

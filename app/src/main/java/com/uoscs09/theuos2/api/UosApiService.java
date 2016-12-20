@@ -8,7 +8,7 @@ public class UosApiService {
 
     public static final String URL_M_SCHOLARSHIP = AnnounceApi.URL_M_SCHOLARSHIP;
     public static final String URL_SCHOLARSHIP = AnnounceApi.URL_SCHOLARSHIP;
-    public static final String URL_M_ANNOUNCE= AnnounceApi.URL_M_ANNOUNCE;
+    public static final String URL_M_ANNOUNCE = AnnounceApi.URL_M_ANNOUNCE;
 
     public static final String URL_SEATS = LibraryApi.SEATS_URL;
 
@@ -75,10 +75,9 @@ public class UosApiService {
         return restaurantApi;
     }
 
-
     private static OkHttpClient okHttpClient;
 
-    private static OkHttpClient okHttpClient() {
+    static OkHttpClient okHttpClient() {
 
         if (okHttpClient == null) {
             okHttpClient = new OkHttpClient.Builder()

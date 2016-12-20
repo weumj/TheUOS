@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -41,7 +42,6 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import mj.android.utils.task.Task;
 import mj.android.utils.task.TaskQueue;
-import mj.android.utils.task.Tasks;
 
 public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
 
@@ -138,7 +138,7 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
             case R.id.action_delete:
 
                 sendClickEvent("delete timetable");
-                deleteDialog().show();
+                deleteTimetable();
                 return true;
 
             case R.id.action_save:
@@ -184,27 +184,29 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
 
         mTimeTableAdapter.changeLayout(true);
 
-        final Task<String> task = TimetableUtil.saveTimetableToImage(mTimeTable, mTimetableListView, mTimeTableAdapter, getTabParentView()).getAsync(result -> {
+        final Task<String> task = AppRequests.TimeTables.saveTimetableToImage(mTimeTable, mTimetableListView, mTimeTableAdapter, getTabParentView()).getAsync(result -> {
                     progressDialog.dismiss();
                     progressDialog.setOnCancelListener(null);
                     mTimeTableAdapter.changeLayout(false);
 
-                    String pictureDir = result.substring(result.lastIndexOf('/') + 1);
+                    String pictureDir = result.replace(result.substring(result.lastIndexOf('/')), "");
+                    pictureDir = pictureDir.substring(pictureDir.lastIndexOf('/') + 1);
                     Snackbar.make(rootView, getString(R.string.tab_timetable_saved, pictureDir), Snackbar.LENGTH_LONG)
                             .setAction(R.string.action_open, v -> {
                                 Intent intent = new Intent();
                                 intent.setAction(Intent.ACTION_VIEW);
+                                // fixme api25
                                 intent.setDataAndType(Uri.parse("file://" + result), "image/*");
 
                                 try {
                                     AnimUtil.startActivityWithScaleUp(getActivity(), intent, v);
-                                    sendClickEvent("show timetable image");
                                 } catch (ActivityNotFoundException e) {
                                     //e.printStackTrace();
                                     AppUtil.showToast(getActivity(), R.string.error_no_activity_found_to_handle_file);
                                 } catch (Exception e) {
                                     AppUtil.showErrorToast(getActivity(), e, true);
                                 }
+                                sendClickEvent("show timetable image");
                             })
                             .show();
                 },
@@ -281,7 +283,7 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
                         execute(
                                 Semester.values()[wiseTermSpinner.getSelectedItemPosition()],
                                 wiseYearSpinner.getSelectedItem().toString(),
-                                wiseIdView.getText().toString().trim(),
+                                id,
                                 wisePasswdView.getText().toString().trim()
                         );
                     }
@@ -301,34 +303,30 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
         mTimeTableAdapter.setTimeTable(timeTable);
     }
 
-
-    private AlertDialog deleteDialog() {
-        return new AlertDialog.Builder(getActivity())
+    void deleteTimetable() {
+        final AlertDialog dialog = new AlertDialog.Builder(getActivity())
                 .setMessage(R.string.confirm_delete)
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> deleteTimetable())
                 .setNegativeButton(R.string.cancel, null)
                 .create();
-    }
 
-    void deleteTimetable() {
-        AlertDialog dialog = deleteDialog();
-        Tasks.newTask(() -> TimetableUtil.deleteTimetable(getActivity())).getAsync(
-                result -> {
-                    dialog.dismiss();
-                    if (result) {
-                        AppUtil.showToast(getActivity(), R.string.execute_delete, isVisible());
-                        setTimetable(null);
-                        TimeTableWidget.sendRefreshIntent(getActivity());
-                    } else {
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(android.R.string.ok), (dialog1, which) -> {
+            AppRequests.TimeTables.deleteTimetable().getAsync(result -> {
+                        dialog.dismiss();
+                        if (result) {
+                            AppUtil.showToast(getActivity(), R.string.execute_delete, isVisible());
+                            setTimetable(null);
+                        } else {
+                            AppUtil.showToast(getActivity(), R.string.file_not_found, isMenuVisible());
+                        }
+                    },
+                    e -> {
+                        dialog.dismiss();
                         AppUtil.showToast(getActivity(), R.string.file_not_found, isMenuVisible());
                     }
-                },
-                e -> {
-                    dialog.dismiss();
-                    AppUtil.showToast(getActivity(), R.string.file_not_found, isMenuVisible());
-                }
-        );
+            );
+        });
 
+        dialog.show();
     }
 
 

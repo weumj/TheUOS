@@ -339,6 +339,7 @@ public class SubAnnounceWebActivity extends BaseActivity {
 
                                 sendClickEvent("open file");
 
+                                // fixme api25
                                 Uri fileUri = Uri.fromFile(result);
                                 String fileExtension = MimeTypeMap.getFileExtensionFromUrl(fileUri.toString());
                                 String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension);

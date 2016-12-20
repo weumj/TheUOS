@@ -44,6 +44,7 @@ public class OApiUtil {
                 return nameEng;
         }
 
+        @Nullable
         public static Semester getSemesterByCode(int code) {
             switch (code) {
                 case 10:

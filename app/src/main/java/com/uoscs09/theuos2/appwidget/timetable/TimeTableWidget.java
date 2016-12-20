@@ -21,7 +21,7 @@ import java.util.Date;
 import java.util.Locale;
 
 public abstract class TimeTableWidget extends BaseAppWidgetProvider {
-    public final static String WIDGET_TIMETABLE_REFRESH_INTERNAL = "com.uoscs09.theuos2.widget.timetable.refresh_internal";
+    private final static String WIDGET_TIMETABLE_REFRESH_INTERNAL = "com.uoscs09.theuos2.widget.timetable.refresh_internal";
     public final static String WIDGET_TIMETABLE_REFRESH = "com.uoscs09.theuos2.widget.timetable";
 
     public static void sendRefreshIntent(Context context) {
@@ -45,10 +45,6 @@ public abstract class TimeTableWidget extends BaseAppWidgetProvider {
 
         final PendingResult pendingResult = goAsync();
         AppRequests.TimeTables.readFile()
-                .map(result -> {
-                    if (result != null) return result;
-                    else throw new RuntimeException("Widget: Timetable == null");
-                })
                 .getAsync(result -> {
                             onResult(context, appWidgetManager, appWidgetIds, result);
                             pendingResult.finish();

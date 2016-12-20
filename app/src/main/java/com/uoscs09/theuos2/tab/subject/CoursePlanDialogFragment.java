@@ -28,8 +28,6 @@ import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.util.AnimUtil;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
-import com.uoscs09.theuos2.util.ImageUtil;
-import com.uoscs09.theuos2.util.PrefHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -226,23 +224,19 @@ public class CoursePlanDialogFragment extends AbsAnimDialogFragment implements T
         }
 
 
-        final String picturePath = PrefHelper.Data.getPicturePath();
-        final String fileName = String.format("%s/%s_%s_%s_%s.png", picturePath, getString(R.string.tab_course_plan_title), mSubject.subject_nm, mSubject.prof_nm, mSubject.class_div);
-        final Task<String> task = new ImageUtil.ListViewBitmapRequest.Builder(mListView, mAdapter)
-                .setHeaderView(mCourseTitle)
-                .build()
-                .map(new ImageUtil.ImageWriteProcessor(fileName));
-
-        Dialog d = AppUtil.getProgressDialog(getActivity(), false, (dialog, which) -> task.cancel());
-
+        final Task<String> task = AppRequests.Subjects.saveCoursePlanToImage(mListView, mAdapter, mCourseTitle, mSubject);
+        final Dialog d = AppUtil.getProgressDialog(getActivity(), false, (dialog, which) -> task.cancel());
+        d.show();
         task.getAsync(result -> {
                     d.dismiss();
 
-                    String pictureDir = picturePath.substring(picturePath.lastIndexOf('/') + 1);
+                    String pictureDir = result.replace(result.substring(result.lastIndexOf('/')), "");
+                    pictureDir = pictureDir.substring(pictureDir.lastIndexOf('/') + 1);
                     Snackbar.make(mListView, getString(R.string.tab_course_plan_action_save_image_completed, pictureDir), Snackbar.LENGTH_LONG)
                             .setAction(R.string.action_open, v -> {
                                 Intent intent = new Intent();
                                 intent.setAction(Intent.ACTION_VIEW);
+                                // fixme api25
                                 intent.setDataAndType(Uri.parse("file://" + result), "image/*");
 
                                 try {
@@ -269,21 +263,19 @@ public class CoursePlanDialogFragment extends AbsAnimDialogFragment implements T
             return;
         }
 
-        final String docPath = PrefHelper.Data.getDocumentPath();
-        final String fileName = String.format("%s/%s_%s_%s_%s.txt", docPath, getString(R.string.tab_course_plan_title), mSubject.subject_nm, mSubject.prof_nm, mSubject.class_div);
-
-        final Task<String> task = AppRequests.Subjects.writeCoursePlanToTextFile(fileName, infoList, mSubject.getClassRoomTimeInformation());
-
-        Dialog d = AppUtil.getProgressDialog(getActivity(), false, (dialog, which) -> task.cancel());
-
+        final Task<String> task = AppRequests.Subjects.saveCoursePlanToTextFile(infoList, mSubject);
+        final Dialog d = AppUtil.getProgressDialog(getActivity(), false, (dialog, which) -> task.cancel());
+        d.show();
         task.getAsync(result -> {
                     d.dismiss();
 
-                    String docDir = docPath.substring(docPath.lastIndexOf('/') + 1);
+                    String docDir = result.replace(result.substring(result.lastIndexOf('/')), "");
+                    docDir = docDir.substring(docDir.lastIndexOf('/') + 1);
                     Snackbar.make(mListView, getString(R.string.tab_course_plan_action_save_text_completed, docDir), Snackbar.LENGTH_LONG)
                             .setAction(R.string.action_open, v -> {
                                 Intent intent = new Intent();
                                 intent.setAction(Intent.ACTION_VIEW);
+                                // fixme api25
                                 intent.setDataAndType(Uri.parse("file://" + result), "text/*");
 
                                 try {
