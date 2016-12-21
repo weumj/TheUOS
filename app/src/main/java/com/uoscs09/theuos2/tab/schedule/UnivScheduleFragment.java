@@ -190,9 +190,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<List<UnivScheduleI
                             addUnivScheduleToCalender();
                         }
                     })
-                    .setNegativeButton(android.R.string.no, (dialog1, which2) -> {
-                        mAccount = null;
-                    })
+                    .setNegativeButton(android.R.string.no, (dialog1, which2) -> mAccount = null)
                     .show();
         }
     }
@@ -202,21 +200,20 @@ public class UnivScheduleFragment extends AbsProgressFragment<List<UnivScheduleI
         mProgressDialog.show();
 
         AppRequests.UnivSchedules.addUnivScheduleToCalender(getActivity(), mAccount, mSelectedItem, mList.indexOf(mSelectedItem))
-                .getAsync(result -> {
-                            mSelectedItem = null;
-                            mProgressDialog.dismiss();
-                            if (result != null)
-                                AppUtil.showToast(getActivity(), R.string.tab_univ_schedule_add_to_calendar_success, isMenuVisible());
-                            else
-                                AppUtil.showToast(getActivity(), R.string.tab_univ_schedule_add_to_calendar_fail, isMenuVisible());
-                        },
-                        e -> {
-                            mSelectedItem = null;
-                            mProgressDialog.dismiss();
-
-                            AppUtil.showErrorToast(getActivity(), e, isMenuVisible());
-                        }
-                );
+                .delayed()
+                .result(result -> {
+                    if (result != null)
+                        AppUtil.showToast(getActivity(), R.string.tab_univ_schedule_add_to_calendar_success, isMenuVisible());
+                    else
+                        AppUtil.showToast(getActivity(), R.string.tab_univ_schedule_add_to_calendar_fail, isMenuVisible());
+                })
+                .error(e -> AppUtil.showErrorToast(getActivity(), e, isMenuVisible())
+                )
+                .atLast(() -> {
+                    mSelectedItem = null;
+                    mProgressDialog.dismiss();
+                })
+                .execute();
     }
 
     private void execute(boolean force) {
@@ -229,6 +226,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<List<UnivScheduleI
                     setSubtitleWhenVisible(mSubTitle = mDateFormat.format(mList.get(0).getDate(true).getTime()));
                 })
                 .error(t -> super.simpleErrorRespond(t))
+                .build()
                 .execute();
     }
 

@@ -3,11 +3,12 @@ package com.uoscs09.theuos2.util;
 import java.util.Collection;
 import java.util.List;
 
+import mj.android.utils.task.DelayedTask;
 import mj.android.utils.task.Task;
 import mj.android.utils.task.Tasks;
 
 public class TaskUtil {
-    public static boolean cancel(Task task) {
+    public static boolean cancel(DelayedTask task) {
         return Tasks.cancelTask(task);
     }
 

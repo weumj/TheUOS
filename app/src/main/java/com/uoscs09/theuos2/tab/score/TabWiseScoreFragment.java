@@ -150,19 +150,16 @@ public class TabWiseScoreFragment extends AbsProgressFragment<WiseScores> {
         final MaterialDialog progressDialog = AppUtil.getProgressDialog(getActivity());
         progressDialog.show();
 
-        AppRequests.WiseScores.wiseScores(id, pw).getAsync(wiseScores -> {
+        AppRequests.WiseScores.wiseScores(id, pw)
+                .delayed()
+                .result(wiseScores -> {
                     adapter.wiseScores = wiseScores;
                     adapter.notifyDataSetChanged();
-
-                    progressDialog.dismiss();
-
                     empty.setVisibility(View.GONE);
-                },
-                throwable -> {
-                    super.simpleErrorRespond(throwable);
-                    progressDialog.dismiss();
-                }
-        );
+                })
+                .error(throwable -> super.simpleErrorRespond(throwable))
+                .atLast(progressDialog::dismiss)
+                .execute();
 
     }
 

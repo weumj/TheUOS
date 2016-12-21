@@ -387,6 +387,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<List<BookItem>> i
                     showEmptyView();
                     simpleErrorRespond(e);
                 })
+                .build()
                 .execute();
     }
 

@@ -34,7 +34,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import mj.android.utils.task.Task;
+import mj.android.utils.task.DelayedTask;
 
 public class CoursePlanDialogFragment extends AbsAnimDialogFragment implements Toolbar.OnMenuItemClickListener {
 
@@ -53,34 +53,30 @@ public class CoursePlanDialogFragment extends AbsAnimDialogFragment implements T
     private ArrayAdapter<CoursePlan> mAdapter;
 
     private ArrayList<CoursePlan> infoList = new ArrayList<>();
-
     private Subject mSubject;
 
     public static void fetchCoursePlanAndShow(final Fragment fragment, Subject subject, View v) {
-        Task<List<CoursePlan>> task = AppRequests.Subjects.requestCoursePlan(subject);
+        DelayedTask<List<CoursePlan>> task = AppRequests.Subjects.requestCoursePlan(subject).delayed();
         Dialog d = AppUtil.getProgressDialog(fragment.getActivity(), false, (dialog, which) -> task.cancel());
-
         d.show();
-        task.getAsync(coursePlanItems -> {
-                    d.dismiss();
+        task.result(result -> showCoursePlanDialog(fragment, subject, v, result))
+                .error(throwable -> AppUtil.showErrorToast(fragment.getActivity(), throwable, true))
+                .atLast(d::dismiss)
+                .execute();
+    }
 
-                    if (!coursePlanItems.isEmpty()) {
-                        CoursePlanDialogFragment f = new CoursePlanDialogFragment();
-                        f.initValues(subject, coursePlanItems);
-                        f.showFromView(fragment.getFragmentManager(), "course", v);
-                    } else {
-                        AppUtil.showToast(fragment.getActivity(), R.string.tab_course_plan_result_empty);
-                    }
-                },
-                throwable -> {
-                    AppUtil.showErrorToast(fragment.getActivity(), throwable, true);
-                    d.dismiss();
-                }
-        );
+    private static void showCoursePlanDialog(final Fragment fragment, Subject subject, View v, List<CoursePlan> coursePlanItems) {
+        if (!coursePlanItems.isEmpty()) {
+            CoursePlanDialogFragment f = new CoursePlanDialogFragment();
+            f.initValues(subject, coursePlanItems);
+            f.showFromView(fragment.getFragmentManager(), "course", v);
+        } else {
+            AppUtil.showToast(fragment.getActivity(), R.string.tab_course_plan_result_empty);
+        }
     }
 
 
-    public void initValues(Subject item, List<CoursePlan> infoList) {
+    private void initValues(Subject item, List<CoursePlan> infoList) {
         this.mSubject = item;
         this.infoList.clear();
         this.infoList.addAll(infoList);
@@ -187,12 +183,6 @@ public class CoursePlanDialogFragment extends AbsAnimDialogFragment implements T
         mToolbar.setSubtitle(null);
     }
 
-
-    void onError(Dialog d, Throwable e) {
-        d.dismiss();
-        AppUtil.showErrorToast(getActivity(), e, true);
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -223,36 +213,36 @@ public class CoursePlanDialogFragment extends AbsAnimDialogFragment implements T
             return;
         }
 
-
-        final Task<String> task = AppRequests.Subjects.saveCoursePlanToImage(mListView, mAdapter, mCourseTitle, mSubject);
+        final DelayedTask<String> task = AppRequests.Subjects.saveCoursePlanToImage(mListView, mAdapter, mCourseTitle, mSubject).delayed();
         final Dialog d = AppUtil.getProgressDialog(getActivity(), false, (dialog, which) -> task.cancel());
         d.show();
-        task.getAsync(result -> {
-                    d.dismiss();
+        task.result(this::showImageSaveResult)
+                .error(e -> AppUtil.showErrorToast(getActivity(), e, true))
+                .atLast(d::dismiss)
+                .execute();
+    }
 
-                    String pictureDir = result.replace(result.substring(result.lastIndexOf('/')), "");
-                    pictureDir = pictureDir.substring(pictureDir.lastIndexOf('/') + 1);
-                    Snackbar.make(mListView, getString(R.string.tab_course_plan_action_save_image_completed, pictureDir), Snackbar.LENGTH_LONG)
-                            .setAction(R.string.action_open, v -> {
-                                Intent intent = new Intent();
-                                intent.setAction(Intent.ACTION_VIEW);
-                                // fixme api25
-                                intent.setDataAndType(Uri.parse("file://" + result), "image/*");
+    void showImageSaveResult(final String savedFilePath) {
+        String pictureDir = savedFilePath.replace(savedFilePath.substring(savedFilePath.lastIndexOf('/')), "");
+        pictureDir = pictureDir.substring(pictureDir.lastIndexOf('/') + 1);
+        Snackbar.make(mListView, getString(R.string.tab_course_plan_action_save_image_completed, pictureDir), Snackbar.LENGTH_LONG)
+                .setAction(R.string.action_open, v -> {
+                    Intent intent = new Intent();
+                    intent.setAction(Intent.ACTION_VIEW);
+                    // fixme api25
+                    intent.setDataAndType(Uri.parse("file://" + savedFilePath), "image/*");
 
-                                try {
-                                    AnimUtil.startActivityWithScaleUp(getActivity(), intent, v);
-                                } catch (ActivityNotFoundException e) {
-                                    //e.printStackTrace();
-                                    AppUtil.showToast(getActivity(), R.string.error_no_activity_found_to_handle_file);
-                                } catch (Exception e) {
-                                    AppUtil.showErrorToast(getActivity(), e, true);
-                                }
-                                sendClickEvent("show course plan image");
-                            })
-                            .show();
-                },
-                throwable -> onError(d, throwable)
-        );
+                    try {
+                        AnimUtil.startActivityWithScaleUp(getActivity(), intent, v);
+                    } catch (ActivityNotFoundException e) {
+                        //e.printStackTrace();
+                        AppUtil.showToast(getActivity(), R.string.error_no_activity_found_to_handle_file);
+                    } catch (Exception e) {
+                        AppUtil.showErrorToast(getActivity(), e, true);
+                    }
+                    sendClickEvent("show course plan image");
+                })
+                .show();
     }
 
     void saveCoursePlanToText() {
@@ -263,36 +253,37 @@ public class CoursePlanDialogFragment extends AbsAnimDialogFragment implements T
             return;
         }
 
-        final Task<String> task = AppRequests.Subjects.saveCoursePlanToTextFile(infoList, mSubject);
+        final DelayedTask<String> task = AppRequests.Subjects.saveCoursePlanToTextFile(infoList, mSubject).delayed();
         final Dialog d = AppUtil.getProgressDialog(getActivity(), false, (dialog, which) -> task.cancel());
         d.show();
-        task.getAsync(result -> {
-                    d.dismiss();
+        task.result(this::showTextSaveResult)
+                .error(e -> AppUtil.showErrorToast(getActivity(), e, true))
+                .atLast(d::dismiss)
+                .execute();
+    }
 
-                    String docDir = result.replace(result.substring(result.lastIndexOf('/')), "");
-                    docDir = docDir.substring(docDir.lastIndexOf('/') + 1);
-                    Snackbar.make(mListView, getString(R.string.tab_course_plan_action_save_text_completed, docDir), Snackbar.LENGTH_LONG)
-                            .setAction(R.string.action_open, v -> {
-                                Intent intent = new Intent();
-                                intent.setAction(Intent.ACTION_VIEW);
-                                // fixme api25
-                                intent.setDataAndType(Uri.parse("file://" + result), "text/*");
+    void showTextSaveResult(final String savedFilePath) {
+        String docDir = savedFilePath.replace(savedFilePath.substring(savedFilePath.lastIndexOf('/')), "");
+        docDir = docDir.substring(docDir.lastIndexOf('/') + 1);
+        Snackbar.make(mListView, getString(R.string.tab_course_plan_action_save_text_completed, docDir), Snackbar.LENGTH_LONG)
+                .setAction(R.string.action_open, v -> {
+                    Intent intent = new Intent();
+                    intent.setAction(Intent.ACTION_VIEW);
+                    // fixme api25
+                    intent.setDataAndType(Uri.parse("file://" + savedFilePath), "text/*");
 
-                                try {
-                                    AnimUtil.startActivityWithScaleUp(getActivity(), intent, v);
-                                } catch (ActivityNotFoundException e) {
-                                    //e.printStackTrace();
-                                    AppUtil.showToast(getActivity(), R.string.error_no_activity_found_to_handle_file);
-                                } catch (Exception e) {
-                                    AppUtil.showErrorToast(getActivity(), e, true);
-                                }
+                    try {
+                        AnimUtil.startActivityWithScaleUp(getActivity(), intent, v);
+                    } catch (ActivityNotFoundException e) {
+                        //e.printStackTrace();
+                        AppUtil.showToast(getActivity(), R.string.error_no_activity_found_to_handle_file);
+                    } catch (Exception e) {
+                        AppUtil.showErrorToast(getActivity(), e, true);
+                    }
 
-                                sendClickEvent("show course plan text");
-                            })
-                            .show();
-                },
-                throwable -> onError(d, throwable)
-        );
+                    sendClickEvent("show course plan text");
+                })
+                .show();
     }
 
     @NonNull

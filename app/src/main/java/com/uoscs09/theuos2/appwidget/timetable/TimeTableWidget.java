@@ -44,16 +44,11 @@ public abstract class TimeTableWidget extends BaseAppWidgetProvider {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
 
         final PendingResult pendingResult = goAsync();
-        AppRequests.TimeTables.readFile()
-                .getAsync(result -> {
-                            onResult(context, appWidgetManager, appWidgetIds, result);
-                            pendingResult.finish();
-                        },
-                        error -> {
-                            error.printStackTrace();
-                            pendingResult.finish();
-                        }
-                );
+        AppRequests.TimeTables.readFile().delayed()
+                .result(result -> onResult(context, appWidgetManager, appWidgetIds, result))
+                .error(Throwable::printStackTrace)
+                .atLast(pendingResult::finish)
+                .execute();
     }
 
     @Override

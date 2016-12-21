@@ -339,6 +339,7 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<List<Subject>
                     setSubtitleWhenVisible(mSearchConditionString);
                 })
                 .error(t -> super.simpleErrorRespond(t))
+                .build()
                 .execute();
     }
 

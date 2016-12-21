@@ -32,7 +32,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import mj.android.utils.task.Task;
+import mj.android.utils.task.DelayedTask;
 import mj.android.utils.task.Tasks;
 
 /**
@@ -143,18 +143,17 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
         Dialog dialog = AppUtil.getProgressDialog(getActivity());
         dialog.show();
 
-        Task<BuildingRoom> task = AppRequests.Buildings.buildingRooms(true).getAsync(room -> {
-                    dialog.dismiss();
-                    dialog.setOnCancelListener(null);
+        DelayedTask<BuildingRoom> task = AppRequests.Buildings.buildingRooms(true).delayed()
+                .result(room -> {
                     onSharedPreferenceChanged(getPreferenceScreen().getSharedPreferences(), PrefUtil.KEY_BUILDINGS_FETCH_TIME);
                     AppUtil.showToast(getActivity(), R.string.finish_update);
-                },
-                throwable -> {
+                })
+                .error(throwable -> AppUtil.showErrorToast(getActivity(), throwable, true))
+                .atLast(() -> {
                     dialog.dismiss();
                     dialog.setOnCancelListener(null);
-                    AppUtil.showErrorToast(getActivity(), throwable, true);
-                }
-        );
+                });
+        task.execute();
         dialog.setOnCancelListener(dialog1 -> task.cancel());
     }
 
@@ -262,10 +261,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
         Tasks.newTask(() -> {
             AppUtil.clearCache(getActivity());
             return null;
-        }).getAsync(
-                result -> AppUtil.showToast(getActivity(), R.string.execute_delete),
-                e -> AppUtil.showErrorToast(getActivity(), e, true)
-        );
+        }).delayed()
+                .result(result -> AppUtil.showToast(getActivity(), R.string.execute_delete))
+                .error(e -> AppUtil.showErrorToast(getActivity(), e, true))
+                .execute();
     }
 
     @Override

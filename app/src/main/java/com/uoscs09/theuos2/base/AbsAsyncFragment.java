@@ -16,6 +16,7 @@ import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import mj.android.utils.task.DelayedTask;
 import mj.android.utils.task.ErrorListener;
 import mj.android.utils.task.ResultListener;
 import mj.android.utils.task.Task;
@@ -63,28 +64,28 @@ public abstract class AbsAsyncFragment<T> extends BaseTabFragment {
     }
 
     // todo 클래스 외부로 리팩토링
-    protected static final class TaskHelper<T> {
+    protected static final class TaskWrapper<T> {
         private final WeakReference<AbsAsyncFragment<T>> ref;
         private Task<T> task;
         private ResultListener<T> r;
         private ErrorListener e;
+        private Runnable last;
 
-        private TaskHelper(AbsAsyncFragment<T> fragment, @NonNull Task<T> task) {
+        private TaskWrapper(AbsAsyncFragment<T> fragment, @NonNull Task<T> task) {
             ref = new WeakReference<>(fragment);
             this.task = task;
         }
 
-        public static <T> TaskHelper<T> create(AbsAsyncFragment<T> fragment, @NonNull Task<T> task) {
-            return new TaskHelper<>(fragment, task);
+        public static <T> TaskWrapper<T> create(AbsAsyncFragment<T> fragment, @NonNull Task<T> task) {
+            return new TaskWrapper<>(fragment, task);
         }
 
 
-        public TaskHelper<T> result(@NonNull final ResultListener<T> r) {
+        public TaskWrapper<T> result(@NonNull final ResultListener<T> r) {
             this.r = result -> {
                 AbsAsyncFragment<T> f = ref.get();
                 if (f != null) {
                     if (f.isVisible()) {
-                        f.onPostExecute();
                         r.onResult(result);
                     } else {
                         f.putAsyncData(getClass().getName(), result);
@@ -96,105 +97,103 @@ public abstract class AbsAsyncFragment<T> extends BaseTabFragment {
             return this;
         }
 
-        public TaskHelper<T> error(@Nullable final ErrorListener e) {
+        public TaskWrapper<T> error(@Nullable final ErrorListener e) {
             final String tag = ref.get().getTag();
             this.e = t -> {
                 AbsAsyncFragment f = ref.get();
                 if (f != null && f.isVisible()) {
-                    f.onPostExecute();
                     if (e != null) {
                         e.onError(t);
                     } else {
-                        Log.w(tag, "error", t);
+                        FirebaseCrash.logcat(Log.ERROR, tag, "AsyncFragment background error");
+                        FirebaseCrash.report(t);
+                        //Log.w(tag, "error", t);
                     }
                 }
             };
             return this;
         }
 
-        public Task<T> executeWithQueue(String tag) {
+        public TaskWrapper<T> atLast(@Nullable final Runnable r) {
+            this.last = () -> {
+                AbsAsyncFragment f = ref.get();
+                if (f != null && f.isVisible()) {
+                    f.onPostExecute();
+                    if (r != null) r.run();
+                }
+            };
+            return this;
+        }
+
+        public DelayedTask<T> build() {
+            setupRef();
+            DelayedTask<T> delayedTask = task.delayed().result(r).error(e).atLast(last);
+            cleanUpRef();
+
             AbsAsyncFragment f = ref.get();
             if (f == null) {
-                r = null;
-                e = null;
-                Log.w(tag, "error(host fragment == null)");
-                return task;
+                Log.w("AbsAsyncFragment", "error(host fragment == null)");
+                return delayedTask;
             }
+
+            f.onPreExecute();
+            sAsyncDataStoreMap.remove(getClass().getName());
+
+            return delayedTask;
+        }
+
+        public DelayedTask<T> buildWithQueue(String tag) {
+            AbsAsyncFragment f = ref.get();
+
+            if (f == null) {
+                DelayedTask<T> delayedTask = task.delayed();
+                setupRef();
+                delayedTask.result(r).error(e).atLast(last);
+                cleanUpRef();
+
+                Log.w(tag, "error(host fragment == null)");
+                return delayedTask;
+            }
+
             TaskQueue taskQueue = f.taskQueue();
             if (taskQueue == null) {
+                DelayedTask<T> delayedTask = task.delayed();
+                setupRef();
+                delayedTask.result(r).error(e).atLast(last);
+                cleanUpRef();
+
                 AppUtil.showToast(f.getActivity(), R.string.error_cannot_execute, true);
-                r = null;
-                e = null;
-                return task;
+                return delayedTask;
             }
 
             f.onPreExecute();
             sAsyncDataStoreMap.remove(getClass().getName());
 
-            taskQueue.enqueue(tag, task, r, e);
-
-            r = null;
-            e = null;
-            return task;
+            DelayedTask<T> delayedTask = taskQueue.enqueue(tag, task);
+            setupRef();
+            delayedTask.result(r).error(e).atLast(last);
+            cleanUpRef();
+            return delayedTask;
         }
 
-        public Task<T> execute() {
-            AbsAsyncFragment f = ref.get();
-            if (f == null) {
-                r = null;
-                e = null;
-                Log.w("AbsAsyncFragment", "error(host fragment == null)");
-                return task;
-            }
+        private void setupRef(){
+            if(r == null) result((result) -> {});
+            if(e == null) error(null);
+            if(last == null) atLast(null);
+        }
 
-            f.onPreExecute();
-            sAsyncDataStoreMap.remove(getClass().getName());
-
-            task.getAsync(r, e);
-
+        private void cleanUpRef() {
             r = null;
             e = null;
-            return task;
+            last = null;
         }
 
     }
 
 
-    protected final TaskHelper<T> appTask(@NonNull Task<T> task) {
-        return TaskHelper.create(this, task);
+    protected final TaskWrapper<T> appTask(@NonNull Task<T> task) {
+        return TaskWrapper.create(this, task);
     }
-
-    /**
-     * 주어진 작업을 비 동기로 실행한다.
-     */
-    protected final void execute(@NonNull Task<? extends T> task, @NonNull final ResultListener<T> resultListener, @Nullable final ErrorListener errorListener) {
-        onPreExecute();
-
-        sAsyncDataStoreMap.remove(getClass().getName());
-
-        task.getAsync(result -> {
-                    if (isVisible()) {
-                        onPostExecute();
-                        resultListener.onResult(result);
-                    } else {
-                        putAsyncData(getClass().getName(), result);
-                    }
-                },
-                e -> {
-                    if (isVisible()) {
-                        onPostExecute();
-                        if (errorListener != null) {
-                            errorListener.onError(e);
-                        } else {
-                            FirebaseCrash.logcat(Log.ERROR, getTag(), "AsyncFragment background error");
-                            FirebaseCrash.report(e);
-                            //Log.w(getTag(), "error", e);
-                        }
-                    }
-                }
-        );
-    }
-
 
     protected void simpleErrorRespond(Throwable e) {
         e.printStackTrace();

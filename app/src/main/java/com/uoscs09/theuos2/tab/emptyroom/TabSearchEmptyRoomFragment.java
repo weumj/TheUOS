@@ -146,24 +146,18 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<List<EmptyRo
 
     void roomClick(View v, int position) {
         // 선택된 빈 강의실의 시간표 보여주기
-
-        Dialog dialog = AppUtil.getProgressDialog(getActivity());
+        final Dialog dialog = AppUtil.getProgressDialog(getActivity());
         dialog.show();
 
         final OApiUtil.Semester semester = OApiUtil.Semester.getSemesterByOrder(mTermSpinner.getSelectedItemPosition());
-        AppRequests.Buildings.classRoomTimeTables(OApiUtil.getYear(), semester.code, mClassRoomList.get(position), false).getAsync(
-                classRoomTimeTable -> {
+        AppRequests.Buildings.classRoomTimeTables(OApiUtil.getYear(), semester.code, mClassRoomList.get(position), false).delayed()
+                .result(classRoomTimeTable -> {
                     ClassroomTimetableDialogFragment.showTimetableDialog(this, classRoomTimeTable, semester, v);
-
-                    dialog.dismiss();
-
                     sendClickEvent("show classroom timetable");
-                },
-                throwable -> {
-                    AppUtil.showErrorToast(getActivity(), throwable, true);
-                    dialog.dismiss();
-                }
-        );
+                })
+                .error(throwable -> AppUtil.showErrorToast(getActivity(), throwable, true))
+                .atLast(dialog::dismiss)
+                .execute();
 
     }
 
@@ -224,6 +218,7 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<List<EmptyRo
                     mEmptyView.setVisibility(mClassRoomList.isEmpty() ? View.VISIBLE : View.INVISIBLE);
                     simpleErrorRespond(e);
                 })
+                .build()
                 .execute();
     }
 

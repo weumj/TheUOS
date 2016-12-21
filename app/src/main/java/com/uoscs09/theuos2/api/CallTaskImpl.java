@@ -1,8 +1,5 @@
 package com.uoscs09.theuos2.api;
 
-import android.os.Handler;
-import android.os.Looper;
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.io.IOException;
@@ -10,6 +7,7 @@ import java.util.concurrent.Executor;
 
 import mj.android.utils.task.Callable2;
 import mj.android.utils.task.Cancelable;
+import mj.android.utils.task.DelayedTask;
 import mj.android.utils.task.ErrorListener;
 import mj.android.utils.task.Func;
 import mj.android.utils.task.ResultListener;
@@ -19,60 +17,32 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-class CallTaskImpl<T> implements Task<T>, Cloneable {
+class CallTaskImpl<T> implements Task<T> {
 
-    private static final Executor CALLBACK_EXECUTOR = new Executor() {
-        final Handler handler = new Handler(Looper.getMainLooper());
-
-        @Override
-        public void execute(@NonNull Runnable command) {
-            handler.post(command);
-        }
-    };
-
-    private CallCallable<T> callCallable;
-    private ResultCallback<T> resultCallback;
+    private static final Executor CALLBACK_EXECUTOR = Tasks.UI_THREAD_EXECUTOR;
+    private Call<T> call;
 
     CallTaskImpl(Call<T> call) {
-        this.callCallable = new CallCallable<T>(call);
+        this.call = call;
     }
 
     @Override
     public T get() throws Throwable {
         try {
-            return callCallable.call();
+            return call.execute().body();
         } finally {
-            callCallable = null;
+            call = null;
         }
     }
 
     @Override
-    public Task<T> getAsync(ResultListener<T> r, ErrorListener e) {
-        callCallable.call.enqueue(resultCallback = new ResultCallback<T>(r, e));
-        return this;
-    }
-
-
-    @Override
-    public Task<T> getAsync(ResultListener<T> resultListener, ErrorListener errorListener, Executor executor) {
-        Tasks.newTask(new CallCallable<>(callCallable.call)).getAsync(resultListener, errorListener, executor);
-        //Tasks.newTask(this::get).getAsync(resultListener, errorListener, executor);
-        return this;
+    public DelayedTask<T> delayed() {
+        return new CallDelayedTaskImpl<>(call);
     }
 
     @Override
     public <V> Task<V> map(Func<T, V> func) {
-        return Tasks.newTask(new CallFuncCallable<T, V>(new CallCallable<T>(callCallable.call), func));
-        //return Tasks.newTask(() -> func.func(get()));
-    }
-
-    @Override
-    public boolean cancel() {
-        callCallable.cancel();
-        if (resultCallback != null)
-            resultCallback.cancel();
-
-        return true;
+        return Tasks.newTask(new CallFuncCallable<>(new CallCallable<>(call), func));
     }
 
     @Override
@@ -82,14 +52,14 @@ class CallTaskImpl<T> implements Task<T>, Cloneable {
             if (o instanceof CallTaskImpl) {
                 //noinspection unchecked
                 CallTaskImpl<T> callTask = (CallTaskImpl<T>) o;
-                callTask.callCallable = new CallCallable<T>(callCallable.call.clone());
+                callTask.call = this.call.clone();
                 return callTask;
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return new CallTaskImpl<>(callCallable.call.clone());
+        return new CallTaskImpl<>(call.clone());
     }
 
 
@@ -100,6 +70,7 @@ class CallTaskImpl<T> implements Task<T>, Cloneable {
             throw new IOException(response.errorBody().string());
         }
     }
+
 
     private static class CallFuncCallable<T, V> implements Callable2<V>, Cancelable {
         private CallCallable<T> callCallable;
@@ -146,8 +117,8 @@ class CallTaskImpl<T> implements Task<T>, Cloneable {
         }
     }
 
-    private static class CallCallable<T> implements Callable2<T>, Cancelable {
-        private retrofit2.Call<T> call;
+    static class CallCallable<T> implements Callable2<T>, Cancelable {
+        private Call<T> call;
         private boolean isCanceled = false;
 
         CallCallable(Call<T> call) {
@@ -182,42 +153,50 @@ class CallTaskImpl<T> implements Task<T>, Cloneable {
     }
 
 
-    private static class ResultCallback<T> implements Callback<T>, Cancelable {
+    static class ResultCallback<T> implements Callback<T>, Cancelable {
         private ResultListener<T> r;
         private ErrorListener e;
+        private Runnable last;
         private boolean isCanceled = false;
 
-        ResultCallback(ResultListener<T> r, ErrorListener e) {
+        ResultCallback(ResultListener<T> r, ErrorListener e, Runnable last) {
             this.r = r;
             this.e = e;
+            this.last = last;
         }
 
         @Override
         public void onResponse(retrofit2.Call<T> call, Response<T> response) {
             try {
-                if (isCanceled)
-                    return;
-
+                if (isCanceled) return;
                 deliverResult(handleResponse(response), r);
             } catch (Throwable throwable) {
-                deliverError(throwable, e);
+                if (isCanceled)
+                    throwable.printStackTrace();
+                else
+                    deliverError(throwable, e);
             } finally {
-                r = null;
-                e = null;
+                deliverAtLast(last);
+                clearRef();
             }
         }
+
 
         @Override
         public void onFailure(Call<T> call, Throwable t) {
             try {
-                if (isCanceled)
-                    return;
-
+                if (isCanceled) return;
                 deliverError(t, e);
             } finally {
-                r = null;
-                e = null;
+                deliverAtLast(last);
+                clearRef();
             }
+        }
+
+        private void clearRef() {
+            r = null;
+            e = null;
+            last = null;
         }
 
         @Override
@@ -239,7 +218,14 @@ class CallTaskImpl<T> implements Task<T>, Cloneable {
                 CALLBACK_EXECUTOR.execute(() -> e.onError(t));
             } else {
                 Log.w("TASK", "ErrorListener == null, error : " + t);
+            }
+        }
 
+        private static void deliverAtLast(Runnable r) {
+            if (r != null) {
+                CALLBACK_EXECUTOR.execute(r);
+            } else {
+                Log.w("TASK", "AtLast Runnable == null");
             }
         }
 

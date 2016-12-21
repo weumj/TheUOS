@@ -208,6 +208,7 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
                     simpleErrorRespond(t);
                     mSwipeRefreshLayout.setRefreshing(false);
                 })
+                .build()
                 .execute();
     }
 

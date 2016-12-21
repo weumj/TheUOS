@@ -246,9 +246,9 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
 
             sendClickEvent("course plan");
 
-            AppRequests.Subjects.requestSubjectInfo(mSubject.nameKor(), mTimeTable.year(), mTimeTable.semester().code).getAsync(result -> {
-                        mProgress.dismiss();
-
+            AppRequests.Subjects.requestSubjectInfo(mSubject.nameKor(), mTimeTable.year(), mTimeTable.semester().code)
+                    .delayed()
+                    .result(result -> {
                         int size;
                         if (result == null) {
                             AppUtil.showToast(getActivity(), R.string.tab_timetable_error_on_search_subject, true);
@@ -269,23 +269,16 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
 
                             mClassDivSelectDialog.show();
                         }
-
-                    },
-                    this::onError
-            );
-
+                    })
+                    .error((e) -> AppUtil.showErrorToast(getActivity(), e, isVisible()))
+                    .atLast(() -> mProgress.dismiss())
+                    .execute();
             mProgress.show();
 
         } else {
             AppUtil.showToast(getActivity(), R.string.tab_timetable_no_subject);
         }
 
-    }
-
-    public void onError(Throwable e) {
-        mProgress.dismiss();
-
-        AppUtil.showErrorToast(getActivity(), e, isVisible());
     }
 
     private void setOrCancelAlarm(TimetableSubject subject, int spinnerSelection) {

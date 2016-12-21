@@ -34,17 +34,11 @@ public class LibrarySeatWidget extends BaseAppWidgetProvider {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
         setWidgetDefaultLayout(context, appWidgetManager, appWidgetIds, R.string.progress_while_loading);
         final PendingResult pendingResult = goAsync();
-        AppRequests.LibrarySeats.widgetDataRequest()
-                .getAsync(
-                        result -> {
-                            onBackgroundTaskResult(context, appWidgetManager, appWidgetIds, result);
-                            pendingResult.finish();
-                        },
-                        error -> {
-                            exceptionOccurred(context, appWidgetManager, appWidgetIds, error);
-                            pendingResult.finish();
-                        }
-                );
+        AppRequests.LibrarySeats.widgetDataRequest().delayed()
+                .result(result -> onBackgroundTaskResult(context, appWidgetManager, appWidgetIds, result))
+                .error(error -> exceptionOccurred(context, appWidgetManager, appWidgetIds, error))
+                .atLast(pendingResult::finish)
+                .execute();
     }
 
     @Override

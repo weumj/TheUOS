@@ -40,7 +40,7 @@ import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import mj.android.utils.task.Task;
+import mj.android.utils.task.DelayedTask;
 import mj.android.utils.task.TaskQueue;
 
 public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
@@ -184,9 +184,9 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
 
         mTimeTableAdapter.changeLayout(true);
 
-        final Task<String> task = AppRequests.TimeTables.saveTimetableToImage(mTimeTable, mTimetableListView, mTimeTableAdapter, getTabParentView()).getAsync(result -> {
-                    progressDialog.dismiss();
-                    progressDialog.setOnCancelListener(null);
+        final DelayedTask<String> task = AppRequests.TimeTables.saveTimetableToImage(mTimeTable, mTimetableListView, mTimeTableAdapter, getTabParentView())
+                .delayed()
+                .result(result -> {
                     mTimeTableAdapter.changeLayout(false);
 
                     String pictureDir = result.replace(result.substring(result.lastIndexOf('/')), "");
@@ -209,15 +209,17 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
                                 sendClickEvent("show timetable image");
                             })
                             .show();
-                },
-                e -> {
+                })
+                .error(e -> {
+                    mTimeTableAdapter.changeLayout(false);
+                    AppUtil.showErrorToast(getActivity(), e, true);
+                })
+                .atLast(() -> {
                     progressDialog.dismiss();
                     progressDialog.setOnCancelListener(null);
-                    mTimeTableAdapter.changeLayout(false);
+                });
+        task.execute();
 
-                    AppUtil.showErrorToast(getActivity(), e, true);
-                }
-        );
         progressDialog.setOnCancelListener(dialog -> TaskUtil.cancel(task));
         progressDialog.show();
 
@@ -247,14 +249,15 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
                         simpleErrorRespond(t);
                     }
                 })
-                .executeWithQueue(TAG);
+                .buildWithQueue(TAG)
+                .execute();
     }
 
     private void readTimetableFromFile() {
-        AppRequests.TimeTables.readFile().getAsync(
-                this::setTimetable,
-                e -> Log.e(TAG, "cannot read timetable from file.", e)
-        );
+        AppRequests.TimeTables.readFile().delayed()
+                .result(this::setTimetable)
+                .error(e -> Log.e(TAG, "cannot read timetable from file.", e))
+                .execute();
     }
 
     private void showLoginDialog() {
@@ -310,20 +313,18 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
                 .create();
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(android.R.string.ok), (dialog1, which) -> {
-            AppRequests.TimeTables.deleteTimetable().getAsync(result -> {
-                        dialog.dismiss();
+            AppRequests.TimeTables.deleteTimetable().delayed()
+                    .result(result -> {
                         if (result) {
                             AppUtil.showToast(getActivity(), R.string.execute_delete, isVisible());
                             setTimetable(null);
                         } else {
                             AppUtil.showToast(getActivity(), R.string.file_not_found, isMenuVisible());
                         }
-                    },
-                    e -> {
-                        dialog.dismiss();
-                        AppUtil.showToast(getActivity(), R.string.file_not_found, isMenuVisible());
-                    }
-            );
+                    })
+                    .error(e -> AppUtil.showToast(getActivity(), R.string.file_not_found, isMenuVisible()))
+                    .atLast(dialog::dismiss)
+                    .execute();
         });
 
         dialog.show();

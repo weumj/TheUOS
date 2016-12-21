@@ -34,6 +34,7 @@ import java.io.IOException;
 import butterknife.BindView;
 import butterknife.OnClick;
 import mj.android.utils.task.TaskQueue;
+
 // future use
 public class TabTimeTableFragment22 extends AbsProgressFragment<Timetable2> {
 
@@ -285,14 +286,15 @@ public class TabTimeTableFragment22 extends AbsProgressFragment<Timetable2> {
                         simpleErrorRespond(t);
                     }
                 })
-                .executeWithQueue(TAG);
+                .buildWithQueue(TAG)
+                .execute();
     }
 
     private void readTimetableFromFile() {
-        AppRequests.TimeTables.readFile().getAsync(
-                this::setTimetable,
-                e -> Log.e(TAG, "cannot read timetable from file.", e)
-        );
+        AppRequests.TimeTables.readFile().delayed()
+                .result(this::setTimetable)
+                .error(e -> Log.e(TAG, "cannot read timetable from file.", e))
+                .execute();
     }
 
     private void setTimetable(Timetable2 timeTable) {
@@ -369,20 +371,21 @@ public class TabTimeTableFragment22 extends AbsProgressFragment<Timetable2> {
 
     void deleteTimetable() {
         AlertDialog dialog = deleteDialog();
-        AppRequests.TimeTables.deleteTimetable()
-                .getAsync(result -> {
-                            dialog.dismiss();
-                            if (result) {
-                                AppUtil.showToast(getActivity(), R.string.execute_delete, isVisible());
-                                setTimetable(null);
-                            } else {
-                                AppUtil.showToast(getActivity(), R.string.file_not_found, isMenuVisible());
-                            }
-                        },
-                        e -> {
-                            dialog.dismiss();
-                            AppUtil.showToast(getActivity(), R.string.file_not_found, isMenuVisible());
-                        });
+        AppRequests.TimeTables.deleteTimetable().delayed()
+                .result(result -> {
+                    dialog.dismiss();
+                    if (result) {
+                        AppUtil.showToast(getActivity(), R.string.execute_delete, isVisible());
+                        setTimetable(null);
+                    } else {
+                        AppUtil.showToast(getActivity(), R.string.file_not_found, isMenuVisible());
+                    }
+                })
+                .error(e -> {
+                    dialog.dismiss();
+                    AppUtil.showToast(getActivity(), R.string.file_not_found, isMenuVisible());
+                })
+                .execute();
 
     }
 

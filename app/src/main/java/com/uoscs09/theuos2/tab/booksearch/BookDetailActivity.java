@@ -25,9 +25,9 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.api.UosApiService;
 import com.uoscs09.theuos2.base.BaseActivity;
 import com.uoscs09.theuos2.util.AnimUtil;
+import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.ResourceUtil;
 
@@ -117,33 +117,33 @@ public class BookDetailActivity extends BaseActivity {
         progressWheel.setVisibility(View.VISIBLE);
         progressWheel.spin();
 
-        UosApiService.libraryApi().bookDetailItem("http://mlibrary.uos.ac.kr" + bookItem.url).getAsync(
-                result -> {
+        AppRequests.Books.bookDetailItem(bookItem).delayed()
+                .result(result -> {
+                    //todo refactoring
                     if (isFinishing())
                         return;
-
-                    progressWheel.stopSpinning();
-                    progressWheel.setVisibility(View.GONE);
-
                     errorTextView.setVisibility(View.GONE);
 
                     bookDetailItem = result;
                     drawLayout();
-                },
-                throwable -> {
+                })
+                .error(throwable -> {
                     throwable.printStackTrace();
-
                     if (isFinishing())
                         return;
 
                     findViewById(R.id.scrollView).setVisibility(View.INVISIBLE);
-                    progressWheel.stopSpinning();
-                    progressWheel.setVisibility(View.GONE);
-
                     errorTextView.setVisibility(View.VISIBLE);
                     errorTextView.setText(R.string.progress_fail);
-                }
-        );
+                })
+                .atLast(() -> {
+                    if (isFinishing())
+                        return;
+
+                    progressWheel.stopSpinning();
+                    progressWheel.setVisibility(View.GONE);
+                })
+                .execute();
     }
 
     @OnClick(R.id.error)

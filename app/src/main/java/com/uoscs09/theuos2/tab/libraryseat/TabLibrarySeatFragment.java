@@ -34,7 +34,7 @@ import jp.wasabeef.recyclerview.animators.SlideInDownAnimator;
 import mj.android.utils.recyclerview.ListRecyclerAdapter;
 import mj.android.utils.recyclerview.ListRecyclerUtil;
 import mj.android.utils.recyclerview.ViewHolderFactory;
-import mj.android.utils.task.Task;
+import mj.android.utils.task.DelayedTask;
 import mj.android.utils.task.Tasks;
 
 /**
@@ -74,7 +74,7 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatTotalInfo> {
      * {@code onSaveInstanceState()} 에서 "COMMIT_TIME"라는 이름으로 저장된다.
      */
     private String mSearchTime = "";
-    private Task<SeatTotalInfo> mCurrentTask = null;
+    private DelayedTask<SeatTotalInfo> mCurrentTask = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -115,7 +115,7 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatTotalInfo> {
             public SeatViewHolder newViewHolder(ViewGroup viewGroup, int i) {
                 return new SeatViewHolder(ListRecyclerUtil.makeViewHolderItemView(viewGroup, R.layout.list_layout_seat));
             }
-        }){
+        }) {
             @Override
             public long getItemId(int position) {
                 return mSeatTotalInfo.seatInfoList().get(position).hashCode();
@@ -209,24 +209,18 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatTotalInfo> {
 
         mCurrentTask = appTask(AppRequests.LibrarySeats.request())
                 .result(result -> {
-                    if (mSwipeRefreshLayout != null) mSwipeRefreshLayout.setRefreshing(false);
-
                     updateTimeView();
 
                     mSeatTotalInfo.addAll(result);
                     mSeatAdapter.notifyDataSetChanged();
-
-                    mCurrentTask = null;
                 })
-                .error(e -> {
-                    e.printStackTrace();
+                .error(e -> super.simpleErrorRespond(e))
+                .atLast(() -> {
                     if (mSwipeRefreshLayout != null) mSwipeRefreshLayout.setRefreshing(false);
-
-                    simpleErrorRespond(e);
-
                     mCurrentTask = null;
                 })
-                .execute();
+                .build();
+        mCurrentTask.execute();
     }
 
 

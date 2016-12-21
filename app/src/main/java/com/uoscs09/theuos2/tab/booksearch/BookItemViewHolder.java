@@ -25,7 +25,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import mj.android.utils.task.Task;
+import mj.android.utils.task.DelayedTask;
 
 class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
     @BindView(R.id.tab_booksearch_list_book_title)
@@ -49,7 +49,7 @@ class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements View.OnCl
      */
     private final List<ChildHolder> mChildHolderList = new CopyOnWriteArrayList<>();
 
-    private Task<List<BookStateInfo>> task;
+    private DelayedTask<List<BookStateInfo>> task;
 
     BookItem item;
     BookItemListAdapter.OnItemClickListener onItemClickListener;
@@ -108,18 +108,17 @@ class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements View.OnCl
                 item.bookStateInfoList = Collections.emptyList();
                 removeAllBookStateInLayout();
             } else {
-                task = AppRequests.Books.requestBookStateInfo(item.infoUrl).getAsync(result -> {
+                task = AppRequests.Books.requestBookStateInfo(item.infoUrl).delayed()
+                        .result(result -> {
                             item.bookStateInfoList = result;
 
                             // 처리 후, ViewHolder item 과 결과 item 이 다르다면 무시
                             if (holder.item.equals(item))
                                 drawBookStateLayout(holder);
-                            else
-                                Log.d("BookItemViewHolder", "request item != current item");
-                        },
-                        t -> AppUtil.showErrorToast(holder.itemView.getContext(), t, true)
-                );
-
+                            else Log.d("BookItemViewHolder", "request item != current item");
+                        })
+                        .error(t -> AppUtil.showErrorToast(holder.itemView.getContext(), t, true));
+                task.execute();
             }
 
         } else if (!item.bookStateInfoList.isEmpty()) {
@@ -152,7 +151,7 @@ class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements View.OnCl
 
         LinearLayout layout = holder.stateInfoLayout;
 
-        final int attachingViewsSize = list == null? 0 : list.size();
+        final int attachingViewsSize = list == null ? 0 : list.size();
 
         final int availableRecyledHolderCount = childHolderList.size();
         final int diff = attachingViewsSize - availableRecyledHolderCount;

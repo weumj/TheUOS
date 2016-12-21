@@ -22,6 +22,7 @@ import com.uoscs09.theuos2.common.SerializableArrayMap;
 import com.uoscs09.theuos2.http.NetworkRequests;
 import com.uoscs09.theuos2.tab.announce.AnnounceDetailItem;
 import com.uoscs09.theuos2.tab.announce.AnnounceItem;
+import com.uoscs09.theuos2.tab.booksearch.BookDetailItem;
 import com.uoscs09.theuos2.tab.booksearch.BookItem;
 import com.uoscs09.theuos2.tab.booksearch.BookStateInfo;
 import com.uoscs09.theuos2.tab.buildings.BuildingRoom;
@@ -38,6 +39,7 @@ import com.uoscs09.theuos2.tab.timetable.SimpleSubject;
 import com.uoscs09.theuos2.tab.timetable.Timetable2;
 import com.uoscs09.theuos2.tab.timetable.TimetableUtil;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -89,10 +91,19 @@ public class AppRequests {
                     });
                     */
         }
+
+
+        public static Task<File> attachedFileDownload(String url, String docPath, String fileName) {
+            return NetworkRequests.Announces.attachedFileDownloadRequest(url, docPath, fileName);
+        }
     }
 
 
     public static class Books {
+        public static Task<BookDetailItem> bookDetailItem(BookItem bookItem) {
+            return NetworkRequests.Books.bookDetailItem(bookItem);
+        }
+
         public static Task<List<BookStateInfo>> requestBookStateInfo(String url) {
             return NetworkRequests.Books.requestBookStateInfo(url);
         }

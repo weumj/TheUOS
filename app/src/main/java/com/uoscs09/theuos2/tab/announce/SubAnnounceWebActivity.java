@@ -27,7 +27,6 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.base.BaseActivity;
 import com.uoscs09.theuos2.customview.NonLeakingWebView;
-import com.uoscs09.theuos2.http.NetworkRequests;
 import com.uoscs09.theuos2.util.AnimUtil;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
@@ -42,7 +41,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
-import mj.android.utils.task.Task;
+import mj.android.utils.task.DelayedTask;
 
 public class SubAnnounceWebActivity extends BaseActivity {
     private static final int REQUEST_PERMISSION_FILE = 40;
@@ -61,7 +60,7 @@ public class SubAnnounceWebActivity extends BaseActivity {
     private String url;
     private AnnounceItem mItem;
     private List<Pair<String, String>> attachedFileUrlPairList;
-    private Task<AnnounceDetailItem> task;
+    private DelayedTask<AnnounceDetailItem> task;
 
 
     @Override
@@ -163,17 +162,17 @@ public class SubAnnounceWebActivity extends BaseActivity {
         progressWheel.setVisibility(View.VISIBLE);
         progressWheel.spin();
 
-        task = AppRequests.Announces.announceInfo(category, url).getAsync(
-                this::setScreenWithItem,
-                throwable -> {
+        task = AppRequests.Announces.announceInfo(category, url).delayed()
+                .result(this::setScreenWithItem)
+                .error(throwable -> {
                     hideProgress();
                     if (errorTextView != null)
                         errorTextView.setVisibility(View.VISIBLE);
                     if (mWebView != null)
                         mWebView.loadDataWithBaseURL(null, "page not found", null, null, null);
                     throwable.printStackTrace();
-                }
-        );
+                });
+        task.execute();
 
         mWebView.setWebViewClient(new NonLeakingWebView.NonLeakingWebViewClient(this) {
             @Override
@@ -182,6 +181,7 @@ public class SubAnnounceWebActivity extends BaseActivity {
                 hideProgress();
             }
 
+            @SuppressWarnings("deprecation")
             @Override
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
                 super.onReceivedError(view, errorCode, description, failingUrl);
@@ -329,10 +329,8 @@ public class SubAnnounceWebActivity extends BaseActivity {
 
         //noinspection ResourceType
         final String docPath = PrefHelper.Data.getDocumentPath();
-        final Task<File> task = NetworkRequests.Announces.attachedFileDownloadRequest(attachedFileUrl, docPath, pair.first).getAsync(result -> {
-                    progressDialog.dismiss();
-                    progressDialog.setOnCancelListener(null);
-
+        final DelayedTask<File> task =AppRequests.Announces.attachedFileDownload(attachedFileUrl, docPath, pair.first).delayed()
+                .result(result -> {
                     String docDir = docPath.substring(docPath.lastIndexOf('/') + 1);
                     Snackbar.make(mWebView, getString(R.string.saved_file, docDir, result.getName()), Snackbar.LENGTH_LONG)
                             .setAction(R.string.action_open, v -> {
@@ -356,14 +354,13 @@ public class SubAnnounceWebActivity extends BaseActivity {
                                 }
                             })
                             .show();
-                },
-                e -> {
+                })
+                .error(e -> AppUtil.showErrorToast(SubAnnounceWebActivity.this, e, true))
+                .atLast(() -> {
                     progressDialog.dismiss();
                     progressDialog.setOnCancelListener(null);
-
-                    AppUtil.showErrorToast(SubAnnounceWebActivity.this, e, true);
-                }
-        );
+                });
+        task.execute();
 
         progressDialog.setOnCancelListener(dialog -> task.cancel());
         progressDialog.show();

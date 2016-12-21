@@ -24,7 +24,7 @@ import com.uoscs09.theuos2.util.ResourceUtil;
 
 import java.util.ArrayList;
 
-import mj.android.utils.task.Task;
+import mj.android.utils.task.DelayedTask;
 
 public class WeekInformationDialogFragment extends AbsAnimDialogFragment {
     private static final String TAG = "WeekInformationDialogFragment";
@@ -38,32 +38,31 @@ public class WeekInformationDialogFragment extends AbsAnimDialogFragment {
     private RestWeekAdapter mRestWeekAdapter = new RestWeekAdapter(new ArrayList<>());
     private int mCurrentSelectionId;
     private RestWeekItem restWeekItem;
-    private Task<RestWeekItem> mTask;
+    private DelayedTask<RestWeekItem> mTask;
 
     public static void fetchDataAndShow(final Fragment fragment, final int stringId, View v) {
-        Task<RestWeekItem> task = AppRequests.Restaurants.readWeekInfo(getCode(stringId));
+        DelayedTask<RestWeekItem> task = AppRequests.Restaurants.readWeekInfo(getCode(stringId)).delayed();
         Dialog d = AppUtil.getProgressDialog(fragment.getActivity(), false, (dialog, which) -> task.cancel());
         d.show();
 
-        task.getAsync(result -> {
-                    d.dismiss();
-                    WeekInformationDialogFragment dialogFragment = new WeekInformationDialogFragment();
-                    dialogFragment.setSelection(stringId);
-                    dialogFragment.setRestWeekItem(result);
-                    dialogFragment.showFromView(fragment.getFragmentManager(), "week", v);
-                },
-                e -> {
-                    d.dismiss();
-                    AppUtil.showErrorToast(fragment.getActivity(), e, true);
-                }
-        );
+        task.result(result -> showWeekDialog(fragment, stringId, v, result))
+                .error(e -> AppUtil.showErrorToast(fragment.getActivity(), e, true))
+                .atLast(d::dismiss)
+                .execute();
+    }
+
+    private static void showWeekDialog(final Fragment fragment, final int stringId, View v, RestWeekItem restWeekItem) {
+        WeekInformationDialogFragment dialogFragment = new WeekInformationDialogFragment();
+        dialogFragment.setSelection(stringId);
+        dialogFragment.setRestWeekItem(restWeekItem);
+        dialogFragment.showFromView(fragment.getFragmentManager(), "week", v);
     }
 
     public void setSelection(int stringId) {
         this.mCurrentSelectionId = stringId;
     }
 
-    public void setRestWeekItem(RestWeekItem restWeekItem) {
+    private void setRestWeekItem(RestWeekItem restWeekItem) {
         this.restWeekItem = restWeekItem;
         mRestWeekAdapter.restItemArrayList.clear();
         mRestWeekAdapter.restItemArrayList.addAll(restWeekItem.weekList);
@@ -130,24 +129,23 @@ public class WeekInformationDialogFragment extends AbsAnimDialogFragment {
 
 
         mTask = AppRequests.Restaurants.readWeekInfo(getCode(mCurrentSelectionId))
-                .getAsync(result -> {
-                            postExecute();
+                .delayed()
+                .result(result -> {
+                    ArrayList<RestItem> weekList = result.weekList;
+                    setRestWeekItem(result);
 
-                            ArrayList<RestItem> weekList = result.weekList;
-                            setRestWeekItem(result);
-
-                            if (weekList.isEmpty()) {
-                                showEmptyView();
-                            } else {
-                                mToolbar.setSubtitle(result.getPeriodString());
-                            }
-                        },
-                        e -> {
-                            postExecute();
-                            AppUtil.showErrorToast(getActivity(), e, true);
-                            showReloadView();
-                        }
-                );
+                    if (weekList.isEmpty()) {
+                        showEmptyView();
+                    } else {
+                        mToolbar.setSubtitle(result.getPeriodString());
+                    }
+                })
+                .error(e -> {
+                    AppUtil.showErrorToast(getActivity(), e, true);
+                    showReloadView();
+                })
+                .atLast(this::postExecute);
+        mTask.execute();
     }
 
     private void postExecute() {

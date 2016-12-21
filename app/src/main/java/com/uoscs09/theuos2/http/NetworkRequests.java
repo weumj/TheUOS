@@ -8,6 +8,7 @@ import com.uoscs09.theuos2.api.WiseApiService;
 import com.uoscs09.theuos2.tab.announce.AnnounceDetailItem;
 import com.uoscs09.theuos2.tab.announce.AnnounceItem;
 import com.uoscs09.theuos2.tab.announce.AnnounceParser;
+import com.uoscs09.theuos2.tab.booksearch.BookDetailItem;
 import com.uoscs09.theuos2.tab.booksearch.BookItem;
 import com.uoscs09.theuos2.tab.booksearch.BookStateInfo;
 import com.uoscs09.theuos2.tab.booksearch.BookStateWrapper;
@@ -129,6 +130,10 @@ public class NetworkRequests {
     }
 
     public static class Books {
+        public static Task<BookDetailItem> bookDetailItem(BookItem bookItem){
+            return libraryApi().bookDetailItem("http://mlibrary.uos.ac.kr" + bookItem.url);
+        }
+
         public static Task<List<BookStateInfo>> requestBookStateInfo(String url) {
             return libraryApi().bookStateInformation(url).map(BookStateWrapper::bookStateList);
         }

@@ -291,6 +291,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>>
                     else updateWithResult(result, true, newPageIndex);
                 })
                 .error(this::onError)
+                .build()
                 .execute();
     }
 
@@ -302,6 +303,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>>
                     else updateWithResult(result, false, newPageIndex);
                 })
                 .error(this::onError)
+                .build()
                 .execute();
     }
 

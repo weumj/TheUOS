@@ -31,16 +31,11 @@ public class RestWidget extends BaseAppWidgetProvider {
 
 
         final PendingResult pendingResult = goAsync();
-        AppRequests.Restaurants.request(false).getAsync(
-                result -> {
-                    onBackgroundTaskResult(context, appWidgetManager, appWidgetIds, result);
-                    pendingResult.finish();
-                },
-                e -> {
-                    exceptionOccurred(context, appWidgetManager, appWidgetIds, e);
-                    pendingResult.finish();
-                }
-        );
+        AppRequests.Restaurants.request(false).delayed()
+                .result(result -> onBackgroundTaskResult(context, appWidgetManager, appWidgetIds, result))
+                .error(e -> exceptionOccurred(context, appWidgetManager, appWidgetIds, e))
+                .atLast(pendingResult::finish)
+                .execute();
     }
 
     @Override
