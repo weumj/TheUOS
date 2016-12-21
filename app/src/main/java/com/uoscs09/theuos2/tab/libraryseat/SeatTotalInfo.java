@@ -8,19 +8,47 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SeatTotalInfo implements Parcelable {
-    public ArrayList<SeatInfo> seatInfoList;
-    List<SeatDismissInfo> seatDismissInfoList;
+    private List<SeatInfo> seatInfoList;
+    private List<SeatDismissInfo> seatDismissInfoList;
+
+    public SeatTotalInfo(List<SeatInfo> seatInfoList, List<SeatDismissInfo> seatDismissInfoList) {
+        this();
+        this.seatInfoList.addAll(seatInfoList);
+        this.seatDismissInfoList.addAll(seatDismissInfoList);
+    }
 
     public SeatTotalInfo() {
         seatInfoList = new ArrayList<>();
         seatDismissInfoList = new ArrayList<>();
     }
 
-    public void clearAndAddAll(SeatTotalInfo info){
-        seatDismissInfoList.clear();
-        seatDismissInfoList.addAll(info.seatDismissInfoList);
+    public boolean isSeatListEmpty() {
+        return seatInfoList.isEmpty();
+    }
 
+    public int seatListSize() {
+        return seatInfoList.size();
+    }
+
+    public List<SeatInfo> seatInfoList() {
+        return seatInfoList;
+    }
+
+    public boolean isSeatDismissListEmpty() {
+        return seatDismissInfoList.isEmpty();
+    }
+
+    public List<SeatDismissInfo> seatDismissInfoList() {
+        return seatDismissInfoList;
+    }
+
+    public void clearAll() {
+        seatDismissInfoList.clear();
         seatInfoList.clear();
+    }
+
+    public void addAll(SeatTotalInfo info) {
+        seatDismissInfoList.addAll(info.seatDismissInfoList);
         seatInfoList.addAll(info.seatInfoList);
     }
 

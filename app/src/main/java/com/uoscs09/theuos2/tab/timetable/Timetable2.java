@@ -21,7 +21,7 @@ public class Timetable2 implements Parcelable, Serializable {
 
     private static final long serialVersionUID = 7330044121618353219L;
 
-    public Timetable2(OApiUtil.Semester semester, int year, StudentInfo studentInfo,
+    public Timetable2(@Nullable OApiUtil.Semester semester, int year, StudentInfo studentInfo,
                       List<Period> periods, SerializableArrayMap<String, Integer> colorTable,
                       int maxPeriod, SerializableArrayMap<String, ArrayList<Subject.ClassInformation>> classInformationTable) {
         this.semester = semester;
@@ -36,7 +36,7 @@ public class Timetable2 implements Parcelable, Serializable {
     }
 
     @Nullable
-    private OApiUtil.Semester semester;
+    private OApiUtil.Semester semester; // 일반적으로 null 이 되면 안됨.
     private int year;
 
     private StudentInfo studentInfo;
@@ -80,7 +80,7 @@ public class Timetable2 implements Parcelable, Serializable {
     @SuppressLint("DefaultLocale")
     public String getYearAndSemester() {
         boolean localeKor = isLocaleKor();
-        String semesterName = this.semester == null? "" : localeKor? semester.nameKor : semester.nameEng;
+        String semesterName = this.semester == null ? "" : localeKor ? semester.nameKor : semester.nameEng;
         return localeKor ? String.format("%d / %s", year, semesterName) : String.format("%s / %d", semesterName, year);
     }
 

@@ -225,7 +225,7 @@ public class AppRequests {
             return NetworkRequests.LibrarySeats.request()
                     .map(seatInfo -> {
                         if (PrefHelper.LibrarySeats.isFilterOccupyingRoom()) {
-                            List<SeatInfo> list = seatInfo.seatInfoList;
+                            List<SeatInfo> list = seatInfo.seatInfoList();
                             // 스터디룸 인덱스
                             final int[] filterArr = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 23, 24, 25, 26, 27, 28};
                             final int size = filterArr.length;
@@ -244,7 +244,7 @@ public class AppRequests {
 
         public static Task<List<SeatInfo>> widgetDataRequest() {
             return NetworkRequests.LibrarySeats.request()
-                    .map(info -> info.seatInfoList)
+                    .map(SeatTotalInfo::seatInfoList)
                     .map(list -> {
                         // filter
                         if (PrefHelper.LibrarySeats.isShowingWidgetStudyRoom()) {

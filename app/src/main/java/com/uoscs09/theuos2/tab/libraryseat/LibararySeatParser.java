@@ -23,20 +23,16 @@ public class LibararySeatParser extends JerichoParser<SeatTotalInfo> {
         }
 
         Element seatListHtmlTable = tableList.get(1);
-        ArrayList<SeatInfo> resultList = parseHtmlToSeatList(seatListHtmlTable);
+        List<SeatInfo> resultList = parseHtmlToSeatList(seatListHtmlTable);
 
         Element dismissTable = tableList.get(3);
         List<SeatDismissInfo> seatDismissInfoList = parseHtmlToDismissInfoList(dismissTable);
 
-        SeatTotalInfo info = new SeatTotalInfo();
-        info.seatInfoList = resultList;
-        info.seatDismissInfoList = seatDismissInfoList;
-
-        return info;
+        return new SeatTotalInfo(resultList, seatDismissInfoList);
     }
 
-    private ArrayList<SeatInfo> parseHtmlToSeatList(Element seatListHtmlTable) {
-        ArrayList<SeatInfo> resultList = new ArrayList<>();
+    private List<SeatInfo> parseHtmlToSeatList(Element seatListHtmlTable) {
+        List<SeatInfo> resultList = new ArrayList<>();
         int index;
 
         List<Element> trList = seatListHtmlTable.getAllElements(HTMLElementName.TR);
@@ -75,7 +71,7 @@ public class LibararySeatParser extends JerichoParser<SeatTotalInfo> {
         if (dismissTR.size() < 4)
             return Collections.emptyList();
 
-        ArrayList<SeatDismissInfo> list = new ArrayList<>(6);
+        List<SeatDismissInfo> list = new ArrayList<>(6);
         final int N = dismissTR.size();
         for (int i = 2; i < N; i++) {
             List<Element> tds = dismissTR.get(i).getAllElements(HTMLElementName.TD);

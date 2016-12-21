@@ -35,6 +35,7 @@ import mj.android.utils.recyclerview.ListRecyclerAdapter;
 import mj.android.utils.recyclerview.ListRecyclerUtil;
 import mj.android.utils.recyclerview.ViewHolderFactory;
 import mj.android.utils.task.Task;
+import mj.android.utils.task.Tasks;
 
 /**
  * 도서관 좌석 정보 현황을 보여주는 페이지
@@ -62,6 +63,7 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatTotalInfo> {
     SwipeRefreshLayout mSwipeRefreshLayout;
     @BindView(R.id.tab_library_list_seat)
     RecyclerView mSeatListView;
+    private ListRecyclerAdapter<SeatInfo, SeatViewHolder> mSeatAdapter;
 
     private SeatTotalInfo mSeatTotalInfo;
     private boolean isAdapterItemClicked = false;
@@ -108,12 +110,18 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatTotalInfo> {
             execute();
         });
 
-        ListRecyclerAdapter<SeatInfo, SeatViewHolder> mSeatAdapter = new ListRecyclerAdapter<>(mSeatTotalInfo.seatInfoList, new ViewHolderFactory<SeatInfo, SeatViewHolder>() {
+        mSeatAdapter = new ListRecyclerAdapter<SeatInfo, SeatViewHolder>(mSeatTotalInfo.seatInfoList(), new ViewHolderFactory<SeatInfo, SeatViewHolder>() {
             @Override
             public SeatViewHolder newViewHolder(ViewGroup viewGroup, int i) {
                 return new SeatViewHolder(ListRecyclerUtil.makeViewHolderItemView(viewGroup, R.layout.list_layout_seat));
             }
-        });
+        }){
+            @Override
+            public long getItemId(int position) {
+                return mSeatTotalInfo.seatInfoList().get(position).hashCode();
+            }
+        };
+        mSeatAdapter.setHasStableIds(true);
         mSeatAdapter.setOnItemClickListener((viewHolder, v) -> {
             if (isAdapterItemClicked)
                 return;
@@ -140,7 +148,7 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatTotalInfo> {
 
         registerProgressView(view.findViewById(R.id.progress_layout));
 
-        if (mSeatTotalInfo.seatInfoList.isEmpty()) {
+        if (mSeatTotalInfo.isSeatListEmpty()) {
             execute();
         }
     }
@@ -151,6 +159,12 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatTotalInfo> {
         outState.putString(COMMIT_TIME, mSearchTime);
         outState.putParcelable(INFO_LIST, mSeatTotalInfo);
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mSeatAdapter.setOnItemClickListener(null);
     }
 
     @Override
@@ -187,30 +201,26 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatTotalInfo> {
     }
 
     private void execute() {
-        if (mCurrentTask != null) {
-            mCurrentTask.cancel();
-            mCurrentTask = null;
-        }
-        mSeatListView.getAdapter().notifyItemRangeRemoved(0, mSeatTotalInfo.seatInfoList.size());
-        mSeatTotalInfo.seatInfoList.clear();
+        Tasks.cancelTask(mCurrentTask);
+        mCurrentTask = null;
+
+        mSeatTotalInfo.clearAll();
+        mSeatAdapter.notifyItemRangeRemoved(0, mSeatTotalInfo.seatListSize());
 
         mCurrentTask = appTask(AppRequests.LibrarySeats.request())
                 .result(result -> {
-                    if (mSwipeRefreshLayout != null)
-                        mSwipeRefreshLayout.setRefreshing(false);
+                    if (mSwipeRefreshLayout != null) mSwipeRefreshLayout.setRefreshing(false);
 
                     updateTimeView();
 
-                    mSeatTotalInfo.clearAndAddAll(result);
-
-                    mSeatListView.getAdapter().notifyItemRangeInserted(0, result.seatInfoList.size());
+                    mSeatTotalInfo.addAll(result);
+                    mSeatAdapter.notifyDataSetChanged();
 
                     mCurrentTask = null;
                 })
                 .error(e -> {
                     e.printStackTrace();
-                    if (mSwipeRefreshLayout != null)
-                        mSwipeRefreshLayout.setRefreshing(false);
+                    if (mSwipeRefreshLayout != null) mSwipeRefreshLayout.setRefreshing(false);
 
                     simpleErrorRespond(e);
 
@@ -255,7 +265,7 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatTotalInfo> {
 
         final PieProgressDrawable drawable = new PieProgressDrawable();
 
-        public SeatViewHolder(View convertView) {
+        SeatViewHolder(View convertView) {
             super(convertView);
 
             ripple.setOnClickListener(this);
@@ -279,7 +289,7 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatTotalInfo> {
             SeatInfo item = getItem();
             roomName.setText(item.roomName);
             int progress = Math.round(item.utilizationRate);
-            drawable.setText(item.vacancySeat.trim() + " / " + (Integer.parseInt(item.occupySeat.trim()) + Integer.parseInt(item.vacancySeat.trim())));
+            drawable.setText(String.format("%s / %d", item.vacancySeat.trim(), (Integer.parseInt(item.occupySeat.trim()) + Integer.parseInt(item.vacancySeat.trim()))));
             drawable.setLevel(progress);
         }
 

@@ -42,7 +42,7 @@ public class SeatDismissDialogFragment extends BaseDialogFragment {
     private SeatTotalInfo mSeatTotalInfo;
     // private Dialog mDialog;
 
-    public void setSeatInfo(SeatTotalInfo info) {
+    private void setSeatInfo(SeatTotalInfo info) {
         mSeatTotalInfo = info;
     }
 
@@ -87,7 +87,7 @@ public class SeatDismissDialogFragment extends BaseDialogFragment {
             recyclerView.setLayoutManager(manager);
 
             if (mSeatTotalInfo != null) {
-                mInfoAdapter = new ListRecyclerAdapter<>(mSeatTotalInfo.seatDismissInfoList, new ViewHolderFactory<SeatDismissInfo, ListRecyclerAdapter.ViewHolder<SeatDismissInfo>>() {
+                mInfoAdapter = new ListRecyclerAdapter<>(mSeatTotalInfo.seatDismissInfoList(), new ViewHolderFactory<SeatDismissInfo, ListRecyclerAdapter.ViewHolder<SeatDismissInfo>>() {
                     @Override
                     public ListRecyclerAdapter.ViewHolder<SeatDismissInfo> newViewHolder(ViewGroup viewGroup, int i) {
                         return new Holder(ListRecyclerUtil.makeViewHolderItemView(viewGroup, R.layout.list_layout_seat_dismiss_info));
@@ -95,7 +95,7 @@ public class SeatDismissDialogFragment extends BaseDialogFragment {
                 });
                 recyclerView.setAdapter(mInfoAdapter);
 
-                if (mSeatTotalInfo.seatDismissInfoList.isEmpty())
+                if (mSeatTotalInfo.isSeatDismissListEmpty())
                     showDismissInfoEmptyView();
             } else {
                 dismiss();
@@ -113,16 +113,18 @@ public class SeatDismissDialogFragment extends BaseDialogFragment {
         }
     }
 
+    /*
     public void notifyDataSetChanged() {
         if (mInfoAdapter != null) {
             mInfoAdapter.notifyDataSetChanged();
 
-            if (mSeatTotalInfo.seatDismissInfoList.isEmpty())
+            if (mSeatTotalInfo.isSeatDismissListEmpty())
                 showDismissInfoEmptyView();
             else if (mDismissEmptyView != null)
                 mDismissEmptyView.setVisibility(View.GONE);
         }
     }
+    */
 
     @NonNull
     @Override

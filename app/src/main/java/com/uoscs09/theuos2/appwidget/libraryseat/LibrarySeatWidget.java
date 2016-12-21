@@ -57,7 +57,7 @@ public class LibrarySeatWidget extends BaseAppWidgetProvider {
 
             case Intent.ACTION_BOOT_COMPLETED:
                 // 처음 부팅시 인터넷 접속이 되지 않으므로, 기존 파일에서 읽어온다.
-                List<SeatInfo> list = null;
+                List<SeatInfo> list;
                 try {
                     list = AppRequests.LibrarySeats.readFile().get();
                 } catch (Throwable throwable) {
