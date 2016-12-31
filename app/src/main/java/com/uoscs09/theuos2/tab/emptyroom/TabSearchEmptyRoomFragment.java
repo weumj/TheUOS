@@ -16,12 +16,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.base.ViewHolder;
 import com.uoscs09.theuos2.tab.buildings.ClassroomTimetableDialogFragment;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
+import com.uoscs09.theuos2.util.CollectionUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.ResourceUtil;
 
@@ -58,7 +58,6 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<List<EmptyRo
     RecyclerView recyclerView;
 
     private ListRecyclerAdapter<EmptyRoom, Holder> mAdapter;
-    @AsyncData
     private ArrayList<EmptyRoom> mClassRoomList;
     private String mTermString;
     private boolean isReverse = false;
@@ -101,6 +100,11 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<List<EmptyRo
         registerTabParentView(mTabParent);
 
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    protected void setPrevAsyncData(List<EmptyRoom> data) {
+        if (mClassRoomList.isEmpty()) CollectionUtil.addAll(mClassRoomList, data);
     }
 
     private void initSearchDialog() {

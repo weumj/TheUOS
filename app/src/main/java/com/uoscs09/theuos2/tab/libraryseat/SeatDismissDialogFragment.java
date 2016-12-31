@@ -38,7 +38,6 @@ public class SeatDismissDialogFragment extends BaseDialogFragment {
     }
 
     private View mDismissDialogView, mDismissEmptyView;
-    private RecyclerView.Adapter mInfoAdapter;
     private SeatTotalInfo mSeatTotalInfo;
     // private Dialog mDialog;
 
@@ -87,7 +86,7 @@ public class SeatDismissDialogFragment extends BaseDialogFragment {
             recyclerView.setLayoutManager(manager);
 
             if (mSeatTotalInfo != null) {
-                mInfoAdapter = new ListRecyclerAdapter<>(mSeatTotalInfo.seatDismissInfoList(), new ViewHolderFactory<SeatDismissInfo, ListRecyclerAdapter.ViewHolder<SeatDismissInfo>>() {
+                RecyclerView.Adapter mInfoAdapter = new ListRecyclerAdapter<>(mSeatTotalInfo.seatDismissInfoList(), new ViewHolderFactory<SeatDismissInfo, ListRecyclerAdapter.ViewHolder<SeatDismissInfo>>() {
                     @Override
                     public ListRecyclerAdapter.ViewHolder<SeatDismissInfo> newViewHolder(ViewGroup viewGroup, int i) {
                         return new Holder(ListRecyclerUtil.makeViewHolderItemView(viewGroup, R.layout.list_layout_seat_dismiss_info));
@@ -136,9 +135,9 @@ public class SeatDismissDialogFragment extends BaseDialogFragment {
         @BindView(R.id.tab_library_seat_info_time)
         public TextView time;
         @BindView(R.id.tab_library_seat_info_number)
-        public TextView count;
+        TextView count;
 
-        public Holder(View v) {
+        Holder(View v) {
             super(v);
         }
 

@@ -17,7 +17,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.ResourceUtil;
@@ -66,7 +65,6 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
 
     private RestItemAdapter mRestItemAdapter;
     // 리스트의 한 아이템은 식당 정보 (아침 점심 저녁) 를 나타냄
-    @AsyncData
     private SparseArray<RestItem> mRestTable;
 
     private int mCurrentSelection;
@@ -118,6 +116,11 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
 
     }
 
+    @Override
+    protected void setPrevAsyncData(SparseArray<RestItem> data) {
+        if(mRestTable == null || mRestTable.size() == 0)
+            mRestTable = data;
+    }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {

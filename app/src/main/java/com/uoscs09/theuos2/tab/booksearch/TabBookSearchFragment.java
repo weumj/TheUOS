@@ -28,11 +28,11 @@ import com.nhaarman.listviewanimations.appearance.AnimationAdapter;
 import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.UosMainActivity;
-import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.util.AnimUtil;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
+import com.uoscs09.theuos2.util.CollectionUtil;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import java.io.UnsupportedEncodingException;
@@ -61,7 +61,6 @@ public class TabBookSearchFragment extends AbsProgressFragment<List<BookItem>> i
     // private String mOptionString;
     private BookItemListAdapter mBookListAdapter;
     private AnimationAdapter mAnimAdapter;
-    @AsyncData
     private ArrayList<BookItem> mBookList;
 
     @BindView(R.id.tab_book_list_search)
@@ -107,6 +106,11 @@ public class TabBookSearchFragment extends AbsProgressFragment<List<BookItem>> i
         initToolbarAndTab(oiSelect, osSelect);
     }
 
+    @Override
+    protected void setPrevAsyncData(List<BookItem> data) {
+        if (mBookList.isEmpty()) CollectionUtil.addAll(mBookList, data);
+    }
+
     private void initToolbarAndTab(int oiSelect, int osSelect) {
         ViewGroup mTabParent = (ViewGroup) LayoutInflater.from(getActivity()).inflate(R.layout.view_tab_book_toolbar_menu, getToolbarParent(), false);
         oi = (Spinner) mTabParent.findViewById(R.id.tab_book_action_spinner_oi);
@@ -119,9 +123,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<List<BookItem>> i
                 AppUtil.showToast(getActivity(), R.string.tab_book_subject_opt_both);
                 return;
             }
-            if (mBookList.isEmpty()) {
-                //AppUtil.showToast(getActivity(), R.string.tab_book_subject_opt_both);
-            } else {
+            if (!mBookList.isEmpty()) {
                 mOptionIndex = oi.getSelectedItemPosition();
                 mOptionSort = os.getSelectedItemPosition();
 
@@ -130,7 +132,9 @@ public class TabBookSearchFragment extends AbsProgressFragment<List<BookItem>> i
                 mCurrentPage = 1;
                 mBookListAdapter.notifyDataSetChanged();
                 execute();
-            }
+            }/*else {
+                 AppUtil.showToast(getActivity(), R.string.tab_book_subject_opt_both);
+            }*/
         });
 
         registerTabParentView(mTabParent);
@@ -431,6 +435,25 @@ public class TabBookSearchFragment extends AbsProgressFragment<List<BookItem>> i
             // getActionBar().show();
             actionMode = null;
         }
+
+
+        private void copyItem(String text) {
+            ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("copy", text);
+            clipboard.setPrimaryClip(clip);
+        }
+
+        private void searchItem(String text) {
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_WEB_SEARCH);
+            intent.putExtra(SearchManager.QUERY, text);
+
+            try {
+                startActivity(intent);
+            } catch (ActivityNotFoundException e) {
+                AppUtil.showToast(getActivity(), R.string.error_no_related_activity_found);
+            }
+        }
     };
 
     @Override
@@ -439,23 +462,6 @@ public class TabBookSearchFragment extends AbsProgressFragment<List<BookItem>> i
             actionMode.finish();
     }
 
-    private void copyItem(String text) {
-        ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData clip = ClipData.newPlainText("copy", text);
-        clipboard.setPrimaryClip(clip);
-    }
-
-    private void searchItem(String text) {
-        Intent intent = new Intent();
-        intent.setAction(Intent.ACTION_WEB_SEARCH);
-        intent.putExtra(SearchManager.QUERY, text);
-
-        try {
-            startActivity(intent);
-        } catch (ActivityNotFoundException e) {
-            AppUtil.showToast(getActivity(), R.string.error_no_related_activity_found);
-        }
-    }
 
     @Override
     protected boolean putAsyncData(String key, List<BookItem> obj) {

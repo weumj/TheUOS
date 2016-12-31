@@ -25,7 +25,6 @@ import android.widget.ListView;
 import android.widget.Spinner;
 
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.appwidget.timetable.TimeTableWidget;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.util.AnimUtil;
@@ -60,7 +59,6 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
     @BindView(R.id.tab_timetable_empty)
     View emptyView;
 
-    @AsyncData
     private Timetable2 mTimeTable;
     private TimeTableAdapter mTimeTableAdapter;
 
@@ -89,6 +87,10 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
         registerTabParentView(mTabParent);
     }
 
+    @Override
+    protected void setPrevAsyncData(Timetable2 data) {
+        if (mTimeTable == null) mTimeTable = data;
+    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -297,7 +299,7 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
 
     private void setTimetable(Timetable2 timeTable) {
         if (timeTable == null) {
-            emptyView.setVisibility(View.VISIBLE);
+            if (emptyView != null) emptyView.setVisibility(View.VISIBLE);
             setSubtitleWhenVisible(null);
         } else {
             this.mTimeTable = timeTable;

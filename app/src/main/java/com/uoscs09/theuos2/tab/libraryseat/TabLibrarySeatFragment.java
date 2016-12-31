@@ -92,6 +92,11 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatTotalInfo> {
     }
 
     @Override
+    protected void setPrevAsyncData(SeatTotalInfo data) {
+       if(data.isSeatListEmpty()) mSeatTotalInfo = data;
+    }
+
+    @Override
     protected int layoutRes() {
         return R.layout.tab_libraryseat;
     }

@@ -68,17 +68,12 @@ public class TabWiseScoreFragment extends AbsProgressFragment<WiseScores> {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        final int viewCount = ResourceUtil.isScreenSizeSmall() ? 1 : 4;
-        GridLayoutManager manager = new GridLayoutManager(getActivity(), viewCount);
-        mRecyclerView.setLayoutManager(manager);
-        //DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getActivity(), manager.getOrientation());
-        //mRecyclerView.addItemDecoration(dividerItemDecoration);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            adapter = new ScoreRecyclerAdapter(null);
+            if (adapter == null)
+                adapter = new ScoreRecyclerAdapter(null);
         } else {
             WiseScores wiseScores = savedInstanceState.getParcelable(getScreenNameForTracker());
 
@@ -88,6 +83,24 @@ public class TabWiseScoreFragment extends AbsProgressFragment<WiseScores> {
 
             adapter = new ScoreRecyclerAdapter(wiseScores);
         }
+    }
+
+    @Override
+    protected void setPrevAsyncData(WiseScores data) {
+        if (data != null)
+            adapter = new ScoreRecyclerAdapter(data);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        final int viewCount = ResourceUtil.isScreenSizeSmall() ? 1 : 4;
+        GridLayoutManager manager = new GridLayoutManager(getActivity(), viewCount);
+        mRecyclerView.setLayoutManager(manager);
+        //DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getActivity(), manager.getOrientation());
+        //mRecyclerView.addItemDecoration(dividerItemDecoration);
+
         mRecyclerView.setAdapter(adapter);
     }
 

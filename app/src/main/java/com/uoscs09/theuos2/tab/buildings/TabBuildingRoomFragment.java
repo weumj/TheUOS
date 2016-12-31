@@ -54,6 +54,12 @@ public class TabBuildingRoomFragment extends AbsProgressFragment<BuildingRoom> {
     }
 
     @Override
+    protected void setPrevAsyncData(BuildingRoom data) {
+        mListView.setAdapter(buildingRoomAdapter = new BuildingRoomAdapter(getActivity(), data));
+        buildingRoomAdapter.notifyDataSetChanged();
+    }
+
+    @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 

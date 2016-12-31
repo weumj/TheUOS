@@ -1,6 +1,5 @@
 package com.uoscs09.theuos2.tab.timetable;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -20,7 +19,6 @@ import android.widget.GridLayout;
 import android.widget.Spinner;
 
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.appwidget.timetable.TimeTableWidget;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.util.AppRequests;
@@ -53,9 +51,6 @@ public class TabTimeTableFragment22 extends AbsProgressFragment<Timetable2> {
 
     TimetableLayout timetableLayout;
 
-    private Dialog mProgressDialog;
-
-    @AsyncData
     private Timetable2 mTimeTable;
 
     private final SubjectDetailDialogFragment mSubjectDetailDialog = new SubjectDetailDialogFragment();
@@ -100,6 +95,10 @@ public class TabTimeTableFragment22 extends AbsProgressFragment<Timetable2> {
 
     }
 
+    @Override
+    protected void setPrevAsyncData(Timetable2 data) {
+        if (mTimeTable == null) mTimeTable = data;
+    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -180,11 +179,6 @@ public class TabTimeTableFragment22 extends AbsProgressFragment<Timetable2> {
             default:
                 return false;
         }
-    }
-
-    private void dismissProgressDialog() {
-        mProgressDialog.dismiss();
-        mProgressDialog.setOnCancelListener(null);
     }
 
     @Override
@@ -334,9 +328,7 @@ public class TabTimeTableFragment22 extends AbsProgressFragment<Timetable2> {
                         execute();
                     }
                 })
-                .setNegativeButton(R.string.cancel, (dialog, which) -> {
-                    clearPassWd();
-                })
+                .setNegativeButton(R.string.cancel, (dialog, which) -> clearPassWd())
                 .create();
     }
 
@@ -362,9 +354,7 @@ public class TabTimeTableFragment22 extends AbsProgressFragment<Timetable2> {
     private AlertDialog deleteDialog() {
         return new AlertDialog.Builder(getActivity())
                 .setMessage(R.string.confirm_delete)
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                    deleteTimetable();
-                })
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> deleteTimetable())
                 .setNegativeButton(R.string.cancel, null)
                 .create();
     }

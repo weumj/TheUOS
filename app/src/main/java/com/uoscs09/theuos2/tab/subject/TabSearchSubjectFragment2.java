@@ -23,11 +23,11 @@ import android.widget.TextView;
 
 import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.customview.CustomHorizontalScrollView;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
+import com.uoscs09.theuos2.util.CollectionUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.ResourceUtil;
 
@@ -63,7 +63,6 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<List<Subject>
     private boolean isInverse = false;
     private boolean mIsScrollViewScrolling = false;
 
-    @AsyncData
     private ArrayList<Subject> mSubjectList;
 
     private SubjectAdapter2 mSubjectAdapter;
@@ -98,7 +97,19 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<List<Subject>
 
         //ViewGroup mToolBarParent = (ViewGroup) getActivity().findViewById(R.id.toolbar_parent);
 
+        if (savedInstanceState != null) {
+            mSubjectList = savedInstanceState.getParcelableArrayList("mSubjectList");
+            mSearchConditionString = savedInstanceState.getString("action");
+        } else {
+            mSubjectList = new ArrayList<>();
+        }
+
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    protected void setPrevAsyncData(List<Subject> data) {
+        if(mSubjectList.isEmpty()) CollectionUtil.addAll(mSubjectList, data);
     }
 
     @Override
@@ -119,13 +130,6 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<List<Subject>
             sendEmptyViewClickEvent();
             mSearchDialog.show();
         });
-
-        if (savedInstanceState != null) {
-            mSubjectList = savedInstanceState.getParcelableArrayList("mSubjectList");
-            mSearchConditionString = savedInstanceState.getString("action");
-        } else {
-            mSubjectList = new ArrayList<>();
-        }
 
         mSubjectAdapter = new SubjectAdapter2(context, mSubjectList);
         mAminAdapter = new AlphaInAnimationAdapter(mSubjectAdapter);

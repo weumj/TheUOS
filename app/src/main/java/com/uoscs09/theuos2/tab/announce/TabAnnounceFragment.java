@@ -20,11 +20,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.util.AnimUtil;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
+import com.uoscs09.theuos2.util.CollectionUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,9 +57,6 @@ public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>>
     View mEmptyView;
     //private NumberPicker mPageNumberPicker;
     private MenuItem mSearchMenu;
-
-
-    @AsyncData
     private ArrayList<AnnounceItem> mDataList;
 
     /**
@@ -106,6 +103,10 @@ public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>>
 
     }
 
+    @Override
+    protected void setPrevAsyncData(List<AnnounceItem> data) {
+        if (mDataList.isEmpty()) CollectionUtil.addAll(mDataList, data);
+    }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {

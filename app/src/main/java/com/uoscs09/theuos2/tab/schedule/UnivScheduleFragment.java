@@ -19,6 +19,7 @@ import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
+import com.uoscs09.theuos2.util.CollectionUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -59,21 +60,29 @@ public class UnivScheduleFragment extends AbsProgressFragment<List<UnivScheduleI
         outState.putString("subTitle", mSubTitle);
     }
 
-
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         if (savedInstanceState != null) {
             mList.clear();
 
             ArrayList<UnivScheduleItem> list = savedInstanceState.getParcelableArrayList("list");
-            if (list != null)
-                mList.addAll(list);
+            if (list != null) mList.addAll(list);
 
             mSubTitle = savedInstanceState.getString("subTitle");
             setSubtitleWhenVisible(mSubTitle);
         }
+    }
+
+    @Override
+    protected void setPrevAsyncData(List<UnivScheduleItem> data) {
+        if(mList.isEmpty()) CollectionUtil.addAll(mList, data);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         mAdapter = new UnivScheduleAdapter(getActivity(), mList);
 

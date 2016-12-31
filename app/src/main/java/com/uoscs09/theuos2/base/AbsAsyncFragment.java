@@ -7,12 +7,10 @@ import android.util.Log;
 
 import com.google.firebase.crash.FirebaseCrash;
 import com.uoscs09.theuos2.R;
-import com.uoscs09.theuos2.annotation.AsyncData;
 import com.uoscs09.theuos2.util.AppUtil;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -35,8 +33,18 @@ public abstract class AbsAsyncFragment<T> extends BaseTabFragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
+
         Object data = getAsyncData(getClass().getName());
         if (data != null) {
+            try {
+                //noinspection unchecked
+                T t = (T) data;
+                setPrevAsyncData(t);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+            /*
             Field[] fs = getClass().getDeclaredFields();
             for (Field f : fs) {
                 if (f.getAnnotation(AsyncData.class) != null) {
@@ -50,6 +58,7 @@ public abstract class AbsAsyncFragment<T> extends BaseTabFragment {
                     break; // 현재 하나의 변수만 취급함
                 }
             }
+            */
         }
 
     }
@@ -176,10 +185,11 @@ public abstract class AbsAsyncFragment<T> extends BaseTabFragment {
             return delayedTask;
         }
 
-        private void setupRef(){
-            if(r == null) result((result) -> {});
-            if(e == null) error(null);
-            if(last == null) atLast(null);
+        private void setupRef() {
+            if (r == null) result((result) -> {
+            });
+            if (e == null) error(null);
+            if (last == null) atLast(null);
         }
 
         private void cleanUpRef() {
@@ -229,5 +239,8 @@ public abstract class AbsAsyncFragment<T> extends BaseTabFragment {
     protected static Object getAsyncData(String key) {
         return sAsyncDataStoreMap.remove(key);
     }
+
+    protected abstract void setPrevAsyncData(T data);
+
 
 }
