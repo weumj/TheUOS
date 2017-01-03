@@ -180,6 +180,10 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
         if (mCurrentTab == null)
             mCurrentTab = mTabList.get(mCurrentSelection);
 
+        if(mSwipeRefreshLayout.isRefreshing()){
+            return;
+        }
+
         mCurrentTab.setSelected(false);
 
         mCurrentSelection = newTabSelection;
@@ -202,15 +206,10 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
                     mRestTable = result;
                     mRestItemAdapter.mItems = mRestTable;
                     //mRestItemAdapter.notifyItemRangeInserted(0, 5);
-
-                    performTabClick(mCurrentSelection);
-
-                    mSwipeRefreshLayout.setRefreshing(false);
+                    mRecyclerView.post(() -> performTabClick(mCurrentSelection));
                 })
-                .error(t -> {
-                    simpleErrorRespond(t);
-                    mSwipeRefreshLayout.setRefreshing(false);
-                })
+                .error(t -> super.simpleErrorRespond(t))
+                .atLast(()-> mSwipeRefreshLayout.setRefreshing(false))
                 .build()
                 .execute();
     }

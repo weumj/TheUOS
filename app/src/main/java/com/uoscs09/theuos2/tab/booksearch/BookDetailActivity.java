@@ -10,6 +10,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.Toolbar;
 import android.text.Spannable;
 import android.text.TextUtils;
@@ -50,6 +51,9 @@ public class BookDetailActivity extends BaseActivity {
     Toolbar toolbar;
     @BindView(R.id.title)
     TextView title;
+
+    @BindView(R.id.scrollView)
+    NestedScrollView scrollView;
 
     @BindView(R.id.book_detail_info_layout)
     LinearLayout infoLayout;
@@ -101,6 +105,8 @@ public class BookDetailActivity extends BaseActivity {
         toolbar.setNavigationIcon(ResourceUtil.getAttrValue(this, R.attr.menu_theme_ic_action_navigation_arrow_back));
         toolbar.setNavigationOnClickListener(v -> finish());
 
+        scrollView.setNestedScrollingEnabled(true);
+
         load();
     }
 
@@ -132,7 +138,7 @@ public class BookDetailActivity extends BaseActivity {
                     if (isFinishing())
                         return;
 
-                    findViewById(R.id.scrollView).setVisibility(View.INVISIBLE);
+                    scrollView.setVisibility(View.INVISIBLE);
                     errorTextView.setVisibility(View.VISIBLE);
                     errorTextView.setText(R.string.progress_fail);
                 })
