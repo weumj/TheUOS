@@ -5,6 +5,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 
@@ -50,7 +51,11 @@ public abstract class AbsAnimDialogFragment extends BaseDialogFragment {
     public void showFromLocation(FragmentManager fm, String tag, int x, int y) {
         this.showingX = x;
         this.showingY = y;
-        this.show(fm, tag);
+
+        //this.show(fm, tag);
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.add(this, tag);
+        ft.commitAllowingStateLoss();
     }
 
     protected abstract View createView();
