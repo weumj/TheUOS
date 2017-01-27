@@ -306,7 +306,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>>
             AppUtil.showToast(getActivity(), R.string.tab_announce_invalid_category, true);
             return;
         }
-        
+
         appTask(AppRequests.Announces.normalRequest(getCurrentCategoryIndex(), newPageIndex))
                 .result(result -> {
                     mListFooterView.setClickable(true);

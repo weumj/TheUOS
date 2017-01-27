@@ -233,6 +233,9 @@ public class TabBookSearchFragment extends AbsProgressFragment<List<BookItem>> i
 
     @OnClick(R.id.tab_book_search_empty_info1)
     void expandSearchView() {
+        if(searchMenu == null){
+            return;
+        }
         sendClickEvent("search menu from empty view");
         searchMenu.expandActionView();
     }
