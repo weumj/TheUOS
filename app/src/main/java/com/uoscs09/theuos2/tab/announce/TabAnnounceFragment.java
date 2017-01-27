@@ -285,6 +285,11 @@ public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>>
     }
 
     private void executeSearchJob(boolean moreRequest, int newPageIndex, String query) {
+        if(isInvalidCategory()){
+            AppUtil.showToast(getActivity(), R.string.tab_announce_invalid_category, true);
+            return;
+        }
+
         appTask(AppRequests.Announces.searchRequest(getCurrentCategoryIndex(), newPageIndex, query))
                 .result(result -> {
                     mListFooterView.setClickable(true);
@@ -297,6 +302,11 @@ public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>>
     }
 
     private void executeJob(boolean moreRequest, int newPageIndex) {
+        if(isInvalidCategory()){
+            AppUtil.showToast(getActivity(), R.string.tab_announce_invalid_category, true);
+            return;
+        }
+        
         appTask(AppRequests.Announces.normalRequest(getCurrentCategoryIndex(), newPageIndex))
                 .result(result -> {
                     mListFooterView.setClickable(true);
@@ -307,6 +317,12 @@ public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>>
                 .build()
                 .execute();
     }
+
+    private boolean isInvalidCategory(){
+        int currentIndex = getCurrentCategoryIndex();
+        return currentIndex < 1 || currentIndex > 3;
+    }
+
 
     void onError(Throwable e) {
         simpleErrorRespond(e);

@@ -285,12 +285,10 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
                     if (wisePasswdView.length() < 1 || TextUtils.isEmpty(id)) {
                         AppUtil.showToast(getActivity(), R.string.tab_timetable_wise_login_warning_null, true);
                     } else {
-                        execute(
-                                Semester.values()[wiseTermSpinner.getSelectedItemPosition()],
+                        execute(Semester.values()[wiseTermSpinner.getSelectedItemPosition()],
                                 wiseYearSpinner.getSelectedItem().toString(),
                                 id,
-                                wisePasswdView.getText().toString().trim()
-                        );
+                                wisePasswdView.getText().toString().trim());
                     }
                 })
                 .setNegativeButton(R.string.cancel, null)
