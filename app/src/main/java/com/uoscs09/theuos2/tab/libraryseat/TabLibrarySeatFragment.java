@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 import jp.wasabeef.recyclerview.animators.SlideInDownAnimator;
 import mj.android.utils.recyclerview.ListRecyclerAdapter;
 import mj.android.utils.recyclerview.ListRecyclerUtil;
@@ -63,6 +64,8 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatTotalInfo> {
     SwipeRefreshLayout mSwipeRefreshLayout;
     @BindView(R.id.tab_library_list_seat)
     RecyclerView mSeatListView;
+    @BindView(R.id.tab_library_seat_empty_view)
+    View mEmptyView;
     private ListRecyclerAdapter<SeatInfo, SeatViewHolder> mSeatAdapter;
 
     private SeatTotalInfo mSeatTotalInfo;
@@ -158,6 +161,10 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatTotalInfo> {
         }
     }
 
+    @OnClick(R.id.tab_library_seat_empty_view)
+    void emptyClick(){
+        execute();
+    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -206,6 +213,7 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatTotalInfo> {
     }
 
     private void execute() {
+        mEmptyView.setVisibility(View.INVISIBLE);
         Tasks.cancelTask(mCurrentTask);
         mCurrentTask = null;
 
@@ -218,8 +226,17 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatTotalInfo> {
 
                     mSeatTotalInfo.addAll(result);
                     mSeatAdapter.notifyDataSetChanged();
+
+                    if(mSeatTotalInfo.isSeatListEmpty()){
+                        mEmptyView.setVisibility(View.VISIBLE);
+                    }
                 })
-                .error(e -> super.simpleErrorRespond(e))
+                .error(e -> {
+                    super.simpleErrorRespond(e);
+                    if(mSeatTotalInfo.isSeatListEmpty()){
+                        mEmptyView.setVisibility(View.VISIBLE);
+                    }
+                })
                 .atLast(() -> {
                     if (mSwipeRefreshLayout != null) mSwipeRefreshLayout.setRefreshing(false);
                     mCurrentTask = null;

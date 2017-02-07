@@ -113,6 +113,7 @@
     <string name="tab_library_seat_dismiss_info_not_exist_in_1hr">1시간 내에 해지될 좌석이 없습니다.</string>
     <string name="tab_library_seat_dismiss_info_time_within">%1$d 분이내</string>
     <string name="tab_library_seat_sub_seat_title">좌석 정보</string>
+    <string name="tab_library_seat_empty_view_title"> 버튼을 누르거나 아래로 드래그 하여\n열람실 정보를 불러오세요.</string>
 
     <string name="tab_wise_score_login">Mobile Wise 로그인</string>
     <string name="tab_wise_score_empty_hint1">Wise에서 Mobile Wise를 등록할 수 있습니다.</string>

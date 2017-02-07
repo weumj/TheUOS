@@ -9,7 +9,7 @@ import com.uoscs09.theuos2.tab.booksearch.BookDetailItem;
 import com.uoscs09.theuos2.tab.booksearch.BookDetailParser;
 import com.uoscs09.theuos2.tab.booksearch.BookItem;
 import com.uoscs09.theuos2.tab.booksearch.BookParser;
-import com.uoscs09.theuos2.tab.libraryseat.LibararySeatParser;
+import com.uoscs09.theuos2.tab.libraryseat.LibrarySeatParser;
 import com.uoscs09.theuos2.tab.libraryseat.SeatTotalInfo;
 import com.uoscs09.theuos2.tab.restaurant.RestItem;
 import com.uoscs09.theuos2.tab.restaurant.RestWeekItem;
@@ -45,7 +45,7 @@ class HtmlConverter implements Converter<ResponseBody, Object> {
             if (clazz.equals(BookItem.class)) {
                 parser = new BookParser();
             } else if (clazz.equals(SeatTotalInfo.class)) {
-                parser = new LibararySeatParser();
+                parser = new LibrarySeatParser();
                 CHARSET_MAP.put(className, "euc-kr");
             } else if (clazz.equals(RestItem.class)) {
                 parser = new RestaurantMenuParser();

@@ -1,15 +1,9 @@
 package com.uoscs09.theuos2.tab.schedule;
 
-import android.Manifest;
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresPermission;
-import android.support.v7.app.AlertDialog;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -41,7 +35,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<List<UnivScheduleI
 
     @BindView(R.id.list)
     ExpandableStickyListHeadersListView mListView;
-    private AlertDialog mItemSelectDialog;
+    //private AlertDialog mItemSelectDialog;
     private Dialog mProgressDialog;
     private UnivScheduleAdapter mAdapter;
 
@@ -87,14 +81,14 @@ public class UnivScheduleFragment extends AbsProgressFragment<List<UnivScheduleI
         mAdapter = new UnivScheduleAdapter(getActivity(), mList);
 
         mListView.setNestedScrollingEnabled(true);
-
+/*
         mListView.setOnItemClickListener((parent, view1, position, id) -> {
             mSelectedItem = mList.get(position);
 
             mItemSelectDialog.setMessage(String.format(getString(R.string.tab_univ_schedule_add_schedule_to_calender), mSelectedItem.content));
             mItemSelectDialog.show();
         });
-
+*/
         mListView.setAdapter(mAdapter);
         mListView.setOnHeaderClickListener((l, header, itemPosition, headerId, currentlySticky) -> {
             boolean collapsed = mListView.isHeaderCollapsed(headerId);
@@ -114,6 +108,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<List<UnivScheduleI
 
         registerProgressView(view.findViewById(R.id.progress_layout));
 
+        /*
         mItemSelectDialog = new AlertDialog.Builder(getActivity())
                 .setTitle(R.string.tab_univ_schedule_add_to_calendar)
                 .setPositiveButton(android.R.string.ok, (dialog, which) -> {
@@ -124,6 +119,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<List<UnivScheduleI
                 .setNegativeButton(android.R.string.no, null)
                 .setMessage("")
                 .create();
+                */
 
         mProgressDialog = AppUtil.getProgressDialog(getActivity(), false, getString(R.string.progress_ongoing), null);
 
@@ -131,7 +127,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<List<UnivScheduleI
         if (mList.isEmpty())
             execute(false);
     }
-
+/*
     @RequiresPermission(Manifest.permission.GET_ACCOUNTS)
     private Account[] deviceAccounts() {
         //noinspection MissingPermission
@@ -224,6 +220,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<List<UnivScheduleI
                 })
                 .execute();
     }
+    */
 
     private void execute(boolean force) {
         appTask(AppRequests.UnivSchedules.request(force))

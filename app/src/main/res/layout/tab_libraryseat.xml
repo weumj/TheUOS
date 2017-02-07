@@ -20,9 +20,31 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
     </android.support.v4.widget.SwipeRefreshLayout>
 
+    <com.balysv.materialripple.MaterialRippleLayout
+        android:id="@+id/tab_library_seat_empty_view_ripple"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:padding="4dp"
+        app:mrl_rippleColor="?color_primary_text"
+        app:mrl_rippleDelayClick="false">
+
+        <TextView
+            android:id="@+id/tab_library_seat_empty_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:drawableLeft="?theme_ic_action_navigation_refresh"
+            android:gravity="center_vertical"
+            android:text="@string/tab_library_seat_empty_view_title"
+            android:visibility="invisible" />
+    </com.balysv.materialripple.MaterialRippleLayout>
+
     <include
         layout="@layout/view_loading_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true" />
+
+
 </RelativeLayout>

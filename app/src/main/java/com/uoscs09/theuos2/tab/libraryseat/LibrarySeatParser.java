@@ -11,13 +11,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class LibararySeatParser extends JerichoParser<SeatTotalInfo> {
+public class LibrarySeatParser extends JerichoParser<SeatTotalInfo> {
 
     @Override
     protected SeatTotalInfo parseHtmlBody(Source src) throws IOException {
         List<Element> tableList = src.getAllElements(HTMLElementName.TABLE);
 
         // 페이지 에러
+        //TODO 좌석 해지 예상 시간표 표시
         if (tableList.size() < 4) {
             throw new IOException("Library Web Page Error");
         }
