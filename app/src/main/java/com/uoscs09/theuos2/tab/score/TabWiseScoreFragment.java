@@ -68,8 +68,14 @@ public class TabWiseScoreFragment extends AbsProgressFragment<WiseScores> {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void setPrevAsyncData(WiseScores data) {
+        if (data != null)
+            adapter = new ScoreRecyclerAdapter(data);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         if (savedInstanceState == null) {
             if (adapter == null)
@@ -83,17 +89,7 @@ public class TabWiseScoreFragment extends AbsProgressFragment<WiseScores> {
 
             adapter = new ScoreRecyclerAdapter(wiseScores);
         }
-    }
 
-    @Override
-    protected void setPrevAsyncData(WiseScores data) {
-        if (data != null)
-            adapter = new ScoreRecyclerAdapter(data);
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
 
         final int viewCount = ResourceUtil.isScreenSizeSmall() ? 1 : 4;
         GridLayoutManager manager = new GridLayoutManager(getActivity(), viewCount);
