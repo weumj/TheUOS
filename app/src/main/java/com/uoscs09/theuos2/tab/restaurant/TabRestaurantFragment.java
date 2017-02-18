@@ -28,6 +28,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import jp.wasabeef.recyclerview.adapters.SlideInBottomAnimationAdapter;
 import jp.wasabeef.recyclerview.animators.SlideInDownAnimator;
+import mj.android.utils.task.DelayedTask;
 
 public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestItem>> {
 
@@ -75,6 +76,9 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
     private Tab mCurrentTab;
 
 
+    private DelayedTask<SparseArray<RestItem>> task;
+
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putInt(BUTTON, mCurrentSelection);
@@ -118,7 +122,7 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
 
     @Override
     protected void setPrevAsyncData(SparseArray<RestItem> data) {
-        if(mRestTable == null || mRestTable.size() == 0)
+        if (mRestTable == null || mRestTable.size() == 0)
             mRestTable = data;
     }
 
@@ -151,10 +155,12 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
 
         registerProgressView(view.findViewById(R.id.progress_layout));
 
-        if (mRestTable.size() == 0)
+        if (mRestTable.size() == 0) {
             execute(false);
-        else
-            performTabClick(mCurrentSelection);
+        } else {
+            // 버그로 인해 레이아웃이 모두 끝나고 실행
+            getActivity().runOnUiThread(() -> performTabClick(mCurrentSelection));
+        }
     }
 
     @Override
@@ -177,12 +183,12 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
     }
 
     private void performTabClick(int newTabSelection) {
-        if (mCurrentTab == null)
-            mCurrentTab = mTabList.get(mCurrentSelection);
-
-        if(mSwipeRefreshLayout.isRefreshing()){
+        if (mSwipeRefreshLayout.isRefreshing()) {
             return;
         }
+
+        if (mCurrentTab == null)
+            mCurrentTab = mTabList.get(mCurrentSelection);
 
         mCurrentTab.setSelected(false);
 
@@ -197,11 +203,20 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
 
 
     private void execute(boolean force) {
+        if(task != null) {
+            if (force) {
+                task.cancel();
+                task = null;
+            } else {
+                return;
+            }
+        }
+
         mRestTable.clear();
         mRestItemAdapter.mItems.clear();
         mRestItemAdapter.notifyItemRangeRemoved(0, 5);
 
-        appTask(AppRequests.Restaurants.request(force))
+        task = appTask(AppRequests.Restaurants.request(force))
                 .result(result -> {
                     mRestTable = result;
                     mRestItemAdapter.mItems = mRestTable;
@@ -209,9 +224,12 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
                     mRecyclerView.post(() -> performTabClick(mCurrentSelection));
                 })
                 .error(t -> super.simpleErrorRespond(t))
-                .atLast(()-> mSwipeRefreshLayout.setRefreshing(false))
-                .build()
-                .execute();
+                .atLast(() -> {
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    task = null;
+                })
+                .build();
+        task.execute();
     }
 
 
