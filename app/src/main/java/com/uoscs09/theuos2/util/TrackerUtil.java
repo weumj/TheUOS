@@ -80,7 +80,7 @@ public class TrackerUtil {
         bundle.putString(SCREEN_NAME, screen);
         bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, label);
         bundle.putString(APP_VERSION, appVersion);
-        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+        firebaseAnalytics.logEvent("click", bundle);
     }
 
     public void sendClickEvent(String screen, String label, long value) {
@@ -92,7 +92,7 @@ public class TrackerUtil {
         bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, label);
         bundle.putLong(FirebaseAnalytics.Param.VALUE, value);
         bundle.putString(APP_VERSION, appVersion);
-        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+        firebaseAnalytics.logEvent("click", bundle);
     }
 
 }
