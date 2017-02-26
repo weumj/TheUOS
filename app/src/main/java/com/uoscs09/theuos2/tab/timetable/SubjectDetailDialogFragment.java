@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.View;
@@ -64,13 +65,16 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
     }
 
     public static void showDialog(Fragment fragment, Timetable2.SubjectInfo subject, Timetable2 timetable, @Nullable ColorSelector.OnColorSelectedListener colorSelectedListener) {
-        SubjectDetailDialogFragment dialog = new SubjectDetailDialogFragment();
-        dialog.setSubject(subject);
-        dialog.setTimeTable(timetable);
-        dialog.setColorSelectedListener(colorSelectedListener);
-        dialog.setTargetFragment(fragment, 101);
+        SubjectDetailDialogFragment dialogFragment = new SubjectDetailDialogFragment();
+        dialogFragment.setSubject(subject);
+        dialogFragment.setTimeTable(timetable);
+        dialogFragment.setColorSelectedListener(colorSelectedListener);
+        dialogFragment.setTargetFragment(fragment, 101);
 
-        dialog.show(fragment.getFragmentManager(), "subject");
+        //dialog.show(fragment.getFragmentManager(), "subject");
+        FragmentTransaction ft = fragment.getFragmentManager().beginTransaction();
+        ft.add(dialogFragment, "subject");
+        ft.commitAllowingStateLoss();
     }
 
     public void setTimeTable(Timetable2 timeTable) {
