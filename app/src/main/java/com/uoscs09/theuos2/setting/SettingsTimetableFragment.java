@@ -16,6 +16,7 @@ public class SettingsTimetableFragment extends PreferenceFragmentCompat implemen
     private static final String TAG = "SettingsTimetableFragment";
 
     private TrackerUtil trackerUtil;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         trackerUtil = new TrackerUtil(getActivity());
@@ -99,6 +100,10 @@ public class SettingsTimetableFragment extends PreferenceFragmentCompat implemen
             case PrefUtil.KEY_TIMETABLE_LIMIT:
                 Preference connectionPref = findPreference(key);
                 boolean limit = sharedPreferences.getBoolean(key, false);
+
+                if (trackerUtil == null) {
+                    trackerUtil = new TrackerUtil(getActivity());
+                }
 
                 trackerUtil.sendEvent(TAG, key, "" + limit);
 
