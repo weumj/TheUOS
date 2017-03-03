@@ -35,8 +35,7 @@ import jp.wasabeef.recyclerview.animators.SlideInDownAnimator;
 import mj.android.utils.recyclerview.ListRecyclerAdapter;
 import mj.android.utils.recyclerview.ListRecyclerUtil;
 import mj.android.utils.recyclerview.ViewHolderFactory;
-import mj.android.utils.task.DelayedTask;
-import mj.android.utils.task.Tasks;
+import rx.Subscription;
 
 /**
  * 도서관 좌석 정보 현황을 보여주는 페이지
@@ -77,7 +76,7 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatTotalInfo> {
      * {@code onSaveInstanceState()} 에서 "COMMIT_TIME"라는 이름으로 저장된다.
      */
     private String mSearchTime = "";
-    private DelayedTask<SeatTotalInfo> mCurrentTask = null;
+    private Subscription mSubscription = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -96,7 +95,7 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatTotalInfo> {
 
     @Override
     protected void setPrevAsyncData(SeatTotalInfo data) {
-       if(data.isSeatListEmpty()) mSeatTotalInfo = data;
+        if (data.isSeatListEmpty()) mSeatTotalInfo = data;
     }
 
     @Override
@@ -162,7 +161,7 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatTotalInfo> {
     }
 
     @OnClick(R.id.tab_library_seat_empty_view)
-    void emptyClick(){
+    void emptyClick() {
         execute();
     }
 
@@ -214,35 +213,39 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatTotalInfo> {
 
     private void execute() {
         mEmptyView.setVisibility(View.INVISIBLE);
-        Tasks.cancelTask(mCurrentTask);
-        mCurrentTask = null;
+        if (mSubscription != null)
+            mSubscription.unsubscribe();
+        mSubscription = null;
 
         mSeatTotalInfo.clearAll();
         mSeatAdapter.notifyItemRangeRemoved(0, mSeatTotalInfo.seatListSize());
 
-        mCurrentTask = appTask(AppRequests.LibrarySeats.request())
-                .result(result -> {
-                    updateTimeView();
+        mSubscription = appTask(AppRequests.LibrarySeats.request())
+                .subscribe(result -> {
+                            updateTimeView();
 
-                    mSeatTotalInfo.addAll(result);
-                    mSeatAdapter.notifyDataSetChanged();
+                            mSeatTotalInfo.addAll(result);
+                            mSeatAdapter.notifyDataSetChanged();
 
-                    if(mSeatTotalInfo.isSeatListEmpty()){
-                        mEmptyView.setVisibility(View.VISIBLE);
-                    }
-                })
-                .error(e -> {
-                    super.simpleErrorRespond(e);
-                    if(mSeatTotalInfo.isSeatListEmpty()){
-                        mEmptyView.setVisibility(View.VISIBLE);
-                    }
-                })
-                .atLast(() -> {
-                    if (mSwipeRefreshLayout != null) mSwipeRefreshLayout.setRefreshing(false);
-                    mCurrentTask = null;
-                })
-                .build();
-        mCurrentTask.execute();
+                            if (mSeatTotalInfo.isSeatListEmpty()) {
+                                mEmptyView.setVisibility(View.VISIBLE);
+                            }
+                        },
+                        e -> {
+                            super.simpleErrorRespond(e);
+                            if (mSeatTotalInfo.isSeatListEmpty()) {
+                                mEmptyView.setVisibility(View.VISIBLE);
+                            }
+
+                            if (mSwipeRefreshLayout != null)
+                                mSwipeRefreshLayout.setRefreshing(false);
+                            mSubscription = null;
+                        },
+                        () -> {
+                            if (mSwipeRefreshLayout != null)
+                                mSwipeRefreshLayout.setRefreshing(false);
+                            mSubscription = null;
+                        });
     }
 
 

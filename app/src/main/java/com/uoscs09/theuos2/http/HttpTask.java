@@ -24,8 +24,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import mj.android.utils.task.Func;
-import mj.android.utils.task.Task;
-import mj.android.utils.task.Tasks;
+import rx.Observable;
 
 /**
  * Http 요청을 처리하는 Request 클래스
@@ -192,12 +191,12 @@ public final class HttpTask {
         Map<? extends CharSequence, ? extends CharSequence> params = null;
         int method = HTTP_METHOD_GET;
 
-        public Task<String> buildAsString() {
-            return Tasks.newTask(new StringRequest(url, encodeParams(), resultEncoding, method)::get);
+        public Observable<String> buildAsString() {
+            return Observable.fromCallable(new StringRequest(url, encodeParams(), resultEncoding, method)::get);
         }
 
-        public Task<HttpURLConnection> buildAsHttpURLConnection() {
-            return Tasks.newTask(new ConnectionRequest(url, encodeParams(), resultEncoding, method)::get);
+        public Observable<HttpURLConnection> buildAsHttpURLConnection() {
+            return Observable.fromCallable(new ConnectionRequest(url, encodeParams(), resultEncoding, method)::get);
         }
 
         public Builder(String url) {

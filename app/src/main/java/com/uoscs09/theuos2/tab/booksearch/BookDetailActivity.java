@@ -37,6 +37,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import rx.Observable;
 
 public class BookDetailActivity extends BaseActivity {
     private static final int COLOR_AVAILABLE = Color.rgb(114, 213, 114) //R.color.material_green_200
@@ -123,8 +124,8 @@ public class BookDetailActivity extends BaseActivity {
         progressWheel.setVisibility(View.VISIBLE);
         progressWheel.spin();
 
-        AppRequests.Books.bookDetailItem(bookItem).delayed()
-                .result(result -> {
+        AppRequests.Books.bookDetailItem(bookItem).subscribe(
+                result -> {
                     //todo refactoring
                     if (isFinishing())
                         return;
@@ -132,24 +133,26 @@ public class BookDetailActivity extends BaseActivity {
 
                     bookDetailItem = result;
                     drawLayout();
-                })
-                .error(throwable -> {
+                },
+                throwable -> {
                     throwable.printStackTrace();
-                    if (isFinishing())
-                        return;
-
-                    scrollView.setVisibility(View.INVISIBLE);
-                    errorTextView.setVisibility(View.VISIBLE);
-                    errorTextView.setText(R.string.progress_fail);
-                })
-                .atLast(() -> {
                     if (isFinishing())
                         return;
 
                     progressWheel.stopSpinning();
                     progressWheel.setVisibility(View.GONE);
-                })
-                .execute();
+
+                    scrollView.setVisibility(View.INVISIBLE);
+                    errorTextView.setVisibility(View.VISIBLE);
+                    errorTextView.setText(R.string.progress_fail);
+                },
+                () -> {
+                    if (isFinishing())
+                        return;
+
+                    progressWheel.stopSpinning();
+                    progressWheel.setVisibility(View.GONE);
+                });
     }
 
     @OnClick(R.id.error)
@@ -239,47 +242,47 @@ public class BookDetailActivity extends BaseActivity {
 
         relatedInfoLayoutTitle.setText(bookDetailItem.relationInfo.title);
 
-        for (BookDetailItem.SubRelationInfo subRelationInfo : subRelationInfoList) {
-            if (subRelationInfo instanceof BookDetailItem.LocationInfo) {
-                BookDetailItem.LocationInfo locationInfo = (BookDetailItem.LocationInfo) subRelationInfo;
+        Observable.from(subRelationInfoList)
+                .filter(subRelationInfo -> subRelationInfo instanceof BookDetailItem.LocationInfo)
+                .forEach(subRelationInfo -> {
+                    BookDetailItem.LocationInfo locationInfo = (BookDetailItem.LocationInfo) subRelationInfo;
 
-                View v = inflater.inflate(R.layout.view_book_detail_related_sub_location, relatedInfoLayout, false);
+                    View v = inflater.inflate(R.layout.view_book_detail_related_sub_location, relatedInfoLayout, false);
 
-                TextView textView1 = ButterKnife.findById(v, android.R.id.text1);
-                textView1.setText(locationInfo.title);
+                    TextView textView1 = ButterKnife.findById(v, android.R.id.text1);
+                    textView1.setText(locationInfo.title);
 
 
-                StringBuilder sb = new StringBuilder();
-                for (String s : locationInfo.infoList) {
-                    sb.append(s).append('\n');
-                }
-                TextView textView2 = ButterKnife.findById(v, android.R.id.text2);
-                textView2.setText(sb.toString());
+                    StringBuilder sb = new StringBuilder();
+                    for (String s : locationInfo.infoList) {
+                        sb.append(s).append('\n');
+                    }
+                    TextView textView2 = ButterKnife.findById(v, android.R.id.text2);
+                    textView2.setText(sb.toString());
 
-                TextView stateText = ButterKnife.findById(v, R.id.state);
+                    TextView stateText = ButterKnife.findById(v, R.id.state);
 
-                String stateString = getString(locationInfo.bookStateStringRes());
-                Spannable styledText = new Spannable.Factory().newSpannable(stateString);
+                    String stateString = getString(locationInfo.bookStateStringRes());
+                    Spannable styledText = new Spannable.Factory().newSpannable(stateString);
 
-                styledText.setSpan(new ForegroundColorSpan(locationInfo.isBookAvailable() ? COLOR_AVAILABLE : COLOR_NOT_AVAILABLE),
-                        0, styledText.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                    styledText.setSpan(new ForegroundColorSpan(locationInfo.isBookAvailable() ? COLOR_AVAILABLE : COLOR_NOT_AVAILABLE),
+                            0, styledText.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
 
-                stateText.setText(styledText);
+                    stateText.setText(styledText);
 
-                if (!TextUtils.isEmpty(locationInfo.link)) {
-                    View reservation = ButterKnife.findById(v, R.id.button);
-                    reservation.setVisibility(View.VISIBLE);
-                    reservation.setOnClickListener(v1 -> {
-                        sendClickEvent("reservation");
+                    if (!TextUtils.isEmpty(locationInfo.link)) {
+                        View reservation = ButterKnife.findById(v, R.id.button);
+                        reservation.setVisibility(View.VISIBLE);
+                        reservation.setOnClickListener(v1 -> {
+                            sendClickEvent("reservation");
 
-                        Intent intent = AppUtil.getWebPageIntent(locationInfo.link);
-                        AnimUtil.startActivityWithScaleUp(BookDetailActivity.this, intent, v1);
-                    });
-                }
+                            Intent intent = AppUtil.getWebPageIntent(locationInfo.link);
+                            AnimUtil.startActivityWithScaleUp(BookDetailActivity.this, intent, v1);
+                        });
+                    }
 
-                relatedInfoLayout.addView(v);
-            }
-        }
+                    relatedInfoLayout.addView(v);
+                });
     }
 
 

@@ -34,11 +34,15 @@ public class LibrarySeatWidget extends BaseAppWidgetProvider {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
         setWidgetDefaultLayout(context, appWidgetManager, appWidgetIds, R.string.progress_while_loading);
         final PendingResult pendingResult = goAsync();
-        AppRequests.LibrarySeats.widgetDataRequest().delayed()
-                .result(result -> onBackgroundTaskResult(context, appWidgetManager, appWidgetIds, result))
-                .error(error -> exceptionOccurred(context, appWidgetManager, appWidgetIds, error))
-                .atLast(pendingResult::finish)
-                .execute();
+        AppRequests.LibrarySeats.widgetDataRequest()
+                .subscribe(
+                        result -> onBackgroundTaskResult(context, appWidgetManager, appWidgetIds, result),
+                        error -> {
+                            exceptionOccurred(context, appWidgetManager, appWidgetIds, error);
+                            pendingResult.finish();
+                        },
+                        pendingResult::finish
+                );
     }
 
     @Override
@@ -51,18 +55,12 @@ public class LibrarySeatWidget extends BaseAppWidgetProvider {
 
             case Intent.ACTION_BOOT_COMPLETED:
                 // 처음 부팅시 인터넷 접속이 되지 않으므로, 기존 파일에서 읽어온다.
-                List<SeatInfo> list;
-                try {
-                    list = AppRequests.LibrarySeats.readFile().get();
-                } catch (Throwable throwable) {
-                    throwable.printStackTrace();
-                    return;
-                }
-                if (list == null)
-                    return;
-
-                onBackgroundTaskResult(context, AppWidgetManager.getInstance(context), new int[]{intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)}, list);
-
+                AppRequests.LibrarySeats
+                        .readFile()
+                        .subscribe(
+                                result -> onBackgroundTaskResult(context, AppWidgetManager.getInstance(context), new int[]{intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)}, result),
+                                Throwable::printStackTrace
+                        );
                 break;
             default:
                 break;
@@ -70,6 +68,8 @@ public class LibrarySeatWidget extends BaseAppWidgetProvider {
     }
 
     void onBackgroundTaskResult(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds, List<SeatInfo> result) {
+        if (result == null) return;
+
         String dateTime = new SimpleDateFormat("a hh:mm:ss", Locale.getDefault()).format(new Date());
         for (int id : appWidgetIds) {
             RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.widget_library_seat);

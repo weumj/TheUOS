@@ -60,7 +60,7 @@ public class PrefHelper {
             return pref().get(KEY_CHECK_SEAT, false);
         }
 
-        public static boolean isShowingWidgetStudyRoom() {
+        public static boolean isShowingStudyRoomInWidget() {
             return pref().get(KEY_LIB_WIDGET_SEAT_SHOW_ALL, false);
         }
     }

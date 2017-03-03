@@ -1,6 +1,5 @@
 package com.uoscs09.theuos2.tab.schedule;
 
-import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,7 +11,6 @@ import android.view.View;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.util.AppRequests;
-import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.CollectionUtil;
 
 import java.text.SimpleDateFormat;
@@ -31,20 +29,20 @@ public class UnivScheduleFragment extends AbsProgressFragment<List<UnivScheduleI
         return R.layout.tab_univ_schedule;
     }
 
-    private static final int PERMISSION_REQUEST_CALENDAR = 12;
+   // private static final int PERMISSION_REQUEST_CALENDAR = 12;
 
     @BindView(R.id.list)
     ExpandableStickyListHeadersListView mListView;
     //private AlertDialog mItemSelectDialog;
-    private Dialog mProgressDialog;
+    //private Dialog mProgressDialog;
     private UnivScheduleAdapter mAdapter;
 
     private final ArrayList<UnivScheduleItem> mList = new ArrayList<>();
-    private UnivScheduleItem mSelectedItem;
+    //private UnivScheduleItem mSelectedItem;
     private String mSubTitle;
     private final SimpleDateFormat mDateFormat = new SimpleDateFormat("MMMM", Locale.getDefault());
 
-    private String mAccount;
+   // private String mAccount;
 
 
     @Override
@@ -71,7 +69,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<List<UnivScheduleI
 
     @Override
     protected void setPrevAsyncData(List<UnivScheduleItem> data) {
-        if(mList.isEmpty()) CollectionUtil.addAll(mList, data);
+        if (mList.isEmpty()) CollectionUtil.addAll(mList, data);
     }
 
     @Override
@@ -121,7 +119,7 @@ public class UnivScheduleFragment extends AbsProgressFragment<List<UnivScheduleI
                 .create();
                 */
 
-        mProgressDialog = AppUtil.getProgressDialog(getActivity(), false, getString(R.string.progress_ongoing), null);
+        //mProgressDialog = AppUtil.getProgressDialog(getActivity(), false, getString(R.string.progress_ongoing), null);
 
 
         if (mList.isEmpty())
@@ -224,16 +222,15 @@ public class UnivScheduleFragment extends AbsProgressFragment<List<UnivScheduleI
 
     private void execute(boolean force) {
         appTask(AppRequests.UnivSchedules.request(force))
-                .result(result -> {
-                    mList.clear();
-                    mList.addAll(result);
-                    mAdapter.notifyDataSetChanged();
+                .subscribe(result -> {
+                            mList.clear();
+                            mList.addAll(result);
+                            mAdapter.notifyDataSetChanged();
 
-                    setSubtitleWhenVisible(mSubTitle = mDateFormat.format(mList.get(0).getDate(true).getTime()));
-                })
-                .error(t -> super.simpleErrorRespond(t))
-                .build()
-                .execute();
+                            setSubtitleWhenVisible(mSubTitle = mDateFormat.format(mList.get(0).getDate(true).getTime()));
+                        },
+                        t -> super.simpleErrorRespond(t)
+                );
     }
 
 

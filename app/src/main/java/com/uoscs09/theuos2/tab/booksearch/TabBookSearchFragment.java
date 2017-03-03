@@ -233,7 +233,7 @@ public class TabBookSearchFragment extends AbsProgressFragment<List<BookItem>> i
 
     @OnClick(R.id.tab_book_search_empty_info1)
     void expandSearchView() {
-        if(searchMenu == null){
+        if (searchMenu == null) {
             return;
         }
         sendClickEvent("search menu from empty view");
@@ -374,28 +374,27 @@ public class TabBookSearchFragment extends AbsProgressFragment<List<BookItem>> i
         mEmptyView.setVisibility(View.GONE);
 
         appTask(AppRequests.Books.request(mRawQuery/*mEncodedQuery*/, mCurrentPage, mOptionSort, mOptionIndex))
-                .result(result -> {
-                    isResultEmpty = false;
-                    if (result.isEmpty()) {
-                        AppUtil.showToast(getActivity(), R.string.search_result_empty, isMenuVisible());
-                        isResultEmpty = true;
+                .subscribe(result -> {
+                            isResultEmpty = false;
+                            if (result.isEmpty()) {
+                                AppUtil.showToast(getActivity(), R.string.search_result_empty, isMenuVisible());
+                                isResultEmpty = true;
 
-                        showEmptyView();
+                                showEmptyView();
 
-                    } else {
-                        AppUtil.showToast(getActivity(), getString(R.string.search_found_amount, result.size()), isMenuVisible());
-                        mBookList.addAll(result);
-                        mBookListAdapter.notifyDataSetChanged();
-                    }
-                })
-                .error(e -> {
-                    e.printStackTrace();
-                    isResultEmpty = false;
-                    showEmptyView();
-                    simpleErrorRespond(e);
-                })
-                .build()
-                .execute();
+                            } else {
+                                AppUtil.showToast(getActivity(), getString(R.string.search_found_amount, result.size()), isMenuVisible());
+                                mBookList.addAll(result);
+                                mBookListAdapter.notifyDataSetChanged();
+                            }
+                        },
+                        e -> {
+                            e.printStackTrace();
+                            isResultEmpty = false;
+                            showEmptyView();
+                            simpleErrorRespond(e);
+                        }
+                );
     }
 
 

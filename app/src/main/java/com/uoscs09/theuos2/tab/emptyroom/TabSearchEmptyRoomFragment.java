@@ -154,15 +154,18 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<List<EmptyRo
         dialog.show();
 
         final OApiUtil.Semester semester = OApiUtil.Semester.getSemesterByOrder(mTermSpinner.getSelectedItemPosition());
-        AppRequests.Buildings.classRoomTimeTables(OApiUtil.getYear(), semester.code, mClassRoomList.get(position), false).delayed()
-                .result(classRoomTimeTable -> {
-                    ClassroomTimetableDialogFragment.showTimetableDialog(this, classRoomTimeTable, semester, v);
-                    sendClickEvent("show classroom timetable");
-                })
-                .error(throwable -> AppUtil.showErrorToast(getActivity(), throwable, true))
-                .atLast(dialog::dismiss)
-                .execute();
-
+        AppRequests.Buildings.classRoomTimeTables(OApiUtil.getYear(), semester.code, mClassRoomList.get(position), false)
+                .subscribe(
+                        classRoomTimeTable -> {
+                            ClassroomTimetableDialogFragment.showTimetableDialog(this, classRoomTimeTable, semester, v);
+                            sendClickEvent("show classroom timetable");
+                        },
+                        throwable -> {
+                            AppUtil.showErrorToast(getActivity(), throwable, true);
+                            dialog.dismiss();
+                        },
+                        dialog::dismiss
+                );
     }
 
     @OnClick(R.id.empty1)
@@ -205,25 +208,23 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<List<EmptyRo
         int term = mTermSpinner.getSelectedItemPosition();
 
         appTask(AppRequests.EmptyRooms.request(building, time, term))
-                .result(result -> {
-                    mClassRoomList.clear();
-                    mClassRoomList.addAll(result);
-                    mAdapter.notifyDataSetChanged();
-                    AppUtil.showToast(getActivity(), getString(R.string.search_found_amount, result.size()), true);
+                .subscribe(result -> {
+                            mClassRoomList.clear();
+                            mClassRoomList.addAll(result);
+                            mAdapter.notifyDataSetChanged();
+                            AppUtil.showToast(getActivity(), getString(R.string.search_found_amount, result.size()), true);
 
-                    mTermString = mTimeSpinner.getSelectedItem().toString().split("\n")[1] + "\n" + mTermSpinner.getSelectedItem();
-                    setSubtitleWhenVisible(mTermString);
+                            mTermString = mTimeSpinner.getSelectedItem().toString().split("\n")[1] + "\n" + mTermSpinner.getSelectedItem();
+                            setSubtitleWhenVisible(mTermString);
 
-                    mEmptyView.setVisibility(mClassRoomList.isEmpty() ? View.VISIBLE : View.INVISIBLE);
-                })
-                .error(e -> {
-                    e.printStackTrace();
+                            mEmptyView.setVisibility(mClassRoomList.isEmpty() ? View.VISIBLE : View.INVISIBLE);
+                        },
+                        e -> {
+                            e.printStackTrace();
 
-                    mEmptyView.setVisibility(mClassRoomList.isEmpty() ? View.VISIBLE : View.INVISIBLE);
-                    simpleErrorRespond(e);
-                })
-                .build()
-                .execute();
+                            mEmptyView.setVisibility(mClassRoomList.isEmpty() ? View.VISIBLE : View.INVISIBLE);
+                            simpleErrorRespond(e);
+                        });
     }
 
     private void onTabClick(int field) {

@@ -9,11 +9,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.util.List;
 
-import mj.android.utils.task.Task;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.POST;
 import retrofit2.http.Url;
+import rx.Observable;
 
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
@@ -36,7 +36,7 @@ public interface AnnounceApi {
 
     @FormUrlEncoded
     @POST("korNotice/list.do")
-    Task<List<AnnounceItem>> announces(
+    Observable<List<AnnounceItem>> announces(
             @NonNull @Field("list_id") String category,
             @Field("pageIndex") int page,
             @Nullable @Field("searchCnd") String searchCondition,
@@ -46,7 +46,7 @@ public interface AnnounceApi {
     @FormUrlEncoded
     @POST
     @Scholarship
-    Task<List<AnnounceItem>> scholarships(
+    Observable<List<AnnounceItem>> scholarships(
             @NonNull @Url String url,
             @Field("pageIndex") int page,
             @Field("brdBbsseq") int brdBbsseq,
@@ -57,7 +57,7 @@ public interface AnnounceApi {
     @FormUrlEncoded
     @POST
     @Mobile
-    Task<List<AnnounceItem>> announcesMobile(
+    Observable<List<AnnounceItem>> announcesMobile(
             @NonNull @Url String url,
             @NonNull @Field("list_id") String category,
             @Field("pageIndex") int page,
@@ -70,7 +70,7 @@ public interface AnnounceApi {
     @POST
     @Mobile
     @Scholarship
-    Task<List<AnnounceItem>> scholarshipsMobile(
+    Observable<List<AnnounceItem>> scholarshipsMobile(
             @NonNull @Url String url,
             @Field("pageIndex") int page,
             @Field("brdBbsseq") int brdBbsseq

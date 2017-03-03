@@ -30,7 +30,7 @@ public class LibrarySeatListService extends RemoteViewsService {
         ListRemoteViewsFactory(Context context, Intent intent) {
             super(context, intent);
             List<SeatInfo> extraList = intent.getBundleExtra(LibrarySeatWidget.LIBRARY_SEAT_WIDGET_DATA).getParcelableArrayList(LibrarySeatWidget.LIBRARY_SEAT_WIDGET_DATA);
-            if(!CollectionUtil.isEmpty(extraList)){
+            if (!CollectionUtil.isEmpty(extraList)) {
                 clear();
                 addAll(extraList);
             }
@@ -111,11 +111,11 @@ public class LibrarySeatListService extends RemoteViewsService {
         public void onDataSetChanged() {
             super.onDataSetChanged();
             clear();
-            try {
-                addAll(AppRequests.LibrarySeats.readFile().get());
-            } catch (Throwable throwable) {
-                throwable.printStackTrace();
-            }
+
+            AppRequests.LibrarySeats
+                    .readFile()
+                    .subscribe(this::addAll, Throwable::printStackTrace);
+
         }
 
     }

@@ -34,7 +34,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import mj.android.utils.task.DelayedTask;
 
 public class CoursePlanDialogFragment extends AbsAnimDialogFragment implements Toolbar.OnMenuItemClickListener {
 
@@ -56,13 +55,18 @@ public class CoursePlanDialogFragment extends AbsAnimDialogFragment implements T
     private Subject mSubject;
 
     public static void fetchCoursePlanAndShow(final Fragment fragment, Subject subject, View v) {
-        DelayedTask<List<CoursePlan>> task = AppRequests.Subjects.requestCoursePlan(subject).delayed();
-        Dialog d = AppUtil.getProgressDialog(fragment.getActivity(), false, (dialog, which) -> task.cancel());
+        Dialog d = AppUtil.getProgressDialog(fragment.getActivity(), false, null);// (dialog, which) -> task.cancel());
+
+        AppRequests.Subjects.requestCoursePlan(subject).subscribe(
+                result -> showCoursePlanDialog(fragment, subject, v, result),
+                throwable -> {
+                    AppUtil.showErrorToast(fragment.getActivity(), throwable, true);
+                    d.dismiss();
+                },
+                d::dismiss
+        );
+
         d.show();
-        task.result(result -> showCoursePlanDialog(fragment, subject, v, result))
-                .error(throwable -> AppUtil.showErrorToast(fragment.getActivity(), throwable, true))
-                .atLast(d::dismiss)
-                .execute();
     }
 
     private static void showCoursePlanDialog(final Fragment fragment, Subject subject, View v, List<CoursePlan> coursePlanItems) {
@@ -213,13 +217,18 @@ public class CoursePlanDialogFragment extends AbsAnimDialogFragment implements T
             return;
         }
 
-        final DelayedTask<String> task = AppRequests.Subjects.saveCoursePlanToImage(mListView, mAdapter, mCourseTitle, mSubject).delayed();
-        final Dialog d = AppUtil.getProgressDialog(getActivity(), false, (dialog, which) -> task.cancel());
+        final Dialog d = AppUtil.getProgressDialog(getActivity(), false, null); // (dialog, which) -> task.cancel());
+
+        AppRequests.Subjects.saveCoursePlanToImage(mListView, mAdapter, mCourseTitle, mSubject).subscribe(
+                this::showImageSaveResult,
+                e -> {
+                    AppUtil.showErrorToast(getActivity(), e, true);
+                    d.dismiss();
+                },
+                d::dismiss
+        );
+
         d.show();
-        task.result(this::showImageSaveResult)
-                .error(e -> AppUtil.showErrorToast(getActivity(), e, true))
-                .atLast(d::dismiss)
-                .execute();
     }
 
     void showImageSaveResult(final String savedFilePath) {
@@ -253,13 +262,16 @@ public class CoursePlanDialogFragment extends AbsAnimDialogFragment implements T
             return;
         }
 
-        final DelayedTask<String> task = AppRequests.Subjects.saveCoursePlanToTextFile(infoList, mSubject).delayed();
-        final Dialog d = AppUtil.getProgressDialog(getActivity(), false, (dialog, which) -> task.cancel());
+        final Dialog d = AppUtil.getProgressDialog(getActivity(), false, null); //(dialog, which) -> task.cancel());
+        AppRequests.Subjects.saveCoursePlanToTextFile(infoList, mSubject).subscribe(
+                this::showTextSaveResult,
+                e -> {
+                    AppUtil.showErrorToast(getActivity(), e, true);
+                    d.dismiss();
+                },
+                d::dismiss
+        );
         d.show();
-        task.result(this::showTextSaveResult)
-                .error(e -> AppUtil.showErrorToast(getActivity(), e, true))
-                .atLast(d::dismiss)
-                .execute();
     }
 
     void showTextSaveResult(final String savedFilePath) {

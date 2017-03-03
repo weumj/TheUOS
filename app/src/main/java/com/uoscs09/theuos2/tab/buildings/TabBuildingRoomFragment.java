@@ -19,7 +19,7 @@ import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 
 import butterknife.BindView;
-import mj.android.utils.task.DelayedTask;
+import rx.Subscription;
 import se.emilsjolander.stickylistheaders.ExpandableStickyListHeadersListView;
 
 // todo grid
@@ -81,19 +81,22 @@ public class TabBuildingRoomFragment extends AbsProgressFragment<BuildingRoom> {
             dialog.show();
 
             final OApiUtil.Semester semester = OApiUtil.Semester.getSemesterByOrder(spinner.getSelectedItemPosition());
-            final DelayedTask<ClassRoomTimetable> task = AppRequests.Buildings.classRoomTimeTables(OApiUtil.getYear(), semester.code, item).delayed()
-                    .result(classroomTimeTable -> {
+            final Subscription subscription = AppRequests.Buildings.classRoomTimeTables(OApiUtil.getYear(), semester.code, item).subscribe(
+                    classroomTimeTable -> {
                         ClassroomTimetableDialogFragment.showTimetableDialog(this, classroomTimeTable, semester, view1);
                         sendClickEvent("show classroom timetable");
-                    })
-                    .error(throwable -> AppUtil.showErrorToast(getActivity(), throwable, true))
-                    .atLast(() -> {
+                    },
+                    throwable -> {
+                        AppUtil.showErrorToast(getActivity(), throwable, true);
+                        dialog.dismiss();
+                        dialog.setOnCancelListener(null);
+                    },
+                    () -> {
                         dialog.dismiss();
                         dialog.setOnCancelListener(null);
                     });
-            task.execute();
 
-            dialog.setOnCancelListener(dialog1 -> task.cancel());
+            dialog.setOnCancelListener(dialog1 -> subscription.unsubscribe());
 
         });
 
@@ -124,9 +127,10 @@ public class TabBuildingRoomFragment extends AbsProgressFragment<BuildingRoom> {
 
     private void loadData(boolean force) {
         appTask(AppRequests.Buildings.buildingRooms(force))
-                .result(room -> mListView.setAdapter(buildingRoomAdapter = new BuildingRoomAdapter(getActivity(), room)))
-                .error(throwable -> super.simpleErrorRespond(throwable))
-                .build()
-                .execute();
+                .subscribe(
+                        room -> mListView.setAdapter(buildingRoomAdapter = new BuildingRoomAdapter(getActivity(), room)),
+                        throwable -> super.simpleErrorRespond(throwable)
+                );
+
     }
 }

@@ -19,6 +19,10 @@ import mj.android.utils.task.ErrorListener;
 import mj.android.utils.task.ResultListener;
 import mj.android.utils.task.Task;
 import mj.android.utils.task.TaskQueue;
+import rx.Observable;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public abstract class AbsAsyncFragment<T> extends BaseTabFragment {
 
@@ -40,7 +44,7 @@ public abstract class AbsAsyncFragment<T> extends BaseTabFragment {
                 //noinspection unchecked
                 T t = (T) data;
                 setPrevAsyncData(t);
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
@@ -203,6 +207,47 @@ public abstract class AbsAsyncFragment<T> extends BaseTabFragment {
 
     protected final TaskWrapper<T> appTask(@NonNull Task<T> task) {
         return TaskWrapper.create(this, task);
+    }
+
+    protected final Observable<T> appTask(@NonNull Observable<T> task) {
+        WeakReference<AbsAsyncFragment<T>> ref = new WeakReference<>(this);
+        final String TAG = getTag();
+
+        this.onPreExecute();
+        sAsyncDataStoreMap.remove(getClass().getName());
+
+        Subscription subscription = task.subscribe(
+                result -> {
+                    AbsAsyncFragment<T> f = ref.get();
+                    if (f != null) {
+                        if (!f.isVisible()) {
+                            f.putAsyncData(getClass().getName(), result);
+                        }
+                    }
+                },
+                t -> {
+                    AbsAsyncFragment f = ref.get();
+                    if (f != null) {
+                        if (f.isVisible()) {
+                            f.onPostExecute();
+                        } else {
+                            FirebaseCrash.logcat(Log.ERROR, TAG, "AsyncFragment background error");
+                            FirebaseCrash.report(t);
+                            //Log.w(tag, "error", t);
+                        }
+                    }
+                },
+                () -> {
+                    AbsAsyncFragment f = ref.get();
+                    if (f != null && f.isVisible()) {
+                        f.onPostExecute();
+                        //if (r != null) r.run();
+                    }
+                }
+        );
+
+        return task.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     protected void simpleErrorRespond(Throwable e) {

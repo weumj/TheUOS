@@ -1,7 +1,6 @@
 package com.uoscs09.theuos2.tab.restaurant;
 
 
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -15,6 +14,7 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsAnimDialogFragment;
@@ -24,7 +24,7 @@ import com.uoscs09.theuos2.util.ResourceUtil;
 
 import java.util.ArrayList;
 
-import mj.android.utils.task.DelayedTask;
+import rx.Subscription;
 
 public class WeekInformationDialogFragment extends AbsAnimDialogFragment {
     private static final String TAG = "WeekInformationDialogFragment";
@@ -38,17 +38,22 @@ public class WeekInformationDialogFragment extends AbsAnimDialogFragment {
     private RestWeekAdapter mRestWeekAdapter = new RestWeekAdapter(new ArrayList<>());
     private int mCurrentSelectionId;
     private RestWeekItem restWeekItem;
-    private DelayedTask<RestWeekItem> mTask;
+    private Subscription mSubscription;
 
     public static void fetchDataAndShow(final Fragment fragment, final int stringId, View v) {
-        DelayedTask<RestWeekItem> task = AppRequests.Restaurants.readWeekInfo(getCode(stringId)).delayed();
-        Dialog d = AppUtil.getProgressDialog(fragment.getActivity(), false, (dialog, which) -> task.cancel());
-        d.show();
+        MaterialDialog d = AppUtil.getProgressDialog(fragment.getActivity(), false, null);// (dialog, which) -> subscription.unsubscribe());
 
-        task.result(result -> showWeekDialog(fragment, stringId, v, result))
-                .error(e -> AppUtil.showErrorToast(fragment.getActivity(), e, true))
-                .atLast(d::dismiss)
-                .execute();
+        Subscription subscription = AppRequests.Restaurants.readWeekInfo(getCode(stringId))
+                .subscribe(
+                        result -> showWeekDialog(fragment, stringId, v, result),
+                        e -> {
+                            AppUtil.showErrorToast(fragment.getActivity(), e, true);
+                            d.dismiss();
+                        },
+                        d::dismiss
+                );
+
+        d.show();
     }
 
     private static void showWeekDialog(final Fragment fragment, final int stringId, View v, RestWeekItem restWeekItem) {
@@ -128,24 +133,24 @@ public class WeekInformationDialogFragment extends AbsAnimDialogFragment {
             mFailView.setVisibility(View.GONE);
 
 
-        mTask = AppRequests.Restaurants.readWeekInfo(getCode(mCurrentSelectionId))
-                .delayed()
-                .result(result -> {
-                    ArrayList<RestItem> weekList = result.weekList;
-                    setRestWeekItem(result);
+        mSubscription = AppRequests.Restaurants.readWeekInfo(getCode(mCurrentSelectionId))
+                .subscribe(result -> {
+                            ArrayList<RestItem> weekList = result.weekList;
+                            setRestWeekItem(result);
 
-                    if (weekList.isEmpty()) {
-                        showEmptyView();
-                    } else {
-                        mToolbar.setSubtitle(result.getPeriodString());
-                    }
-                })
-                .error(e -> {
-                    AppUtil.showErrorToast(getActivity(), e, true);
-                    showReloadView();
-                })
-                .atLast(this::postExecute);
-        mTask.execute();
+                            if (weekList.isEmpty()) {
+                                showEmptyView();
+                            } else {
+                                mToolbar.setSubtitle(result.getPeriodString());
+                            }
+                        },
+                        e -> {
+                            postExecute();
+                            AppUtil.showErrorToast(getActivity(), e, true);
+                            showReloadView();
+                        },
+                        this::postExecute
+                );
     }
 
     private void postExecute() {
@@ -159,7 +164,7 @@ public class WeekInformationDialogFragment extends AbsAnimDialogFragment {
         if (mSwipeRefreshLayout.isRefreshing())
             mSwipeRefreshLayout.setRefreshing(false);
 
-        mTask = null;
+        mSubscription = null;
     }
 
     static String getCode(int selection) {
@@ -182,9 +187,9 @@ public class WeekInformationDialogFragment extends AbsAnimDialogFragment {
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
 
-        if (mTask != null)
-            mTask.cancel();
-        mTask = null;
+        if (mSubscription != null)
+            mSubscription.unsubscribe();
+        mSubscription = null;
 
     }
 

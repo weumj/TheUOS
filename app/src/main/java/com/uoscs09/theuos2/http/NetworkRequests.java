@@ -31,9 +31,9 @@ import com.uoscs09.theuos2.tab.timetable.Timetable2;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.StringUtil;
-import com.uoscs09.theuos2.util.TaskUtil;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -42,8 +42,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import mj.android.utils.task.Task;
-import mj.android.utils.task.Tasks;
+import rx.Observable;
+import rx.exceptions.Exceptions;
 
 import static com.uoscs09.theuos2.api.UosApiService.URL_M_ANNOUNCE;
 import static com.uoscs09.theuos2.api.UosApiService.URL_M_SCHOLARSHIP;
@@ -59,11 +59,11 @@ public class NetworkRequests {
 
     public static class Announces {
 
-        public static Task<List<AnnounceItem>> normalRequest(int category, int page) {
+        public static Observable<List<AnnounceItem>> normalRequest(int category, int page) {
             return normalRequest(AnnounceItem.Category.fromIndex(category - 1), page);
         }
 
-        public static Task<List<AnnounceItem>> normalRequest(AnnounceItem.Category category, int pageIndex) {
+        public static Observable<List<AnnounceItem>> normalRequest(AnnounceItem.Category category, int pageIndex) {
             boolean scholarship = category == AnnounceItem.Category.SCHOLARSHIP;
              /*
             if (scholarship) {
@@ -85,11 +85,11 @@ public class NetworkRequests {
             }
         }
 
-        public static Task<List<AnnounceItem>> searchRequest(int category, int pageIndex, String query) {
+        public static Observable<List<AnnounceItem>> searchRequest(int category, int pageIndex, String query) {
             return searchRequest(AnnounceItem.Category.fromIndex(category - 1), pageIndex, query);
         }
 
-        public static Task<List<AnnounceItem>> searchRequest(AnnounceItem.Category category, int pageIndex, String query) {
+        public static Observable<List<AnnounceItem>> searchRequest(AnnounceItem.Category category, int pageIndex, String query) {
             boolean scholarship = category == AnnounceItem.Category.SCHOLARSHIP;
             /*
             if (scholarship) {
@@ -107,38 +107,49 @@ public class NetworkRequests {
 
 
             if (scholarship) {
-                return Tasks.newTask(() -> {
-                    throw new IllegalStateException(AppUtil.context().getString(R.string.tab_announce_not_support_search_on_scholarship));
-                });
+                return Observable.error(new IllegalStateException(AppUtil.context().getString(R.string.tab_announce_not_support_search_on_scholarship)));
             } else {
                 return announceApi().announcesMobile(URL_M_ANNOUNCE, category.tag, pageIndex, "1", query);
             }
         }
 
-        public static Task<AnnounceDetailItem> announceInfo(int category, String url) {
+        public static Observable<AnnounceDetailItem> announceInfo(int category, String url) {
             return new HttpTask.Builder(url)
                     .buildAsString()
-                    .map(AnnounceParser.announcePageParser(AnnounceItem.Category.fromIndex(category - 1))::parse);
+                    .map(s -> {
+                        try {
+                            return AnnounceParser.announcePageParser(AnnounceItem.Category.fromIndex(category - 1)).parse(s);
+                        } catch (Throwable throwable) {
+                            throw Exceptions.propagate(throwable);
+                        }
+                    });
+
         }
 
-        public static Task<File> attachedFileDownloadRequest(String url, String docPath, String fileName) {
+        public static Observable<File> attachedFileDownloadRequest(String url, String docPath, String fileName) {
             return new HttpTask.Builder(url)
                     .setHttpMethod(HttpTask.HTTP_METHOD_POST)
                     .buildAsHttpURLConnection()
-                    .map(new HttpTask.FileDownloadProcessor(new File(docPath), fileName));
+                    .map(httpURLConnection -> {
+                        try {
+                            return new HttpTask.FileDownloadProcessor(new File(docPath), fileName).func(httpURLConnection);
+                        } catch (IOException e) {
+                            throw Exceptions.propagate(e);
+                        }
+                    });
         }
     }
 
     public static class Books {
-        public static Task<BookDetailItem> bookDetailItem(BookItem bookItem){
+        public static Observable<BookDetailItem> bookDetailItem(BookItem bookItem) {
             return libraryApi().bookDetailItem("http://mlibrary.uos.ac.kr" + bookItem.url);
         }
 
-        public static Task<List<BookStateInfo>> requestBookStateInfo(String url) {
+        public static Observable<List<BookStateInfo>> requestBookStateInfo(String url) {
             return libraryApi().bookStateInformation(url).map(BookStateWrapper::bookStateList);
         }
 
-        public static Task<List<BookItem>> request(String query, int page, int os, int oi) {
+        public static Observable<List<BookItem>> request(String query, int page, int os, int oi) {
             String OS = optionItem(1, os);
             String OI = optionItem(0, oi);
 
@@ -178,11 +189,11 @@ public class NetworkRequests {
     }
 
     public static class Restaurants {
-        public static Task<SparseArray<RestItem>> request() {
+        public static Observable<SparseArray<RestItem>> request() {
             return restaurantApi().restItem();
         }
 
-        public static Task<RestWeekItem> requestWeekInfo(String code) {
+        public static Observable<RestWeekItem> requestWeekInfo(String code) {
             return restaurantApi().weekRestItem(URL_REST_WEEK, code);
         }
 
@@ -190,21 +201,21 @@ public class NetworkRequests {
 
     public static class TimeTables {
 
-        public static Task<Timetable2> request(CharSequence id, CharSequence passwd, OApiUtil.Semester semester, CharSequence year) {
-            return WiseApiService.timetableTask(id, passwd, semester, Integer.parseInt(year.toString()));
+        public static Observable<Timetable2> request(CharSequence id, CharSequence passwd, OApiUtil.Semester semester, CharSequence year) {
+            return WiseApiService.timetable(id, passwd, semester, Integer.parseInt(year.toString()));
         }
 
     }
 
     public static class LibrarySeats {
-        public static Task<SeatTotalInfo> request() {
+        public static Observable<SeatTotalInfo> request() {
             return libraryApi().seatInformation(URL_SEATS);
         }
     }
 
     public static class EmptyRooms {
 
-        public static Task<List<EmptyRoom>> request(String building, int time, int term) {
+        public static Observable<List<EmptyRoom>> request(String building, int time, int term) {
             if (building.equals("00")) {
                 return requestAllEmptyRoom(time, term);
             } else {
@@ -227,46 +238,45 @@ public class NetworkRequests {
         }
 
 
-        private static Task<List<EmptyRoom>> requestAllEmptyRoom(int time, int term) {
-            return Tasks.newTask(() -> {
+        private static Observable<List<EmptyRoom>> requestAllEmptyRoom(int time, int term) {
+            final String[] buildings = {
+                    "01", "02", "03", "04", "05",
+                    "06", "08", "09", "10", "11",
+                    "13", "14", "15", "16", "17",
+                    "18", "19", "20", "23", "24",
+                    "25", "33"
+            };
 
-                final String[] buildings = {
-                        "01", "02", "03", "04", "05",
-                        "06", "08", "09", "10", "11",
-                        "13", "14", "15", "16", "17",
-                        "18", "19", "20", "23", "24",
-                        "25", "33"
-                };
+            String year = OApiUtil.getYear();
+            String termCode = OApiUtil.Semester.getCodeByTermIndex(term);
+            Calendar c = Calendar.getInstance();
+            String date = new SimpleDateFormat("yyyyMMdd", Locale.KOREAN).format(new Date());
+            String wdayTime = String.format("%d%02d", c.get(Calendar.DAY_OF_WEEK), time);
 
-                String year = OApiUtil.getYear();
-                String termCode = OApiUtil.Semester.getCodeByTermIndex(term);
-                Calendar c = Calendar.getInstance();
-                String date = new SimpleDateFormat("yyyyMMdd", Locale.KOREAN).format(new Date());
-                String wdayTime = String.valueOf(c.get(Calendar.DAY_OF_WEEK)) + (time < 10 ? "0" : "") + String.valueOf(time);
-
-                ArrayList<Task<List<EmptyRoom>>> requests = new ArrayList<>(buildings.length);
-
-                for (String building : buildings) {
-                    requests.add(oApi().emptyRooms(
-                            OApiUtil.UOS_API_KEY,
-                            year,
-                            termCode,
-                            building,
-                            date,
-                            date,
-                            wdayTime,
-                            null,
-                            "Y"
-                    ).map(EmptyRoomWrapper::emptyRoomList));
-                }
-
-                return TaskUtil.parallelTaskTypedCollection(requests).get();
-            });
+            return Observable.from(buildings)
+                    .flatMap(building ->
+                            oApi().emptyRooms(
+                                    OApiUtil.UOS_API_KEY,
+                                    year,
+                                    termCode,
+                                    building,
+                                    date,
+                                    date,
+                                    wdayTime,
+                                    null,
+                                    "Y"
+                            )
+                    )
+                    .map(EmptyRoomWrapper::emptyRoomList)
+                    .reduce(new ArrayList<>(), (list, accumulator) -> {
+                        accumulator.addAll(list);
+                        return list;
+                    });
         }
     }
 
     public static class Subjects {
-        public static Task<List<Subject>> requestCulture(String year, int term, String subjectDiv, String subjectName) {
+        public static Observable<List<Subject>> requestCulture(String year, int term, String subjectDiv, String subjectName) {
             return oApi().timetableCulture(
                     OApiUtil.UOS_API_KEY,
                     year,
@@ -277,7 +287,7 @@ public class NetworkRequests {
             ).map(TimeTableSubjectInfo::subjectInfoList);
         }
 
-        public static Task<List<Subject>> requestMajor(String year, int term, Map<String, String> majorParams, String subjectName) {
+        public static Observable<List<Subject>> requestMajor(String year, int term, Map<String, String> majorParams, String subjectName) {
             return oApi().timetableMajor(
                     OApiUtil.UOS_API_KEY,
                     year,
@@ -294,7 +304,7 @@ public class NetworkRequests {
         }
 
 
-        public static Task<List<CoursePlan>> requestCoursePlan(Subject item) {
+        public static Observable<List<CoursePlan>> requestCoursePlan(Subject item) {
             return oApi().coursePlans(
                     OApiUtil.UOS_API_KEY,
                     item.term,
@@ -305,7 +315,7 @@ public class NetworkRequests {
         }
 
 
-        public static Task<List<SimpleSubject>> requestSubjectInfo(String subjectName, int year, String termCode) {
+        public static Observable<List<SimpleSubject>> requestSubjectInfo(String subjectName, int year, String termCode) {
             return oApi().subjectInformation(
                     OApiUtil.UOS_API_KEY,
                     year,
@@ -323,27 +333,25 @@ public class NetworkRequests {
     }
 
     public static class UnivSchedules {
-        public static Task<List<UnivScheduleItem>> request() {
+        public static Observable<List<UnivScheduleItem>> request() {
             return oApi().schedules(OApiUtil.UOS_API_KEY).map(UnivScheduleWrapper::univScheduleList);
         }
     }
 
     public static class Buildings {
-        public static Task<BuildingRoom> buildingRooms() {
+        public static Observable<BuildingRoom> buildingRooms() {
             return oApi().buildings(OApiUtil.UOS_API_KEY);
         }
 
-        public static Task<ClassRoomTimetable> classRoomTimeTables(String year, String term, BuildingRoom.RoomInfo roomInfo) {
+        public static Observable<ClassRoomTimetable> classRoomTimeTables(String year, String term, BuildingRoom.RoomInfo roomInfo) {
             return oApi().classRoomTimeTables(OApiUtil.UOS_API_KEY, year, term, roomInfo.buildingCode(), roomInfo.code());
         }
     }
 
     public static class WiseScores {
-        public static Task<com.uoscs09.theuos2.tab.score.WiseScores> wiseScores(String id, String pw) {
-            return Tasks.Parallel.serialTask(
-                    WiseApiService.mobileWiseApi().login(1, id, pw),
-                    WiseApiService.mobileWiseApi().score()
-            ).map(objects -> (com.uoscs09.theuos2.tab.score.WiseScores) objects[1]);
+        public static Observable<com.uoscs09.theuos2.tab.score.WiseScores> wiseScores(String id, String pw) {
+            return WiseApiService.mobileWiseApi().login(1, id, pw)
+                    .flatMap(aVoid -> WiseApiService.mobileWiseApi().score());
         }
     }
 }

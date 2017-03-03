@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.uoscs09.theuos2.R;
+import com.uoscs09.theuos2.api.WiseApiService;
 import com.uoscs09.theuos2.base.AbsProgressFragment;
 import com.uoscs09.theuos2.base.BaseActivity;
 import com.uoscs09.theuos2.base.ViewHolder;
@@ -160,16 +161,22 @@ public class TabWiseScoreFragment extends AbsProgressFragment<WiseScores> {
         progressDialog.show();
 
         AppRequests.WiseScores.wiseScores(id, pw)
-                .delayed()
-                .result(wiseScores -> {
-                    adapter.wiseScores = wiseScores;
-                    adapter.notifyDataSetChanged();
-                    empty.setVisibility(View.GONE);
-                })
-                .error(throwable -> super.simpleErrorRespond(throwable))
-                .atLast(progressDialog::dismiss)
-                .execute();
-
+                .subscribe(
+                        wiseScores -> {
+                            adapter.wiseScores = wiseScores;
+                            adapter.notifyDataSetChanged();
+                            empty.setVisibility(View.GONE);
+                        },
+                        throwable -> {
+                            if (throwable instanceof WiseApiService.LoginRequiredException) {
+                                AppUtil.showToast(getActivity(), "Login Failed");
+                            } else {
+                                super.simpleErrorRespond(throwable);
+                            }
+                            progressDialog.dismiss();
+                        },
+                        progressDialog::dismiss
+                );
     }
 
     private static class ScoreRecyclerAdapter extends RecyclerView.Adapter<BaseScoreViewHolder> {

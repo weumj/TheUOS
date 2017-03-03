@@ -20,7 +20,6 @@ import android.view.View;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.base.AbsArrayAdapter;
 import com.uoscs09.theuos2.common.PieProgressDrawable;
-import com.uoscs09.theuos2.tab.buildings.BuildingRoom;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.AppUtil.AppTheme;
@@ -32,8 +31,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import mj.android.utils.task.DelayedTask;
 import mj.android.utils.task.Tasks;
+import rx.Subscription;
 
 /**
  * 메인 설정화면을 나타내는 {@code PreferenceFragment}
@@ -143,18 +142,22 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
         Dialog dialog = AppUtil.getProgressDialog(getActivity());
         dialog.show();
 
-        DelayedTask<BuildingRoom> task = AppRequests.Buildings.buildingRooms(true).delayed()
-                .result(room -> {
-                    onSharedPreferenceChanged(getPreferenceScreen().getSharedPreferences(), PrefUtil.KEY_BUILDINGS_FETCH_TIME);
-                    AppUtil.showToast(getActivity(), R.string.finish_update);
-                })
-                .error(throwable -> AppUtil.showErrorToast(getActivity(), throwable, true))
-                .atLast(() -> {
-                    dialog.dismiss();
-                    dialog.setOnCancelListener(null);
-                });
-        task.execute();
-        dialog.setOnCancelListener(dialog1 -> task.cancel());
+        Subscription subscribe = AppRequests.Buildings.buildingRooms(true)
+                .subscribe(room -> {
+                            onSharedPreferenceChanged(getPreferenceScreen().getSharedPreferences(), PrefUtil.KEY_BUILDINGS_FETCH_TIME);
+                            AppUtil.showToast(getActivity(), R.string.finish_update);
+                        },
+                        throwable -> {
+                            AppUtil.showErrorToast(getActivity(), throwable, true);
+                            dialog.dismiss();
+                            dialog.setOnCancelListener(null);
+                        },
+                        () -> {
+                            dialog.dismiss();
+                            dialog.setOnCancelListener(null);
+                        });
+
+        dialog.setOnCancelListener(dialog1 -> subscribe.unsubscribe());
     }
 
 

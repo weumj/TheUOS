@@ -261,34 +261,32 @@ public class TabTimeTableFragment22 extends AbsProgressFragment<Timetable2> {
         String mTimeTableYear = mWiseYearSpinner.getSelectedItem().toString();
 
         appTask(AppRequests.TimeTables.request(mWiseIdView.getText(), mWisePasswdView.getText(), semester, mTimeTableYear))
-                .result(r -> {
-                    TimeTableWidget.sendRefreshIntent(getActivity());
+                .subscribe(r -> {
+                            TimeTableWidget.sendRefreshIntent(getActivity());
 
-                    clearPassWd();
+                            clearPassWd();
 
-                    setTimetable(r);
-                    if (r == null)
-                        AppUtil.showToast(getActivity(), R.string.tab_timetable_wise_login_warning_fail, isMenuVisible());
-                })
-                .error(t -> {
-                    emptyView.setVisibility(View.VISIBLE);
+                            setTimetable(r);
+                            if (r == null)
+                                AppUtil.showToast(getActivity(), R.string.tab_timetable_wise_login_warning_fail, isMenuVisible());
+                        },
+                        t -> {
+                            emptyView.setVisibility(View.VISIBLE);
 
-                    if (t instanceof IOException || t instanceof NullPointerException) {
-                        t.printStackTrace();
-                        AppUtil.showToast(getActivity(), R.string.tab_timetable_wise_login_warning_fail, isMenuVisible());
-                    } else {
-                        simpleErrorRespond(t);
-                    }
-                })
-                .buildWithQueue(TAG)
-                .execute();
+                            if (t instanceof IOException || t instanceof NullPointerException) {
+                                t.printStackTrace();
+                                AppUtil.showToast(getActivity(), R.string.tab_timetable_wise_login_warning_fail, isMenuVisible());
+                            } else {
+                                simpleErrorRespond(t);
+                            }
+                        });
     }
 
     private void readTimetableFromFile() {
-        AppRequests.TimeTables.readFile().delayed()
-                .result(this::setTimetable)
-                .error(e -> Log.e(TAG, "cannot read timetable from file.", e))
-                .execute();
+        AppRequests.TimeTables.readFile().subscribe(
+                this::setTimetable,
+                e -> Log.e(TAG, "cannot read timetable from file.", e)
+        );
     }
 
     private void setTimetable(Timetable2 timeTable) {
@@ -361,8 +359,8 @@ public class TabTimeTableFragment22 extends AbsProgressFragment<Timetable2> {
 
     void deleteTimetable() {
         AlertDialog dialog = deleteDialog();
-        AppRequests.TimeTables.deleteTimetable().delayed()
-                .result(result -> {
+        AppRequests.TimeTables.deleteTimetable().subscribe(
+                result -> {
                     dialog.dismiss();
                     if (result) {
                         AppUtil.showToast(getActivity(), R.string.execute_delete, isVisible());
@@ -370,13 +368,11 @@ public class TabTimeTableFragment22 extends AbsProgressFragment<Timetable2> {
                     } else {
                         AppUtil.showToast(getActivity(), R.string.file_not_found, isMenuVisible());
                     }
-                })
-                .error(e -> {
+                },
+                e -> {
                     dialog.dismiss();
                     AppUtil.showToast(getActivity(), R.string.file_not_found, isMenuVisible());
-                })
-                .execute();
-
+                });
     }
 
 

@@ -16,7 +16,6 @@ import com.uoscs09.theuos2.common.PieProgressDrawable;
 import com.uoscs09.theuos2.util.AppRequests;
 import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.ResourceUtil;
-import com.uoscs09.theuos2.util.TaskUtil;
 
 import java.util.Collections;
 import java.util.List;
@@ -25,7 +24,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import mj.android.utils.task.DelayedTask;
+import rx.Subscription;
 
 class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
     @BindView(R.id.tab_booksearch_list_book_title)
@@ -49,7 +48,7 @@ class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements View.OnCl
      */
     private final List<ChildHolder> mChildHolderList = new CopyOnWriteArrayList<>();
 
-    private DelayedTask<List<BookStateInfo>> task;
+    private Subscription subscription;
 
     BookItem item;
     BookItemListAdapter.OnItemClickListener onItemClickListener;
@@ -85,8 +84,9 @@ class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements View.OnCl
     }
 
     private void cancelBookStateLoadingTask() {
-        TaskUtil.cancel(task);
-        task = null;
+        if (subscription != null)
+            subscription.unsubscribe();
+        subscription = null;
     }
 
     @OnClick(R.id.tab_booksearch_list_info_layout)
@@ -108,17 +108,17 @@ class BookItemViewHolder extends AbsArrayAdapter.ViewHolder implements View.OnCl
                 item.bookStateInfoList = Collections.emptyList();
                 removeAllBookStateInLayout();
             } else {
-                task = AppRequests.Books.requestBookStateInfo(item.infoUrl).delayed()
-                        .result(result -> {
+                subscription = AppRequests.Books.requestBookStateInfo(item.infoUrl).subscribe(
+                        result -> {
                             item.bookStateInfoList = result;
 
                             // 처리 후, ViewHolder item 과 결과 item 이 다르다면 무시
                             if (holder.item.equals(item))
                                 drawBookStateLayout(holder);
                             else Log.d("BookItemViewHolder", "request item != current item");
-                        })
-                        .error(t -> AppUtil.showErrorToast(holder.itemView.getContext(), t, true));
-                task.execute();
+                        },
+                        t -> AppUtil.showErrorToast(holder.itemView.getContext(), t, true)
+                );
             }
 
         } else if (!item.bookStateInfoList.isEmpty()) {

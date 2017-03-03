@@ -1,5 +1,6 @@
 package com.uoscs09.theuos2.tab.restaurant;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -28,7 +29,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import jp.wasabeef.recyclerview.adapters.SlideInBottomAnimationAdapter;
 import jp.wasabeef.recyclerview.animators.SlideInDownAnimator;
-import mj.android.utils.task.DelayedTask;
+import rx.Subscription;
 
 public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestItem>> {
 
@@ -76,7 +77,7 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
     private Tab mCurrentTab;
 
 
-    private DelayedTask<SparseArray<RestItem>> task;
+    private Subscription mSubscription;
 
 
     @Override
@@ -203,10 +204,10 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
 
 
     private void execute(boolean force) {
-        if(task != null) {
+        if (mSubscription != null) {
             if (force) {
-                task.cancel();
-                task = null;
+                mSubscription.unsubscribe();
+                mSubscription = null;
             } else {
                 return;
             }
@@ -216,20 +217,22 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
         mRestItemAdapter.mItems.clear();
         mRestItemAdapter.notifyItemRangeRemoved(0, 5);
 
-        task = appTask(AppRequests.Restaurants.request(force))
-                .result(result -> {
-                    mRestTable = result;
-                    mRestItemAdapter.mItems = mRestTable;
-                    //mRestItemAdapter.notifyItemRangeInserted(0, 5);
-                    mRecyclerView.post(() -> performTabClick(mCurrentSelection));
-                })
-                .error(t -> super.simpleErrorRespond(t))
-                .atLast(() -> {
-                    mSwipeRefreshLayout.setRefreshing(false);
-                    task = null;
-                })
-                .build();
-        task.execute();
+        mSubscription = appTask(AppRequests.Restaurants.request(force))
+                .subscribe(result -> {
+                            mRestTable = result;
+                            mRestItemAdapter.mItems = mRestTable;
+                            //mRestItemAdapter.notifyItemRangeInserted(0, 5);
+                            mRecyclerView.post(() -> performTabClick(mCurrentSelection));
+                        },
+                        t -> {
+                            super.simpleErrorRespond(t);
+                            mSwipeRefreshLayout.setRefreshing(false);
+                            mSubscription = null;
+                        },
+                        () -> {
+                            mSwipeRefreshLayout.setRefreshing(false);
+                            mSubscription = null;
+                        });
     }
 
 
@@ -383,12 +386,15 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
             ButterKnife.bind(this, tabView);
 
             mSelectedColor = ResourceUtil.getAttrColor(parent.getContext(), R.attr.color_actionbar_title);
-            mNormalColor = mSelectedColor | 0xaa << 24;
+
+            mNormalColor = Color.TRANSPARENT;
+
+            //mSelectedColor | 0xaa << 24;
         }
 
         void setSelected(boolean selected) {
             mStrip.setVisibility(selected ? View.VISIBLE : View.INVISIBLE);
-            mTextView.setTextColor(selected ? mSelectedColor : mNormalColor);
+            //mTextView.setTextColor(selected ? mSelectedColor : mNormalColor);
         }
 
         public void setText(int stringId) {

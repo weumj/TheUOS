@@ -251,32 +251,36 @@ public class SubjectDetailDialogFragment extends BaseDialogFragment implements C
             sendClickEvent("course plan");
 
             AppRequests.Subjects.requestSubjectInfo(mSubject.nameKor(), mTimeTable.year(), mTimeTable.semester().code)
-                    .delayed()
-                    .result(result -> {
-                        int size;
-                        if (result == null) {
-                            AppUtil.showToast(getActivity(), R.string.tab_timetable_error_on_search_subject, true);
-                            dismiss();
+                    .subscribe(
+                            result -> {
+                                int size;
+                                if (result == null) {
+                                    AppUtil.showToast(getActivity(), R.string.tab_timetable_error_on_search_subject, true);
+                                    dismiss();
 
-                        } else if ((size = result.size()) == 0) {
-                            AppUtil.showToast(getActivity(), R.string.tab_timetable_error_on_search_subject_empty, true);
-                            dismiss();
+                                } else if ((size = result.size()) == 0) {
+                                    AppUtil.showToast(getActivity(), R.string.tab_timetable_error_on_search_subject_empty, true);
+                                    dismiss();
 
-                        } else if (size == 1) {
-                            showCoursePlan(result.get(0).toSubject(mTimeTable, mSubject), v);
-                            dismiss();
+                                } else if (size == 1) {
+                                    showCoursePlan(result.get(0).toSubject(mTimeTable, mSubject), v);
+                                    dismiss();
 
-                        } else {
-                            mClassDivSelectAdapter.clear();
-                            mClassDivSelectAdapter.addAll(result);
-                            mClassDivSelectAdapter.notifyDataSetChanged();
+                                } else {
+                                    mClassDivSelectAdapter.clear();
+                                    mClassDivSelectAdapter.addAll(result);
+                                    mClassDivSelectAdapter.notifyDataSetChanged();
 
-                            mClassDivSelectDialog.show();
-                        }
-                    })
-                    .error((e) -> AppUtil.showErrorToast(getActivity(), e, isVisible()))
-                    .atLast(() -> mProgress.dismiss())
-                    .execute();
+                                    mClassDivSelectDialog.show();
+                                }
+                            },
+                            (e) -> {
+                                AppUtil.showErrorToast(getActivity(), e, isVisible());
+                                mProgress.dismiss();
+                            },
+                            mProgress::dismiss
+                    );
+
             mProgress.show();
 
         } else {

@@ -33,7 +33,6 @@ import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.CollectionUtil;
 import com.uoscs09.theuos2.util.PrefHelper;
 
-import java.io.File;
 import java.util.List;
 import java.util.Locale;
 
@@ -41,7 +40,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
-import mj.android.utils.task.DelayedTask;
+import rx.Subscription;
 
 public class SubAnnounceWebActivity extends BaseActivity {
     private static final int REQUEST_PERMISSION_FILE = 40;
@@ -60,7 +59,7 @@ public class SubAnnounceWebActivity extends BaseActivity {
     private String url;
     private AnnounceItem mItem;
     private List<Pair<String, String>> attachedFileUrlPairList;
-    private DelayedTask<AnnounceDetailItem> task;
+    private Subscription subscription;
 
 
     @Override
@@ -114,9 +113,9 @@ public class SubAnnounceWebActivity extends BaseActivity {
             //mWebView.destroy();
             mWebView = null;
         }
-        if (task != null) {
-            task.cancel();
-            task = null;
+        if (subscription != null) {
+            subscription.unsubscribe();
+            subscription = null;
         }
         if (unbinder != null)
             unbinder.unbind();
@@ -162,17 +161,18 @@ public class SubAnnounceWebActivity extends BaseActivity {
         progressWheel.setVisibility(View.VISIBLE);
         progressWheel.spin();
 
-        task = AppRequests.Announces.announceInfo(category, url).delayed()
-                .result(this::setScreenWithItem)
-                .error(throwable -> {
-                    hideProgress();
-                    if (errorTextView != null)
-                        errorTextView.setVisibility(View.VISIBLE);
-                    if (mWebView != null)
-                        mWebView.loadDataWithBaseURL(null, "page not found", null, null, null);
-                    throwable.printStackTrace();
-                });
-        task.execute();
+        subscription = AppRequests.Announces.announceInfo(category, url)
+                .subscribe(
+                        this::setScreenWithItem,
+                        throwable -> {
+                            hideProgress();
+                            if (errorTextView != null)
+                                errorTextView.setVisibility(View.VISIBLE);
+                            if (mWebView != null)
+                                mWebView.loadDataWithBaseURL(null, "page not found", null, null, null);
+                            throwable.printStackTrace();
+                        });
+
 
         mWebView.setWebViewClient(new NonLeakingWebView.NonLeakingWebViewClient(this) {
             @Override
@@ -329,40 +329,44 @@ public class SubAnnounceWebActivity extends BaseActivity {
 
         //noinspection ResourceType
         final String docPath = PrefHelper.Data.getDocumentPath();
-        final DelayedTask<File> task =AppRequests.Announces.attachedFileDownload(attachedFileUrl, docPath, pair.first).delayed()
-                .result(result -> {
-                    String docDir = docPath.substring(docPath.lastIndexOf('/') + 1);
-                    Snackbar.make(mWebView, getString(R.string.saved_file, docDir, result.getName()), Snackbar.LENGTH_LONG)
-                            .setAction(R.string.action_open, v -> {
+        final Subscription fileDownloadSubs = AppRequests.Announces.attachedFileDownload(attachedFileUrl, docPath, pair.first)
+                .subscribe(result -> {
+                            String docDir = docPath.substring(docPath.lastIndexOf('/') + 1);
+                            Snackbar.make(mWebView, getString(R.string.saved_file, docDir, result.getName()), Snackbar.LENGTH_LONG)
+                                    .setAction(R.string.action_open, v -> {
 
-                                sendClickEvent("open file");
+                                        sendClickEvent("open file");
 
-                                // fixme api25
-                                Uri fileUri = Uri.fromFile(result);
-                                String fileExtension = MimeTypeMap.getFileExtensionFromUrl(fileUri.toString());
-                                String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension);
+                                        // fixme api25
+                                        Uri fileUri = Uri.fromFile(result);
+                                        String fileExtension = MimeTypeMap.getFileExtensionFromUrl(fileUri.toString());
+                                        String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension);
 
-                                Intent intent = new Intent()
-                                        .setAction(Intent.ACTION_VIEW)
-                                        .setDataAndType(fileUri, mimeType);
-                                try {
-                                    AnimUtil.startActivityWithScaleUp(SubAnnounceWebActivity.this, intent, v);
-                                } catch (ActivityNotFoundException e) {
-                                    AppUtil.showToast(SubAnnounceWebActivity.this, R.string.error_no_activity_found_to_handle_file);
-                                } catch (Exception e) {
-                                    AppUtil.showErrorToast(SubAnnounceWebActivity.this, e, true);
-                                }
-                            })
-                            .show();
-                })
-                .error(e -> AppUtil.showErrorToast(SubAnnounceWebActivity.this, e, true))
-                .atLast(() -> {
-                    progressDialog.dismiss();
-                    progressDialog.setOnCancelListener(null);
-                });
-        task.execute();
+                                        Intent intent = new Intent()
+                                                .setAction(Intent.ACTION_VIEW)
+                                                .setDataAndType(fileUri, mimeType);
+                                        try {
+                                            AnimUtil.startActivityWithScaleUp(SubAnnounceWebActivity.this, intent, v);
+                                        } catch (ActivityNotFoundException e) {
+                                            AppUtil.showToast(SubAnnounceWebActivity.this, R.string.error_no_activity_found_to_handle_file);
+                                        } catch (Exception e) {
+                                            AppUtil.showErrorToast(SubAnnounceWebActivity.this, e, true);
+                                        }
+                                    })
+                                    .show();
+                        },
+                        e -> {
+                            AppUtil.showErrorToast(SubAnnounceWebActivity.this, e, true);
+                            progressDialog.dismiss();
+                            progressDialog.setOnCancelListener(null);
+                        },
+                        () -> {
+                            progressDialog.dismiss();
+                            progressDialog.setOnCancelListener(null);
+                        }
+                );
 
-        progressDialog.setOnCancelListener(dialog -> task.cancel());
+        progressDialog.setOnCancelListener(dialog -> fileDownloadSubs.unsubscribe());
         progressDialog.show();
 
         sendClickEvent("download file");

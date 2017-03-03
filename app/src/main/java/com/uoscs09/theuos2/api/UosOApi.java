@@ -11,13 +11,13 @@ import com.uoscs09.theuos2.tab.subject.CoursePlanWrapper;
 import com.uoscs09.theuos2.tab.subject.SubjectWrapper;
 import com.uoscs09.theuos2.tab.subject.TimeTableSubjectInfo;
 
-import mj.android.utils.task.Task;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
+import rx.Observable;
 
 public interface UosOApi {
     String URL = "http://wise.uos.ac.kr/uosdoc/";
@@ -25,7 +25,7 @@ public interface UosOApi {
     @FormUrlEncoded
     @Headers({"Content-Type: charset=EUC-KR"})
     @POST("api.ApiUcsFromToEmptyRoom.oapi")
-    Task<EmptyRoomWrapper> emptyRooms(
+    Observable<EmptyRoomWrapper> emptyRooms(
             @NonNull @Field("apiKey") String apiKey,
             @NonNull @Field("year") String year,
             @NonNull @Field("term") String term,
@@ -40,7 +40,7 @@ public interface UosOApi {
     @FormUrlEncoded
     @Headers({"Content-Type: charset=EUC-KR"})
     @POST("api.ApiApiCoursePlanView.oapi")
-    Task<CoursePlanWrapper> coursePlans(
+    Observable<CoursePlanWrapper> coursePlans(
             @NonNull @Field("apiKey") String apiKey,
             @NonNull @Field("term") String term,
             @NonNull @Field("subjectNo") String subjectNo,
@@ -50,7 +50,7 @@ public interface UosOApi {
 
     @Headers({"Content-Type: charset=EUC-KR"})
     @GET("api.ApiUcrCultTimeInq.oapi")
-    Task<TimeTableSubjectInfo> timetableCulture(
+    Observable<TimeTableSubjectInfo> timetableCulture(
             @NonNull @Query("apiKey") String apiKey,
             @NonNull @Query("year") String year,
             @NonNull @Query("term") String term,
@@ -61,7 +61,7 @@ public interface UosOApi {
 
     @Headers({"Content-Type: charset=EUC-KR"})
     @GET("api.ApiUcrMjTimeInq.oapi")
-    Task<TimeTableSubjectInfo> timetableMajor(
+    Observable<TimeTableSubjectInfo> timetableMajor(
             @NonNull @Query("apiKey") String apiKey,
             @NonNull @Query("year") String year,
             @NonNull @Query("term") String term,
@@ -78,7 +78,7 @@ public interface UosOApi {
 
     @Headers({"Content-Type: charset=EUC-KR"})
     @GET("api.ApiApiSubjectList.oapi")
-    Task<SubjectWrapper> subjectInformation(
+    Observable<SubjectWrapper> subjectInformation(
             @NonNull @Query("apiKey") String apiKey,
             @Query("year") int year,
             @NonNull @Query("term") String term,
@@ -94,21 +94,21 @@ public interface UosOApi {
     @FormUrlEncoded
     @Headers({"Content-Type: charset=EUC-KR"})
     @POST("api.ApiApiMainBd.oapi")
-    Task<UnivScheduleWrapper> schedules(
+    Observable<UnivScheduleWrapper> schedules(
             @NonNull @Field("apiKey") String apiKey
     );
 
     @FormUrlEncoded
     @Headers({"Content-Type: charset=EUC-KR"})
     @POST("api.ApiApiBuildingRoomList.oapi")
-    Task<BuildingRoom> buildings(
+    Observable<BuildingRoom> buildings(
             @NonNull @Field("apiKey") String apiKey
     );
 
     @FormUrlEncoded
     @Headers({"Content-Type: charset=EUC-KR"})
     @POST("api.ApiUcsCourseTimeTableRoomList.oapi")
-    Task<ClassRoomTimetable> classRoomTimeTables(
+    Observable<ClassRoomTimetable> classRoomTimeTables(
             @Field("apiKey") String apiKey,
             @Field("year") String year,
             @Field("term") String term,

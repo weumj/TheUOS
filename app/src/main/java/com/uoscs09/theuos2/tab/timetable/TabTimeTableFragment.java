@@ -33,14 +33,13 @@ import com.uoscs09.theuos2.util.AppUtil;
 import com.uoscs09.theuos2.util.IOUtil;
 import com.uoscs09.theuos2.util.OApiUtil;
 import com.uoscs09.theuos2.util.OApiUtil.Semester;
-import com.uoscs09.theuos2.util.TaskUtil;
 
 import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import mj.android.utils.task.DelayedTask;
 import mj.android.utils.task.TaskQueue;
+import rx.Subscription;
 
 public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
 
@@ -114,8 +113,8 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
 
     @OnClick(R.id.tab_timetable_empty_text)
     void emptyViewClick() {
-        sendEmptyViewClickEvent();
-        showLoginDialog();
+       sendEmptyViewClickEvent();
+       showLoginDialog();
     }
 
     @Override
@@ -186,43 +185,44 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
 
         mTimeTableAdapter.changeLayout(true);
 
-        final DelayedTask<String> task = AppRequests.TimeTables.saveTimetableToImage(mTimeTable, mTimetableListView, mTimeTableAdapter, getTabParentView())
-                .delayed()
-                .result(result -> {
-                    mTimeTableAdapter.changeLayout(false);
+        final Subscription subscription = AppRequests.TimeTables.saveTimetableToImage(mTimeTable, mTimetableListView, mTimeTableAdapter, getTabParentView())
+                .subscribe(
+                        result -> {
+                            mTimeTableAdapter.changeLayout(false);
 
-                    String pictureDir = result.replace(result.substring(result.lastIndexOf('/')), "");
-                    pictureDir = pictureDir.substring(pictureDir.lastIndexOf('/') + 1);
-                    Snackbar.make(rootView, getString(R.string.tab_timetable_saved, pictureDir), Snackbar.LENGTH_LONG)
-                            .setAction(R.string.action_open, v -> {
-                                Intent intent = new Intent();
-                                intent.setAction(Intent.ACTION_VIEW);
-                                // fixme api25
-                                intent.setDataAndType(Uri.parse("file://" + result), "image/*");
+                            String pictureDir = result.replace(result.substring(result.lastIndexOf('/')), "");
+                            pictureDir = pictureDir.substring(pictureDir.lastIndexOf('/') + 1);
+                            Snackbar.make(rootView, getString(R.string.tab_timetable_saved, pictureDir), Snackbar.LENGTH_LONG)
+                                    .setAction(R.string.action_open, v -> {
+                                        Intent intent = new Intent();
+                                        intent.setAction(Intent.ACTION_VIEW);
+                                        // fixme api25
+                                        intent.setDataAndType(Uri.parse("file://" + result), "image/*");
 
-                                try {
-                                    AnimUtil.startActivityWithScaleUp(getActivity(), intent, v);
-                                } catch (ActivityNotFoundException e) {
-                                    //e.printStackTrace();
-                                    AppUtil.showToast(getActivity(), R.string.error_no_activity_found_to_handle_file);
-                                } catch (Exception e) {
-                                    AppUtil.showErrorToast(getActivity(), e, true);
-                                }
-                                sendClickEvent("show timetable image");
-                            })
-                            .show();
-                })
-                .error(e -> {
-                    mTimeTableAdapter.changeLayout(false);
-                    AppUtil.showErrorToast(getActivity(), e, true);
-                })
-                .atLast(() -> {
-                    progressDialog.dismiss();
-                    progressDialog.setOnCancelListener(null);
-                });
-        task.execute();
+                                        try {
+                                            AnimUtil.startActivityWithScaleUp(getActivity(), intent, v);
+                                        } catch (ActivityNotFoundException e) {
+                                            //e.printStackTrace();
+                                            AppUtil.showToast(getActivity(), R.string.error_no_activity_found_to_handle_file);
+                                        } catch (Exception e) {
+                                            AppUtil.showErrorToast(getActivity(), e, true);
+                                        }
+                                        sendClickEvent("show timetable image");
+                                    })
+                                    .show();
+                        },
+                        e -> {
+                            mTimeTableAdapter.changeLayout(false);
+                            AppUtil.showErrorToast(getActivity(), e, true);
+                            progressDialog.dismiss();
+                            progressDialog.setOnCancelListener(null);
+                        },
+                        () -> {
+                            progressDialog.dismiss();
+                            progressDialog.setOnCancelListener(null);
+                        });
 
-        progressDialog.setOnCancelListener(dialog -> TaskUtil.cancel(task));
+        progressDialog.setOnCancelListener(dialog -> subscription.unsubscribe());
         progressDialog.show();
 
     }
@@ -232,15 +232,15 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
         emptyView.setVisibility(View.INVISIBLE);
 
         // dummy : AppRequests.TimeTables.dummyRequest(id, passwd, semester, year)
-        appTask(AppRequests.TimeTables.request(id, passwd, semester, year))
-                .result(r -> {
+        appTask(AppRequests.TimeTables.request(id, passwd, semester, year)).subscribe(
+                r -> {
                     TimeTableWidget.sendRefreshIntent(getActivity());
 
                     setTimetable(r);
                     if (r == null)
                         AppUtil.showToast(getActivity(), R.string.tab_timetable_wise_login_warning_fail, isMenuVisible());
-                })
-                .error(t -> {
+                },
+                t -> {
                     if (mTimeTable == null || mTimeTable.classTimeInformationTable() == null || mTimeTable.classTimeInformationTable().isEmpty())
                         emptyView.setVisibility(View.VISIBLE);
 
@@ -250,16 +250,14 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
                     } else {
                         simpleErrorRespond(t);
                     }
-                })
-                .buildWithQueue(TAG)
-                .execute();
+                });
     }
 
     private void readTimetableFromFile() {
-        AppRequests.TimeTables.readFile().delayed()
-                .result(this::setTimetable)
-                .error(e -> Log.e(TAG, "cannot read timetable from file.", e))
-                .execute();
+        AppRequests.TimeTables.readFile().subscribe(
+                this::setTimetable,
+                e -> Log.e(TAG, "cannot read timetable from file.", e)
+        );
     }
 
     private void showLoginDialog() {
@@ -312,20 +310,22 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
                 .setNegativeButton(R.string.cancel, null)
                 .create();
 
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(android.R.string.ok), (dialog1, which) -> {
-            AppRequests.TimeTables.deleteTimetable().delayed()
-                    .result(result -> {
-                        if (result) {
-                            AppUtil.showToast(getActivity(), R.string.execute_delete, isVisible());
-                            setTimetable(null);
-                        } else {
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(android.R.string.ok), (dialog1, which) ->
+                AppRequests.TimeTables.deleteTimetable().subscribe(
+                        result -> {
+                            if (result) {
+                                AppUtil.showToast(getActivity(), R.string.execute_delete, isVisible());
+                                setTimetable(null);
+                            } else {
+                                AppUtil.showToast(getActivity(), R.string.file_not_found, isMenuVisible());
+                            }
+                        },
+                        e -> {
                             AppUtil.showToast(getActivity(), R.string.file_not_found, isMenuVisible());
-                        }
-                    })
-                    .error(e -> AppUtil.showToast(getActivity(), R.string.file_not_found, isMenuVisible()))
-                    .atLast(dialog::dismiss)
-                    .execute();
-        });
+                            dialog.dismiss();
+                        },
+                        dialog::dismiss
+                ));
 
         dialog.show();
     }

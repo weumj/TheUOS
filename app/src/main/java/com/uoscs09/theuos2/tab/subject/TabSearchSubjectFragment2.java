@@ -38,7 +38,7 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.OnItemClick;
-import mj.android.utils.task.Task;
+import rx.Observable;
 
 public class TabSearchSubjectFragment2 extends AbsProgressFragment<List<Subject>> implements AdapterView.OnItemSelectedListener {
     private AlertDialog mSearchDialog;
@@ -109,7 +109,7 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<List<Subject>
 
     @Override
     protected void setPrevAsyncData(List<Subject> data) {
-        if(mSubjectList.isEmpty()) CollectionUtil.addAll(mSubjectList, data);
+        if (mSubjectList.isEmpty()) CollectionUtil.addAll(mSubjectList, data);
     }
 
     @Override
@@ -293,7 +293,7 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<List<Subject>
         int term = mDialogTermSpinner.getSelectedItemPosition();
         String subjectName = mSearchEditText.getText().toString();
 
-        Task<List<Subject>> request;
+        Observable<List<Subject>> request;
         boolean culture = mDialogSpinner1.getSelectedItemPosition() == 0;
         if (culture) {
             request = AppRequests.Subjects.requestCulture(year, term, getCultSubjectDiv(mDialogSpinner2.getSelectedItemPosition()), subjectName);
@@ -312,8 +312,8 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<List<Subject>
             request = AppRequests.Subjects.requestMajor(year, term, additionalParams, subjectName);
         }
 
-        appTask(request)
-                .result(result -> {
+        appTask(request).subscribe(
+                result -> {
                     mSubjectAdapter.clear();
                     mSubjectAdapter.addAll(result);
                     mAminAdapter.reset();
@@ -341,10 +341,9 @@ public class TabSearchSubjectFragment2 extends AbsProgressFragment<List<Subject>
                             + " / "
                             + mDialogTermSpinner.getSelectedItem().toString();
                     setSubtitleWhenVisible(mSearchConditionString);
-                })
-                .error(t -> super.simpleErrorRespond(t))
-                .build()
-                .execute();
+                },
+                t -> super.simpleErrorRespond(t)
+        );
     }
 
     @Override

@@ -161,6 +161,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>>
         sendClickEvent("detail announce");
 
         Intent intent = new Intent(getActivity(), SubAnnounceWebActivity.class)
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 .putExtra(ITEM, mAnnounceAdapter.getItem(position))
                 .putExtra(INDEX_CATEGORY, getCurrentCategoryIndex());
 
@@ -285,40 +286,38 @@ public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>>
     }
 
     private void executeSearchJob(boolean moreRequest, int newPageIndex, String query) {
-        if(isInvalidCategory()){
+        if (isInvalidCategory()) {
             AppUtil.showToast(getActivity(), R.string.tab_announce_invalid_category, true);
             return;
         }
 
         appTask(AppRequests.Announces.searchRequest(getCurrentCategoryIndex(), newPageIndex, query))
-                .result(result -> {
-                    mListFooterView.setClickable(true);
-                    if (moreRequest) updateWithResultInMoreRequest(result, newPageIndex);
-                    else updateWithResult(result, true, newPageIndex);
-                })
-                .error(this::onError)
-                .build()
-                .execute();
+                .subscribe(result -> {
+                            mListFooterView.setClickable(true);
+                            if (moreRequest) updateWithResultInMoreRequest(result, newPageIndex);
+                            else updateWithResult(result, true, newPageIndex);
+                        },
+                        this::onError
+                );
     }
 
     private void executeJob(boolean moreRequest, int newPageIndex) {
-        if(isInvalidCategory()){
+        if (isInvalidCategory()) {
             AppUtil.showToast(getActivity(), R.string.tab_announce_invalid_category, true);
             return;
         }
 
         appTask(AppRequests.Announces.normalRequest(getCurrentCategoryIndex(), newPageIndex))
-                .result(result -> {
-                    mListFooterView.setClickable(true);
-                    if (moreRequest) updateWithResultInMoreRequest(result, newPageIndex);
-                    else updateWithResult(result, false, newPageIndex);
-                })
-                .error(this::onError)
-                .build()
-                .execute();
+                .subscribe(result -> {
+                            mListFooterView.setClickable(true);
+                            if (moreRequest) updateWithResultInMoreRequest(result, newPageIndex);
+                            else updateWithResult(result, false, newPageIndex);
+                        },
+                        this::onError
+                );
     }
 
-    private boolean isInvalidCategory(){
+    private boolean isInvalidCategory() {
         int currentIndex = getCurrentCategoryIndex();
         return currentIndex < 1 || currentIndex > 4;
     }

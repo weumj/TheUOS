@@ -22,8 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mj.android.utils.task.Func;
-import mj.android.utils.task.Task;
-import mj.android.utils.task.Tasks;
+import rx.Observable;
 
 public class ImageUtil {
 
@@ -235,8 +234,8 @@ public class ImageUtil {
                 return this;
             }
 
-            public Task<Bitmap> build() {
-                return Tasks.newTask(new ListViewBitmapRequest(adapter, listViewRef, headerViewRef)::get);
+            public Observable<Bitmap> build() {
+                return Observable.fromCallable(new ListViewBitmapRequest(adapter, listViewRef, headerViewRef)::get);
             }
         }
     }

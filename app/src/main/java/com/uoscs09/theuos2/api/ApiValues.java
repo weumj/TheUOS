@@ -10,8 +10,15 @@ import java.io.IOException;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 
 class ApiValues {
+    private static final RxJavaCallAdapterFactory RX_JAVA_CALL_ADAPTER = RxJavaCallAdapterFactory.create();
+
+    static RxJavaCallAdapterFactory rxJavaCallAdapter(){
+       return RX_JAVA_CALL_ADAPTER;
+    }
+
     static final class Networks {
 
         static final Interceptor CHECK_NETWORK = chain -> {
