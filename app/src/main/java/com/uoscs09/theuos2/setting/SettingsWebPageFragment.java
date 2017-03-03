@@ -63,7 +63,7 @@ public class SettingsWebPageFragment extends PreferenceFragmentCompat {
             return true;
 
         } else if (title.equals(getText(R.string.web_page_uostime))) {
-            startActivity(AppUtil.getWebPageIntent("http://uosti.me/"));
+            startActivity(AppUtil.getWebPageIntent("http://uostime.com/"));
             return true;
 
         }

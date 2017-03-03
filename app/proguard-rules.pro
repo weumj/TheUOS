@@ -40,70 +40,11 @@
 }
 
 
-#### Retrolambda
--dontwarn java.lang.invoke.*
--keepclassmembernames  @com.uoscs09.theuos2.annotation.KeepName class * {
-     *;
-}
-
-
-
-
-#### Google Play Services
-#
-# Keep SafeParcelable value, needed for reflection. This is required to support backwards
-# compatibility of some classes.
--keep public class com.google.android.gms.common.internal.safeparcel.SafeParcelable {
-    public static final *** NULL;
-}
-
-# Keep the names of classes/members we need for client functionality.
--keepnames @com.google.android.gms.common.annotation.KeepName class *
--keepclassmembernames class * {
-    @com.google.android.gms.common.annotation.KeepName *;
-}
-
-# Needed for Parcelable/SafeParcelable Creators to not get stripped
--keepnames class * implements android.os.Parcelable {
-    public static final ** CREATOR;
-}
-
-
 
 ##### Android Support Library
 -keep class android.support.** { *; }
 -keep interface android.support.** { *; }
 #-keep class !android.support.v7.internal.view.menu.**, ** { *; }
-
-
-
-#### Butterknife
--keep class butterknife.** { *; }
--dontwarn butterknife.internal.**
--keep class **$$ViewBinder { *; }
-
--keepclasseswithmembernames class * {
-    @butterknife.* <fields>;
-}
-
--keepclasseswithmembernames class * {
-    @butterknife.* <methods>;
-}
-
-
-##### okhttp
--keepattributes Signature
--keepattributes Annotation
--keep class okhttp3.** { *; }
--keep interface okhttp3.** { *; }
--dontwarn okhttp3.**
--dontwarn okio.**
-
-##### retrofit
--dontwarn retrofit2.**
--keep class retrofit2.** { *; }
--keepattributes Signature
--keepattributes Exceptions
 
 ##### glide
 -keep public class * implements com.bumptech.glide.module.GlideModule
@@ -120,12 +61,8 @@
    public <init>(...);
 }
 
-# Library Jars
-#-libraryjars libs/jericho-html-3.3.jar
 
 -keepattributes SourceFile,LineNumberTable
 
 -dontwarn com.haarman.listviewanimations.**
 -dontwarn net.htmlparser.jericho.**
--dontwarn com.google.android.gms.**
--dontwarn com.android.volley.**

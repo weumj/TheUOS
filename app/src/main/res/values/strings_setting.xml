@@ -146,7 +146,7 @@
     <string name="web_page_club">UOS Club</string>
     <string name="web_page_club_desc">에듀 클래스</string>
     <string name="web_page_uostime">UOSTIME</string>
-    <string name="web_page_uostime_desc">시간표 짜기\nprogrammed by square^\nsupported by codingsroom</string>
+    <string name="web_page_uostime_desc">시간표 짜기</string>
     <string name="web_page_uostable">UOSTABLE</string>
     <string name="web_page_uostable_desc">시간표 짜기\nmade by Gnu Shim</string>
 

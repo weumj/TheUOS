@@ -320,7 +320,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>>
 
     private boolean isInvalidCategory(){
         int currentIndex = getCurrentCategoryIndex();
-        return currentIndex < 1 || currentIndex > 3;
+        return currentIndex < 1 || currentIndex > 4;
     }
 
 
