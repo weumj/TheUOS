@@ -23,7 +23,6 @@ import java.net.URLEncoder;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import mj.android.utils.task.Func;
 import rx.Observable;
 
 /**
@@ -249,7 +248,7 @@ public final class HttpTask {
 
     //** FileDownloadProcessor
 
-    public static class FileDownloadProcessor implements Func<HttpURLConnection, File> {
+    public static class FileDownloadProcessor {
         private final File downloadDir;
         private final String suggestFileName;
 
@@ -258,7 +257,6 @@ public final class HttpTask {
             this.suggestFileName = suggestFileName;
         }
 
-        @Override
         public File func(HttpURLConnection connection) throws IOException {
             String fileNameAndExtension = TextUtils.isEmpty(suggestFileName) ? getFileName(connection) : suggestFileName;
             File downloadFile = makeFile(fileNameAndExtension);

@@ -31,7 +31,7 @@ import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import mj.android.utils.task.TaskQueue;
+import rx.Subscription;
 
 // future use
 public class TabTimeTableFragment22 extends AbsProgressFragment<Timetable2> {
@@ -54,6 +54,8 @@ public class TabTimeTableFragment22 extends AbsProgressFragment<Timetable2> {
     private Timetable2 mTimeTable;
 
     private final SubjectDetailDialogFragment mSubjectDetailDialog = new SubjectDetailDialogFragment();
+
+    private Subscription timetableObserveSubs;
 
 
     @Override
@@ -155,8 +157,7 @@ public class TabTimeTableFragment22 extends AbsProgressFragment<Timetable2> {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_wise:
-                TaskQueue taskQueue = taskQueue();
-                if (taskQueue != null && taskQueue.exist(TAG))
+                if (timetableObserveSubs != null && !timetableObserveSubs.isUnsubscribed())
                     AppUtil.showToast(getActivity(), R.string.progress_ongoing, true);
                 else {
                     sendClickEvent("wise login");
@@ -260,7 +261,7 @@ public class TabTimeTableFragment22 extends AbsProgressFragment<Timetable2> {
         Semester semester = Semester.values()[mWiseTermSpinner.getSelectedItemPosition()];
         String mTimeTableYear = mWiseYearSpinner.getSelectedItem().toString();
 
-        appTask(AppRequests.TimeTables.request(mWiseIdView.getText(), mWisePasswdView.getText(), semester, mTimeTableYear))
+        timetableObserveSubs = appTask(AppRequests.TimeTables.request(mWiseIdView.getText(), mWisePasswdView.getText(), semester, mTimeTableYear))
                 .subscribe(r -> {
                             TimeTableWidget.sendRefreshIntent(getActivity());
 
@@ -269,6 +270,7 @@ public class TabTimeTableFragment22 extends AbsProgressFragment<Timetable2> {
                             setTimetable(r);
                             if (r == null)
                                 AppUtil.showToast(getActivity(), R.string.tab_timetable_wise_login_warning_fail, isMenuVisible());
+                            atLast();
                         },
                         t -> {
                             emptyView.setVisibility(View.VISIBLE);
@@ -279,7 +281,16 @@ public class TabTimeTableFragment22 extends AbsProgressFragment<Timetable2> {
                             } else {
                                 simpleErrorRespond(t);
                             }
+                            atLast();
                         });
+    }
+
+    private void atLast() {
+        if (timetableObserveSubs != null && !timetableObserveSubs.isUnsubscribed()) {
+            timetableObserveSubs.unsubscribe();
+        }
+
+        timetableObserveSubs = null;
     }
 
     private void readTimetableFromFile() {

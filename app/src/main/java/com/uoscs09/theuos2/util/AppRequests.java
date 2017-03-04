@@ -271,10 +271,9 @@ public class AppRequests {
                         if (PrefHelper.LibrarySeats.isFilterOccupyingRoom()) {
                             List<SeatInfo> list = seatInfo.seatInfoList();
                             // 스터디룸 인덱스
-                            final int[] filterArr = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 23, 24, 25, 26, 27, 28};
-                            final int size = filterArr.length;
+                            final int size = STUDY_ROOM_NUMBER_ARRAY.length;
                             for (int i = size - 1; i > -1; i--) {
-                                SeatInfo item = list.get(filterArr[i]);
+                                SeatInfo item = list.get(STUDY_ROOM_NUMBER_ARRAY[i]);
                                 if (item.utilizationRate >= 50)
                                     list.remove(item);
                             }
@@ -486,8 +485,7 @@ public class AppRequests {
                         }
 
                         try {
-                            //noinspection unchecked
-                            ArrayList<UnivScheduleItem> result = (ArrayList<UnivScheduleItem>) IOUtil.internalFileOpenTask(FILE_NAME).get();
+                            ArrayList<UnivScheduleItem> result = IOUtil.readFromInternalFile(FILE_NAME);
 
                             if (result != null)
                                 return Observable.just(result);

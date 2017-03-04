@@ -18,7 +18,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-import mj.android.utils.task.Tasks;
+import rx.Observable;
 
 public class TimetableAlarmUtil {
     private static final String TAG = "TimetableAlarmUtil";
@@ -67,7 +67,10 @@ public class TimetableAlarmUtil {
 
         }
 
-       Tasks.execute(() -> recordAlarmInfo(context, subject, alarmType));
+        Observable.fromCallable(() -> {
+            recordAlarmInfo(context, subject, alarmType);
+            return null;
+        });
     }
 
 
@@ -110,15 +113,16 @@ public class TimetableAlarmUtil {
 
         final Context appContext = context.getApplicationContext();
 
-        Tasks.execute(() -> {
 
+        Observable.fromCallable(() -> {
             for (int period = 0; period < 15; period++) {
                 for (int day = 0; day < 7; day++) {
                     registerAlarmFromFileOnStart(appContext, period, day);
                 }
             }
 
-        });
+            return null;
+        }).subscribe();
 
     }
 
@@ -149,8 +153,10 @@ public class TimetableAlarmUtil {
     public static void clearAllAlarm(Context context) {
         final Context appContext = context.getApplicationContext();
 
-        Tasks.execute(() -> clearAllAlarmInner(appContext));
-
+        Observable.fromCallable(() -> {
+            clearAllAlarmInner(appContext);
+            return null;
+        });
     }
 
     private static void clearAllAlarmInner(Context appContext) {
@@ -176,7 +182,7 @@ public class TimetableAlarmUtil {
         deleteAlarmCount();
         setNotificationReceiverEnabled(appContext, false);
 
-     PrefHelper.TimeTables.putNotifyServiceEnable(false);
+        PrefHelper.TimeTables.putNotifyServiceEnable(false);
     }
 
     private static void cancelAlarm(Context context, int period, int day) {

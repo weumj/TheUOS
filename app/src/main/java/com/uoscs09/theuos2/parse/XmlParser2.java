@@ -17,8 +17,4 @@ public class XmlParser2<T> extends mj.android.utils.xml.XmlParser<T> implements 
         return t;
     }
 
-    @Override
-    public final T func(InputStream param) throws Throwable {
-        return parse(param);
-    }
 }

@@ -13,7 +13,6 @@ import com.uoscs09.theuos2.UosMainActivity;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import mj.android.utils.task.TaskQueue;
 
 public abstract class BaseTabFragment extends BaseFragment {
     private ViewGroup mTabParent;
@@ -33,14 +32,6 @@ public abstract class BaseTabFragment extends BaseFragment {
             return null;
 
         return (UOSApplication) getActivity().getApplication();
-    }
-
-    @Nullable
-    protected final TaskQueue taskQueue() {
-        if (getUosApplication() != null)
-            return getUosApplication().taskQueue();
-        else
-            return null;
     }
 
     @Nullable

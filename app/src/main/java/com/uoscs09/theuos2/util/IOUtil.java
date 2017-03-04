@@ -11,9 +11,6 @@ import java.io.IOException;
 import java.io.StreamCorruptedException;
 
 import mj.android.utils.common.IOUtils;
-import mj.android.utils.task.Func;
-import mj.android.utils.task.Task;
-import mj.android.utils.task.Tasks;
 
 import static com.uoscs09.theuos2.util.AppUtil.context;
 
@@ -153,39 +150,28 @@ public class IOUtil {
         }
     }
 
-    public static <T> Task<T> externalFileOpenTask(String fileName) {
-        //noinspection unchecked
-        return Tasks.newTask(() -> (T) readFromExternalFile(new File(fileName)));
-    }
-
-    public static <T> Task<T> internalFileOpenTask(String fileName) {
-        //noinspection unchecked
-        return Tasks.newTask(() -> (T) readFromInternalFile(fileName));
-    }
-
-
     @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-    public static <T> Func<T, T> newExternalFileWriteFunc(String fileName) {
+    public static <T> FileWriteFunc<T> newExternalFileWriteFunc(String fileName) {
         return new FileWriteFunc<>(fileName, true);
     }
 
-    public static <T> Func<T, T> newInternalFileWriteFunc(String fileName) {
+    public static <T> FileWriteFunc<T> newInternalFileWriteFunc(String fileName) {
         return new FileWriteFunc<>(fileName, false);
     }
 
     @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-    public static Func<String, String> newStringExternalFileWriteFunc(String fileName) {
+    public static FileWriteFunc<String> newStringExternalFileWriteFunc(String fileName) {
         return new StringFileWriteFunc(fileName, true);
     }
 
-    public static Func<String, String> newStringInternalFileWriteFunc(String fileName) {
+    public static FileWriteFunc<String> newStringInternalFileWriteFunc(String fileName) {
         return new StringFileWriteFunc(fileName, false);
     }
 
     /*
     * 처리 후 반환값은 Input Object 이다.
     * */
-    static class FileWriteFunc<T> implements Func<T, T> {
+    static class FileWriteFunc<T>  {
         final String fileName;
         private final boolean isExternal;
 
@@ -194,7 +180,6 @@ public class IOUtil {
             this.isExternal = isExternal;
         }
 
-        @Override
         public T func(T t) throws IOException {
             if (isExternal)
                 //noinspection ResourceType

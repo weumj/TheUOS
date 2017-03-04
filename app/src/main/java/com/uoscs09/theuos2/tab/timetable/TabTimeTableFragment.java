@@ -38,7 +38,6 @@ import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import mj.android.utils.task.TaskQueue;
 import rx.Subscription;
 
 public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
@@ -60,6 +59,8 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
 
     private Timetable2 mTimeTable;
     private TimeTableAdapter mTimeTableAdapter;
+
+    private Subscription timetableObserveSubs;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -113,8 +114,8 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
 
     @OnClick(R.id.tab_timetable_empty_text)
     void emptyViewClick() {
-       sendEmptyViewClickEvent();
-       showLoginDialog();
+        sendEmptyViewClickEvent();
+        showLoginDialog();
     }
 
     @Override
@@ -127,8 +128,7 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_wise:
-                TaskQueue taskQueue = taskQueue();
-                if (taskQueue != null && taskQueue.exist(TAG))
+                if (timetableObserveSubs != null && !timetableObserveSubs.isUnsubscribed())
                     AppUtil.showToast(getActivity(), R.string.progress_ongoing, true);
                 else {
                     sendClickEvent("wise login");
@@ -160,7 +160,8 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
         switch (requestCode) {
             case REQUEST_PERMISSION_SAVE_IMAGE:
                 if (checkPermissionResultAndShowToastIfFailed(permissions, grantResults, R.string.tab_timetable_permission_image_reject)) {
-                    saveTimetableImage();
+                    // stackoverflow 방지
+                    getActivity().runOnUiThread(this::saveTimetableImage);
                 }
                 break;
 
@@ -232,13 +233,15 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
         emptyView.setVisibility(View.INVISIBLE);
 
         // dummy : AppRequests.TimeTables.dummyRequest(id, passwd, semester, year)
-        appTask(AppRequests.TimeTables.request(id, passwd, semester, year)).subscribe(
+        timetableObserveSubs = appTask(AppRequests.TimeTables.request(id, passwd, semester, year)).subscribe(
                 r -> {
                     TimeTableWidget.sendRefreshIntent(getActivity());
 
                     setTimetable(r);
                     if (r == null)
                         AppUtil.showToast(getActivity(), R.string.tab_timetable_wise_login_warning_fail, isMenuVisible());
+
+                    atLast();
                 },
                 t -> {
                     if (mTimeTable == null || mTimeTable.classTimeInformationTable() == null || mTimeTable.classTimeInformationTable().isEmpty())
@@ -250,7 +253,17 @@ public class TabTimeTableFragment extends AbsProgressFragment<Timetable2> {
                     } else {
                         simpleErrorRespond(t);
                     }
+                    atLast();
                 });
+    }
+
+
+    private void atLast() {
+        if (timetableObserveSubs != null && !timetableObserveSubs.isUnsubscribed()) {
+            timetableObserveSubs.unsubscribe();
+        }
+
+        timetableObserveSubs = null;
     }
 
     private void readTimetableFromFile() {

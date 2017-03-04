@@ -99,7 +99,6 @@ dependencies {
 
     compile(name: 'utils_common', ext: 'aar')
     compile(name: 'utils_recyclerview', ext: 'aar')
-    compile(name: 'utils_task', ext: 'aar')
     compile(name: 'utils_xml', ext: 'aar')
 
     compile project(':stickylistheaders')

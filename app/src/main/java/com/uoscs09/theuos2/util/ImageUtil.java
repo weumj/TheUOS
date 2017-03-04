@@ -21,7 +21,6 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-import mj.android.utils.task.Func;
 import rx.Observable;
 
 public class ImageUtil {
@@ -141,14 +140,13 @@ public class ImageUtil {
         return ResourcesCompat.getDrawable(context.getResources(), id, context.getTheme());
     }
 
-    public static class ImageWriteProcessor implements Func<Bitmap, String> {
+    public static class ImageWriteProcessor {
         private final String fileName;
 
         public ImageWriteProcessor(String fileName) {
             this.fileName = fileName;
         }
 
-        @Override
         public String func(Bitmap bitmap) throws Exception {
             try {
                 ImageUtil.saveImageToFile(fileName, bitmap);

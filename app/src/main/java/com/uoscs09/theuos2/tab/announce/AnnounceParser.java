@@ -14,8 +14,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import mj.android.utils.task.Task;
-import mj.android.utils.task.Tasks;
+import rx.Observable;
 
 public abstract class AnnounceParser extends JerichoParser<List<AnnounceItem>> {
     public static AnnounceParser mobileWeb() {
@@ -209,40 +208,12 @@ public abstract class AnnounceParser extends JerichoParser<List<AnnounceItem>> {
             Element boardList = source.getElementById("board_list");
             List<Element> elementList = boardList.getChildElements();
 
-            Task<List<AnnounceItem>> task;
-            // final int size = elementList.size();
-            //if (size > 7 && OptimizeStrategy.isSafeToOptimize()) {
-            //     appTask = parseListElementUsing2Thread(elementList, size);
-            // } else {
-            task = parseTask(elementList);
-            // }
-
-            return task.get();
-        }
-
-        private static List<AnnounceItem> parseList(List<Element> elements) {
-
-            List<AnnounceItem> list = new ArrayList<>(elements.size());
-            for (Element e : elements) {
-                AnnounceItem item = parseElement(e);
-                if (item != null)
-                    list.add(item);
-            }
-            return list;
-        }
-
-        private static Task<List<AnnounceItem>> parseListElementUsing2Thread(List<Element> elementList, int size) {
-            final int halfSize = size / 2;
-            ArrayList<Task<List<AnnounceItem>>> tasks = new ArrayList<>();
-            tasks.add(parseTask(elementList.subList(0, halfSize)));
-            tasks.add(parseTask(elementList.subList(halfSize, size)));
-
-            return Tasks.Parallel.parallelTaskTypedCollection(tasks);
-        }
-
-
-        private static Task<List<AnnounceItem>> parseTask(List<Element> elementList) {
-            return Tasks.newTask(() -> parseList(elementList));
+            return Observable.from(elementList)
+                    .map(MobileWeb::parseElement)
+                    .filter(announceItem -> announceItem != null)
+                    .toList()
+                    .toBlocking()
+                    .first();
         }
 
         private static AnnounceItem parseElement(Element element) {

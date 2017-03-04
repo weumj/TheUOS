@@ -31,8 +31,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import mj.android.utils.task.Tasks;
+import rx.Observable;
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * 메인 설정화면을 나타내는 {@code PreferenceFragment}
@@ -261,13 +263,15 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
      * 어플리케이션의 모든 캐쉬를 삭제한다.
      */
     private void deleteCache() {
-        Tasks.newTask(() -> {
+        Observable.fromCallable(() -> {
             AppUtil.clearCache(getActivity());
             return null;
-        }).delayed()
-                .result(result -> AppUtil.showToast(getActivity(), R.string.execute_delete))
-                .error(e -> AppUtil.showErrorToast(getActivity(), e, true))
-                .execute();
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        r -> AppUtil.showToast(getActivity(), R.string.execute_delete),
+                        e -> AppUtil.showErrorToast(getActivity(), e, true)
+                );
     }
 
     @Override

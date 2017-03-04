@@ -2,11 +2,9 @@ package com.uoscs09.theuos2.base;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.google.firebase.crash.FirebaseCrash;
-import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.util.AppUtil;
 
 import java.io.IOException;
@@ -14,11 +12,6 @@ import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import mj.android.utils.task.DelayedTask;
-import mj.android.utils.task.ErrorListener;
-import mj.android.utils.task.ResultListener;
-import mj.android.utils.task.Task;
-import mj.android.utils.task.TaskQueue;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -74,139 +67,6 @@ public abstract class AbsAsyncFragment<T> extends BaseTabFragment {
     }
 
     protected void onPostExecute() {
-    }
-
-    // todo 클래스 외부로 리팩토링
-    protected static final class TaskWrapper<T> {
-        private final WeakReference<AbsAsyncFragment<T>> ref;
-        private Task<T> task;
-        private ResultListener<T> r;
-        private ErrorListener e;
-        private Runnable last;
-
-        private TaskWrapper(AbsAsyncFragment<T> fragment, @NonNull Task<T> task) {
-            ref = new WeakReference<>(fragment);
-            this.task = task;
-        }
-
-        public static <T> TaskWrapper<T> create(AbsAsyncFragment<T> fragment, @NonNull Task<T> task) {
-            return new TaskWrapper<>(fragment, task);
-        }
-
-
-        public TaskWrapper<T> result(@NonNull final ResultListener<T> r) {
-            this.r = result -> {
-                AbsAsyncFragment<T> f = ref.get();
-                if (f != null) {
-                    if (f.isVisible()) {
-                        r.onResult(result);
-                    } else {
-                        f.putAsyncData(getClass().getName(), result);
-                    }
-                }
-                // else
-                // putAsyncData
-            };
-            return this;
-        }
-
-        public TaskWrapper<T> error(@Nullable final ErrorListener e) {
-            final String tag = ref.get().getTag();
-            this.e = t -> {
-                AbsAsyncFragment f = ref.get();
-                if (f != null && f.isVisible()) {
-                    if (e != null) {
-                        e.onError(t);
-                    } else {
-                        FirebaseCrash.logcat(Log.ERROR, tag, "AsyncFragment background error");
-                        FirebaseCrash.report(t);
-                        //Log.w(tag, "error", t);
-                    }
-                }
-            };
-            return this;
-        }
-
-        public TaskWrapper<T> atLast(@Nullable final Runnable r) {
-            this.last = () -> {
-                AbsAsyncFragment f = ref.get();
-                if (f != null && f.isVisible()) {
-                    f.onPostExecute();
-                    if (r != null) r.run();
-                }
-            };
-            return this;
-        }
-
-        public DelayedTask<T> build() {
-            setupRef();
-            DelayedTask<T> delayedTask = task.delayed().result(r).error(e).atLast(last);
-            cleanUpRef();
-
-            AbsAsyncFragment f = ref.get();
-            if (f == null) {
-                Log.w("AbsAsyncFragment", "error(host fragment == null)");
-                return delayedTask;
-            }
-
-            f.onPreExecute();
-            sAsyncDataStoreMap.remove(getClass().getName());
-
-            return delayedTask;
-        }
-
-        public DelayedTask<T> buildWithQueue(String tag) {
-            AbsAsyncFragment f = ref.get();
-
-            if (f == null) {
-                DelayedTask<T> delayedTask = task.delayed();
-                setupRef();
-                delayedTask.result(r).error(e).atLast(last);
-                cleanUpRef();
-
-                Log.w(tag, "error(host fragment == null)");
-                return delayedTask;
-            }
-
-            TaskQueue taskQueue = f.taskQueue();
-            if (taskQueue == null) {
-                DelayedTask<T> delayedTask = task.delayed();
-                setupRef();
-                delayedTask.result(r).error(e).atLast(last);
-                cleanUpRef();
-
-                AppUtil.showToast(f.getActivity(), R.string.error_cannot_execute, true);
-                return delayedTask;
-            }
-
-            f.onPreExecute();
-            sAsyncDataStoreMap.remove(getClass().getName());
-
-            DelayedTask<T> delayedTask = taskQueue.enqueue(tag, task);
-            setupRef();
-            delayedTask.result(r).error(e).atLast(last);
-            cleanUpRef();
-            return delayedTask;
-        }
-
-        private void setupRef() {
-            if (r == null) result((result) -> {
-            });
-            if (e == null) error(null);
-            if (last == null) atLast(null);
-        }
-
-        private void cleanUpRef() {
-            r = null;
-            e = null;
-            last = null;
-        }
-
-    }
-
-
-    protected final TaskWrapper<T> appTask(@NonNull Task<T> task) {
-        return TaskWrapper.create(this, task);
     }
 
     protected final Observable<T> appTask(@NonNull Observable<T> task) {

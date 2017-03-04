@@ -3,22 +3,18 @@ package com.uoscs09.theuos2.tab.booksearch;
 import android.text.TextUtils;
 
 import com.uoscs09.theuos2.parse.JerichoParser;
-import com.uoscs09.theuos2.util.OptimizeStrategy;
 import com.uoscs09.theuos2.util.StringUtil;
 
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import mj.android.utils.task.Func;
-import mj.android.utils.task.Task;
-import mj.android.utils.task.Tasks;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import rx.Observable;
 
 public class BookParser extends JerichoParser<List<BookItem>> {
     //private static final String LOG_TAG = "BookParser";
@@ -34,39 +30,12 @@ public class BookParser extends JerichoParser<List<BookItem>> {
         List<Element> briefList = source.getAllElementsByClass("briefList");
         List<Element> bookHtmlList = briefList.get(0).getAllElements(LI);
 
-        Task<List<BookItem>> task;
-        final int size = bookHtmlList.size();
-        if (size > 7 && OptimizeStrategy.isSafeToOptimize()) {
-            task = parseListElementUsing2Thread(bookHtmlList, size);
-        } else {
-            task = parseTask(bookHtmlList);
-        }
-
-        return task.get();
-    }
-
-    private static Task<List<BookItem>> parseListElementUsing2Thread(List<Element> bookHtmlList, int size) {
-        final int halfSize = size / 2;
-        ArrayList<Task<List<BookItem>>> tasks = new ArrayList<>();
-        tasks.add(parseTask(bookHtmlList.subList(0, halfSize)));
-        tasks.add(parseTask(bookHtmlList.subList(halfSize, size)));
-
-        return Tasks.Parallel.parallelTaskTypedCollection(tasks);
-    }
-
-
-    private static Task<List<BookItem>> parseTask(List<Element> bookHtmlList) {
-        return Tasks.newTask(() -> parseListElement(bookHtmlList));
-    }
-
-    private static List<BookItem> parseListElement(List<Element> bookHtmlList) {
-        ArrayList<BookItem> bookItemList = new ArrayList<>();
-        for (Element element : bookHtmlList) {
-            BookItem item = parseElement(element);
-            if (item != null)
-                bookItemList.add(item);
-        }
-        return bookItemList;
+       return Observable.from(bookHtmlList)
+                .map(BookParser::parseElement)
+                .filter(bookItem -> bookItem != null)
+                .toList()
+                .toBlocking()
+                .first();
     }
 
     private static BookItem parseElement(Element rawBookElement) {
@@ -165,7 +134,7 @@ public class BookParser extends JerichoParser<List<BookItem>> {
                     .execute();
 
             if (response.isSuccessful()) {
-                return imageHtmlParser.func(new String(response.body().bytes(), StringUtil.ENCODE_UTF_8));
+                return imageHtmlParser.parse(new String(response.body().bytes(), StringUtil.ENCODE_UTF_8));
             }
             /*
             imgSrc = HttpTask.Builder.newStringRequestBuilder(imgUrl)
@@ -180,7 +149,7 @@ public class BookParser extends JerichoParser<List<BookItem>> {
         return imgSrc;
     }
 
-    private static final Func<String, String> imageHtmlParser = new JerichoParser<String>() {
+    private static final JerichoParser<String> imageHtmlParser = new JerichoParser<String>() {
         @Override
         protected String parseHtmlBody(Source source) throws Exception {
             return source.getAllElements(HTMLElementName.IMG)
