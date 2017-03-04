@@ -216,6 +216,8 @@ public abstract class AbsAsyncFragment<T> extends BaseTabFragment {
         this.onPreExecute();
         sAsyncDataStoreMap.remove(getClass().getName());
 
+        task = task.publish().autoConnect();
+
         Subscription subscription = task.subscribe(
                 result -> {
                     AbsAsyncFragment<T> f = ref.get();
@@ -245,6 +247,7 @@ public abstract class AbsAsyncFragment<T> extends BaseTabFragment {
                     }
                 }
         );
+
 
         return task.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());

@@ -270,7 +270,7 @@ public class NetworkRequests {
                     .map(EmptyRoomWrapper::emptyRoomList)
                     .reduce(new ArrayList<>(), (list, accumulator) -> {
                         accumulator.addAll(list);
-                        return list;
+                        return accumulator;
                     });
         }
     }
