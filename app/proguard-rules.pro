@@ -56,7 +56,9 @@
 #### xml
 -keep class mj.android.utils.xml.**
 
-
+-keepclassmembernames @mj.android.utils.xml.* class * {
+    *;
+}
 -keepclassmembers @mj.android.utils.xml.* class * {
    public <init>(...);
 }

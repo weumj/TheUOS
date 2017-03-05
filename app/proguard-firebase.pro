@@ -7,4 +7,5 @@
 # Realtime database
 -keepattributes Signature
 
+-dontwarn com.google.firebase.iid.zzc.**
 # End: Proguard rules for Firebase

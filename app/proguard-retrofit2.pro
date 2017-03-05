@@ -11,4 +11,6 @@
 # Retain declared checked exceptions for use by a Proxy instance.
 -keepattributes Exceptions
 
+-dontwarn retrofit2.adapter.rxjava.CompletableHelper$**
+
 # End: Proguard rules for retrofit2
