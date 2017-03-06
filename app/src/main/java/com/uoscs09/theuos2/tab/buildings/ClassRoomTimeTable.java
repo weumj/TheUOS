@@ -2,6 +2,7 @@ package com.uoscs09.theuos2.tab.buildings;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Keep;
 
 import java.io.Serializable;
 import java.util.List;
@@ -10,6 +11,7 @@ import mj.android.utils.xml.Element;
 import mj.android.utils.xml.ListContainer;
 import mj.android.utils.xml.Root;
 
+@Keep
 @Root(name = "root")
 public class ClassRoomTimetable implements Parcelable, Serializable {
 
@@ -52,6 +54,7 @@ public class ClassRoomTimetable implements Parcelable, Serializable {
     };
 
 
+    @Keep
     @Root(name = "list")
     public static class Timetable implements Parcelable, Serializable {
         private static final long serialVersionUID = -3195316989062654934L;

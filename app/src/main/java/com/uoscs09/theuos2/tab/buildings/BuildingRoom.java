@@ -1,5 +1,6 @@
 package com.uoscs09.theuos2.tab.buildings;
 
+import android.support.annotation.Keep;
 import android.support.annotation.Nullable;
 
 import com.uoscs09.theuos2.annotation.KeepName;
@@ -16,6 +17,7 @@ import mj.android.utils.xml.Element;
 import mj.android.utils.xml.ListContainer;
 import mj.android.utils.xml.Root;
 
+@Keep
 @Root(name = "root", charset = "euc-kr")
 public class BuildingRoom implements Serializable, IParser.IPostParsing {
 
@@ -84,6 +86,7 @@ public class BuildingRoom implements Serializable, IParser.IPostParsing {
         return roomInfoList;
     }
 
+    @Keep
     @Root(name = "list")
     public static class BuildingInfo implements Serializable {
 

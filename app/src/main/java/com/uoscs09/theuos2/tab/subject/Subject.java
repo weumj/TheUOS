@@ -2,6 +2,7 @@ package com.uoscs09.theuos2.tab.subject;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Keep;
 import android.support.annotation.StringRes;
 import android.text.TextUtils;
 
@@ -17,6 +18,7 @@ import java.util.List;
 import mj.android.utils.xml.Element;
 import mj.android.utils.xml.Root;
 
+@Keep
 @Root(name = "list")
 public class Subject implements Parcelable, IParser.IPostParsing {
 

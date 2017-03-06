@@ -228,13 +228,13 @@ public class TabLibrarySeatFragment extends AbsProgressFragment<SeatTotalInfo> {
                             mSeatAdapter.notifyDataSetChanged();
 
                             if (mSeatTotalInfo.isSeatListEmpty()) {
-                                mEmptyView.setVisibility(View.VISIBLE);
+                                if (mEmptyView != null) mEmptyView.setVisibility(View.VISIBLE);
                             }
                         },
                         e -> {
                             super.simpleErrorRespond(e);
                             if (mSeatTotalInfo.isSeatListEmpty()) {
-                                mEmptyView.setVisibility(View.VISIBLE);
+                                if (mEmptyView != null) mEmptyView.setVisibility(View.VISIBLE);
                             }
 
                             if (mSwipeRefreshLayout != null)

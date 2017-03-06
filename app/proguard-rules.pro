@@ -23,6 +23,10 @@
     protected Object[][] getContents();
 }
 
+-keepclasseswithmembernames @android.support.annotation.keep class * {
+    *;
+}
+
 -keep class com.uoscs09.theuos2.annotation.**
 
 

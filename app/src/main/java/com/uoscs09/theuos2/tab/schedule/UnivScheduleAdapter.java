@@ -61,6 +61,9 @@ class UnivScheduleAdapter extends AbsArrayAdapter<UnivScheduleItem, UnivSchedule
         UnivScheduleItem item = getItem(position);
         if (item != null) {
             UnivScheduleItem.ScheduleDate date = item.dateStart;
+            if(date == null){
+                return -1;
+            }
             return date.month * 100 + date.day;
         } else {
             return -1;

@@ -2,12 +2,14 @@ package com.uoscs09.theuos2.tab.booksearch;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Keep;
 
 import com.uoscs09.theuos2.parse.IParser;
 
 import mj.android.utils.xml.Element;
 import mj.android.utils.xml.Root;
 
+@Keep
 @Root(name = "item")
 public class BookStateInfo implements Parcelable, IParser.IPostParsing {
 

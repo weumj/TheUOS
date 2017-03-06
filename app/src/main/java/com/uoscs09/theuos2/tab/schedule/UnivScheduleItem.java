@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.CalendarContract.Events;
+import android.support.annotation.Keep;
 
 import com.uoscs09.theuos2.parse.IParser;
 
@@ -13,6 +14,7 @@ import java.util.Calendar;
 import mj.android.utils.xml.Element;
 import mj.android.utils.xml.Root;
 
+@Keep
 @Root(name = "list")
 public class UnivScheduleItem implements Serializable, Parcelable, IParser.IPostParsing {
     private static final long serialVersionUID = 4167246292492938182L;

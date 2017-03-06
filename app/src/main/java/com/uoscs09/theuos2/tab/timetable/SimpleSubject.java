@@ -1,6 +1,8 @@
 package com.uoscs09.theuos2.tab.timetable;
 
 
+import android.support.annotation.Keep;
+
 import com.uoscs09.theuos2.tab.subject.Subject;
 
 import java.util.ArrayList;
@@ -8,6 +10,7 @@ import java.util.ArrayList;
 import mj.android.utils.xml.Element;
 import mj.android.utils.xml.Root;
 
+@Keep
 @Root(name = "list")
 public class SimpleSubject {
 
