@@ -482,7 +482,7 @@ public class AppRequests {
 
 
     public static class UnivSchedules {
-        static final String FILE_NAME = "file_univ_schedule_r1";
+        static final String FILE_NAME = "file_univ_schedule_r2";
 
         public static Observable<List<UnivScheduleItem>> request(boolean force) {
             //FIXME

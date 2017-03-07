@@ -20,8 +20,8 @@ android {
         applicationId "com.uoscs09.theuos2"
         minSdkVersion 14
         targetSdkVersion 25
-        versionCode 15
-        versionName "1.2.2"
+        versionCode 16
+        versionName "1.2.3"
         resValue "string", "setting_app_version_name", "${versionName}"
     }
 
@@ -49,28 +49,12 @@ android {
         debug {
             signingConfig signingConfigs.common
             minifyEnabled true//Boolean.valueOf(project.property('TheUOS.Debug.Proguard').toString())
-            proguardFiles getDefaultProguardFile('proguard-android.txt'),
-                    'proguard-rules.pro',
-                    'proguard-butterknife.pro',
-                    'proguard-firebase.pro',
-                    'proguard-okhttp3.pro',
-                    'proguard-play-service.pro',
-                    'proguard-retrofit2.pro',
-                    'proguard-retrolambda.pro',
-                    'proguard-rxjava.pro'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         release {
             signingConfig signingConfigs.common
             minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'),
-                    'proguard-rules.pro',
-                    'proguard-butterknife.pro',
-                    'proguard-firebase.pro',
-                    'proguard-okhttp3.pro',
-                    'proguard-play-service.pro',
-                    'proguard-retrofit2.pro',
-                    'proguard-retrolambda.pro',
-                    'proguard-rxjava.pro'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 

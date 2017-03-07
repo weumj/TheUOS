@@ -55,13 +55,12 @@ class UnivScheduleAdapter extends AbsArrayAdapter<UnivScheduleItem, UnivSchedule
     }
 
 
-
     @Override
     public long getHeaderId(int position) {
         UnivScheduleItem item = getItem(position);
         if (item != null) {
             UnivScheduleItem.ScheduleDate date = item.dateStart;
-            if(date == null){
+            if (date == null) {
                 return -1;
             }
             return date.month * 100 + date.day;
@@ -135,17 +134,16 @@ class UnivScheduleAdapter extends AbsArrayAdapter<UnivScheduleItem, UnivSchedule
                 UnivScheduleItem.ScheduleDate date = item.dateStart;
                 Calendar c = item.getDate(true);
 
-                textView.setText(String.valueOf(date.day));
-                if (c != null)
-                    textView2.setText(dateFormat.format(c.getTime()));
+                textView.setText(date != null ? String.valueOf(date.day) : "");
+                textView2.setText(c != null ? dateFormat.format(c.getTime()) : "");
             } else {
                 textView.setText("");
                 textView2.setText("");
             }
         }
 
-        void setBarVisible(boolean visible){
-            bar.setVisibility(visible? View.VISIBLE : View.INVISIBLE);
+        void setBarVisible(boolean visible) {
+            bar.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
         }
     }
 

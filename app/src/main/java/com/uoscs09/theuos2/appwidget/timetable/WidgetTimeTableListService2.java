@@ -67,7 +67,13 @@ public abstract class WidgetTimeTableListService2 extends RemoteViewsService {
 
         @Override
         public int getCount() {
-            return PrefHelper.TimeTables.isShowingLastEmptyPeriod() ? (mTimeTable != null ? mTimeTable.maxPeriod() : 0) : super.getCount();
+            int defaultCount = super.getCount();
+            if (mTimeTable != null && PrefHelper.TimeTables.isShowingLastEmptyPeriod()) {
+                int maxCount = mTimeTable.maxPeriod();
+
+                return maxCount > defaultCount ? defaultCount : maxCount;
+            }
+            return defaultCount;
         }
 
 
@@ -137,17 +143,12 @@ public abstract class WidgetTimeTableListService2 extends RemoteViewsService {
         }
 
         private void getData() {
-            AppRequests.TimeTables.readFile()
-                    .subscribe(
-                            timetable2 -> {
-                                mTimeTable = timetable2;
-                                if (mTimeTable != null) {
-                                    addAll(mTimeTable.periods());
-                                }
-                            },
-                            Throwable::printStackTrace
-                    );
-
+            mTimeTable = AppRequests.TimeTables.readFile()
+                    .toBlocking()
+                    .single();
+            if (mTimeTable != null) {
+                addAll(mTimeTable.periods());
+            }
         }
 
     }
