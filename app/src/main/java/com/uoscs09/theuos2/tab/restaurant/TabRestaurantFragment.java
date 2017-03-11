@@ -183,6 +183,13 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
 
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (mSubscription != null)
+            mSubscription.unsubscribe();
+    }
+
     private void performTabClick(int newTabSelection) {
         if (mSwipeRefreshLayout.isRefreshing()) {
             return;
@@ -222,15 +229,18 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
                             mRestTable = result;
                             mRestItemAdapter.mItems = mRestTable;
                             //mRestItemAdapter.notifyItemRangeInserted(0, 5);
-                            mRecyclerView.post(() -> performTabClick(mCurrentSelection));
+                            if (mRecyclerView != null)
+                                mRecyclerView.post(() -> performTabClick(mCurrentSelection));
                         },
                         t -> {
                             super.simpleErrorRespond(t);
-                            mSwipeRefreshLayout.setRefreshing(false);
+                            if (mSwipeRefreshLayout != null)
+                                mSwipeRefreshLayout.setRefreshing(false);
                             mSubscription = null;
                         },
                         () -> {
-                            mSwipeRefreshLayout.setRefreshing(false);
+                            if (mSwipeRefreshLayout != null)
+                                mSwipeRefreshLayout.setRefreshing(false);
                             mSubscription = null;
                         });
     }
