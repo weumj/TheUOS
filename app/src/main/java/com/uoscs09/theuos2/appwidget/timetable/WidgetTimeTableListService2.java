@@ -143,12 +143,14 @@ public abstract class WidgetTimeTableListService2 extends RemoteViewsService {
         }
 
         private void getData() {
-            mTimeTable = AppRequests.TimeTables.readFile()
-                    .toBlocking()
-                    .single();
-            if (mTimeTable != null) {
-                addAll(mTimeTable.periods());
-            }
+            AppRequests.TimeTables.readFile()
+                    .subscribe(result -> this.mTimeTable = result,
+                            Throwable::printStackTrace,
+                            () -> {
+                                if (mTimeTable != null) {
+                                    addAll(mTimeTable.periods());
+                                }
+                            });
         }
 
     }

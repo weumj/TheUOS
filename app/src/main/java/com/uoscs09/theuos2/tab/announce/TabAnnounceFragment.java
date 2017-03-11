@@ -155,7 +155,7 @@ public class TabAnnounceFragment extends AbsProgressFragment<List<AnnounceItem>>
 
     @OnItemClick(R.id.tab_announce_list_announce)
     void listItemClick(int position, View view) {
-        if (!isMenuVisible() || getCurrentCategoryIndex() < 1)
+        if (!isMenuVisible() || getCurrentCategoryIndex() < 1 || mAnnounceAdapter.getCount() <= position)
             return;
 
         sendClickEvent("detail announce");
