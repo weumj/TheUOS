@@ -248,10 +248,15 @@ public class AppRequests {
         /* 반환값은 저장된 파일의 경로*/
         @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         public static Observable<String> saveTimetableToImage(Timetable2 timetable, ListView listView, ListAdapter originalAdapter, View header) {
+
             //noinspection ResourceType
             final String picturePath = PrefHelper.Data.getPicturePath();
             @SuppressLint("DefaultLocale")
-            String savedPath = String.format("%s/timetable_%d_%s_%d.png", picturePath, timetable.year(), timetable.semester().name(), System.currentTimeMillis());
+            String savedPath = String.format("%s/timetable_%d_%s_%d.png",
+                    picturePath,
+                    timetable.year(),timetable.semester() != null? timetable.semester().name() : "",
+                    System.currentTimeMillis()
+            );
 
             return new ImageUtil.ListViewBitmapRequest.Builder(listView, originalAdapter)
                     .setHeaderView(header)

@@ -83,6 +83,10 @@ public abstract class WidgetTimeTableListService2 extends RemoteViewsService {
         public RemoteViews getViewAt(int position) {
             RemoteViews views = new RemoteViews(getContext().getPackageName(), isBigSize() ? R.layout.list_layout_widget_timetable_5x4 : R.layout.list_layout_widget_timetable_4x4);
 
+            // guard
+            if(position >= getCount())
+                return views;
+
             views.setTextViewText(viewIds[0], periodTimeArray[position]);
 
             if (mTimeTable == null) {
@@ -147,6 +151,7 @@ public abstract class WidgetTimeTableListService2 extends RemoteViewsService {
                     .subscribe(result -> this.mTimeTable = result,
                             Throwable::printStackTrace,
                             () -> {
+                                clear();
                                 if (mTimeTable != null) {
                                     addAll(mTimeTable.periods());
                                 }
