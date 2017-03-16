@@ -93,6 +93,10 @@ public abstract class AbsAsyncFragment<T> extends BaseTabFragment {
                         if (f.isVisible()) {
                             f.onPostExecute();
                         } else {
+                            if (t.getMessage().equals("Library Web Page Error")) {
+                                return;
+                            }
+
                             FirebaseCrash.logcat(Log.ERROR, TAG, "AsyncFragment background error");
                             FirebaseCrash.report(t);
                             //Log.w(tag, "error", t);

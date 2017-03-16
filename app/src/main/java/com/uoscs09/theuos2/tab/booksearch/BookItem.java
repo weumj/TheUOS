@@ -133,6 +133,11 @@ public class BookItem implements Parcelable {
         bookStateInfoList = null;
     }
 
+    public BookItem bookInfo(String bookInfo){
+        this.bookInfo = bookInfo;
+        return this;
+    }
+
     /*
     public BookItem(String title, String writer, String bookInfo, String site,
                     String bookState, String coverSrc, String url, String infoUrl,

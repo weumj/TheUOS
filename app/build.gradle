@@ -20,8 +20,8 @@ android {
         applicationId "com.uoscs09.theuos2"
         minSdkVersion 14
         targetSdkVersion 25
-        versionCode 18
-        versionName "1.2.5"
+        versionCode 19
+        versionName "1.2.6"
         resValue "string", "setting_app_version_name", "${versionName}"
     }
 

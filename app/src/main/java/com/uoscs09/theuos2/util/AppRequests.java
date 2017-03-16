@@ -116,32 +116,15 @@ public class AppRequests {
         }
 
         public static Observable<List<BookItem>> request(String query, int page, int os, int oi) {
+            final boolean shouldFilterUnavailableBook =  PrefHelper.Books.isFilterUnavailableBook();
+
             return NetworkRequests.Books.request(query, page, os, oi)
-                    .map(originalList -> {
-                                //FIXME
-                                if (PrefHelper.Books.isFilterUnavailableBook() && originalList.size() > 0) {
-                                    List<BookItem> newList = new ArrayList<>();
-                                    String emptyMsg = context().getString(R.string.tab_book_not_found);
-                                    final int N = originalList.size();
-                                    for (int i = 0; i < N; i++) {
-                                        BookItem item = originalList.get(i);
-                                        if (item.isBookAvailable()) {
-                                            newList.add(item);
-                                        }
-                                    }
-
-                                    if (newList.size() == 0) {
-                                        BookItem item = new BookItem();
-                                        item.bookInfo = emptyMsg;
-                                        newList.add(item);
-                                    }
-
-                                    return newList;
-                                } else {
-                                    return new ArrayList<>(originalList);
-                                }
-                            }
-                    ).subscribeOn(Schedulers.io())
+                    .flatMap(Observable::from)
+                    .filter(bookItem -> !shouldFilterUnavailableBook && bookItem.isBookAvailable())
+                    // fixme bookitem을 이런 용도로 사용하지 말고 에러메시지 보여주기
+                    .defaultIfEmpty(new BookItem().bookInfo(context().getString(R.string.tab_book_not_found)))
+                    .toList()
+                    .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread());
         }
     }
