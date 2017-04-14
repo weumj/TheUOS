@@ -275,7 +275,7 @@ public class AppRequests {
         private final static int[] STUDY_ROOM_NUMBER_ARRAY = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 23, 24, 25, 26, 27, 28};
 
         public static Observable<List<SeatInfo>> widgetDataRequest() {
-            boolean showingStudyRoomInWidget = PrefHelper.LibrarySeats.isShowingStudyRoomInWidget();
+            //boolean showingStudyRoomInWidget = PrefHelper.LibrarySeats.isShowingStudyRoomInWidget();
             return NetworkRequests.LibrarySeats.request()
                     .map(SeatTotalInfo::seatInfoList)
                     /*

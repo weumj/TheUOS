@@ -9,6 +9,7 @@ import android.widget.RemoteViewsService;
 import com.uoscs09.theuos2.R;
 import com.uoscs09.theuos2.tab.restaurant.RestItem;
 import com.uoscs09.theuos2.util.AppRequests;
+import com.uoscs09.theuos2.util.AppUtil;
 
 public class RestListService extends RemoteViewsService {
 
@@ -97,7 +98,15 @@ public class RestListService extends RemoteViewsService {
         @Override
         public void onDataSetChanged() {
             AppRequests.Restaurants.request(false)
-                    .subscribe(result -> this.mTable = result);
+                    .subscribe(
+                            result -> this.mTable = result,
+                            throwable -> {
+                                throwable.printStackTrace();
+                                if (context != null){
+                                    AppUtil.showToast(context, "Cannot get restaurant data.");
+                                }
+                            }
+                    );
         }
 
 

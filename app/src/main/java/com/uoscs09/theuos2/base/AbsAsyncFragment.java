@@ -93,7 +93,7 @@ public abstract class AbsAsyncFragment<T> extends BaseTabFragment {
                         if (f.isVisible()) {
                             f.onPostExecute();
                         } else {
-                            if (t.getMessage().equals("Library Web Page Error")) {
+                            if (t instanceof IOException) {
                                 return;
                             }
 
