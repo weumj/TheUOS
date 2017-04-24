@@ -149,6 +149,9 @@ public class TabSearchEmptyRoomFragment extends AbsProgressFragment<List<EmptyRo
     }
 
     void roomClick(View v, int position) {
+        if(position >= mClassRoomList.size()){
+            return;
+        }
         // 선택된 빈 강의실의 시간표 보여주기
         final Dialog dialog = AppUtil.getProgressDialog(getActivity());
         dialog.show();
