@@ -1,6 +1,5 @@
 package com.uoscs09.theuos2.tab.restaurant;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -191,7 +190,7 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
     }
 
     private void performTabClick(int newTabSelection) {
-        if (mSwipeRefreshLayout.isRefreshing()) {
+        if (mSwipeRefreshLayout != null && mSwipeRefreshLayout.isRefreshing()) {
             return;
         }
 
@@ -378,7 +377,7 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
         return mCurrentRestName;
     }
 */
-    protected static class Tab {
+    static class Tab {
         final FrameLayout tabView;
         @BindView(R.id.tab_rest_tab_text)
         TextView mTextView;
@@ -388,16 +387,16 @@ public class TabRestaurantFragment extends AbsProgressFragment<SparseArray<RestI
         View mStrip;
         // public int id;
 
-        private final int mSelectedColor;
-        private final int mNormalColor;
+        // private final int mSelectedColor;
+       // private final int mNormalColor;
 
-        public Tab(LinearLayout parent) {
+        Tab(LinearLayout parent) {
             tabView = (FrameLayout) LayoutInflater.from(parent.getContext()).inflate(R.layout.view_tab_rest_tab, parent, false);
             ButterKnife.bind(this, tabView);
 
-            mSelectedColor = ResourceUtil.getAttrColor(parent.getContext(), R.attr.color_actionbar_title);
+            // mSelectedColor = ResourceUtil.getAttrColor(parent.getContext(), R.attr.color_actionbar_title);
 
-            mNormalColor = Color.TRANSPARENT;
+            // mNormalColor = Color.TRANSPARENT;
 
             //mSelectedColor | 0xaa << 24;
         }
